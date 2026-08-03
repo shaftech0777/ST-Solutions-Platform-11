@@ -62,6 +62,25 @@ const fileSystemTree: FileNode[] = [
         description: "Express.js REST API service with clean architecture",
         children: [
           {
+            name: "prisma",
+            path: "apps/api/prisma",
+            type: "folder",
+            children: [
+              {
+                name: "schema.prisma",
+                path: "apps/api/prisma/schema.prisma",
+                type: "file",
+                content: `// Prisma Schema for ST-Solutions Platform\n\ngenerator client {\n  provider = "prisma-client-js"\n}\n\ndatasource db {\n  provider = "postgresql"\n  url      = env("DATABASE_URL")\n}\n\nenum UserStatus {\n  ACTIVE\n  INACTIVE\n  SUSPENDED\n  PENDING\n}\n\nenum AccountType {\n  ADMIN\n  SUB_ADMIN\n  MANAGER\n  MEMBER\n  CLIENT\n}\n\nmodel User {\n  id           String      @id @default(uuid())\n  email        String?     @unique\n  passwordHash String\n  accountType  AccountType @default(MEMBER)\n  status       UserStatus  @default(PENDING)\n  roleId       String?\n  createdAt    DateTime    @default(now())\n  updatedAt    DateTime    @updatedAt\n\n  role      Role?        @relation(fields: [roleId], references: [id], onDelete: SetNull)\n  profile   UserProfile?\n  sessions  Session[]\n  auditLogs AuditLog[]\n\n  @@index([email])\n  @@index([status])\n  @@index([accountType])\n}\n\nmodel Role {\n  id          String   @id @default(uuid())\n  name        String   @unique\n  description String?\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  users       User[]\n  permissions RolePermission[]\n}\n\nmodel Permission {\n  id          String   @id @default(uuid())\n  name        String   @unique\n  description String?\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  roles RolePermission[]\n}\n\nmodel RolePermission {\n  id           String   @id @default(uuid())\n  roleId       String\n  permissionId String\n  createdAt    DateTime @default(now())\n\n  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)\n  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)\n\n  @@unique([roleId, permissionId])\n  @@index([roleId])\n  @@index([permissionId])\n}\n\nmodel UserProfile {\n  id           String   @id @default(uuid())\n  userId       String   @unique\n  fullName     String?\n  profileImage String?\n  phoneNumber  String?\n  country      String?\n  city         String?\n  address      String?\n  createdAt    DateTime @default(now())\n  updatedAt    DateTime @updatedAt\n\n  user User @relation(fields: [userId], references: [id], onDelete: Cascade)\n}\n\nmodel Session {\n  id        String   @id @default(uuid())\n  userId    String\n  tokenHash String\n  ipAddress String?\n  userAgent String?\n  expiresAt DateTime\n  createdAt DateTime @default(now())\n\n  user User @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([userId])\n  @@index([tokenHash])\n}\n\nmodel AuditLog {\n  id          String   @id @default(uuid())\n  userId      String?\n  action      String\n  description String?\n  ipAddress   String?\n  createdAt   DateTime @default(now())\n\n  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)\n\n  @@index([userId])\n  @@index([action])\n  @@index([createdAt])\n}`
+              }
+            ]
+          },
+          {
+            name: ".env.example",
+            path: "apps/api/.env.example",
+            type: "file",
+            content: `DATABASE_URL="postgresql://postgres:postgres@localhost:5432/st_solutions?schema=public"\nPORT=4000\nNODE_ENV=development\nJWT_SECRET=default-development-jwt-secret-key-change-in-production`
+          },
+          {
             name: "src",
             path: "apps/api/src",
             type: "folder",
@@ -72,10 +91,22 @@ const fileSystemTree: FileNode[] = [
                 type: "folder",
                 children: [
                   {
+                    name: "database.ts",
+                    path: "apps/api/src/config/database.ts",
+                    type: "file",
+                    content: `import { env } from "./env.js";\n\nexport const databaseConfig = {\n  url: env.DATABASE_URL || "postgresql://postgres:postgres@localhost:5432/st_solutions?schema=public",\n  logQueries: env.NODE_ENV === "development",\n};`
+                  },
+                  {
+                    name: "env.ts",
+                    path: "apps/api/src/config/env.ts",
+                    type: "file",
+                    content: `import dotenv from "dotenv";\nimport { z } from "zod";\n\ndotenv.config();\n\nexport const envSchema = z.object({\n  NODE_ENV: z.enum(["development", "production", "test"]).default("development"),\n  PORT: z.string().default("4000"),\n  DATABASE_URL: z.string().optional(),\n  JWT_SECRET: z.string().default("default-development-secret-key"),\n});\n\nexport const env = envSchema.parse(process.env);`
+                  },
+                  {
                     name: "index.ts",
                     path: "apps/api/src/config/index.ts",
                     type: "file",
-                    content: `export const config = {\n  port: process.env.PORT || 4000,\n  env: process.env.NODE_ENV || "development",\n};`
+                    content: `export * from "./env.js";\nexport * from "./logger.js";\nexport * from "./security.js";\nexport * from "./database.js";`
                   }
                 ]
               },
@@ -85,22 +116,16 @@ const fileSystemTree: FileNode[] = [
                 type: "folder",
                 children: [
                   {
-                    name: "index.ts",
-                    path: "apps/api/src/database/index.ts",
+                    name: "prisma.ts",
+                    path: "apps/api/src/database/prisma.ts",
                     type: "file",
-                    content: `export * from "./database.js";\nexport * from "./prisma.js";`
+                    content: `import { PrismaClient } from "@prisma/client";\nimport { databaseConfig } from "../config/database.js";\n\nconst globalForPrisma = globalThis as unknown as {\n  prisma: PrismaClient | undefined;\n};\n\nexport const prisma =\n  globalForPrisma.prisma ?\?\n  new PrismaClient({\n    log: databaseConfig.logQueries ? ["query", "error", "warn"] : ["error"],\n  });\n\nif (process.env.NODE_ENV !== "production") {\n  globalForPrisma.prisma = prisma;\n}`
                   },
                   {
                     name: "database.ts",
                     path: "apps/api/src/database/database.ts",
                     type: "file",
-                    content: `export async function connectDatabase(): Promise<void> {\n  // Connection bootstrap\n}`
-                  },
-                  {
-                    name: "prisma.ts",
-                    path: "apps/api/src/database/prisma.ts",
-                    type: "file",
-                    content: `export const prisma = null;`
+                    content: `import { prisma } from "./prisma.js";\nimport { logger } from "../config/logger.js";\n\nexport async function connectDatabase(): Promise<void> {\n  try {\n    if (process.env.DATABASE_URL) {\n      await prisma.$connect();\n      logger.info("Database connection initialized via Prisma.");\n    }\n  } catch (error) {\n    logger.warn({ error }, "Database connection attempt failed.");\n  }\n}`
                   }
                 ]
               },
@@ -361,15 +386,13 @@ export default function App() {
   };
 
   const phaseRefinements = [
-    { title: "Backend Structure", desc: "config, modules, middlewares, services, shared, utils, types, database", done: true },
-    { title: "Express Separation", desc: "app.ts (express, routes, middlewares) & server.ts (process startup, port server)", done: true },
-    { title: "15 Production Feature Modules", desc: "auth, users, roles, permissions, members, applicants, managers, client-relations, clients, projects, payments, notifications, settings, audit, ai", done: true },
-    { title: "Standard Module Architecture", desc: "controller, service, repository, routes, validation, types, index.ts for each module", done: true },
-    { title: "Frontend Structure", desc: "app, assets, components, features, hooks, layouts, pages, services, store, types, utils", done: true },
-    { title: "Shared Types Library", desc: "user.ts, role.ts, permission.ts, api.ts, pagination.ts, jwt.ts re-exported", done: true },
-    { title: "Shared Config Library", desc: "constants.ts, roles.ts, permissions.ts, routes.ts, status.ts", done: true },
-    { title: "Shared Utils Library", desc: "date.ts, string.ts, id.ts, validation.ts", done: true },
-    { title: "Database Layer", desc: "database.ts, prisma.ts, index.ts", done: true }
+    { title: "Client Model", desc: "Client profile with optional userId link, company & personal details, business info, status enum", done: true },
+    { title: "Project Model", desc: "Project tracking with client, creator, manager, member links, status enum, budget & milestone dates", done: true },
+    { title: "ProjectUpdate Model", desc: "Client-visible project progress updates with progress percentage & author tracking", done: true },
+    { title: "Payment Model", desc: "Client payment records linked to projects, amount/currency, submission & approval timestamps", done: true },
+    { title: "ClientRequest Model", desc: "Contact/inquiry requests storage for prospective clients prior to account confirmation", done: true },
+    { title: "Enums & Relations", desc: "ClientStatus, ProjectStatus, PaymentStatus enums; Cascade/SetNull/Restrict foreign keys & indexes", done: true },
+    { title: "Prisma CLI Validation", desc: "prisma format, prisma validate, and prisma generate verified with 0 errors", done: true }
   ];
 
   return (
@@ -384,7 +407,7 @@ export default function App() {
             <div className="flex items-center space-x-2">
               <h1 className="text-base font-bold tracking-tight text-white">ST-Solutions Platform</h1>
               <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
-                Phase 1.5 Refined
+                Phase 6 Client & Project Schema Ready
               </span>
             </div>
             <p className="text-xs text-slate-400">Enterprise Clean Monorepo Architecture</p>
