@@ -1,0 +1,6 @@
+{
+  "name": "ST-Solutions",
+  "description": "Official source code and architecture of the ST-Solutions Platform monorepo.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,11 +1,14 @@
-<div align="center">
+# ST-Solutions
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+Official source code of the ST-Solutions Platform.
 
-  <h1>Built with AI Studio</h2>
+## Architecture
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+- Frontend (React + Vite)
+- Backend (Express + TypeScript)
+- Database (Neon PostgreSQL)
+- ORM (Prisma)
+- Authentication (JWT)
+- Authorization (RBAC)
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
-
-</div>
+Documentation is available in the `/docs` directory.

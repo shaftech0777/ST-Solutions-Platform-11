@@ -1,0 +1,15 @@
+{
+  "name": "@st-solutions/web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Frontend Web Application for ST-Solutions",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "react": "^19.0.1",
+    "react-dom": "^19.0.1"
+  }
+}
