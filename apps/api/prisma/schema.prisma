@@ -50,6 +50,29 @@ model User {
   projectUpdates   ProjectUpdate[] @relation("ProjectUpdates")
   approvedPayments Payment[]       @relation("ApprovedPayments")
 
+  memberAccount               Member?             @relation("UserMember")
+  rankChangesAuthored         MemberRankHistory[] @relation("RankChangeAuthor")
+  approvedMemberRewards       MemberReward[]      @relation("ApprovedRewards")
+  managedClientOwnerships     ClientOwnership[]   @relation("AssignedOwnershipManager")
+  reviewedPromotionActivities PromotionActivity[] @relation("ReviewedPromotionActivities")
+
+  assignedContactMessages ContactMessage[]        @relation("AssignedContactMessages")
+  notifications           Notification[]          @relation("UserNotifications")
+  createdAnnouncements    Announcement[]          @relation("CreatedAnnouncements")
+  communicationLogs       CommunicationLog[]      @relation("UserCommunicationLogs")
+  notificationPreference  NotificationPreference? @relation("UserNotificationPreference")
+
+  aiConversations AIConversation[] @relation("UserAIConversations")
+  aiTrainingNotes AITrainingNote[] @relation("CreatedAITrainingNotes")
+
+  managerAnalytics ManagerAnalytics[] @relation("ManagerAnalytics")
+
+  createdMaintenanceWindows MaintenanceWindow[] @relation("CreatedMaintenanceWindows")
+  createdBackups            BackupHistory[]     @relation("CreatedBackups")
+  createdApiKeys            ApiKey[]            @relation("CreatedApiKeys")
+  createdPlatformVersions   PlatformVersion[]   @relation("CreatedPlatformVersions")
+  performedMaintenanceLogs  MaintenanceLog[]    @relation("PerformedMaintenanceLogs")
+
   @@index([email])
   @@index([status])
   @@index([accountType])
@@ -118,10 +141,11 @@ model MemberApplication {
   updatedAt DateTime @updatedAt
 
   // Relations
-  reviewedBy    User?                @relation("ReviewedApplications", fields: [reviewedById], references: [id], onDelete: SetNull)
-  answers       ApplicationAnswer[]
-  verifications MemberVerification[]
-  profiles      MemberProfile[]
+  reviewedBy        User?                @relation("ReviewedApplications", fields: [reviewedById], references: [id], onDelete: SetNull)
+  answers           ApplicationAnswer[]
+  verifications     MemberVerification[]
+  profiles          MemberProfile[]
+  communicationLogs CommunicationLog[]
 
   @@index([email])
   @@index([phoneNumber])
@@ -312,9 +336,11 @@ model Client {
   createdAt           DateTime     @default(now())
   updatedAt           DateTime     @updatedAt
 
-  user     User?     @relation("ClientAccount", fields: [userId], references: [id], onDelete: SetNull)
-  projects Project[]
-  payments Payment[]
+  user              User?              @relation("ClientAccount", fields: [userId], references: [id], onDelete: SetNull)
+  projects          Project[]
+  payments          Payment[]
+  ownership         ClientOwnership?
+  communicationLogs CommunicationLog[] @relation("ClientCommunicationLogs")
 
   @@index([email])
   @@index([phoneNumber])
@@ -405,5 +431,1061 @@ model ClientRequest {
 
   @@index([email])
   @@index([status])
+  @@index([createdAt])
+}
+
+// ====================================================
+// PHASE 7: ORGANIZATION, PARTNER & INTERNAL MANAGEMENT
+// Business Rules:
+// - Only one ADMIN account in system.
+// - Only one SUB_ADMIN account in system.
+// - Members are trusted partners, not employees.
+// - Managers supervise members via hierarchy self-relation.
+// - Client ownership is preserved even if member leaves.
+// - Rank history is never deleted.
+// ====================================================
+
+enum MemberStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  REMOVED
+}
+
+enum RankChangeReason {
+  PROMOTION
+  DEMOTION
+  PERFORMANCE
+  ADMIN_DECISION
+  MANUAL
+}
+
+enum RewardType {
+  CLIENT_REFERRAL
+  SOCIAL_MEDIA
+  MONTHLY_BONUS
+  SPECIAL_REWARD
+}
+
+enum RewardStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  PAID
+}
+
+model Rank {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  priority    Int      @unique
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members          Member[]
+  oldRankHistories MemberRankHistory[] @relation("OldRankHistory")
+  newRankHistories MemberRankHistory[] @relation("NewRankHistory")
+}
+
+model Member {
+  id         String       @id @default(uuid())
+  userId     String       @unique
+  rankId     String
+  managerId  String?
+  status     MemberStatus @default(ACTIVE)
+  trustScore Int          @default(0)
+  joinedAt   DateTime     @default(now())
+  removedAt  DateTime?
+  notes      String?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  user                User                @relation("UserMember", fields: [userId], references: [id], onDelete: Cascade)
+  rank                Rank                @relation(fields: [rankId], references: [id], onDelete: Restrict)
+  manager             Member?             @relation("MemberHierarchy", fields: [managerId], references: [id], onDelete: SetNull)
+  managedMembers      Member[]            @relation("MemberHierarchy")
+  ownedClients        ClientOwnership[]
+  rewards             MemberReward[]
+  rankHistory         MemberRankHistory[]
+  promotionActivities PromotionActivity[]
+  memberAnalytics     MemberAnalytics[]
+
+  @@index([userId])
+  @@index([rankId])
+  @@index([managerId])
+  @@index([status])
+}
+
+model MemberRankHistory {
+  id          String           @id @default(uuid())
+  memberId    String
+  oldRankId   String?
+  newRankId   String
+  changedById String
+  reason      RankChangeReason
+  notes       String?
+  createdAt   DateTime         @default(now())
+
+  member    Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  oldRank   Rank?  @relation("OldRankHistory", fields: [oldRankId], references: [id], onDelete: SetNull)
+  newRank   Rank   @relation("NewRankHistory", fields: [newRankId], references: [id], onDelete: Restrict)
+  changedBy User   @relation("RankChangeAuthor", fields: [changedById], references: [id], onDelete: Restrict)
+
+  @@index([memberId])
+  @@index([changedById])
+  @@index([createdAt])
+}
+
+model MemberReward {
+  id           String       @id @default(uuid())
+  memberId     String
+  rewardType   RewardType
+  rewardStatus RewardStatus @default(PENDING)
+  amount       Float
+  currency     String       @default("USD")
+  description  String?
+  approvedById String?
+  approvedAt   DateTime?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  member     Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  approvedBy User?  @relation("ApprovedRewards", fields: [approvedById], references: [id], onDelete: SetNull)
+
+  @@index([memberId])
+  @@index([rewardStatus])
+  @@index([rewardType])
+}
+
+model ClientOwnership {
+  id                String   @id @default(uuid())
+  clientId          String   @unique
+  memberId          String
+  assignedManagerId String?
+  assignedAt        DateTime @default(now())
+  notes             String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  client  Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  member  Member @relation(fields: [memberId], references: [id], onDelete: Restrict)
+  manager User?  @relation("AssignedOwnershipManager", fields: [assignedManagerId], references: [id], onDelete: SetNull)
+
+  @@index([clientId])
+  @@index([memberId])
+  @@index([assignedManagerId])
+}
+
+model PromotionActivity {
+  id           String   @id @default(uuid())
+  memberId     String
+  platform     String
+  postUrl      String?
+  description  String?
+  reviewedById String?
+  rewardGiven  Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  member     Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  reviewedBy User?  @relation("ReviewedPromotionActivities", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@index([memberId])
+  @@index([reviewedById])
+  @@index([createdAt])
+}
+
+// ====================================================
+// PHASE 8: BUSINESS CONFIGURATION & CONTENT MANAGEMENT
+// Business Rules:
+// - Only one CompanyProfile should exist (enforced at app level).
+// - Only one SEOSettings should exist (enforced at app level).
+// - Only one WebsiteSettings should exist (enforced at app level).
+// - Multiple services, portfolio projects, FAQs, office locations, bank accounts.
+// ====================================================
+
+enum ServiceStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum PortfolioStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum FAQStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model CompanyProfile {
+  id             String   @id @default(uuid())
+  companyName    String
+  legalName      String?
+  tagline        String?
+  description    String
+  mission        String?
+  vision         String?
+  foundedYear    Int?
+  email          String
+  phoneNumber    String
+  whatsappNumber String
+  website        String?
+  country        String
+  city           String
+  address        String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model OfficeLocation {
+  id            String   @id @default(uuid())
+  title         String
+  country       String
+  city          String
+  address       String
+  googleMapsUrl String?
+  isHeadOffice  Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model BankAccount {
+  id            String   @id @default(uuid())
+  bankName      String
+  accountTitle  String
+  accountNumber String
+  iban          String?
+  swiftCode     String?
+  isActive      Boolean  @default(true)
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model ServiceCategory {
+  id           String   @id @default(uuid())
+  name         String
+  description  String?
+  displayOrder Int      @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  services Service[]
+}
+
+model Service {
+  id                String        @id @default(uuid())
+  categoryId        String
+  title             String
+  shortDescription  String
+  fullDescription   String
+  startingPrice     Float?
+  estimatedDelivery String?
+  status            ServiceStatus @default(ACTIVE)
+  displayOrder      Int           @default(0)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  category ServiceCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@index([categoryId])
+  @@index([status])
+}
+
+model PortfolioCategory {
+  id           String   @id @default(uuid())
+  name         String
+  description  String?
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  projects PortfolioProject[]
+}
+
+model PortfolioProject {
+  id           String          @id @default(uuid())
+  categoryId   String
+  title        String
+  description  String
+  projectType  String
+  liveUrl      String?
+  githubUrl    String?
+  thumbnailUrl String?
+  status       PortfolioStatus @default(DRAFT)
+  featured     Boolean         @default(false)
+  displayOrder Int             @default(0)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  category PortfolioCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@index([categoryId])
+  @@index([status])
+  @@index([featured])
+}
+
+model FAQ {
+  id           String    @id @default(uuid())
+  question     String
+  answer       String
+  status       FAQStatus @default(ACTIVE)
+  displayOrder Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([status])
+}
+
+model SocialLink {
+  id           String   @id @default(uuid())
+  platform     String
+  url          String
+  isActive     Boolean  @default(true)
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model SEOSettings {
+  id              String   @id @default(uuid())
+  siteTitle       String
+  siteDescription String
+  keywords        String
+  canonicalUrl    String?
+  ogImage         String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model WebsiteSettings {
+  id                      String   @id @default(uuid())
+  maintenanceMode         Boolean  @default(false)
+  allowNewApplications    Boolean  @default(true)
+  allowClientRequests     Boolean  @default(true)
+  allowAIAssistant        Boolean  @default(true)
+  allowMemberApplications Boolean  @default(true)
+  defaultLanguage         String   @default("en")
+  timezone                String   @default("UTC")
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+}
+
+// ====================================================
+// PHASE 9: COMMUNICATION & NOTIFICATION MANAGEMENT
+// Business Rules:
+// - Templates are reusable.
+// - CommunicationLog is immutable.
+// - Notifications belong to one user.
+// - Contact messages may optionally be assigned to a User.
+// - Announcement visibility depends on audience setting.
+// - NotificationPreference is one-to-one with User.
+// ====================================================
+
+enum NotificationType {
+  SYSTEM
+  MEMBER
+  CLIENT
+  PROJECT
+  PAYMENT
+  APPLICATION
+  AI
+  GENERAL
+}
+
+enum NotificationStatus {
+  UNREAD
+  READ
+  ARCHIVED
+}
+
+enum EmailTemplateType {
+  APPLICATION_APPROVED
+  APPLICATION_REJECTED
+  MORE_INFORMATION
+  CLIENT_WELCOME
+  CLIENT_ACCOUNT_CREATED
+  PROJECT_CREATED
+  PROJECT_UPDATED
+  PAYMENT_RECEIVED
+  PAYMENT_APPROVED
+  GENERAL
+}
+
+enum ContactMessageStatus {
+  NEW
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum AnnouncementAudience {
+  ALL
+  MEMBERS
+  MANAGERS
+  CLIENTS
+}
+
+enum AnnouncementStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model ContactMessage {
+  id             String               @id @default(uuid())
+  fullName       String
+  email          String
+  phoneNumber    String?
+  whatsappNumber String?
+  country        String?
+  subject        String
+  message        String
+  status         ContactMessageStatus @default(NEW)
+  assignedToId   String?
+  resolvedAt     DateTime?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  assignedTo        User?              @relation("AssignedContactMessages", fields: [assignedToId], references: [id], onDelete: SetNull)
+  communicationLogs CommunicationLog[]
+
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model EmailTemplate {
+  id        String            @id @default(uuid())
+  name      String
+  type      EmailTemplateType
+  subject   String
+  body      String
+  isActive  Boolean           @default(true)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  @@index([type])
+}
+
+model Notification {
+  id               String             @id @default(uuid())
+  userId           String
+  title            String
+  message          String
+  notificationType NotificationType
+  status           NotificationStatus @default(UNREAD)
+  actionUrl        String?
+  createdAt        DateTime           @default(now())
+  readAt           DateTime?
+
+  user User @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([notificationType])
+}
+
+model Announcement {
+  id          String               @id @default(uuid())
+  title       String
+  content     String
+  audience    AnnouncementAudience
+  status      AnnouncementStatus   @default(DRAFT)
+  publishedAt DateTime?
+  createdById String
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  createdBy User @relation("CreatedAnnouncements", fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@index([status])
+  @@index([audience])
+}
+
+model WhatsAppTemplate {
+  id        String   @id @default(uuid())
+  name      String
+  title     String
+  message   String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CommunicationLog {
+  id                  String   @id @default(uuid())
+  userId              String?
+  contactMessageId    String?
+  clientId            String?
+  memberApplicationId String?
+  type                String
+  destination         String
+  subject             String?
+  content             String
+  success             Boolean  @default(true)
+  failureReason       String?
+  createdAt           DateTime @default(now())
+
+  user              User?              @relation("UserCommunicationLogs", fields: [userId], references: [id], onDelete: SetNull)
+  client            Client?            @relation("ClientCommunicationLogs", fields: [clientId], references: [id], onDelete: SetNull)
+  contactMessage    ContactMessage?    @relation(fields: [contactMessageId], references: [id], onDelete: SetNull)
+  memberApplication MemberApplication? @relation(fields: [memberApplicationId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([success])
+}
+
+model NotificationPreference {
+  id                  String   @id @default(uuid())
+  userId              String   @unique
+  emailEnabled        Boolean  @default(true)
+  systemEnabled       Boolean  @default(true)
+  projectEnabled      Boolean  @default(true)
+  paymentEnabled      Boolean  @default(true)
+  announcementEnabled Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user User @relation("UserNotificationPreference", fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ====================================================
+// PHASE 10: ST-SOLUTIONS AI KNOWLEDGE & INTELLIGENCE
+// Business Rules:
+// - Serves as the central AI Brain containing business knowledge, workflow, policies, hiring & service details.
+// - Stores visitor AI conversations, messages, detected intents & recommendations.
+// - Admin feedback & training notes allow continuous knowledge base refinement.
+// - Supports multilingual configuration (SupportedLanguage).
+// ====================================================
+
+enum AIConversationStatus {
+  ACTIVE
+  CLOSED
+  ARCHIVED
+  ESCALATED
+}
+
+enum AISenderType {
+  USER
+  AI
+  SYSTEM
+}
+
+model AIKnowledgeCategory {
+  id           String   @id @default(uuid())
+  name         String
+  description  String?
+  displayOrder Int      @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  knowledges AIKnowledge[]
+}
+
+model AIKnowledge {
+  id         String   @id @default(uuid())
+  categoryId String
+  title      String
+  content    String
+  tags       String?
+  priority   Int      @default(0)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  category AIKnowledgeCategory   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  feedback AIKnowledgeFeedback[]
+
+  @@index([categoryId])
+  @@index([isActive])
+}
+
+model AIConversation {
+  id        String               @id @default(uuid())
+  visitorId String?
+  userId    String?
+  title     String?
+  language  String?              @default("en")
+  status    AIConversationStatus @default(ACTIVE)
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+
+  user            User?                   @relation("UserAIConversations", fields: [userId], references: [id], onDelete: SetNull)
+  messages        AIConversationMessage[]
+  intents         AIIntent[]
+  recommendations AIRecommendation[]
+
+  @@index([visitorId])
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model AIConversationMessage {
+  id               String       @id @default(uuid())
+  conversationId   String
+  senderType       AISenderType
+  content          String
+  detectedLanguage String?
+  metadata         String?
+  createdAt        DateTime     @default(now())
+
+  conversation AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([createdAt])
+}
+
+model AIIntent {
+  id              String   @id @default(uuid())
+  conversationId  String
+  intentName      String
+  confidenceScore Float?
+  detectedAt      DateTime @default(now())
+
+  conversation AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([intentName])
+}
+
+model AIRecommendation {
+  id                 String   @id @default(uuid())
+  conversationId     String
+  recommendationType String
+  title              String
+  description        String?
+  actionUrl          String?
+  createdAt          DateTime @default(now())
+
+  conversation AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+}
+
+model AIQuickReply {
+  id            String   @id @default(uuid())
+  label         String
+  promptMessage String
+  category      String?
+  displayOrder  Int      @default(0)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([category])
+}
+
+model AIKnowledgeFeedback {
+  id                    String   @id @default(uuid())
+  knowledgeId           String?
+  conversationMessageId String?
+  isHelpful             Boolean
+  feedbackText          String?
+  createdAt             DateTime @default(now())
+
+  knowledge AIKnowledge? @relation(fields: [knowledgeId], references: [id], onDelete: SetNull)
+
+  @@index([knowledgeId])
+  @@index([isHelpful])
+}
+
+model AITrainingNote {
+  id          String   @id @default(uuid())
+  createdById String
+  title       String
+  note        String
+  isResolved  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  createdBy User @relation("CreatedAITrainingNotes", fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@index([createdById])
+  @@index([isResolved])
+}
+
+model SupportedLanguage {
+  id           String   @id @default(uuid())
+  code         String   @unique
+  name         String
+  nativeName   String?
+  isRtl        Boolean  @default(false)
+  isActive     Boolean  @default(true)
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([isActive])
+}
+
+// ====================================================
+// PHASE 11: ANALYTICS & BUSINESS INTELLIGENCE
+// Business Rules:
+// - Analytics records are immutable.
+// - DashboardMetric stores latest calculated KPI values.
+// - VisitorSession supports anonymous visitors.
+// - MemberAnalytics references Member.
+// - ManagerAnalytics references User.
+// ====================================================
+
+enum AnalyticsPeriod {
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
+
+enum VisitorDevice {
+  DESKTOP
+  MOBILE
+  TABLET
+  UNKNOWN
+}
+
+enum TrafficSource {
+  DIRECT
+  GOOGLE
+  SOCIAL_MEDIA
+  WHATSAPP
+  EMAIL
+  REFERRAL
+  OTHER
+}
+
+model VisitorSession {
+  id              String        @id @default(uuid())
+  sessionId       String        @unique
+  visitorId       String?
+  ipAddress       String?
+  country         String?
+  city            String?
+  browser         String?
+  operatingSystem String?
+  device          VisitorDevice @default(UNKNOWN)
+  language        String?
+  trafficSource   TrafficSource @default(DIRECT)
+  landingPage     String?
+  exitPage        String?
+  startedAt       DateTime      @default(now())
+  endedAt         DateTime?
+  durationSeconds Int?
+  createdAt       DateTime      @default(now())
+
+  @@index([sessionId])
+  @@index([country])
+  @@index([language])
+  @@index([trafficSource])
+}
+
+model WebsiteAnalytics {
+  id                     String          @id @default(uuid())
+  period                 AnalyticsPeriod
+  date                   DateTime
+  totalVisitors          Int             @default(0)
+  uniqueVisitors         Int             @default(0)
+  pageViews              Int             @default(0)
+  averageSessionDuration Float           @default(0)
+  bounceRate             Float           @default(0)
+  createdAt              DateTime        @default(now())
+
+  @@index([period])
+  @@index([date])
+}
+
+model AIAnalytics {
+  id                        String          @id @default(uuid())
+  period                    AnalyticsPeriod
+  date                      DateTime
+  totalConversations        Int             @default(0)
+  resolvedByAI              Int             @default(0)
+  escalatedToHuman          Int             @default(0)
+  averageConversationLength Float           @default(0)
+  averageResponseTime       Float           @default(0)
+  averageSatisfaction       Float?
+  createdAt                 DateTime        @default(now())
+
+  @@index([period])
+  @@index([date])
+}
+
+model ClientAnalytics {
+  id                String          @id @default(uuid())
+  period            AnalyticsPeriod
+  date              DateTime
+  newClients        Int             @default(0)
+  activeClients     Int             @default(0)
+  completedProjects Int             @default(0)
+  conversionRate    Float           @default(0)
+  createdAt         DateTime        @default(now())
+
+  @@index([period])
+  @@index([date])
+}
+
+model MemberAnalytics {
+  id                String          @id @default(uuid())
+  memberId          String
+  period            AnalyticsPeriod
+  date              DateTime
+  clientsAcquired   Int             @default(0)
+  projectsCompleted Int             @default(0)
+  rewardAmount      Float           @default(0)
+  trustScore        Int             @default(0)
+  createdAt         DateTime        @default(now())
+
+  member Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@index([memberId])
+  @@index([period])
+}
+
+model ManagerAnalytics {
+  id              String          @id @default(uuid())
+  managerId       String
+  period          AnalyticsPeriod
+  date            DateTime
+  membersManaged  Int             @default(0)
+  projectsManaged Int             @default(0)
+  teamRevenue     Float           @default(0)
+  createdAt       DateTime        @default(now())
+
+  manager User @relation("ManagerAnalytics", fields: [managerId], references: [id], onDelete: Cascade)
+
+  @@index([managerId])
+  @@index([period])
+}
+
+model RevenueAnalytics {
+  id               String          @id @default(uuid())
+  period           AnalyticsPeriod
+  date             DateTime
+  currency         String          @default("USD")
+  grossRevenue     Float           @default(0)
+  approvedPayments Float           @default(0)
+  pendingPayments  Float           @default(0)
+  createdAt        DateTime        @default(now())
+
+  @@index([period])
+  @@index([date])
+}
+
+model DashboardMetric {
+  id               String   @id @default(uuid())
+  metricKey        String   @unique
+  metricValue      String
+  lastCalculatedAt DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+// ====================================================
+// PHASE 12: PLATFORM ADMINISTRATION & SYSTEM CONFIGURATION
+// Business Rules:
+// - SystemConfiguration stores platform-wide settings.
+// - FeatureFlag enables/disables functionality without code changes.
+// - ApiKey stores ONLY hashed keys.
+// - BackupHistory never stores actual backup files.
+// - PlatformVersion maintains release history.
+// - Changelog belongs to one PlatformVersion.
+// - ScheduledTask stores scheduler metadata only.
+// - MaintenanceLog provides immutable audit history.
+// ====================================================
+
+enum FeatureFlagStatus {
+  ENABLED
+  DISABLED
+}
+
+enum MaintenanceStatus {
+  SCHEDULED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum BackupStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+enum ApiKeyStatus {
+  ACTIVE
+  REVOKED
+  EXPIRED
+}
+
+enum WebhookStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum TaskStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+model SystemConfiguration {
+  id          String   @id @default(uuid())
+  configKey   String   @unique
+  configValue String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model FeatureFlag {
+  id          String            @id @default(uuid())
+  featureKey  String            @unique
+  displayName String
+  description String?
+  status      FeatureFlagStatus @default(ENABLED)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([status])
+}
+
+model MaintenanceWindow {
+  id          String            @id @default(uuid())
+  title       String
+  description String?
+  status      MaintenanceStatus @default(SCHEDULED)
+  startsAt    DateTime
+  endsAt      DateTime
+  createdById String
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  createdBy User @relation("CreatedMaintenanceWindows", fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@index([status])
+  @@index([startsAt])
+}
+
+model BackupHistory {
+  id          String       @id @default(uuid())
+  backupName  String
+  status      BackupStatus @default(PENDING)
+  fileSize    BigInt?
+  startedAt   DateTime     @default(now())
+  completedAt DateTime?
+  createdById String?
+  notes       String?
+
+  createdBy User? @relation("CreatedBackups", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([startedAt])
+}
+
+model ApiKey {
+  id          String       @id @default(uuid())
+  name        String
+  keyHash     String       @unique
+  status      ApiKeyStatus @default(ACTIVE)
+  lastUsedAt  DateTime?
+  expiresAt   DateTime?
+  createdById String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  createdBy User @relation("CreatedApiKeys", fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@index([status])
+  @@index([createdById])
+}
+
+model WebhookEndpoint {
+  id         String        @id @default(uuid())
+  name       String
+  url        String
+  secretHash String
+  status     WebhookStatus @default(ACTIVE)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  logs WebhookLog[]
+
+  @@index([status])
+}
+
+model WebhookLog {
+  id            String   @id @default(uuid())
+  webhookId     String
+  event         String
+  responseCode  Int?
+  success       Boolean
+  failureReason String?
+  createdAt     DateTime @default(now())
+
+  webhook WebhookEndpoint @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+
+  @@index([webhookId])
+  @@index([event])
+  @@index([success])
+  @@index([createdAt])
+}
+
+model PlatformVersion {
+  id           String   @id @default(uuid())
+  version      String   @unique
+  releaseTitle String
+  releaseNotes String
+  releasedAt   DateTime
+  createdById  String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  createdBy  User        @relation("CreatedPlatformVersions", fields: [createdById], references: [id], onDelete: Restrict)
+  changelogs Changelog[]
+
+  @@index([releasedAt])
+}
+
+model Changelog {
+  id          String   @id @default(uuid())
+  versionId   String
+  title       String
+  description String
+  createdAt   DateTime @default(now())
+
+  version PlatformVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+
+  @@index([versionId])
+}
+
+model ScheduledTask {
+  id             String     @id @default(uuid())
+  name           String
+  cronExpression String
+  status         TaskStatus @default(PENDING)
+  lastRunAt      DateTime?
+  nextRunAt      DateTime?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@index([status])
+}
+
+model MaintenanceLog {
+  id            String   @id @default(uuid())
+  performedById String
+  title         String
+  description   String
+  createdAt     DateTime @default(now())
+
+  performedBy User @relation("PerformedMaintenanceLogs", fields: [performedById], references: [id], onDelete: Restrict)
+
+  @@index([performedById])
   @@index([createdAt])
 }
