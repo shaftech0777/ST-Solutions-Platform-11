@@ -1,11 +1,12 @@
 import helmet from "helmet";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
+import { config } from "./config.js";
 
 export const securityConfig = {
   helmet: helmet(),
   cors: cors({
-    origin: process.env.CORS_ORIGIN || "*",
+    origin: config.security.corsOrigin,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   }),

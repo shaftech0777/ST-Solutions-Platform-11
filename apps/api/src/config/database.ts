@@ -1,6 +1,6 @@
-import { env } from "./env.js";
+import { config } from "./config.js";
 
 export const databaseConfig = {
-  url: env.DATABASE_URL || "postgresql://postgres:postgres@localhost:5432/st_solutions?schema=public",
-  logQueries: env.NODE_ENV === "development",
+  url: config.database.url,
+  logQueries: config.database.logQueries,
 };

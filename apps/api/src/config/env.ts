@@ -1,13 +1,33 @@
 import dotenv from "dotenv";
-import { z } from "zod";
+import { envSchema, EnvSchemaType } from "./env.schema.js";
 
+// Load environment variables from .env file
 dotenv.config();
 
-export const envSchema = z.object({
-  NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
-  PORT: z.string().default("4000"),
-  DATABASE_URL: z.string().optional(),
-  JWT_SECRET: z.string().default("default-development-secret-key"),
-});
+/**
+ * Validates and parses environment variables.
+ * Stops execution with a clear error report if validation fails.
+ */
+function validateEnv(): EnvSchemaType {
+  const result = envSchema.safeParse(process.env);
 
-export const env = envSchema.parse(process.env);
+  if (!result.success) {
+    const formattedErrors = result.error.errors
+      .map((err) => `  - ${err.path.join(".")}: ${err.message}`)
+      .join("\n");
+
+    // eslint-disable-next-line no-console
+    console.error(
+      `\n[FATAL] Environment Validation Failed:\n${formattedErrors}\n`
+    );
+
+    throw new Error(`Environment validation failed:\n${formattedErrors}`);
+  }
+
+  return result.data;
+}
+
+/**
+ * Validated, strongly typed environment variables instance.
+ */
+export const env: EnvSchemaType = validateEnv();
