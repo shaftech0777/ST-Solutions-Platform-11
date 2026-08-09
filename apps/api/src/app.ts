@@ -1,6 +1,7 @@
 import express, { Express, Request, Response } from "express";
 import { securityConfig } from "./config/security.js";
 import { databaseService } from "./database/index.js";
+import { apiRouter } from "./routes/api.router.js";
 import {
   globalErrorHandlerMiddleware,
   notFoundHandlerMiddleware,
@@ -35,6 +36,9 @@ app.get("/health", async (_req: Request, res: Response) => {
     database: dbHealth,
   });
 });
+
+app.use("/api/v1", apiRouter);
+app.use("/auth", apiRouter); // Alias for top-level /auth/login access
 
 // 6. 404 Route Not Found Middleware
 app.use(notFoundHandlerMiddleware);

@@ -11,6 +11,8 @@ import { config } from "../../config/index.js";
 import { Logger } from "../logger/index.js";
 import { databaseService, prisma } from "../../database/index.js";
 import { jwtService, passwordService } from "../security/index.js";
+import { authRepository, authService, authController } from "../../modules/auth/index.js";
+import { usersRepository, usersService, usersController } from "../../modules/users/index.js";
 
 /**
  * Lightweight, strongly typed Dependency Injection Container.
@@ -94,6 +96,12 @@ export function createApplicationContainer(): Container {
   containerInstance.registerValue(TOKENS.DatabaseService, databaseService);
   containerInstance.registerValue(TOKENS.JwtService, jwtService);
   containerInstance.registerValue(TOKENS.PasswordService, passwordService);
+  containerInstance.registerValue(TOKENS.AuthRepository, authRepository);
+  containerInstance.registerValue(TOKENS.AuthService, authService);
+  containerInstance.registerValue(TOKENS.AuthController, authController);
+  containerInstance.registerValue(TOKENS.UsersRepository, usersRepository);
+  containerInstance.registerValue(TOKENS.UsersService, usersService);
+  containerInstance.registerValue(TOKENS.UsersController, usersController);
 
   return containerInstance;
 }
