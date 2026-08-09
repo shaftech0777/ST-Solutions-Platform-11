@@ -1,5 +1,6 @@
 import express, { Express, Request, Response } from "express";
 import { securityConfig } from "./config/security.js";
+import { databaseService } from "./database/index.js";
 import {
   globalErrorHandlerMiddleware,
   notFoundHandlerMiddleware,
@@ -24,8 +25,15 @@ app.use(requestLoggerMiddleware);
 app.use(express.json());
 
 // 5. Routes / Health Check
-app.get("/health", (_req: Request, res: Response) => {
-  res.json({ status: "ok", service: "st-solutions-api", version: "1.0.0" });
+app.get("/health", async (_req: Request, res: Response) => {
+  const dbHealth = await databaseService.healthCheck();
+  const isHealthy = dbHealth.status === "up";
+  res.status(isHealthy ? 200 : 503).json({
+    status: isHealthy ? "ok" : "degraded",
+    service: "st-solutions-api",
+    version: "1.0.0",
+    database: dbHealth,
+  });
 });
 
 // 6. 404 Route Not Found Middleware

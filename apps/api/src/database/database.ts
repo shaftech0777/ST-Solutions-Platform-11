@@ -1,15 +1,10 @@
-import { prisma } from "./prisma.js";
-import { logger } from "../config/logger.js";
+import { databaseService } from "./database.service.js";
 
+/**
+ * Backward-compatible wrapper for database connection initialization.
+ */
 export async function connectDatabase(): Promise<void> {
-  try {
-    if (process.env.DATABASE_URL) {
-      await prisma.$connect();
-      logger.info("Database connection initialized via Prisma.");
-    } else {
-      logger.info("DATABASE_URL not configured; skipping active database connection.");
-    }
-  } catch (error) {
-    logger.warn({ error }, "Database connection attempt failed.");
-  }
+  await databaseService.connect();
 }
+
+export * from "./database.service.js";
