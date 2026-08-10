@@ -4,3 +4,4 @@ export * from "./roles.repository.js";
 export * from "./roles.routes.js";
 export * from "./roles.validation.js";
 export * from "./roles.types.js";
+export * from "./roles.mapper.js";

@@ -13,6 +13,10 @@ import { databaseService, prisma } from "../../database/index.js";
 import { jwtService, passwordService } from "../security/index.js";
 import { authRepository, authService, authController } from "../../modules/auth/index.js";
 import { usersRepository, usersService, usersController } from "../../modules/users/index.js";
+import { rolesRepository, rolesService, rolesController } from "../../modules/roles/index.js";
+import { permissionsRepository, permissionsService, permissionsController } from "../../modules/permissions/index.js";
+import { applicantsRepository, applicantsService, applicantsController } from "../../modules/applicants/index.js";
+import { membersRepository, membersService, membersController } from "../../modules/members/index.js";
 
 /**
  * Lightweight, strongly typed Dependency Injection Container.
@@ -102,6 +106,18 @@ export function createApplicationContainer(): Container {
   containerInstance.registerValue(TOKENS.UsersRepository, usersRepository);
   containerInstance.registerValue(TOKENS.UsersService, usersService);
   containerInstance.registerValue(TOKENS.UsersController, usersController);
+  containerInstance.registerValue(TOKENS.RolesRepository, rolesRepository);
+  containerInstance.registerValue(TOKENS.RolesService, rolesService);
+  containerInstance.registerValue(TOKENS.RolesController, rolesController);
+  containerInstance.registerValue(TOKENS.PermissionsRepository, permissionsRepository);
+  containerInstance.registerValue(TOKENS.PermissionsService, permissionsService);
+  containerInstance.registerValue(TOKENS.PermissionsController, permissionsController);
+  containerInstance.registerValue(TOKENS.ApplicantsRepository, applicantsRepository);
+  containerInstance.registerValue(TOKENS.ApplicantsService, applicantsService);
+  containerInstance.registerValue(TOKENS.ApplicantsController, applicantsController);
+  containerInstance.registerValue(TOKENS.MembersRepository, membersRepository);
+  containerInstance.registerValue(TOKENS.MembersService, membersService);
+  containerInstance.registerValue(TOKENS.MembersController, membersController);
 
   return containerInstance;
 }

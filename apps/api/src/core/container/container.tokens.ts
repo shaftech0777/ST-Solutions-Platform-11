@@ -44,6 +44,10 @@ export const TOKENS = {
   // Controllers
   UsersController: Symbol.for("UsersController"),
   AuthController: Symbol.for("AuthController"),
+  RolesController: Symbol.for("RolesController"),
+  PermissionsController: Symbol.for("PermissionsController"),
+  ApplicantsController: Symbol.for("ApplicantsController"),
+  MembersController: Symbol.for("MembersController"),
 } as const;
 
 export type TokenName = keyof typeof TOKENS;
