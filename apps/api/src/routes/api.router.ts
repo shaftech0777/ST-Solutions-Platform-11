@@ -5,6 +5,9 @@ import { rolesRouter } from "../modules/roles/index.js";
 import { usersRouter } from "../modules/users/index.js";
 import { applicantsRouter } from "../modules/applicants/index.js";
 import { membersRouter } from "../modules/members/index.js";
+import { clientsRouter } from "../modules/clients/index.js";
+import { projectsRouter } from "../modules/projects/index.js";
+import { paymentsRouter } from "../modules/payments/index.js";
 
 export const apiRouter = Router();
 
@@ -15,5 +18,8 @@ apiRouter.use("/roles", rolesRouter);
 apiRouter.use("/permissions", permissionsRouter);
 apiRouter.use("/applicants", applicantsRouter);
 apiRouter.use("/members", membersRouter);
+apiRouter.use("/clients", clientsRouter);
+apiRouter.use("/projects", projectsRouter);
+apiRouter.use("/payments", paymentsRouter);
 
 

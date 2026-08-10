@@ -4,3 +4,4 @@ export * from "./payments.repository.js";
 export * from "./payments.routes.js";
 export * from "./payments.validation.js";
 export * from "./payments.types.js";
+export * from "./payments.mapper.js";

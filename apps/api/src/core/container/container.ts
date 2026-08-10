@@ -17,6 +17,9 @@ import { rolesRepository, rolesService, rolesController } from "../../modules/ro
 import { permissionsRepository, permissionsService, permissionsController } from "../../modules/permissions/index.js";
 import { applicantsRepository, applicantsService, applicantsController } from "../../modules/applicants/index.js";
 import { membersRepository, membersService, membersController } from "../../modules/members/index.js";
+import { clientsRepository, clientsService, clientsController } from "../../modules/clients/index.js";
+import { projectsRepository, projectsService, projectsController } from "../../modules/projects/index.js";
+import { paymentsRepository, paymentsService, paymentsController } from "../../modules/payments/index.js";
 
 /**
  * Lightweight, strongly typed Dependency Injection Container.
@@ -118,6 +121,15 @@ export function createApplicationContainer(): Container {
   containerInstance.registerValue(TOKENS.MembersRepository, membersRepository);
   containerInstance.registerValue(TOKENS.MembersService, membersService);
   containerInstance.registerValue(TOKENS.MembersController, membersController);
+  containerInstance.registerValue(TOKENS.ClientsRepository, clientsRepository);
+  containerInstance.registerValue(TOKENS.ClientsService, clientsService);
+  containerInstance.registerValue(TOKENS.ClientsController, clientsController);
+  containerInstance.registerValue(TOKENS.ProjectsRepository, projectsRepository);
+  containerInstance.registerValue(TOKENS.ProjectsService, projectsService);
+  containerInstance.registerValue(TOKENS.ProjectsController, projectsController);
+  containerInstance.registerValue(TOKENS.PaymentsRepository, paymentsRepository);
+  containerInstance.registerValue(TOKENS.PaymentsService, paymentsService);
+  containerInstance.registerValue(TOKENS.PaymentsController, paymentsController);
 
   return containerInstance;
 }

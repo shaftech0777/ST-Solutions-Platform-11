@@ -1,1 +1,126 @@
-export interface ProjectsState {}
+import { ProjectStatus } from "@prisma/client";
+
+export interface ProjectQueryFilters {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: ProjectStatus;
+  clientId?: string;
+  assignedManagerId?: string;
+  assignedMemberId?: string;
+  createdById?: string;
+  category?: string;
+  sortBy?: "createdAt" | "title" | "projectStatus" | "budget" | "startDate" | "expectedCompletionDate";
+  sortOrder?: "asc" | "desc";
+}
+
+export interface ProjectClientSummary {
+  id: string;
+  fullName: string;
+  companyName: string | null;
+  email: string;
+  phoneNumber: string;
+}
+
+export interface ProjectUserSummary {
+  id: string;
+  email: string;
+  fullName: string | null;
+  profileImage: string | null;
+}
+
+export interface ProjectUpdateSummary {
+  id: string;
+  projectId: string;
+  title: string;
+  description: string | null;
+  progressPercentage: number;
+  createdAt: Date;
+  createdBy: ProjectUserSummary | null;
+}
+
+export interface ProjectSummaryResponse {
+  id: string;
+  title: string;
+  description: string | null;
+  category: string | null;
+  budget: number | null;
+  projectStatus: ProjectStatus;
+  startDate: Date | null;
+  expectedCompletionDate: Date | null;
+  completedDate: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+  client: ProjectClientSummary | null;
+  createdBy: ProjectUserSummary | null;
+  manager: ProjectUserSummary | null;
+  member: ProjectUserSummary | null;
+}
+
+export interface ProjectDetailResponse extends ProjectSummaryResponse {
+  updatesCount: number;
+  paymentsCount: number;
+  recentUpdates: ProjectUpdateSummary[];
+}
+
+export interface CreateProjectInput {
+  clientId: string;
+  title: string;
+  description?: string;
+  category?: string;
+  budget?: number;
+  projectStatus?: ProjectStatus;
+  assignedManagerId?: string;
+  assignedMemberId?: string;
+  startDate?: string | Date;
+  expectedCompletionDate?: string | Date;
+}
+
+export interface UpdateProjectInput {
+  title?: string;
+  description?: string;
+  category?: string;
+  budget?: number;
+  clientId?: string;
+  assignedManagerId?: string | null;
+  assignedMemberId?: string | null;
+  startDate?: string | Date | null;
+  expectedCompletionDate?: string | Date | null;
+  completedDate?: string | Date | null;
+}
+
+export interface UpdateProjectStatusInput {
+  projectStatus: ProjectStatus;
+}
+
+export interface UpdateProjectOwnershipInput {
+  assignedManagerId?: string | null;
+  assignedMemberId?: string | null;
+}
+
+export interface CreateProjectUpdateInput {
+  title: string;
+  description?: string;
+  progressPercentage?: number;
+}
+
+export interface UpdateProjectUpdateInput {
+  title?: string;
+  description?: string;
+  progressPercentage?: number;
+}
+
+export interface ProjectStatistics {
+  totalProjects: number;
+  activeProjects: number;
+  completedProjects: number;
+  cancelledProjects: number;
+  projectsByStatus: Array<{
+    status: ProjectStatus;
+    count: number;
+  }>;
+  recentlyCreatedCount: number;
+  assignedProjectsCount: number;
+  unassignedProjectsCount: number;
+  totalBudget: number;
+}
