@@ -19,6 +19,7 @@ export const TOKENS = {
   ApplicantsRepository: Symbol.for("ApplicantsRepository"),
   ManagersRepository: Symbol.for("ManagersRepository"),
   ClientsRepository: Symbol.for("ClientsRepository"),
+  ClientRequestsRepository: Symbol.for("ClientRequestsRepository"),
   ProjectsRepository: Symbol.for("ProjectsRepository"),
   PaymentsRepository: Symbol.for("PaymentsRepository"),
   NotificationsRepository: Symbol.for("NotificationsRepository"),
@@ -34,6 +35,7 @@ export const TOKENS = {
   ApplicantsService: Symbol.for("ApplicantsService"),
   ManagersService: Symbol.for("ManagersService"),
   ClientsService: Symbol.for("ClientsService"),
+  ClientRequestsService: Symbol.for("ClientRequestsService"),
   ProjectsService: Symbol.for("ProjectsService"),
   PaymentsService: Symbol.for("PaymentsService"),
   NotificationsService: Symbol.for("NotificationsService"),
@@ -49,8 +51,11 @@ export const TOKENS = {
   ApplicantsController: Symbol.for("ApplicantsController"),
   MembersController: Symbol.for("MembersController"),
   ClientsController: Symbol.for("ClientsController"),
+  ClientRequestsController: Symbol.for("ClientRequestsController"),
   ProjectsController: Symbol.for("ProjectsController"),
   PaymentsController: Symbol.for("PaymentsController"),
+  SettingsController: Symbol.for("SettingsController"),
+  AuditController: Symbol.for("AuditController"),
 } as const;
 
 export type TokenName = keyof typeof TOKENS;

@@ -6,8 +6,11 @@ import { usersRouter } from "../modules/users/index.js";
 import { applicantsRouter } from "../modules/applicants/index.js";
 import { membersRouter } from "../modules/members/index.js";
 import { clientsRouter } from "../modules/clients/index.js";
+import { clientRequestsRouter } from "../modules/client-requests/index.js";
 import { projectsRouter } from "../modules/projects/index.js";
 import { paymentsRouter } from "../modules/payments/index.js";
+import { settingsRouter } from "../modules/settings/index.js";
+import { auditRouter } from "../modules/audit/index.js";
 
 export const apiRouter = Router();
 
@@ -19,7 +22,10 @@ apiRouter.use("/permissions", permissionsRouter);
 apiRouter.use("/applicants", applicantsRouter);
 apiRouter.use("/members", membersRouter);
 apiRouter.use("/clients", clientsRouter);
+apiRouter.use("/client-requests", clientRequestsRouter);
 apiRouter.use("/projects", projectsRouter);
 apiRouter.use("/payments", paymentsRouter);
+apiRouter.use("/settings", settingsRouter);
+apiRouter.use("/audit-logs", auditRouter);
 
 

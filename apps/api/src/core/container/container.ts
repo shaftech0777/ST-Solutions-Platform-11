@@ -18,8 +18,11 @@ import { permissionsRepository, permissionsService, permissionsController } from
 import { applicantsRepository, applicantsService, applicantsController } from "../../modules/applicants/index.js";
 import { membersRepository, membersService, membersController } from "../../modules/members/index.js";
 import { clientsRepository, clientsService, clientsController } from "../../modules/clients/index.js";
+import { clientRequestsRepository, clientRequestsService, clientRequestsController } from "../../modules/client-requests/index.js";
 import { projectsRepository, projectsService, projectsController } from "../../modules/projects/index.js";
 import { paymentsRepository, paymentsService, paymentsController } from "../../modules/payments/index.js";
+import { settingsRepository, settingsService, settingsController } from "../../modules/settings/index.js";
+import { auditRepository, auditService, auditController } from "../../modules/audit/index.js";
 
 /**
  * Lightweight, strongly typed Dependency Injection Container.
@@ -124,12 +127,21 @@ export function createApplicationContainer(): Container {
   containerInstance.registerValue(TOKENS.ClientsRepository, clientsRepository);
   containerInstance.registerValue(TOKENS.ClientsService, clientsService);
   containerInstance.registerValue(TOKENS.ClientsController, clientsController);
+  containerInstance.registerValue(TOKENS.ClientRequestsRepository, clientRequestsRepository);
+  containerInstance.registerValue(TOKENS.ClientRequestsService, clientRequestsService);
+  containerInstance.registerValue(TOKENS.ClientRequestsController, clientRequestsController);
   containerInstance.registerValue(TOKENS.ProjectsRepository, projectsRepository);
   containerInstance.registerValue(TOKENS.ProjectsService, projectsService);
   containerInstance.registerValue(TOKENS.ProjectsController, projectsController);
   containerInstance.registerValue(TOKENS.PaymentsRepository, paymentsRepository);
   containerInstance.registerValue(TOKENS.PaymentsService, paymentsService);
   containerInstance.registerValue(TOKENS.PaymentsController, paymentsController);
+  containerInstance.registerValue(TOKENS.SettingsRepository, settingsRepository);
+  containerInstance.registerValue(TOKENS.SettingsService, settingsService);
+  containerInstance.registerValue(TOKENS.SettingsController, settingsController);
+  containerInstance.registerValue(TOKENS.AuditRepository, auditRepository);
+  containerInstance.registerValue(TOKENS.AuditService, auditService);
+  containerInstance.registerValue(TOKENS.AuditController, auditController);
 
   return containerInstance;
 }

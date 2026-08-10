@@ -7,6 +7,7 @@ export * from "./applicants/index.js";
 export * from "./managers/index.js";
 export * from "./client-relations/index.js";
 export * from "./clients/index.js";
+export * from "./client-requests/index.js";
 export * from "./projects/index.js";
 export * from "./payments/index.js";
 export * from "./notifications/index.js";
