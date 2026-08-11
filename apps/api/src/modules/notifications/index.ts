@@ -4,3 +4,6 @@ export * from "./notifications.repository.js";
 export * from "./notifications.routes.js";
 export * from "./notifications.validation.js";
 export * from "./notifications.types.js";
+export * from "./notifications.mapper.js";
+export * from "./notification-handlers.js";
+export * from "./providers/index.js";

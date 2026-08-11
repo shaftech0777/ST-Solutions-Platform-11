@@ -8,6 +8,7 @@ import {
   UpdatePaymentInputSchema,
   UpdatePaymentStatusInputSchema,
 } from "./payments.validation.js";
+import { CreatePaymentInput, UpdatePaymentStatusInput } from "./payments.types.js";
 
 /**
  * Controller class managing HTTP request handlers for Payment & Financial operations.
@@ -84,7 +85,7 @@ export class PaymentsController {
         accountType: authReq.user?.accountType as AccountType,
       };
 
-      const created = await this.paymentsService.createPayment(body, actor);
+      const created = await this.paymentsService.createPayment(body as CreatePaymentInput, actor);
 
       ResponseBuilder.created(res, created, {
         message: "Payment record created successfully",
@@ -131,7 +132,7 @@ export class PaymentsController {
         accountType: authReq.user?.accountType as AccountType,
       };
 
-      const updated = await this.paymentsService.updatePaymentStatus(paymentId, body, actor);
+      const updated = await this.paymentsService.updatePaymentStatus(paymentId, body as UpdatePaymentStatusInput, actor);
 
       ResponseBuilder.success(res, updated, {
         message: "Payment status updated successfully",

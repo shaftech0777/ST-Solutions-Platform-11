@@ -13,6 +13,7 @@ import { SecurityLogger } from "../../core/security/security.logger.js";
 import { sanitizeApplicationResponse, sanitizeQuestionResponse } from "./applicants.mapper.js";
 import { applicantsRepository as defaultApplicantsRepository, ApplicantsRepository } from "./applicants.repository.js";
 import {
+  AnswerItemInput,
   ApplicationQuestionSummary,
   ApplicationResponse,
   MemberVerificationSummary,
@@ -166,7 +167,7 @@ export class ApplicantsService {
       profileImageUrl: dto.profileImageUrl?.trim() || null,
       applicationStatus: ApplicationStatus.PENDING,
       verificationStatus: VerificationStatus.NOT_VERIFIED,
-      answersData: dto.answers,
+      answersData: (dto.answers || []) as AnswerItemInput[],
     });
 
     Logger.info(
@@ -372,7 +373,7 @@ export class ApplicantsService {
       }
     }
 
-    const updatedApp = await this.applicantsRepository.submitAnswers(applicationId, dto.answers);
+    const updatedApp = await this.applicantsRepository.submitAnswers(applicationId, dto.answers as AnswerItemInput[]);
 
     if (!updatedApp) {
       throw new NotFoundError(`Member application with ID '${applicationId}' was not found`, ERROR_CODES.APPLICATION_NOT_FOUND);

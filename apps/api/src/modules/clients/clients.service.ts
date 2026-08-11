@@ -1,6 +1,8 @@
 import { AccountType, ClientStatus } from "@prisma/client";
 import { BusinessError, ConflictError, NotFoundError } from "../../core/errors/app-error.js";
 import { ERROR_CODES } from "../../core/errors/error.codes.js";
+import { DOMAIN_EVENTS } from "../../core/events/domain-event.types.js";
+import { eventBus } from "../../core/events/event-bus.js";
 import { sanitizeClientDetailResponse, sanitizeClientResponse } from "./clients.mapper.js";
 import { clientsRepository as defaultClientsRepository, ClientsRepository } from "./clients.repository.js";
 import {
@@ -118,6 +120,22 @@ export class ClientsService {
       return this.clientsRepository.findById(clientRecord.id, tx);
     });
 
+    await eventBus.publish({
+      eventName: DOMAIN_EVENTS.CLIENT_CREATED,
+      entityType: "CLIENT",
+      entityId: createdClient!.id,
+      actorId: _actor?.userId,
+      timestamp: new Date(),
+      payload: {
+        clientId: createdClient!.id,
+        companyName: createdClient!.companyName || createdClient!.fullName,
+        email: createdClient!.email,
+        fullName: createdClient!.fullName,
+        memberId: input.memberId,
+        assignedManagerId: input.assignedManagerId,
+      },
+    });
+
     return sanitizeClientDetailResponse(createdClient!);
   }
 
@@ -202,6 +220,22 @@ export class ClientsService {
       clientStatus: newStatus,
     });
 
+    await eventBus.publish({
+      eventName: DOMAIN_EVENTS.CLIENT_STATUS_CHANGED,
+      entityType: "CLIENT",
+      entityId: clientId,
+      actorId: _actor?.userId,
+      timestamp: new Date(),
+      payload: {
+        clientId,
+        companyName: updatedClient.companyName || updatedClient.fullName,
+        previousStatus: currentStatus,
+        newStatus,
+        memberId: updatedClient.ownership?.memberId,
+        assignedManagerId: updatedClient.ownership?.assignedManagerId,
+      },
+    });
+
     return sanitizeClientDetailResponse(updatedClient);
   }
 
@@ -238,6 +272,22 @@ export class ClientsService {
     );
 
     const updatedClient = await this.clientsRepository.findById(clientId);
+
+    await eventBus.publish({
+      eventName: DOMAIN_EVENTS.CLIENT_OWNERSHIP_CHANGED,
+      entityType: "CLIENT",
+      entityId: clientId,
+      actorId: _actor?.userId,
+      timestamp: new Date(),
+      payload: {
+        clientId,
+        companyName: updatedClient!.companyName || updatedClient!.fullName,
+        previousMemberId: client.ownership?.memberId,
+        newMemberId: input.memberId,
+        assignedManagerId: input.assignedManagerId,
+      },
+    });
+
     return sanitizeClientDetailResponse(updatedClient!);
   }
 

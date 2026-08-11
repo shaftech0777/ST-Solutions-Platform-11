@@ -9,6 +9,7 @@ import {
   UpdateClientOwnershipInputSchema,
   UpdateClientStatusInputSchema,
 } from "./clients.validation.js";
+import { CreateClientInput, UpdateClientOwnershipInput, UpdateClientStatusInput } from "./clients.types.js";
 
 /**
  * Controller class managing HTTP endpoints for Client operations.
@@ -84,7 +85,7 @@ export class ClientsController {
         ? { userId: authReq.user.userId, accountType: authReq.user.accountType as AccountType }
         : undefined;
 
-      const created = await this.clientsService.createClient(body, actor);
+      const created = await this.clientsService.createClient(body as CreateClientInput, actor);
 
       ResponseBuilder.created(res, created, {
         message: "Client created successfully",
@@ -130,7 +131,7 @@ export class ClientsController {
         ? { userId: authReq.user.userId, accountType: authReq.user.accountType as AccountType }
         : undefined;
 
-      const updated = await this.clientsService.updateClientStatus(clientId, body, actor);
+      const updated = await this.clientsService.updateClientStatus(clientId, body as UpdateClientStatusInput, actor);
 
       ResponseBuilder.success(res, updated, {
         message: "Client status updated successfully",
@@ -153,7 +154,7 @@ export class ClientsController {
         ? { userId: authReq.user.userId, accountType: authReq.user.accountType as AccountType }
         : undefined;
 
-      const updated = await this.clientsService.updateClientOwnership(clientId, body, actor);
+      const updated = await this.clientsService.updateClientOwnership(clientId, body as UpdateClientOwnershipInput, actor);
 
       ResponseBuilder.success(res, updated, {
         message: "Client ownership updated successfully",

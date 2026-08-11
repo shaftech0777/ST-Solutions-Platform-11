@@ -1,6 +1,8 @@
 import { ClientStatus } from "@prisma/client";
 import { BusinessError, ConflictError, NotFoundError } from "../../core/errors/app-error.js";
 import { ERROR_CODES } from "../../core/errors/error.codes.js";
+import { DOMAIN_EVENTS } from "../../core/events/domain-event.types.js";
+import { eventBus } from "../../core/events/event-bus.js";
 import { sanitizeClientRequestResponse } from "./client-requests.mapper.js";
 import {
   clientRequestsRepository as defaultClientRequestsRepository,
@@ -76,6 +78,19 @@ export class ClientRequestsService {
       message: input.message.trim(),
       country: input.country?.trim() || null,
       status,
+    });
+
+    await eventBus.publish({
+      eventName: DOMAIN_EVENTS.CLIENT_REQUEST_CREATED,
+      entityType: "CLIENT_REQUEST",
+      entityId: created.id,
+      timestamp: new Date(),
+      payload: {
+        requestId: created.id,
+        fullName: created.fullName,
+        email: created.email,
+        companyName: null,
+      },
     });
 
     return sanitizeClientRequestResponse(created);
@@ -186,6 +201,19 @@ export class ClientRequestsService {
       status: newStatus,
     });
 
+    await eventBus.publish({
+      eventName: DOMAIN_EVENTS.CLIENT_REQUEST_STATUS_CHANGED,
+      entityType: "CLIENT_REQUEST",
+      entityId: requestId,
+      timestamp: new Date(),
+      payload: {
+        requestId,
+        fullName: updated.fullName,
+        previousStatus: currentStatus,
+        newStatus,
+      },
+    });
+
     return sanitizeClientRequestResponse(updated);
   }
 
@@ -210,7 +238,7 @@ export class ClientRequestsService {
 
     const existingClient = await this.clientRequestsRepository.findClientByEmail(request.email);
 
-    return this.clientRequestsRepository.withTransaction(async (tx) => {
+    const converted = await this.clientRequestsRepository.withTransaction(async (tx) => {
       let clientRecord = existingClient;
 
       if (!clientRecord) {
@@ -238,7 +266,7 @@ export class ClientRequestsService {
         tx
       );
 
-      return {
+      const result = {
         request: sanitizeClientRequestResponse(updatedRequest),
         client: {
           id: clientRecord.id,
@@ -250,7 +278,23 @@ export class ClientRequestsService {
           createdAt: clientRecord.createdAt,
         },
       };
+
+      return result;
     });
+
+    await eventBus.publish({
+      eventName: DOMAIN_EVENTS.CLIENT_REQUEST_CONVERTED,
+      entityType: "CLIENT_REQUEST",
+      entityId: requestId,
+      timestamp: new Date(),
+      payload: {
+        requestId,
+        clientId: converted.client.id,
+        companyName: converted.client.companyName || converted.client.fullName,
+      },
+    });
+
+    return converted;
   }
 
   /**

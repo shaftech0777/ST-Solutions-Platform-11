@@ -803,6 +803,13 @@ enum NotificationStatus {
   ARCHIVED
 }
 
+enum NotificationPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
 enum EmailTemplateType {
   APPLICATION_APPROVED
   APPLICATION_REJECTED
@@ -873,14 +880,18 @@ model EmailTemplate {
 }
 
 model Notification {
-  id               String             @id @default(uuid())
+  id               String               @id @default(uuid())
   userId           String
   title            String
   message          String
   notificationType NotificationType
-  status           NotificationStatus @default(UNREAD)
+  priority         NotificationPriority @default(NORMAL)
+  entityType       String?
+  entityId         String?
+  metadata         Json?
+  status           NotificationStatus   @default(UNREAD)
   actionUrl        String?
-  createdAt        DateTime           @default(now())
+  createdAt        DateTime             @default(now())
   readAt           DateTime?
 
   user User @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
@@ -888,6 +899,7 @@ model Notification {
   @@index([userId])
   @@index([status])
   @@index([notificationType])
+  @@index([priority])
 }
 
 model Announcement {
@@ -945,8 +957,10 @@ model NotificationPreference {
   userId              String   @unique
   emailEnabled        Boolean  @default(true)
   systemEnabled       Boolean  @default(true)
+  clientEnabled       Boolean  @default(true)
   projectEnabled      Boolean  @default(true)
   paymentEnabled      Boolean  @default(true)
+  securityEnabled     Boolean  @default(true)
   announcementEnabled Boolean  @default(true)
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt

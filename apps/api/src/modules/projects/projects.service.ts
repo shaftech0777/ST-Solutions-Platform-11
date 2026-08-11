@@ -1,6 +1,8 @@
 import { ProjectStatus } from "@prisma/client";
 import { BusinessError, NotFoundError } from "../../core/errors/app-error.js";
 import { ERROR_CODES } from "../../core/errors/error.codes.js";
+import { DOMAIN_EVENTS } from "../../core/events/domain-event.types.js";
+import { eventBus } from "../../core/events/event-bus.js";
 import {
   sanitizeProjectDetailResponse,
   sanitizeProjectResponse,
@@ -104,6 +106,21 @@ export class ProjectsService {
       createdBy: { connect: { id: actor.userId } },
       manager: input.assignedManagerId ? { connect: { id: input.assignedManagerId } } : undefined,
       member: input.assignedMemberId ? { connect: { id: input.assignedMemberId } } : undefined,
+    });
+
+    await eventBus.publish({
+      eventName: DOMAIN_EVENTS.PROJECT_CREATED,
+      entityType: "PROJECT",
+      entityId: createdProject.id,
+      actorId: actor.userId,
+      timestamp: new Date(),
+      payload: {
+        projectId: createdProject.id,
+        title: createdProject.title,
+        clientId: input.clientId,
+        assignedManagerId: input.assignedManagerId,
+        assignedMemberId: input.assignedMemberId,
+      },
     });
 
     return sanitizeProjectDetailResponse(createdProject);
@@ -213,6 +230,39 @@ export class ProjectsService {
     }
 
     const updatedProject = await this.projectsRepository.update(projectId, updateData);
+
+    await eventBus.publish({
+      eventName: DOMAIN_EVENTS.PROJECT_STATUS_CHANGED,
+      entityType: "PROJECT",
+      entityId: projectId,
+      actorId: _actor?.userId,
+      timestamp: new Date(),
+      payload: {
+        projectId,
+        title: updatedProject.title,
+        previousStatus: currentStatus,
+        newStatus,
+        assignedManagerId: updatedProject.assignedManagerId,
+        assignedMemberId: updatedProject.assignedMemberId,
+      },
+    });
+
+    if (newStatus === ProjectStatus.COMPLETED) {
+      await eventBus.publish({
+        eventName: DOMAIN_EVENTS.PROJECT_COMPLETED,
+        entityType: "PROJECT",
+        entityId: projectId,
+        actorId: _actor?.userId,
+        timestamp: new Date(),
+        payload: {
+          projectId,
+          title: updatedProject.title,
+          assignedManagerId: updatedProject.assignedManagerId,
+          assignedMemberId: updatedProject.assignedMemberId,
+        },
+      });
+    }
+
     return sanitizeProjectDetailResponse(updatedProject);
   }
 
@@ -291,6 +341,23 @@ export class ProjectsService {
       progressPercentage: input.progressPercentage ?? 0,
       project: { connect: { id: projectId } },
       createdBy: { connect: { id: actor.userId } },
+    });
+
+    await eventBus.publish({
+      eventName: DOMAIN_EVENTS.PROJECT_UPDATE_CREATED,
+      entityType: "PROJECT",
+      entityId: projectId,
+      actorId: actor.userId,
+      timestamp: new Date(),
+      payload: {
+        projectId,
+        projectTitle: project.title,
+        updateId: updateRecord.id,
+        updateTitle: updateRecord.title,
+        progressPercentage: updateRecord.progressPercentage,
+        assignedManagerId: project.assignedManagerId,
+        assignedMemberId: project.assignedMemberId,
+      },
     });
 
     return sanitizeProjectUpdate(updateRecord);

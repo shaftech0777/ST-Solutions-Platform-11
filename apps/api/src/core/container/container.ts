@@ -23,6 +23,13 @@ import { projectsRepository, projectsService, projectsController } from "../../m
 import { paymentsRepository, paymentsService, paymentsController } from "../../modules/payments/index.js";
 import { settingsRepository, settingsService, settingsController } from "../../modules/settings/index.js";
 import { auditRepository, auditService, auditController } from "../../modules/audit/index.js";
+import {
+  NotificationsRepository,
+  NotificationsService,
+  NotificationsController,
+  registerNotificationHandlers,
+} from "../../modules/notifications/index.js";
+import { eventBus } from "../events/event-bus.js";
 
 /**
  * Lightweight, strongly typed Dependency Injection Container.
@@ -142,6 +149,18 @@ export function createApplicationContainer(): Container {
   containerInstance.registerValue(TOKENS.AuditRepository, auditRepository);
   containerInstance.registerValue(TOKENS.AuditService, auditService);
   containerInstance.registerValue(TOKENS.AuditController, auditController);
+
+  // Register Notifications & Event Bus
+  const notificationsRepository = new NotificationsRepository(prisma);
+  const notificationsService = new NotificationsService(notificationsRepository);
+  const notificationsController = new NotificationsController(notificationsService);
+
+  registerNotificationHandlers(eventBus, notificationsService, prisma);
+
+  containerInstance.registerValue(TOKENS.EventBus, eventBus);
+  containerInstance.registerValue(TOKENS.NotificationsRepository, notificationsRepository);
+  containerInstance.registerValue(TOKENS.NotificationsService, notificationsService);
+  containerInstance.registerValue(TOKENS.NotificationsController, notificationsController);
 
   return containerInstance;
 }

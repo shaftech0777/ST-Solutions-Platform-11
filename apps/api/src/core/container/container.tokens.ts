@@ -9,6 +9,7 @@ export const TOKENS = {
   DatabaseService: Symbol.for("DatabaseService"),
   JwtService: Symbol.for("JwtService"),
   PasswordService: Symbol.for("PasswordService"),
+  EventBus: Symbol.for("EventBus"),
 
   // Repositories
   UsersRepository: Symbol.for("UsersRepository"),
@@ -56,6 +57,7 @@ export const TOKENS = {
   PaymentsController: Symbol.for("PaymentsController"),
   SettingsController: Symbol.for("SettingsController"),
   AuditController: Symbol.for("AuditController"),
+  NotificationsController: Symbol.for("NotificationsController"),
 } as const;
 
 export type TokenName = keyof typeof TOKENS;

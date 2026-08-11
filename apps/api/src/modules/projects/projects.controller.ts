@@ -11,6 +11,7 @@ import {
   UpdateProjectStatusInputSchema,
   UpdateProjectUpdateInputSchema,
 } from "./projects.validation.js";
+import { CreateProjectInput, CreateProjectUpdateInput, UpdateProjectStatusInput } from "./projects.types.js";
 
 /**
  * Controller class managing HTTP request handlers for Project operations.
@@ -87,7 +88,7 @@ export class ProjectsController {
         accountType: authReq.user?.accountType as AccountType,
       };
 
-      const created = await this.projectsService.createProject(body, actor);
+      const created = await this.projectsService.createProject(body as CreateProjectInput, actor);
 
       ResponseBuilder.created(res, created, {
         message: "Project created successfully",
@@ -133,7 +134,7 @@ export class ProjectsController {
         ? { userId: authReq.user.userId, accountType: authReq.user.accountType as AccountType }
         : undefined;
 
-      const updated = await this.projectsService.updateProjectStatus(projectId, body, actor);
+      const updated = await this.projectsService.updateProjectStatus(projectId, body as UpdateProjectStatusInput, actor);
 
       ResponseBuilder.success(res, updated, {
         message: "Project status updated successfully",
@@ -197,7 +198,7 @@ export class ProjectsController {
         accountType: authReq.user?.accountType as AccountType,
       };
 
-      const created = await this.projectsService.createProjectUpdate(projectId, body, actor);
+      const created = await this.projectsService.createProjectUpdate(projectId, body as CreateProjectUpdateInput, actor);
 
       ResponseBuilder.created(res, created, {
         message: "Project update created successfully",

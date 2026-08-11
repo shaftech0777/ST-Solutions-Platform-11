@@ -1,6 +1,8 @@
 import { PaymentStatus } from "@prisma/client";
 import { BusinessError, NotFoundError } from "../../core/errors/app-error.js";
 import { ERROR_CODES } from "../../core/errors/error.codes.js";
+import { DOMAIN_EVENTS } from "../../core/events/domain-event.types.js";
+import { eventBus } from "../../core/events/event-bus.js";
 import { sanitizePaymentResponse } from "./payments.mapper.js";
 import { paymentsRepository as defaultPaymentsRepository, PaymentsRepository } from "./payments.repository.js";
 import {
@@ -160,6 +162,7 @@ export class PaymentsService {
     }
 
     const updatedPayment = await this.paymentsRepository.update(paymentId, updateData);
+
     return sanitizePaymentResponse(updatedPayment);
   }
 
@@ -213,6 +216,58 @@ export class PaymentsService {
     }
 
     const updatedPayment = await this.paymentsRepository.update(paymentId, updateData);
+
+    if (newStatus === PaymentStatus.SUBMITTED) {
+      await eventBus.publish({
+        eventName: DOMAIN_EVENTS.PAYMENT_SUBMITTED,
+        entityType: "PAYMENT",
+        entityId: paymentId,
+        actorId: actor.userId,
+        timestamp: new Date(),
+        payload: {
+          paymentId,
+          amount: updatedPayment.amount,
+          currency: updatedPayment.currency,
+          clientId: updatedPayment.clientId,
+          projectId: updatedPayment.projectId,
+          submittedByUserId: actor.userId,
+        },
+      });
+    } else if (newStatus === PaymentStatus.APPROVED) {
+      await eventBus.publish({
+        eventName: DOMAIN_EVENTS.PAYMENT_APPROVED,
+        entityType: "PAYMENT",
+        entityId: paymentId,
+        actorId: actor.userId,
+        timestamp: new Date(),
+        payload: {
+          paymentId,
+          amount: updatedPayment.amount,
+          currency: updatedPayment.currency,
+          clientId: updatedPayment.clientId,
+          projectId: updatedPayment.projectId,
+          approvedByUserId: actor.userId,
+        },
+      });
+    } else if (newStatus === PaymentStatus.REJECTED) {
+      await eventBus.publish({
+        eventName: DOMAIN_EVENTS.PAYMENT_REJECTED,
+        entityType: "PAYMENT",
+        entityId: paymentId,
+        actorId: actor.userId,
+        timestamp: new Date(),
+        payload: {
+          paymentId,
+          amount: updatedPayment.amount,
+          currency: updatedPayment.currency,
+          clientId: updatedPayment.clientId,
+          projectId: updatedPayment.projectId,
+          rejectedByUserId: actor.userId,
+          reason: input.approvalNotes,
+        },
+      });
+    }
+
     return sanitizePaymentResponse(updatedPayment);
   }
 

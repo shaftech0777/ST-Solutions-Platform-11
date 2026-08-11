@@ -8,6 +8,7 @@ import {
   UpdateMemberRankInputSchema,
   UpdateMemberStatusInputSchema,
 } from "./members.validation.js";
+import { UpdateMemberRankInput, UpdateMemberStatusInput } from "./members.types.js";
 
 /**
  * Controller class managing HTTP endpoints for Members operations.
@@ -133,7 +134,7 @@ export class MembersController {
         accountType: authReq.user!.accountType as AccountType,
       };
 
-      const updated = await this.membersService.updateStatus(memberId, body, actor);
+      const updated = await this.membersService.updateStatus(memberId, body as UpdateMemberStatusInput, actor);
 
       ResponseBuilder.success(res, updated, {
         message: "Member status updated successfully",
@@ -157,7 +158,7 @@ export class MembersController {
         accountType: authReq.user!.accountType as AccountType,
       };
 
-      const updated = await this.membersService.updateRank(memberId, body, actor);
+      const updated = await this.membersService.updateRank(memberId, body as UpdateMemberRankInput, actor);
 
       ResponseBuilder.success(res, updated, {
         message: "Member rank updated successfully",

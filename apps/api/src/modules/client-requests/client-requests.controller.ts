@@ -7,6 +7,7 @@ import {
   UpdateClientRequestInputSchema,
   UpdateClientRequestStatusInputSchema,
 } from "./client-requests.validation.js";
+import { CreateClientRequestInput, UpdateClientRequestStatusInput } from "./client-requests.types.js";
 
 /**
  * Controller class managing HTTP request handlers for Client Requests & Lead Intake.
@@ -77,7 +78,7 @@ export class ClientRequestsController {
   public createClientRequest = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const body = req.body as CreateClientRequestInputSchema;
-      const created = await this.clientRequestsService.createClientRequest(body);
+      const created = await this.clientRequestsService.createClientRequest(body as CreateClientRequestInput);
 
       ResponseBuilder.created(res, created, {
         message: "Client request submitted successfully",
@@ -113,7 +114,10 @@ export class ClientRequestsController {
     try {
       const { requestId } = req.params;
       const body = req.body as UpdateClientRequestStatusInputSchema;
-      const updated = await this.clientRequestsService.updateClientRequestStatus(requestId, body);
+      const updated = await this.clientRequestsService.updateClientRequestStatus(
+        requestId,
+        body as UpdateClientRequestStatusInput
+      );
 
       ResponseBuilder.success(res, updated, {
         message: "Client request status updated successfully",
