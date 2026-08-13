@@ -1,6 +1,8 @@
 import { ProjectStatus } from "@prisma/client";
 
 export interface ProjectQueryFilters {
+  organizationId?: string;
+  workspaceId?: string;
   page?: number;
   limit?: number;
   search?: string;
@@ -64,6 +66,8 @@ export interface ProjectDetailResponse extends ProjectSummaryResponse {
 }
 
 export interface CreateProjectInput {
+  organizationId?: string;
+  workspaceId?: string;
   clientId: string;
   title: string;
   description?: string;

@@ -21,6 +21,10 @@ export class RequestContext {
       requestId: options.requestId || generateRequestId(),
       userId: options.userId,
       sessionId: options.sessionId,
+      organizationId: options.organizationId,
+      workspaceId: options.workspaceId,
+      organizationRole: options.organizationRole,
+      workspaceRole: options.workspaceRole,
       ipAddress: options.ipAddress,
       userAgent: options.userAgent,
       startTime: Date.now(),
@@ -78,6 +82,52 @@ export class RequestContext {
     const store = asyncLocalStorage.getStore();
     if (store !== undefined) {
       store.sessionId = sessionId;
+    }
+  }
+
+  /**
+   * Gets active organization ID from request context.
+   */
+  public static getOrganizationId(): string | undefined {
+    return asyncLocalStorage.getStore()?.organizationId;
+  }
+
+  /**
+   * Gets active workspace ID from request context.
+   */
+  public static getWorkspaceId(): string | undefined {
+    return asyncLocalStorage.getStore()?.workspaceId;
+  }
+
+  /**
+   * Gets active organization role from request context.
+   */
+  public static getOrganizationRole(): string | undefined {
+    return asyncLocalStorage.getStore()?.organizationRole;
+  }
+
+  /**
+   * Gets active workspace role from request context.
+   */
+  public static getWorkspaceRole(): string | undefined {
+    return asyncLocalStorage.getStore()?.workspaceRole;
+  }
+
+  /**
+   * Sets tenant context in active store.
+   */
+  public static setTenantContext(scope: {
+    organizationId?: string;
+    workspaceId?: string;
+    organizationRole?: string;
+    workspaceRole?: string;
+  }): void {
+    const store = asyncLocalStorage.getStore();
+    if (store !== undefined) {
+      if (scope.organizationId !== undefined) store.organizationId = scope.organizationId;
+      if (scope.workspaceId !== undefined) store.workspaceId = scope.workspaceId;
+      if (scope.organizationRole !== undefined) store.organizationRole = scope.organizationRole;
+      if (scope.workspaceRole !== undefined) store.workspaceRole = scope.workspaceRole;
     }
   }
 

@@ -5,6 +5,10 @@ export interface RequestContextData {
   readonly requestId: string;
   userId?: string;
   sessionId?: string;
+  organizationId?: string;
+  workspaceId?: string;
+  organizationRole?: string;
+  workspaceRole?: string;
   readonly ipAddress?: string;
   readonly userAgent?: string;
   readonly startTime: number;
@@ -18,6 +22,10 @@ export interface CreateRequestContextOptions {
   readonly requestId?: string;
   readonly userId?: string;
   readonly sessionId?: string;
+  readonly organizationId?: string;
+  readonly workspaceId?: string;
+  readonly organizationRole?: string;
+  readonly workspaceRole?: string;
   readonly ipAddress?: string;
   readonly userAgent?: string;
   readonly metadata?: Record<string, unknown>;

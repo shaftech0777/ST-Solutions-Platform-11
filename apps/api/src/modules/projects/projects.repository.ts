@@ -68,6 +68,14 @@ export class ProjectsRepository extends BaseRepository {
       const where: Prisma.ProjectWhereInput = {};
       const conditions: Prisma.ProjectWhereInput[] = [];
 
+      if (filters.organizationId) {
+        conditions.push({ organizationId: filters.organizationId });
+      }
+
+      if (filters.workspaceId) {
+        conditions.push({ workspaceId: filters.workspaceId });
+      }
+
       if (filters.status) {
         conditions.push({ projectStatus: filters.status });
       }

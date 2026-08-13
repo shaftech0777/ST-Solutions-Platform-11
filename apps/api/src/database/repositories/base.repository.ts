@@ -32,4 +32,16 @@ export abstract class BaseRepository {
       throw handleDatabaseError(error, requestId);
     }
   }
+
+  /**
+   * Executes a database transaction cleanly wrapped with AppError handling.
+   *
+   * @param fn Callback receiving transaction client
+   * @returns Result of callback
+   */
+  public async transaction<R>(fn: (tx: TransactionClient) => Promise<R>): Promise<R> {
+    return this.execute(async () => {
+      return prisma.$transaction(fn);
+    });
+  }
 }

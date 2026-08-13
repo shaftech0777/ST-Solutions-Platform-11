@@ -102,6 +102,8 @@ export class ProjectsService {
       projectStatus: input.projectStatus || ProjectStatus.PENDING,
       startDate: input.startDate ? new Date(input.startDate) : null,
       expectedCompletionDate: input.expectedCompletionDate ? new Date(input.expectedCompletionDate) : null,
+      organization: input.organizationId ? { connect: { id: input.organizationId } } : undefined,
+      workspace: input.workspaceId ? { connect: { id: input.workspaceId } } : undefined,
       client: { connect: { id: input.clientId } },
       createdBy: { connect: { id: actor.userId } },
       manager: input.assignedManagerId ? { connect: { id: input.assignedManagerId } } : undefined,

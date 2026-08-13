@@ -4,6 +4,7 @@ import { ERROR_CODES } from "../errors/error.codes.js";
 import { RequestContext } from "../context/request-context.js";
 import { jwtService as defaultJwtService, JwtService } from "./jwt.service.js";
 import { SecurityLogger } from "./security.logger.js";
+import { formatEndpoint } from "./rbac.middleware.js";
 import { AuthenticatedRequest, AuthUser } from "./security.types.js";
 
 /**
@@ -16,8 +17,8 @@ import { AuthenticatedRequest, AuthUser } from "./security.types.js";
 export function authenticate(jwtServiceInstance: JwtService = defaultJwtService): RequestHandler {
   return async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
     const authReq = req as AuthenticatedRequest;
-    const authHeader = req.headers.authorization;
-    const endpoint = `${req.method} ${req.originalUrl || req.url}`;
+    const authHeader = req.headers?.authorization;
+    const endpoint = formatEndpoint(req);
     const ipAddress = req.ip || (req.headers["x-forwarded-for"] as string) || undefined;
     const userAgent = req.headers["user-agent"];
 

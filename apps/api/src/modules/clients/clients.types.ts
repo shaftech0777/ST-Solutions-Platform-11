@@ -1,6 +1,7 @@
 import { ClientStatus } from "@prisma/client";
 
 export interface ClientQueryFilters {
+  organizationId?: string;
   page?: number;
   limit?: number;
   search?: string;

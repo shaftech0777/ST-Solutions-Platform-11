@@ -59,6 +59,10 @@ export class ClientsRepository extends BaseRepository {
 
       const where: Prisma.ClientWhereInput = {};
 
+      if (filters.organizationId) {
+        where.organizationId = filters.organizationId;
+      }
+
       if (filters.status) {
         where.clientStatus = filters.status;
       }

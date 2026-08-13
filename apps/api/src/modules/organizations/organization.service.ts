@@ -108,6 +108,13 @@ export class OrganizationService {
       );
     }
 
+    if (member.role === OrganizationRole.ADMIN && dto.role === OrganizationRole.OWNER) {
+      throw new AuthorizationError(
+        "Access denied: Admins cannot invite users with the Owner role",
+        ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
+      );
+    }
+
     const token = crypto.randomBytes(32).toString("hex");
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
 
@@ -157,8 +164,10 @@ export class OrganizationService {
       throw new ConflictError("User is already a member of this organization", ERROR_CODES.USER_ALREADY_EXISTS);
     }
 
-    await this.orgRepository.addMember(invitation.organizationId, userId, invitation.role);
-    await this.orgRepository.updateInvitationStatus(invitation.id, InvitationStatus.ACCEPTED);
+    await this.orgRepository.transaction(async (tx) => {
+      await this.orgRepository.addMember(invitation.organizationId, userId, invitation.role, tx);
+      await this.orgRepository.updateInvitationStatus(invitation.id, InvitationStatus.ACCEPTED, tx);
+    });
 
     await domainEventBus.publish({
       eventName: DOMAIN_EVENTS.MEMBER_JOINED,
@@ -192,6 +201,15 @@ export class OrganizationService {
       throw new NotFoundError("Target member not found in this organization", ERROR_CODES.DATABASE_RECORD_NOT_FOUND);
     }
 
+    if (actorMember.role === OrganizationRole.ADMIN) {
+      if (dto.role === OrganizationRole.OWNER) {
+        throw new AuthorizationError("Admins cannot assign the Owner role", ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS);
+      }
+      if (targetMember.role === OrganizationRole.ADMIN || targetMember.role === OrganizationRole.OWNER) {
+        throw new AuthorizationError("Admins cannot modify roles of other admins or owners", ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS);
+      }
+    }
+
     if (targetMember.role === OrganizationRole.OWNER && dto.role !== OrganizationRole.OWNER) {
       throw new AuthorizationError("Cannot demote organization owner", ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS);
     }
@@ -208,6 +226,10 @@ export class OrganizationService {
     const targetMember = await this.orgRepository.getMember(organizationId, targetUserId);
     if (!targetMember) {
       throw new NotFoundError("Target member not found in this organization", ERROR_CODES.DATABASE_RECORD_NOT_FOUND);
+    }
+
+    if (actorMember.role === OrganizationRole.ADMIN && (targetMember.role === OrganizationRole.ADMIN || targetMember.role === OrganizationRole.OWNER)) {
+      throw new AuthorizationError("Admins cannot remove other admins or owners", ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS);
     }
 
     if (targetMember.role === OrganizationRole.OWNER) {

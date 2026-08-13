@@ -4,6 +4,12 @@ import { ERROR_CODES } from "../errors/error.codes.js";
 import { SecurityLogger } from "./security.logger.js";
 import { AuthenticatedRequest } from "./security.types.js";
 
+export function formatEndpoint(req: Request): string {
+  const method = req.method || "UNKNOWN";
+  const path = req.originalUrl || req.url || req.path || "UNKNOWN_PATH";
+  return `${method} ${path}`;
+}
+
 /**
  * Middleware restricting route access to users with specified account types (e.g. ADMIN, MANAGER, MEMBER, CLIENT).
  * ADMIN account type automatically bypasses restrictions.
@@ -15,7 +21,7 @@ export function requireAccountType(...allowedAccountTypes: string[]): RequestHan
   return (req: Request, _res: Response, next: NextFunction): void => {
     const authReq = req as AuthenticatedRequest;
     const user = authReq.user;
-    const endpoint = `${req.method} ${req.originalUrl || req.url}`;
+    const endpoint = formatEndpoint(req);
 
     if (!user) {
       return next(
@@ -59,7 +65,7 @@ export function requireRole(...allowedRoles: string[]): RequestHandler {
   return (req: Request, _res: Response, next: NextFunction): void => {
     const authReq = req as AuthenticatedRequest;
     const user = authReq.user;
-    const endpoint = `${req.method} ${req.originalUrl || req.url}`;
+    const endpoint = formatEndpoint(req);
 
     if (!user) {
       return next(
@@ -107,7 +113,7 @@ export function requirePermission(...requiredPermissions: string[]): RequestHand
   return (req: Request, _res: Response, next: NextFunction): void => {
     const authReq = req as AuthenticatedRequest;
     const user = authReq.user;
-    const endpoint = `${req.method} ${req.originalUrl || req.url}`;
+    const endpoint = formatEndpoint(req);
 
     if (!user) {
       return next(

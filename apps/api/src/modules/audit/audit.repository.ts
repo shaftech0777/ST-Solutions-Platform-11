@@ -56,6 +56,10 @@ export class AuditRepository extends BaseRepository {
       const where: Prisma.AuditLogWhereInput = {};
       const conditions: Prisma.AuditLogWhereInput[] = [];
 
+      if (filters.organizationId) {
+        conditions.push({ organizationId: filters.organizationId });
+      }
+
       if (filters.userId) {
         conditions.push({ userId: filters.userId });
       }

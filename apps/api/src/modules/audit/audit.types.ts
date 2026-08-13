@@ -16,12 +16,14 @@ export interface AuditLogResponse {
 
 export interface CreateAuditLogInput {
   userId?: string | null;
+  organizationId?: string | null;
   action: string;
   description?: string | null;
   ipAddress?: string | null;
 }
 
 export interface AuditLogQueryFilters {
+  organizationId?: string;
   page?: number;
   limit?: number;
   search?: string;

@@ -35,11 +35,22 @@ export interface AuthUser {
 }
 
 /**
- * Express Request decorated with authenticated user credentials.
+ * Active tenant context attached to request and context store.
+ */
+export interface TenantContextData {
+  organizationId?: string;
+  organizationRole?: string;
+  workspaceId?: string;
+  workspaceRole?: string;
+}
+
+/**
+ * Express Request decorated with authenticated user credentials and tenant context.
  */
 export interface AuthenticatedRequest extends Request {
   user?: AuthUser;
   token?: string;
+  tenantContext?: TenantContextData;
 }
 
 /**
