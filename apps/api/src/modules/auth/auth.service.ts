@@ -1,12 +1,14 @@
-import { AuthenticationError, NotFoundError } from "../../core/errors/app-error.js";
+import { AuthenticationError, ConflictError, NotFoundError } from "../../core/errors/app-error.js";
 import { ERROR_CODES } from "../../core/errors/error.codes.js";
+import { domainEventBus } from "../../core/events/event-bus.js";
+import { DOMAIN_EVENTS } from "../../core/events/domain-event.types.js";
 import { jwtService as defaultJwtService, JwtService } from "../../core/security/jwt.service.js";
 import { passwordService as defaultPasswordService, PasswordService } from "../../core/security/password.service.js";
 import { SecurityLogger } from "../../core/security/security.logger.js";
 import { sanitizeUser } from "./auth.mapper.js";
 import { authRepository as defaultAuthRepository, AuthRepository } from "./auth.repository.js";
 import { AuthTokenPayload, RefreshTokenPayload, SafeUser } from "./auth.types.js";
-import { ChangePasswordDto, LoginDto } from "./auth.validation.js";
+import { ChangePasswordDto, LoginDto, RegisterDto } from "./auth.validation.js";
 
 /**
  * Enterprise Service orchestrating authentication business logic.
@@ -24,6 +26,75 @@ export class AuthService {
     this.authRepository = authRepository;
     this.jwtService = jwtService;
     this.passwordService = passwordService;
+  }
+
+  /**
+   * Registers a new user, hashes password, creates profile and optional default organization.
+   */
+  public async register(
+    dto: RegisterDto,
+    metadata?: { ipAddress?: string; userAgent?: string }
+  ): Promise<AuthTokenPayload> {
+    const normalizedEmail = dto.email.toLowerCase().trim();
+
+    const existingUser = await this.authRepository.findByEmail(normalizedEmail);
+    if (existingUser) {
+      throw new ConflictError("Email address is already registered", ERROR_CODES.USER_ALREADY_EXISTS);
+    }
+
+    const passwordHash = await this.passwordService.hashPassword(dto.password);
+
+    const user = await this.authRepository.createUserWithRegistration({
+      email: normalizedEmail,
+      passwordHash,
+      fullName: dto.fullName.trim(),
+      accountType: dto.accountType,
+      organizationName: dto.organizationName,
+    });
+
+    const permissions: string[] = user.role?.permissions
+      ? user.role.permissions.map((rp) => rp.permission.name)
+      : [];
+
+    const tokenPair = this.jwtService.signTokenPair({
+      sub: user.id,
+      email: user.email ?? undefined,
+      accountType: user.accountType,
+      role: user.role?.name,
+      permissions,
+    });
+
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    await this.authRepository.createSession({
+      userId: user.id,
+      tokenHash: tokenPair.refreshToken,
+      ipAddress: metadata?.ipAddress,
+      userAgent: metadata?.userAgent,
+      expiresAt,
+    });
+
+    await domainEventBus.publish({
+      eventName: DOMAIN_EVENTS.USER_REGISTERED,
+      entityType: "User",
+      entityId: user.id,
+      actorId: user.id,
+      timestamp: new Date(),
+      payload: {
+        userId: user.id,
+        email: user.email,
+        fullName: dto.fullName,
+      },
+    });
+
+    const safeUser = sanitizeUser(user);
+
+    return {
+      user: safeUser,
+      accessToken: tokenPair.accessToken,
+      refreshToken: tokenPair.refreshToken,
+      expiresIn: tokenPair.expiresIn,
+      tokenType: "Bearer",
+    };
   }
 
   /**

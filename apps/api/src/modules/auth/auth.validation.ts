@@ -1,5 +1,21 @@
 import { z } from "zod";
+import { AccountType } from "@prisma/client";
 import { emailSchema, passwordSchema } from "../../core/validation/validation.schema.js";
+
+/**
+ * Registration request validation schema.
+ */
+export const registerSchema = z.object({
+  fullName: z
+    .string({ required_error: "Full name is required" })
+    .trim()
+    .min(2, { message: "Full name must be at least 2 characters" })
+    .max(100, { message: "Full name cannot exceed 100 characters" }),
+  email: emailSchema,
+  password: passwordSchema,
+  accountType: z.nativeEnum(AccountType).optional(),
+  organizationName: z.string().trim().min(2).max(100).optional(),
+});
 
 /**
  * Login request validation schema.
@@ -34,6 +50,8 @@ export const changePasswordSchema = z
     path: ["newPassword"],
   });
 
+export type RegisterDto = z.infer<typeof registerSchema>;
 export type LoginDto = z.infer<typeof loginSchema>;
 export type RefreshTokenDto = z.infer<typeof refreshTokenSchema>;
 export type ChangePasswordDto = z.infer<typeof changePasswordSchema>;
+

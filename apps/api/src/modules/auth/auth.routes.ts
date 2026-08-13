@@ -1,9 +1,21 @@
 import { Router } from "express";
 import { authenticate, authRateLimiter, validate } from "../../middlewares/index.js";
 import { authController } from "./auth.controller.js";
-import { changePasswordSchema, loginSchema, refreshTokenSchema } from "./auth.validation.js";
+import { changePasswordSchema, loginSchema, refreshTokenSchema, registerSchema } from "./auth.validation.js";
 
 export const authRouter = Router();
+
+/**
+ * @route POST /auth/register
+ * @desc Registers a new user account with profile and optional organization
+ * @access Public (Rate Limited)
+ */
+authRouter.post(
+  "/register",
+  authRateLimiter,
+  validate({ body: registerSchema }),
+  authController.register
+);
 
 /**
  * @route POST /auth/login

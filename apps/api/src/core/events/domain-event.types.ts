@@ -29,6 +29,23 @@ export const DOMAIN_EVENTS = {
   // Settings & Security Domain Events
   SETTINGS_UPDATED: "settings.updated",
   SECURITY_EVENT: "security.event",
+
+  // User & Auth Domain Events
+  USER_REGISTERED: "user.registered",
+  USER_LOGGED_IN: "user.logged_in",
+  USER_LOGGED_OUT: "user.logged_out",
+  PASSWORD_CHANGED: "password.changed",
+
+  // Organization & Workspace Domain Events
+  ORGANIZATION_CREATED: "organization.created",
+  WORKSPACE_CREATED: "workspace.created",
+
+  // Membership & Role Domain Events
+  MEMBER_INVITED: "member.invited",
+  MEMBER_JOINED: "member.joined",
+  MEMBER_REMOVED: "member.removed",
+  ROLE_ASSIGNED: "role.assigned",
+  ROLE_REMOVED: "role.removed",
 } as const;
 
 export type DomainEventName = (typeof DOMAIN_EVENTS)[keyof typeof DOMAIN_EVENTS];

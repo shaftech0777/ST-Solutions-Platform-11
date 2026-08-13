@@ -21,7 +21,7 @@ export const clientQuerySchema = z.object({
 
 export const createClientSchema = z.object({
   fullName: z.string().trim().min(2, "Full name is required").max(100),
-  email: z.string().trim().email("Invalid email address format"),
+  email: z.string().trim().toLowerCase().email("Invalid email address format"),
   phoneNumber: z.string().trim().min(5, "Phone number is required").max(30),
   companyName: z.string().trim().max(100).optional(),
   whatsappNumber: z.string().trim().max(30).optional(),
@@ -38,7 +38,7 @@ export const createClientSchema = z.object({
 
 export const updateClientSchema = z.object({
   fullName: z.string().trim().min(2).max(100).optional(),
-  email: z.string().trim().email("Invalid email address format").optional(),
+  email: z.string().trim().toLowerCase().email("Invalid email address format").optional(),
   phoneNumber: z.string().trim().min(5).max(30).optional(),
   companyName: z.string().trim().max(100).optional(),
   whatsappNumber: z.string().trim().max(30).optional(),

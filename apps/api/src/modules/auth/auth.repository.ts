@@ -1,6 +1,8 @@
-import { UserStatus } from "@prisma/client";
+import { AccountType, OrganizationRole, OrganizationStatus, UserStatus } from "@prisma/client";
 import { TransactionClient } from "../../database/database.types.js";
 import { BaseRepository } from "../../database/repositories/base.repository.js";
+
+import { prisma } from "../../database/prisma.client.js";
 
 /**
  * Repository handling database operations for Authentication & User Session management.
@@ -20,7 +22,86 @@ export class AuthRepository extends BaseRepository {
       },
     },
     profile: true,
+    organizationMemberships: {
+      include: {
+        organization: true,
+      },
+    },
   } as const;
+
+  /**
+   * Creates a user, profile, and optional default Organization in an atomic transaction.
+   */
+  public async createUserWithRegistration(
+    data: {
+      email: string;
+      passwordHash: string;
+      fullName: string;
+      accountType?: AccountType;
+      organizationName?: string;
+    },
+    tx?: TransactionClient
+  ) {
+    return this.execute(async () => {
+      const executeTransaction = async (transaction: TransactionClient) => {
+        const user = await transaction.user.create({
+          data: {
+            email: data.email,
+            passwordHash: data.passwordHash,
+            accountType: data.accountType || AccountType.MEMBER,
+            status: UserStatus.ACTIVE,
+            profile: {
+              create: {
+                fullName: data.fullName,
+              },
+            },
+          },
+          include: this.userAuthInclude,
+        });
+
+        if (data.organizationName) {
+          const slugBase = data.organizationName
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-|-$/g, "");
+          const slug = `${slugBase}-${Date.now().toString(36)}`;
+
+          await transaction.organization.create({
+            data: {
+              name: data.organizationName,
+              slug,
+              status: OrganizationStatus.ACTIVE,
+              ownerId: user.id,
+              members: {
+                create: {
+                  userId: user.id,
+                  role: OrganizationRole.OWNER,
+                },
+              },
+              workspaces: {
+                create: {
+                  name: "Default Workspace",
+                  slug: "default",
+                  description: "Default primary workspace",
+                },
+              },
+            },
+          });
+        }
+
+        return transaction.user.findUniqueOrThrow({
+          where: { id: user.id },
+          include: this.userAuthInclude,
+        });
+      };
+
+      if (tx) {
+        return executeTransaction(tx);
+      }
+
+      return prisma.$transaction(executeTransaction);
+    });
+  }
 
   /**
    * Finds a user entity by email address with authentication-related relations.

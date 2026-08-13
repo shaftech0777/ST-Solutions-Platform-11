@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { ResponseBuilder } from "../../core/responses/index.js";
 import { AuthenticatedRequest } from "../../core/security/security.types.js";
 import { authService as defaultAuthService, AuthService } from "./auth.service.js";
-import { ChangePasswordDto, LoginDto, RefreshTokenDto } from "./auth.validation.js";
+import { ChangePasswordDto, LoginDto, RefreshTokenDto, RegisterDto } from "./auth.validation.js";
 
 /**
  * Controller handling HTTP requests for Authentication endpoints.
@@ -14,6 +14,28 @@ export class AuthController {
   constructor(authService: AuthService = defaultAuthService) {
     this.authService = authService;
   }
+
+  /**
+   * Handles user registration request.
+   * POST /api/v1/auth/register
+   */
+  public register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const dto = req.body as RegisterDto;
+      const metadata = {
+        ipAddress: req.ip || (req.headers["x-forwarded-for"] as string) || undefined,
+        userAgent: req.headers["user-agent"],
+      };
+
+      const result = await this.authService.register(dto, metadata);
+
+      ResponseBuilder.created(res, result, {
+        message: "User registered successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 
   /**
    * Handles user login request.

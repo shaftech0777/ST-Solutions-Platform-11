@@ -48,3 +48,5 @@ export class EventBus {
 }
 
 export const eventBus = EventBus.getInstance();
+export const domainEventBus = eventBus;
+

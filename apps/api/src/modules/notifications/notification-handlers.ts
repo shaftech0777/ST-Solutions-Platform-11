@@ -192,7 +192,7 @@ export function registerNotificationHandlers(
       await notifyUsers(adminIds, {
         title: "New Client Request",
         message: `New client request received from ${fullName}${companyName ? ` (${companyName})` : ""}.`,
-        notificationType: "CLIENT_REQUEST",
+        notificationType: NotificationType.CLIENT,
         priority: "NORMAL",
         entityType: "CLIENT_REQUEST",
         entityId: requestId,
@@ -215,7 +215,7 @@ export function registerNotificationHandlers(
       await notifyUsers(adminIds, {
         title: "Client Request Status Updated",
         message: `Request from ${fullName} status changed to ${newStatus}.`,
-        notificationType: "CLIENT_REQUEST",
+        notificationType: NotificationType.CLIENT,
         priority: "NORMAL",
         entityType: "CLIENT_REQUEST",
         entityId: requestId,
@@ -231,7 +231,7 @@ export function registerNotificationHandlers(
     await notifyUsers([convertedByUserId], {
       title: "Lead Converted",
       message: `Client request for '${companyName}' was converted to a Client.`,
-      notificationType: "CLIENT_REQUEST",
+      notificationType: NotificationType.CLIENT,
       priority: "HIGH",
       entityType: "CLIENT",
       entityId: clientId,
@@ -245,7 +245,7 @@ export function registerNotificationHandlers(
       await notifyUsers([updatedByUserId], {
         title: "System Settings Modified",
         message: `Settings section '${section}' was updated.`,
-        notificationType: "SYSTEM",
+        notificationType: NotificationType.SYSTEM,
         priority: "NORMAL",
         entityType: "SETTINGS",
         entityId: section,
@@ -259,7 +259,7 @@ export function registerNotificationHandlers(
       await notifyUsers([targetUserId], {
         title: "Security Event Alert",
         message: `Security event '${action}' occurred.${details ? ` Details: ${details}` : ""}`,
-        notificationType: "SECURITY",
+        notificationType: NotificationType.SYSTEM,
         priority: severity || "URGENT",
         entityType: "SECURITY",
       });
