@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import {
   Folder,
   FolderTree,
@@ -18,8 +19,31 @@ import {
   Code2,
   Cpu,
   Workflow,
-  Box
+  Box,
+  Sparkles,
+  LayoutDashboard
 } from "lucide-react";
+
+import { AuthProvider } from "./context/AuthContext.js";
+import { ThemeProvider } from "./context/ThemeContext.js";
+import { ToastProvider } from "./context/ToastContext.js";
+import { ApplicationShell } from "./components/shell/ApplicationShell.js";
+
+// Page Imports
+import { DashboardPage } from "./pages/DashboardPage.js";
+import { OrganizationsPage } from "./pages/OrganizationsPage.js";
+import { WorkspacesPage } from "./pages/WorkspacesPage.js";
+import { ClientsPage } from "./pages/ClientsPage.js";
+import { ProjectsPage } from "./pages/ProjectsPage.js";
+import { PaymentsPage } from "./pages/PaymentsPage.js";
+import { ApplicantsPage } from "./pages/ApplicantsPage.js";
+import { MembersPage } from "./pages/MembersPage.js";
+import { RolesPage } from "./pages/RolesPage.js";
+import { AuditLogsPage } from "./pages/AuditLogsPage.js";
+import { SettingsPage } from "./pages/SettingsPage.js";
+import { AIAssistantPage } from "./pages/AIAssistantPage.js";
+import { LoginPage } from "./pages/LoginPage.js";
+import { RegisterPage } from "./pages/RegisterPage.js";
 
 interface FileNode {
   name: string;
@@ -70,7 +94,7 @@ const fileSystemTree: FileNode[] = [
                 name: "schema.prisma",
                 path: "apps/api/prisma/schema.prisma",
                 type: "file",
-                content: `// Prisma Schema for ST-Solutions Platform\n\ngenerator client {\n  provider = "prisma-client-js"\n}\n\ndatasource db {\n  provider = "postgresql"\n  url      = env("DATABASE_URL")\n}\n\nenum UserStatus {\n  ACTIVE\n  INACTIVE\n  SUSPENDED\n  PENDING\n}\n\nenum AccountType {\n  ADMIN\n  SUB_ADMIN\n  MANAGER\n  MEMBER\n  CLIENT\n}\n\nmodel User {\n  id           String      @id @default(uuid())\n  email        String?     @unique\n  passwordHash String\n  accountType  AccountType @default(MEMBER)\n  status       UserStatus  @default(PENDING)\n  roleId       String?\n  createdAt    DateTime    @default(now())\n  updatedAt    DateTime    @updatedAt\n\n  role      Role?        @relation(fields: [roleId], references: [id], onDelete: SetNull)\n  profile   UserProfile?\n  sessions  Session[]\n  auditLogs AuditLog[]\n\n  @@index([email])\n  @@index([status])\n  @@index([accountType])\n}\n\nmodel Role {\n  id          String   @id @default(uuid())\n  name        String   @unique\n  description String?\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  users       User[]\n  permissions RolePermission[]\n}\n\nmodel Permission {\n  id          String   @id @default(uuid())\n  name        String   @unique\n  description String?\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  roles RolePermission[]\n}\n\nmodel RolePermission {\n  id           String   @id @default(uuid())\n  roleId       String\n  permissionId String\n  createdAt    DateTime @default(now())\n\n  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)\n  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)\n\n  @@unique([roleId, permissionId])\n  @@index([roleId])\n  @@index([permissionId])\n}\n\nmodel UserProfile {\n  id           String   @id @default(uuid())\n  userId       String   @unique\n  fullName     String?\n  profileImage String?\n  phoneNumber  String?\n  country      String?\n  city         String?\n  address      String?\n  createdAt    DateTime @default(now())\n  updatedAt    DateTime @updatedAt\n\n  user User @relation(fields: [userId], references: [id], onDelete: Cascade)\n}\n\nmodel Session {\n  id        String   @id @default(uuid())\n  userId    String\n  tokenHash String\n  ipAddress String?\n  userAgent String?\n  expiresAt DateTime\n  createdAt DateTime @default(now())\n\n  user User @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([userId])\n  @@index([tokenHash])\n}\n\nmodel AuditLog {\n  id          String   @id @default(uuid())\n  userId      String?\n  action      String\n  description String?\n  ipAddress   String?\n  createdAt   DateTime @default(now())\n\n  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)\n\n  @@index([userId])\n  @@index([action])\n  @@index([createdAt])\n}`
+                content: `// Prisma Schema for ST-Solutions Platform\n\ngenerator client {\n  provider = "prisma-client-js"\n}\n\ndatasource db {\n  provider = "postgresql"\n  url      = env("DATABASE_URL")\n}\n\nenum UserStatus {\n  ACTIVE\n  INACTIVE\n  SUSPENDED\n  PENDING\n}\n\nenum AccountType {\n  ADMIN\n  SUB_ADMIN\n  MANAGER\n  MEMBER\n  CLIENT\n}\n\nmodel User {\n  id           String      @id @default(uuid())\n  email        String?     @unique\n  passwordHash String\n  accountType  AccountType @default(MEMBER)\n  status       UserStatus  @default(PENDING)\n  roleId       String?\n  createdAt    DateTime    @default(now())\n  updatedAt    DateTime    @updatedAt\n\n  role      Role?        @relation(fields: [roleId], references: [id], onDelete: SetNull)\n  profile   UserProfile?\n  sessions  Session[]\n  auditLogs AuditLog[]\n\n  @@index([email])\n  @@index([status])\n  @@index([accountType])\n}`
               }
             ]
           },
@@ -100,128 +124,21 @@ const fileSystemTree: FileNode[] = [
                     name: "env.ts",
                     path: "apps/api/src/config/env.ts",
                     type: "file",
-                    content: `import dotenv from "dotenv";\nimport { z } from "zod";\n\ndotenv.config();\n\nexport const envSchema = z.object({\n  NODE_ENV: z.enum(["development", "production", "test"]).default("development"),\n  PORT: z.string().default("4000"),\n  DATABASE_URL: z.string().optional(),\n  JWT_SECRET: z.string().default("default-development-secret-key"),\n});\n\nexport const env = envSchema.parse(process.env);`
-                  },
-                  {
-                    name: "index.ts",
-                    path: "apps/api/src/config/index.ts",
-                    type: "file",
-                    content: `export * from "./env.js";\nexport * from "./logger.js";\nexport * from "./security.js";\nexport * from "./database.js";`
+                    content: `import dotenv from "dotenv";\ndotenv.config();\n\nexport const env = {\n  PORT: process.env.PORT || 4000,\n  NODE_ENV: process.env.NODE_ENV || "development",\n  DATABASE_URL: process.env.DATABASE_URL,\n  JWT_SECRET: process.env.JWT_SECRET || "super-secret-key",\n};`
                   }
-                ]
-              },
-              {
-                name: "database",
-                path: "apps/api/src/database",
-                type: "folder",
-                children: [
-                  {
-                    name: "prisma.ts",
-                    path: "apps/api/src/database/prisma.ts",
-                    type: "file",
-                    content: `import { PrismaClient } from "@prisma/client";\nimport { databaseConfig } from "../config/database.js";\n\nconst globalForPrisma = globalThis as unknown as {\n  prisma: PrismaClient | undefined;\n};\n\nexport const prisma =\n  globalForPrisma.prisma ?\?\n  new PrismaClient({\n    log: databaseConfig.logQueries ? ["query", "error", "warn"] : ["error"],\n  });\n\nif (process.env.NODE_ENV !== "production") {\n  globalForPrisma.prisma = prisma;\n}`
-                  },
-                  {
-                    name: "database.ts",
-                    path: "apps/api/src/database/database.ts",
-                    type: "file",
-                    content: `import { prisma } from "./prisma.js";\nimport { logger } from "../config/logger.js";\n\nexport async function connectDatabase(): Promise<void> {\n  try {\n    if (process.env.DATABASE_URL) {\n      await prisma.$connect();\n      logger.info("Database connection initialized via Prisma.");\n    }\n  } catch (error) {\n    logger.warn({ error }, "Database connection attempt failed.");\n  }\n}`
-                  }
-                ]
-              },
-              {
-                name: "middlewares",
-                path: "apps/api/src/middlewares",
-                type: "folder",
-                children: [
-                  {
-                    name: "index.ts",
-                    path: "apps/api/src/middlewares/index.ts",
-                    type: "file",
-                    content: `import { Request, Response, NextFunction } from "express";\n\nexport function errorHandler(\n  err: Error,\n  _req: Request,\n  res: Response,\n  _next: NextFunction\n): void {\n  res.status(500).json({ error: err.message || "Internal Server Error" });\n}`
-                  }
-                ]
-              },
-              {
-                name: "modules",
-                path: "apps/api/src/modules",
-                type: "folder",
-                description: "15 Production feature modules",
-                children: [
-                  {
-                    name: "index.ts",
-                    path: "apps/api/src/modules/index.ts",
-                    type: "file",
-                    content: apiModules.map(m => `export * from "./${m}/index.js";`).join("\n")
-                  },
-                  ...apiModules.map(mod => ({
-                    name: mod,
-                    path: `apps/api/src/modules/${mod}`,
-                    type: "folder" as const,
-                    children: [
-                      {
-                        name: "index.ts",
-                        path: `apps/api/src/modules/${mod}/index.ts`,
-                        type: "file" as const,
-                        content: `export * from "./${mod}.controller.js";\nexport * from "./${mod}.service.js";\nexport * from "./${mod}.repository.js";\nexport * from "./${mod}.routes.js";\nexport * from "./${mod}.validation.js";\nexport * from "./${mod}.types.js";`
-                      },
-                      {
-                        name: `${mod}.controller.ts`,
-                        path: `apps/api/src/modules/${mod}/${mod}.controller.ts`,
-                        type: "file" as const,
-                        content: `export class ${mod.split('-').map(s=>s.charAt(0).toUpperCase()+s.slice(1)).join('')}Controller {}`
-                      },
-                      {
-                        name: `${mod}.service.ts`,
-                        path: `apps/api/src/modules/${mod}/${mod}.service.ts`,
-                        type: "file" as const,
-                        content: `export class ${mod.split('-').map(s=>s.charAt(0).toUpperCase()+s.slice(1)).join('')}Service {}`
-                      },
-                      {
-                        name: `${mod}.repository.ts`,
-                        path: `apps/api/src/modules/${mod}/${mod}.repository.ts`,
-                        type: "file" as const,
-                        content: `export class ${mod.split('-').map(s=>s.charAt(0).toUpperCase()+s.slice(1)).join('')}Repository {}`
-                      },
-                      {
-                        name: `${mod}.routes.ts`,
-                        path: `apps/api/src/modules/${mod}/${mod}.routes.ts`,
-                        type: "file" as const,
-                        content: `import { Router } from "express";\n\nexport const ${mod.replace(/-([a-z])/g, g => g[1].toUpperCase())}Router = Router();`
-                      },
-                      {
-                        name: `${mod}.validation.ts`,
-                        path: `apps/api/src/modules/${mod}/${mod}.validation.ts`,
-                        type: "file" as const,
-                        content: `export const ${mod.replace(/-([a-z])/g, g => g[1].toUpperCase())}Validation = {};`
-                      },
-                      {
-                        name: `${mod}.types.ts`,
-                        path: `apps/api/src/modules/${mod}/${mod}.types.ts`,
-                        type: "file" as const,
-                        content: `export interface ${mod.split('-').map(s=>s.charAt(0).toUpperCase()+s.slice(1)).join('')}State {}`
-                      }
-                    ]
-                  }))
                 ]
               },
               {
                 name: "app.ts",
                 path: "apps/api/src/app.ts",
                 type: "file",
-                content: `import express, { Express, Request, Response } from "express";\nimport { errorHandler } from "./middlewares/index.js";\n\nconst app: Express = express();\n\napp.use(express.json());\n\napp.get("/health", (_req: Request, res: Response) => {\n  res.json({ status: "ok", service: "st-solutions-api", version: "1.0.0" });\n});\n\napp.use(errorHandler);\n\nexport default app;`
+                content: `import express from "express";\nimport cors from "cors";\nimport helmet from "helmet";\nimport { errorHandler } from "./shared/error-handler.js";\n\nconst app = express();\napp.use(helmet());\napp.use(cors());\napp.use(express.json());\n\napp.get("/health", (req, res) => res.json({ status: "ok", timestamp: new Date() }));\n\napp.use(errorHandler);\nexport default app;`
               },
               {
                 name: "server.ts",
                 path: "apps/api/src/server.ts",
                 type: "file",
-                content: `import app from "./app.js";\nimport { config } from "./config/index.js";\n\nconst port = config.port;\n\nconst server = app.listen(port, () => {\n  console.log(\`ST-Solutions API running on port \${port}\`);\n});\n\nexport default server;`
-              },
-              {
-                name: "index.ts",
-                path: "apps/api/src/index.ts",
-                type: "file",
-                content: `import "./server.js";\n\nexport { default as app } from "./app.js";\nexport { default as server } from "./server.js";`
+                content: `import app from "./app.js";\nimport { env } from "./config/env.js";\n\napp.listen(env.PORT, () => {\n  console.log(\`ST-Solutions API running on port \${env.PORT}\`);\n});`
               }
             ]
           }
@@ -231,27 +148,20 @@ const fileSystemTree: FileNode[] = [
         name: "web",
         path: "apps/web",
         type: "folder",
-        description: "React + Vite Frontend Client",
+        description: "React SPA Frontend Application with Tailwind CSS",
         children: [
           {
             name: "src",
             path: "apps/web/src",
             type: "folder",
             children: [
-              "app", "assets", "components", "features", "hooks", "layouts", "pages", "services", "store", "types", "utils"
-            ].map(dir => ({
-              name: dir,
-              path: `apps/web/src/${dir}`,
-              type: "folder" as const,
-              children: [
-                {
-                  name: "index.ts",
-                  path: `apps/web/src/${dir}/index.ts`,
-                  type: "file" as const,
-                  content: "export {};"
-                }
-              ]
-            }))
+              {
+                name: "App.tsx",
+                path: "apps/web/src/App.tsx",
+                type: "file",
+                content: `// React SPA entry with multi-tenant router and auth providers`
+              }
+            ]
           }
         ]
       }
@@ -261,33 +171,32 @@ const fileSystemTree: FileNode[] = [
     name: "packages",
     path: "packages",
     type: "folder",
-    description: "Shared monorepo packages",
+    description: "Shared monorepo packages across API & Web",
     children: [
-      {
-        name: "shared-config",
-        path: "packages/shared-config",
-        type: "folder",
-        children: [
-          { name: "constants.ts", path: "packages/shared-config/constants.ts", type: "file", content: `export const APP_NAME = "ST-Solutions";` },
-          { name: "roles.ts", path: "packages/shared-config/roles.ts", type: "file", content: `export const ROLES = { ADMIN: "ADMIN" } as const;` },
-          { name: "permissions.ts", path: "packages/shared-config/permissions.ts", type: "file", content: `export const PERMISSIONS = { USERS_READ: "users:read" } as const;` },
-          { name: "routes.ts", path: "packages/shared-config/routes.ts", type: "file", content: `export const ROUTES = { AUTH: "/api/v1/auth" } as const;` },
-          { name: "status.ts", path: "packages/shared-config/status.ts", type: "file", content: `export const HTTP_STATUS = { OK: 200 } as const;` },
-          { name: "index.ts", path: "packages/shared-config/index.ts", type: "file", content: `export * from "./constants.js";\nexport * from "./roles.js";` }
-        ]
-      },
       {
         name: "shared-types",
         path: "packages/shared-types",
         type: "folder",
         children: [
-          { name: "user.ts", path: "packages/shared-types/user.ts", type: "file", content: `export interface User { id: string; email: string; }` },
-          { name: "role.ts", path: "packages/shared-types/role.ts", type: "file", content: `export interface Role { id: string; name: string; }` },
-          { name: "permission.ts", path: "packages/shared-types/permission.ts", type: "file", content: `export interface Permission { id: string; code: string; }` },
-          { name: "api.ts", path: "packages/shared-types/api.ts", type: "file", content: `export interface ApiResponse<T = unknown> { success: boolean; data?: T; }` },
-          { name: "pagination.ts", path: "packages/shared-types/pagination.ts", type: "file", content: `export interface PaginationMeta { page: number; limit: number; }` },
-          { name: "jwt.ts", path: "packages/shared-types/jwt.ts", type: "file", content: `export interface JwtPayload { userId: string; role: string; }` },
-          { name: "index.ts", path: "packages/shared-types/index.ts", type: "file", content: `export * from "./user.js";\nexport * from "./api.js";` }
+          {
+            name: "index.ts",
+            path: "packages/shared-types/index.ts",
+            type: "file",
+            content: `export * from "./user.types.js";\nexport * from "./org.types.js";\nexport * from "./api.types.js";`
+          }
+        ]
+      },
+      {
+        name: "shared-config",
+        path: "packages/shared-config",
+        type: "folder",
+        children: [
+          {
+            name: "constants.ts",
+            path: "packages/shared-config/constants.ts",
+            type: "file",
+            content: `export className Constants {\n  static readonly PLATFORM_NAME = "ST-SOLUTIONS";\n}`
+          }
         ]
       },
       {
@@ -295,33 +204,33 @@ const fileSystemTree: FileNode[] = [
         path: "packages/shared-utils",
         type: "folder",
         children: [
-          { name: "date.ts", path: "packages/shared-utils/date.ts", type: "file", content: `export function formatDate(d: Date | string) { return new Date(d).toISOString(); }` },
-          { name: "string.ts", path: "packages/shared-utils/string.ts", type: "file", content: `export function capitalize(s: string) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ""; }` },
-          { name: "id.ts", path: "packages/shared-utils/id.ts", type: "file", content: `export function generateId() { return Math.random().toString(36).slice(2); }` },
-          { name: "validation.ts", path: "packages/shared-utils/validation.ts", type: "file", content: `export function isValidEmail(e: string) { return e.includes("@"); }` },
-          { name: "index.ts", path: "packages/shared-utils/index.ts", type: "file", content: `export * from "./date.js";\nexport * from "./string.js";` }
+          {
+            name: "index.ts",
+            path: "packages/shared-utils/index.ts",
+            type: "file",
+            content: `export const formatCurrency = (amount: number) => \`$\${amount.toLocaleString()}\`;`
+          }
         ]
       }
     ]
   }
 ];
 
-export default function App() {
-  const [selectedFile, setSelectedFile] = useState<FileNode | null>(fileSystemTree[0]);
+export function AppContent() {
+  const [selectedFile, setSelectedFile] = useState<FileNode | null>(fileSystemTree[0].children![0].children![0].children![0]);
   const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({
     apps: true,
     "apps/api": true,
+    "apps/api/prisma": true,
     "apps/api/src": true,
-    "apps/api/src/modules": true,
+    "apps/api/src/config": true,
     "apps/web": true,
-    "apps/web/src": true,
     packages: true,
-    "packages/shared-config": true,
     "packages/shared-types": true,
     "packages/shared-utils": true
   });
   const [copied, setCopied] = useState(false);
-  const [activeTab, setActiveTab] = useState<"explorer" | "checklist" | "modules" | "architecture">("explorer");
+  const [activeTab, setActiveTab] = useState<"app" | "explorer" | "checklist" | "modules" | "architecture">("app");
 
   const toggleFolder = (path: string) => {
     setExpandedFolders((prev) => ({ ...prev, [path]: !prev[path] }));
@@ -397,25 +306,35 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
-      {/* Header */}
-      <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur px-6 py-3.5 flex items-center justify-between sticky top-0 z-20">
+      {/* Platform Top Header & View Switcher */}
+      <header className="border-b border-slate-800 bg-slate-900/90 backdrop-blur px-6 py-2.5 flex items-center justify-between sticky top-0 z-40">
         <div className="flex items-center space-x-3">
-          <div className="p-2 bg-indigo-600/20 border border-indigo-500/30 rounded-xl text-indigo-400">
-            <Boxes className="w-5 h-5" />
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#D4AF37] to-[#B88E20] text-black font-extrabold flex items-center justify-center text-xs shadow-md shadow-amber-500/10 shrink-0 border border-amber-300/40">
+            ST
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <h1 className="text-base font-bold tracking-tight text-white">ST-Solutions Platform</h1>
-              <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
-                Phase 13 Database Schema v1.0 FROZEN
+              <h1 className="text-sm font-bold tracking-tight text-white">ST-SOLUTIONS PLATFORM</h1>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 font-mono font-medium">
+                Shaf Tech Enterprise
               </span>
             </div>
-            <p className="text-xs text-slate-400">Enterprise Clean Monorepo Architecture</p>
           </div>
         </div>
 
-        {/* Tab Selector */}
+        {/* Navigation Mode Bar */}
         <div className="flex items-center space-x-1 bg-slate-950 p-1 rounded-lg border border-slate-800">
+          <button
+            onClick={() => setActiveTab("app")}
+            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+              activeTab === "app"
+                ? "bg-gradient-to-r from-[#D4AF37] to-[#B88E20] text-black shadow-sm"
+                : "text-amber-400 hover:text-white hover:bg-slate-900"
+            }`}
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Interactive SaaS App</span>
+          </button>
           <button
             onClick={() => setActiveTab("explorer")}
             className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
@@ -447,23 +366,36 @@ export default function App() {
             }`}
           >
             <CheckCircle2 className="w-3.5 h-3.5" />
-            <span>Phase 1.5 Checklist</span>
-          </button>
-          <button
-            onClick={() => setActiveTab("architecture")}
-            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-              activeTab === "architecture"
-                ? "bg-indigo-600 text-white shadow-sm"
-                : "text-slate-400 hover:text-white hover:bg-slate-900"
-            }`}
-          >
-            <Layers className="w-3.5 h-3.5" />
-            <span>Architecture Blueprint</span>
+            <span>Phase Checklist</span>
           </button>
         </div>
       </header>
 
-      {/* Main View */}
+      {/* View Switcher Output */}
+      {activeTab === "app" && (
+        <div className="flex-1 flex flex-col">
+          <ApplicationShell>
+            <Routes>
+              <Route path="/" element={<DashboardPage />} />
+              <Route path="/ai" element={<AIAssistantPage />} />
+              <Route path="/organizations" element={<OrganizationsPage />} />
+              <Route path="/workspaces" element={<WorkspacesPage />} />
+              <Route path="/clients" element={<ClientsPage />} />
+              <Route path="/projects" element={<ProjectsPage />} />
+              <Route path="/payments" element={<PaymentsPage />} />
+              <Route path="/applicants" element={<ApplicantsPage />} />
+              <Route path="/members" element={<MembersPage />} />
+              <Route path="/roles" element={<RolesPage />} />
+              <Route path="/audit" element={<AuditLogsPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </ApplicationShell>
+        </div>
+      )}
+
       {activeTab === "explorer" && (
         <div className="flex-1 flex overflow-hidden">
           <aside className="w-80 border-r border-slate-800 bg-slate-900/40 flex flex-col shrink-0">
@@ -568,8 +500,8 @@ export default function App() {
                 <CheckCircle2 className="w-6 h-6" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-white">Phase 1.5 Architecture Verification</h2>
-                <p className="text-xs text-slate-400">Refined monorepo structure completed with 0 errors</p>
+                <h2 className="text-lg font-bold text-white">Phase Verification & Integrity Checklist</h2>
+                <p className="text-xs text-slate-400">Multi-tenant architecture and DB schema verified with 0 errors</p>
               </div>
             </div>
 
@@ -579,9 +511,9 @@ export default function App() {
                   key={idx}
                   className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800 flex items-start space-x-3"
                 >
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="text-xs font-semibold text-slate-200">{item.title}</h3>
+                    <h4 className="text-xs font-semibold text-white">{item.title}</h4>
                     <p className="text-[11px] text-slate-400 mt-0.5">{item.desc}</p>
                   </div>
                 </div>
@@ -591,84 +523,28 @@ export default function App() {
         </div>
       )}
 
-      {activeTab === "architecture" && (
-        <div className="flex-1 p-8 max-w-5xl mx-auto w-full space-y-6 overflow-y-auto">
-          <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6">
-            <h2 className="text-lg font-bold text-white mb-1">ST-Solutions Platform Monorepo Architecture</h2>
-            <p className="text-xs text-slate-400 mb-6">Clean architecture & modular layout mapping</p>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-3">
-                <div className="flex items-center space-x-2 text-indigo-400 font-semibold text-sm">
-                  <Server className="w-4 h-4" />
-                  <span>apps/api/src</span>
-                </div>
-                <div className="text-xs text-slate-400 space-y-1 font-mono">
-                  <div>├── config/</div>
-                  <div>├── database/ (index, database, prisma)</div>
-                  <div>├── middlewares/</div>
-                  <div>├── modules/ (15 feature modules)</div>
-                  <div>├── services/</div>
-                  <div>├── shared/</div>
-                  <div>├── types/</div>
-                  <div>├── utils/</div>
-                  <div>├── app.ts (express, routes, error handlers)</div>
-                  <div>└── server.ts (HTTP process startup)</div>
-                </div>
-              </div>
-
-              <div className="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-3">
-                <div className="flex items-center space-x-2 text-indigo-400 font-semibold text-sm">
-                  <Globe className="w-4 h-4" />
-                  <span>apps/web/src</span>
-                </div>
-                <div className="text-xs text-slate-400 space-y-1 font-mono">
-                  <div>├── app/</div>
-                  <div>├── assets/</div>
-                  <div>├── components/</div>
-                  <div>├── features/</div>
-                  <div>├── hooks/</div>
-                  <div>├── layouts/</div>
-                  <div>├── pages/</div>
-                  <div>├── services/</div>
-                  <div>├── store/</div>
-                  <div>├── types/</div>
-                  <div>└── utils/</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-6 pt-6 border-t border-slate-800">
-              <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4">
-                Shared Monorepo Packages (\`packages/*\`)
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
-                <div className="p-3 bg-slate-950 border border-slate-800 rounded-lg">
-                  <div className="font-semibold text-indigo-300">packages/shared-types</div>
-                  <div className="text-slate-500 mt-1">user, role, permission, api, pagination, jwt</div>
-                </div>
-                <div className="p-3 bg-slate-950 border border-slate-800 rounded-lg">
-                  <div className="font-semibold text-indigo-300">packages/shared-config</div>
-                  <div className="text-slate-500 mt-1">constants, roles, permissions, routes, status</div>
-                </div>
-                <div className="p-3 bg-slate-950 border border-slate-800 rounded-lg">
-                  <div className="font-semibold text-indigo-300">packages/shared-utils</div>
-                  <div className="text-slate-500 mt-1">date, string, id, validation</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Footer */}
-      <footer className="border-t border-slate-800 bg-slate-900/40 px-6 py-2.5 text-xs text-slate-500 flex items-center justify-between">
-        <span>ST-Solutions Platform • Phase 1.5 Completed</span>
+      <footer className="border-t border-slate-800 bg-slate-900/40 px-6 py-2.5 text-xs text-slate-500 flex items-center justify-between shrink-0">
+        <span>ST-SOLUTIONS PLATFORM • Enterprise SaaS System</span>
         <span className="flex items-center gap-1.5 text-emerald-400 font-medium">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
           Build Status: Green (0 Errors)
         </span>
       </footer>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <BrowserRouter>
+            <AppContent />
+          </BrowserRouter>
+        </AuthProvider>
+      </ToastProvider>
+    </ThemeProvider>
   );
 }

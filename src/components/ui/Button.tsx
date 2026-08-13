@@ -1,0 +1,105 @@
+import React from "react";
+import { Loader2 } from "lucide-react";
+
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: "gold" | "dark" | "outline" | "ghost" | "danger";
+  size?: "sm" | "md" | "lg";
+  isLoading?: boolean;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  fullWidth?: boolean;
+}
+
+export const Button: React.FC<ButtonProps> = ({
+  children,
+  variant = "gold",
+  size = "md",
+  isLoading = false,
+  leftIcon,
+  rightIcon,
+  fullWidth = false,
+  className = "",
+  disabled,
+  ...props
+}) => {
+  const baseClasses =
+    "inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none rounded-lg";
+
+  const sizeClasses = {
+    sm: "px-3 py-1.5 text-xs gap-1.5",
+    md: "px-4 py-2 text-sm gap-2",
+    lg: "px-5 py-2.5 text-base gap-2.5",
+  };
+
+  const variantClasses = {
+    gold: "bg-gradient-to-r from-[#D4AF37] to-[#E5C158] hover:from-[#C59B27] hover:to-[#D4AF37] text-black font-semibold shadow-md hover:shadow-amber-500/20 focus:ring-[#D4AF37]",
+    dark: "bg-slate-900 dark:bg-slate-800 text-white hover:bg-slate-800 dark:hover:bg-slate-700 border border-slate-700/60 focus:ring-slate-500",
+    outline: "border border-[#D4AF37]/40 text-[#D4AF37] hover:bg-[#D4AF37]/10 dark:hover:bg-[#D4AF37]/15 focus:ring-[#D4AF37]",
+    ghost: "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-white focus:ring-slate-400",
+    danger: "bg-red-600 hover:bg-red-700 text-white font-semibold focus:ring-red-500 shadow-sm",
+  };
+
+  const widthClass = fullWidth ? "w-full" : "";
+
+  return (
+    <button
+      className={`${baseClasses} ${sizeClasses[size]} ${variantClasses[variant]} ${widthClass} ${className}`}
+      disabled={disabled || isLoading}
+      {...props}
+    >
+      {isLoading ? (
+        <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+      ) : (
+        leftIcon && <span className="shrink-0">{leftIcon}</span>
+      )}
+      <span>{children}</span>
+      {!isLoading && rightIcon && <span className="shrink-0">{rightIcon}</span>}
+    </button>
+  );
+};
+
+export interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: "gold" | "dark" | "outline" | "ghost" | "danger";
+  size?: "sm" | "md" | "lg";
+  isLoading?: boolean;
+  label: string;
+}
+
+export const IconButton: React.FC<IconButtonProps> = ({
+  children,
+  variant = "ghost",
+  size = "md",
+  isLoading = false,
+  label,
+  className = "",
+  disabled,
+  ...props
+}) => {
+  const sizeClasses = {
+    sm: "p-1.5 text-xs rounded-md",
+    md: "p-2 text-sm rounded-lg",
+    lg: "p-2.5 text-base rounded-xl",
+  };
+
+  return (
+    <button
+      aria-label={label}
+      title={label}
+      className={`inline-flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#D4AF37] disabled:opacity-50 disabled:cursor-not-allowed ${sizeClasses[size]} ${
+        variant === "gold"
+          ? "bg-[#D4AF37] text-black hover:bg-[#C59B27]"
+          : variant === "dark"
+          ? "bg-slate-900 dark:bg-slate-800 text-slate-200 hover:bg-slate-800"
+          : variant === "outline"
+          ? "border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+          : variant === "danger"
+          ? "bg-red-600/10 text-red-500 hover:bg-red-600/20"
+          : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
+      } ${className}`}
+      disabled={disabled || isLoading}
+      {...props}
+    >
+      {isLoading ? <Loader2 className="w-4 h-4 animate-spin shrink-0" /> : children}
+    </button>
+  );
+};
