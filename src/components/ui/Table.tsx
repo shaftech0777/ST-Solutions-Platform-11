@@ -2,14 +2,43 @@ import React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export interface TableProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  headers?: React.ReactNode[];
+  rows?: React.ReactNode[][];
   className?: string;
 }
 
-export const Table: React.FC<TableProps> = ({ children, className = "" }) => {
+export const Table: React.FC<TableProps> = ({ children, headers, rows, className = "" }) => {
   return (
     <div className="w-full overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-sm scrollbar-thin">
-      <table className={`w-full text-left text-xs border-collapse ${className}`}>{children}</table>
+      <table className={`w-full text-left text-xs border-collapse ${className}`}>
+        {children ? (
+          children
+        ) : (
+          <>
+            {headers && (
+              <TableHeader>
+                <TableRow>
+                  {headers.map((h, i) => (
+                    <TableHead key={i}>{h}</TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+            )}
+            {rows && (
+              <tbody>
+                {rows.map((row, rIdx) => (
+                  <TableRow key={rIdx}>
+                    {row.map((cell, cIdx) => (
+                      <TableCell key={cIdx}>{cell}</TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </tbody>
+            )}
+          </>
+        )}
+      </table>
     </div>
   );
 };

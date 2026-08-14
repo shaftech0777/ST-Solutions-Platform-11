@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { FolderKanban, Plus, Search, Calendar, DollarSign, Filter, CheckCircle2 } from "lucide-react";
+import { FolderKanban, Plus, Search, Calendar, DollarSign, Filter, CheckCircle2, Trash2 } from "lucide-react";
 import { PageHeader } from "../components/shell/PageHeader.js";
 import { Table, TableHeader, TableRow, TableHead, TableCell, Pagination } from "../components/ui/Table.js";
 import { Button, IconButton } from "../components/ui/Button.js";
 import { Badge } from "../components/ui/Badge.js";
-import { Modal } from "../components/ui/Modal.js";
+import { Modal, ConfirmModal } from "../components/ui/Modal.js";
 import { Input, Textarea } from "../components/ui/Input.js";
 import { Select } from "../components/ui/Select.js";
 import { EmptyState, ErrorState } from "../components/ui/EmptyState.js";
@@ -28,6 +28,8 @@ export const ProjectsPage: React.FC = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState<{ id: string; title: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [formData, setFormData] = useState({
     clientId: "",
@@ -113,6 +115,21 @@ export const ProjectsPage: React.FC = () => {
       loadData();
     } catch (err: any) {
       addToast({ type: "danger", title: "Update Failed", message: err.message || "Failed to update project status" });
+    }
+  };
+
+  const confirmDeleteProject = async () => {
+    if (!projectToDelete) return;
+    setIsDeleting(true);
+    try {
+      await projectsService.delete(projectToDelete.id);
+      addToast({ type: "info", title: "Project Deleted", message: `Project "${projectToDelete.title}" removed` });
+      setProjectToDelete(null);
+      loadData();
+    } catch (err: any) {
+      addToast({ type: "danger", title: "Deletion Failed", message: err.message || "Failed to delete project" });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -220,17 +237,27 @@ export const ProjectsPage: React.FC = () => {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <select
-                      value={p.projectStatus}
-                      onChange={(e) => handleUpdateStatus(p.id, e.target.value as ProjectStatus)}
-                      className="text-xs bg-slate-900 text-slate-200 border border-slate-800 rounded-lg p-1.5 focus:outline-none focus:ring-1 focus:ring-[#D4AF37]"
-                    >
-                      <option value="PLANNING">PLANNING</option>
-                      <option value="IN_PROGRESS">IN_PROGRESS</option>
-                      <option value="COMPLETED">COMPLETED</option>
-                      <option value="ON_HOLD">ON_HOLD</option>
-                      <option value="CANCELLED">CANCELLED</option>
-                    </select>
+                    <div className="flex items-center justify-end gap-2">
+                      <select
+                        value={p.projectStatus}
+                        onChange={(e) => handleUpdateStatus(p.id, e.target.value as ProjectStatus)}
+                        className="text-xs bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-200 border border-slate-200 dark:border-slate-800 rounded-lg p-1.5 focus:outline-none focus:ring-1 focus:ring-[#D4AF37]"
+                      >
+                        <option value="PLANNING">PLANNING</option>
+                        <option value="IN_PROGRESS">IN_PROGRESS</option>
+                        <option value="COMPLETED">COMPLETED</option>
+                        <option value="ON_HOLD">ON_HOLD</option>
+                        <option value="CANCELLED">CANCELLED</option>
+                      </select>
+                      <IconButton
+                        label="Delete project"
+                        variant="danger"
+                        size="sm"
+                        onClick={() => setProjectToDelete({ id: p.id, title: p.title })}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </IconButton>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -245,6 +272,18 @@ export const ProjectsPage: React.FC = () => {
           />
         </div>
       )}
+
+      {/* Confirm Delete Project Modal */}
+      <ConfirmModal
+        isOpen={!!projectToDelete}
+        onClose={() => setProjectToDelete(null)}
+        onConfirm={confirmDeleteProject}
+        isLoading={isDeleting}
+        title="Delete Project"
+        message={`Are you sure you want to delete "${projectToDelete?.title}"? All deliverables and milestones associated with this project will be deleted.`}
+        confirmLabel="Delete Project"
+        variant="danger"
+      />
 
       {/* Modal for Create Project */}
       <Modal

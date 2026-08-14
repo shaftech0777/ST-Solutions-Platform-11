@@ -2,10 +2,13 @@ import React from "react";
 import { LucideIcon } from "lucide-react";
 
 export interface CardProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
   onClick?: () => void;
   hoverable?: boolean;
+  title?: string;
+  description?: string;
+  headerAction?: React.ReactNode;
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -13,6 +16,9 @@ export const Card: React.FC<CardProps> = ({
   className = "",
   onClick,
   hoverable = false,
+  title,
+  description,
+  headerAction,
 }) => {
   return (
     <div
@@ -23,6 +29,23 @@ export const Card: React.FC<CardProps> = ({
           : ""
       } ${className}`}
     >
+      {(title || headerAction) && (
+        <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100 dark:border-slate-800/60">
+          <div>
+            {title && (
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight uppercase font-mono">
+                {title}
+              </h3>
+            )}
+            {description && (
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                {description}
+              </p>
+            )}
+          </div>
+          {headerAction && <div>{headerAction}</div>}
+        </div>
+      )}
       {children}
     </div>
   );

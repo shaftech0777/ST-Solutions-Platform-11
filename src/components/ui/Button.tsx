@@ -2,7 +2,7 @@ import React from "react";
 import { Loader2 } from "lucide-react";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "gold" | "dark" | "outline" | "ghost" | "danger";
+  variant?: "gold" | "dark" | "outline" | "ghost" | "danger" | "primary" | "secondary";
   size?: "sm" | "md" | "lg";
   isLoading?: boolean;
   leftIcon?: React.ReactNode;
@@ -33,7 +33,9 @@ export const Button: React.FC<ButtonProps> = ({
 
   const variantClasses = {
     gold: "bg-gradient-to-r from-[#D4AF37] to-[#E5C158] hover:from-[#C59B27] hover:to-[#D4AF37] text-black font-semibold shadow-md hover:shadow-amber-500/20 focus:ring-[#D4AF37]",
+    primary: "bg-gradient-to-r from-[#D4AF37] to-[#E5C158] hover:from-[#C59B27] hover:to-[#D4AF37] text-black font-semibold shadow-md hover:shadow-amber-500/20 focus:ring-[#D4AF37]",
     dark: "bg-slate-900 dark:bg-slate-800 text-white hover:bg-slate-800 dark:hover:bg-slate-700 border border-slate-700/60 focus:ring-slate-500",
+    secondary: "bg-slate-900 dark:bg-slate-800 text-white hover:bg-slate-800 dark:hover:bg-slate-700 border border-slate-700/60 focus:ring-slate-500",
     outline: "border border-[#D4AF37]/40 text-[#D4AF37] hover:bg-[#D4AF37]/10 dark:hover:bg-[#D4AF37]/15 focus:ring-[#D4AF37]",
     ghost: "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-white focus:ring-slate-400",
     danger: "bg-red-600 hover:bg-red-700 text-white font-semibold focus:ring-red-500 shadow-sm",

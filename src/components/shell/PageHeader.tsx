@@ -43,9 +43,13 @@ export interface PageHeaderProps {
   title: string;
   description?: string;
   actions?: React.ReactNode;
+  action?: React.ReactNode;
+  children?: React.ReactNode;
 }
 
-export const PageHeader: React.FC<PageHeaderProps> = ({ title, description, actions }) => {
+export const PageHeader: React.FC<PageHeaderProps> = ({ title, description, actions, action, children }) => {
+  const actionElements = actions || action || children;
+
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
       <div>
@@ -58,7 +62,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({ title, description, acti
           </p>
         )}
       </div>
-      {actions && <div className="flex items-center gap-2.5 shrink-0">{actions}</div>}
+      {actionElements && <div className="flex items-center gap-2.5 shrink-0">{actionElements}</div>}
     </div>
   );
 };

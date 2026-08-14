@@ -142,3 +142,62 @@ export const Drawer: React.FC<DrawerProps> = ({
     </div>
   );
 };
+
+export interface ConfirmModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  title: string;
+  message: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  variant?: "danger" | "warning" | "primary" | "gold";
+  isLoading?: boolean;
+}
+
+export const ConfirmModal: React.FC<ConfirmModalProps> = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  title,
+  message,
+  confirmLabel = "Confirm",
+  cancelLabel = "Cancel",
+  variant = "danger",
+  isLoading = false,
+}) => {
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={title}
+      maxWidth="sm"
+      footer={
+        <>
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={isLoading}
+            className="px-3.5 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+          >
+            {cancelLabel}
+          </button>
+          <button
+            type="button"
+            disabled={isLoading}
+            onClick={onConfirm}
+            className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg shadow-sm transition-all ${
+              variant === "danger"
+                ? "bg-red-600 hover:bg-red-700 text-white"
+                : "bg-[#D4AF37] hover:bg-[#C59B27] text-black"
+            }`}
+          >
+            {isLoading ? "Processing..." : confirmLabel}
+          </button>
+        </>
+      }
+    >
+      <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">{message}</p>
+    </Modal>
+  );
+};

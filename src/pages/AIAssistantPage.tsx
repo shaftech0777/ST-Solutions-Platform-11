@@ -123,26 +123,26 @@ export const AIAssistantPage: React.FC = () => {
       {/* Main Chat Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Chat Stream Window */}
-        <div className="lg:col-span-3 flex flex-col bg-slate-900/60 border border-slate-800 rounded-2xl h-[620px] overflow-hidden">
+        <div className="lg:col-span-3 flex flex-col bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl h-[620px] overflow-hidden shadow-sm">
           {/* Top Assistant Header */}
-          <div className="px-6 py-4 border-b border-slate-800 bg-slate-950/60 flex items-center justify-between">
+          <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="p-2.5 rounded-xl bg-gradient-to-br from-[#D4AF37] to-[#B88E20] text-black font-bold shadow-lg shadow-amber-500/10">
                 <Bot className="w-5 h-5" />
               </div>
               <div>
                 <div className="flex items-center space-x-2">
-                  <h3 className="font-semibold text-white text-sm">Shaf Tech AI Model v2.4</h3>
+                  <h3 className="font-semibold text-slate-900 dark:text-white text-sm">Shaf Tech AI Model v2.4</h3>
                   <Badge variant="gold">Gemini Engine</Badge>
                 </div>
-                <p className="text-xs text-slate-400 font-mono">
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">
                   Tenant Scoped: {currentOrganization?.name || "All Organizations"}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center space-x-2 text-xs text-emerald-400 font-mono">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <div className="flex items-center space-x-2 text-xs text-emerald-600 dark:text-emerald-400 font-mono">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse"></span>
               <span>Online & Ready</span>
             </div>
           </div>
@@ -169,14 +169,14 @@ export const AIAssistantPage: React.FC = () => {
                 <div
                   className={`max-w-xl p-4 rounded-2xl text-xs sm:text-sm leading-relaxed whitespace-pre-wrap ${
                     msg.sender === "user"
-                      ? "bg-indigo-600/90 text-white rounded-tr-none"
-                      : "bg-slate-950 border border-slate-800 text-slate-200 rounded-tl-none shadow-md"
+                      ? "bg-indigo-600 text-white rounded-tr-none shadow-sm"
+                      : "bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 rounded-tl-none shadow-sm"
                   }`}
                 >
                   {msg.text}
                   <div
                     className={`mt-2 text-[10px] font-mono ${
-                      msg.sender === "user" ? "text-indigo-200 text-right" : "text-slate-500"
+                      msg.sender === "user" ? "text-indigo-200 text-right" : "text-slate-400 dark:text-slate-500"
                     }`}
                   >
                     {msg.timestamp}
@@ -186,11 +186,11 @@ export const AIAssistantPage: React.FC = () => {
             ))}
 
             {isLoading && (
-              <div className="flex items-center space-x-3 text-slate-400 text-xs font-mono">
+              <div className="flex items-center space-x-3 text-slate-500 dark:text-slate-400 text-xs font-mono">
                 <div className="w-8 h-8 rounded-xl bg-[#D4AF37]/20 border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37]">
                   <Cpu className="w-4 h-4 animate-spin" />
                 </div>
-                <div className="flex items-center space-x-2 bg-slate-950 p-3 rounded-xl border border-slate-800">
+                <div className="flex items-center space-x-2 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
                   <LoadingSpinner size="sm" />
                   <span>Processing query with Gemini telemetry...</span>
                 </div>
@@ -199,7 +199,7 @@ export const AIAssistantPage: React.FC = () => {
           </div>
 
           {/* Chat Input Bar */}
-          <div className="p-4 border-t border-slate-800 bg-slate-950/80">
+          <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/80">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -212,7 +212,7 @@ export const AIAssistantPage: React.FC = () => {
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 disabled={isLoading}
-                className="flex-1 bg-slate-900 border-slate-800 focus:border-[#D4AF37]"
+                className="flex-1 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 focus:border-[#D4AF37]"
               />
               <Button
                 type="submit"
@@ -238,16 +238,16 @@ export const AIAssistantPage: React.FC = () => {
                     key={idx}
                     onClick={() => handleSendMessage(item.text)}
                     disabled={isLoading}
-                    className="w-full text-left p-3 rounded-xl bg-slate-950 border border-slate-800/80 hover:border-[#D4AF37]/50 hover:bg-slate-900 transition-all text-xs space-y-1.5 group"
+                    className="w-full text-left p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80 hover:border-[#D4AF37]/50 hover:bg-slate-100 dark:hover:bg-slate-900 transition-all text-xs space-y-1.5 group"
                   >
-                    <div className="flex items-center justify-between text-slate-200 group-hover:text-[#D4AF37] font-semibold">
+                    <div className="flex items-center justify-between text-slate-800 dark:text-slate-200 group-hover:text-[#D4AF37] font-semibold">
                       <span className="flex items-center space-x-2">
                         <IconComp className="w-3.5 h-3.5 text-[#D4AF37]" />
                         <span>{item.label}</span>
                       </span>
-                      <Sparkles className="w-3 h-3 text-slate-600 group-hover:text-[#D4AF37]" />
+                      <Sparkles className="w-3 h-3 text-slate-400 dark:text-slate-600 group-hover:text-[#D4AF37]" />
                     </div>
-                    <p className="text-[11px] text-slate-400 line-clamp-2">{item.text}</p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2">{item.text}</p>
                   </button>
                 );
               })}
@@ -255,22 +255,22 @@ export const AIAssistantPage: React.FC = () => {
           </Card>
 
           <Card title="AI Telemetry Info">
-            <div className="space-y-3 text-xs text-slate-400 font-mono">
-              <div className="flex justify-between py-1 border-b border-slate-800/60">
+            <div className="space-y-3 text-xs text-slate-500 dark:text-slate-400 font-mono">
+              <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800/60">
                 <span>Model Engine:</span>
-                <span className="text-white font-semibold">Gemini 2.5 Flash</span>
+                <span className="text-slate-900 dark:text-white font-semibold">Gemini 2.5 Flash</span>
               </div>
-              <div className="flex justify-between py-1 border-b border-slate-800/60">
+              <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800/60">
                 <span>Latency Avg:</span>
-                <span className="text-emerald-400 font-semibold">142ms</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-semibold">142ms</span>
               </div>
-              <div className="flex justify-between py-1 border-b border-slate-800/60">
+              <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800/60">
                 <span>Context Window:</span>
-                <span className="text-amber-400 font-semibold">1M Tokens</span>
+                <span className="text-amber-600 dark:text-amber-400 font-semibold">1M Tokens</span>
               </div>
               <div className="flex justify-between py-1">
                 <span>Tenant Privacy:</span>
-                <span className="text-indigo-400 font-semibold">Isolated</span>
+                <span className="text-indigo-600 dark:text-indigo-400 font-semibold">Isolated</span>
               </div>
             </div>
           </Card>

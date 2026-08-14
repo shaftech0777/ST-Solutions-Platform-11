@@ -193,7 +193,7 @@ export const ApplicantsPage: React.FC = () => {
                     <select
                       value={a.status}
                       onChange={(e) => handleUpdateStatus(a.id, e.target.value as ApplicantStatus)}
-                      className="text-xs bg-slate-900 text-slate-200 border border-slate-800 rounded-lg p-1.5 focus:outline-none focus:ring-1 focus:ring-[#D4AF37]"
+                      className="text-xs bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-200 border border-slate-200 dark:border-slate-800 rounded-lg p-1.5 focus:outline-none focus:ring-1 focus:ring-[#D4AF37]"
                     >
                       <option value="NEW">NEW</option>
                       <option value="SCREENING">SCREENING</option>

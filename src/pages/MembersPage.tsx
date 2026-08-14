@@ -4,7 +4,7 @@ import { PageHeader } from "../components/shell/PageHeader.js";
 import { Table, TableHeader, TableRow, TableHead, TableCell } from "../components/ui/Table.js";
 import { Button, IconButton } from "../components/ui/Button.js";
 import { Badge, Avatar } from "../components/ui/Badge.js";
-import { Modal } from "../components/ui/Modal.js";
+import { Modal, ConfirmModal } from "../components/ui/Modal.js";
 import { Input } from "../components/ui/Input.js";
 import { Select } from "../components/ui/Select.js";
 import { EmptyState, ErrorState } from "../components/ui/EmptyState.js";
@@ -25,6 +25,9 @@ export const MembersPage: React.FC = () => {
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState("MEMBER");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [memberToRemove, setMemberToRemove] = useState<{ id: string; email: string } | null>(null);
+  const [isRemoving, setIsRemoving] = useState(false);
 
   const loadMembers = async () => {
     if (!currentOrganization) return;
@@ -84,16 +87,18 @@ export const MembersPage: React.FC = () => {
     }
   };
 
-  const handleRemoveMember = async (userId: string, email: string) => {
-    if (!currentOrganization) return;
-    if (!window.confirm(`Remove member ${email} from organization?`)) return;
-
+  const confirmRemoveMember = async () => {
+    if (!currentOrganization || !memberToRemove) return;
+    setIsRemoving(true);
     try {
-      await organizationsService.removeMember(currentOrganization.id, userId);
+      await organizationsService.removeMember(currentOrganization.id, memberToRemove.id);
       addToast({ type: "info", title: "Member Removed", message: `Member removed from ${currentOrganization.name}` });
+      setMemberToRemove(null);
       loadMembers();
     } catch (err: any) {
       addToast({ type: "danger", title: "Removal Failed", message: err.message || "Failed to remove member" });
+    } finally {
+      setIsRemoving(false);
     }
   };
 
@@ -158,7 +163,7 @@ export const MembersPage: React.FC = () => {
                       disabled={isSelf}
                       value={m.role || "MEMBER"}
                       onChange={(e) => handleRoleChange(u.id, e.target.value)}
-                      className="text-xs bg-slate-900 text-slate-200 border border-slate-800 rounded-lg p-1.5 focus:outline-none focus:ring-1 focus:ring-[#D4AF37] disabled:opacity-50"
+                      className="text-xs bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-200 border border-slate-200 dark:border-slate-800 rounded-lg p-1.5 focus:outline-none focus:ring-1 focus:ring-[#D4AF37] disabled:opacity-50"
                     >
                       <option value="OWNER">OWNER</option>
                       <option value="ADMIN">ADMIN</option>
@@ -175,7 +180,7 @@ export const MembersPage: React.FC = () => {
                         label="Remove member"
                         variant="danger"
                         size="sm"
-                        onClick={() => handleRemoveMember(u.id, u.email)}
+                        onClick={() => setMemberToRemove({ id: u.id, email: u.email })}
                       >
                         <Trash2 className="w-4 h-4" />
                       </IconButton>
@@ -187,6 +192,18 @@ export const MembersPage: React.FC = () => {
           </tbody>
         </Table>
       )}
+
+      {/* Confirmation Modal for Member Removal */}
+      <ConfirmModal
+        isOpen={!!memberToRemove}
+        onClose={() => setMemberToRemove(null)}
+        onConfirm={confirmRemoveMember}
+        isLoading={isRemoving}
+        title="Remove Organization Member"
+        message={`Are you sure you want to remove ${memberToRemove?.email} from ${currentOrganization?.name}? Their access to workspaces and projects under this organization will be revoked.`}
+        confirmLabel="Remove Member"
+        variant="danger"
+      />
 
       {/* Invite Member Modal */}
       <Modal

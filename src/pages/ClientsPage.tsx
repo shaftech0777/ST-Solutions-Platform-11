@@ -4,7 +4,7 @@ import { PageHeader } from "../components/shell/PageHeader.js";
 import { Table, TableHeader, TableRow, TableHead, TableCell, Pagination } from "../components/ui/Table.js";
 import { Button, IconButton } from "../components/ui/Button.js";
 import { Badge } from "../components/ui/Badge.js";
-import { Modal } from "../components/ui/Modal.js";
+import { Modal, ConfirmModal } from "../components/ui/Modal.js";
 import { Input } from "../components/ui/Input.js";
 import { EmptyState, ErrorState } from "../components/ui/EmptyState.js";
 import { LoadingSpinner } from "../components/ui/LoadingSpinner.js";
@@ -24,6 +24,8 @@ export const ClientsPage: React.FC = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [clientToDelete, setClientToDelete] = useState<{ id: string; name: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -69,14 +71,18 @@ export const ClientsPage: React.FC = () => {
     }
   };
 
-  const handleDeleteClient = async (id: string, name: string) => {
-    if (!window.confirm(`Delete client "${name}"?`)) return;
+  const confirmDeleteClient = async () => {
+    if (!clientToDelete) return;
+    setIsDeleting(true);
     try {
-      await clientsService.delete(id);
+      await clientsService.delete(clientToDelete.id);
       addToast({ type: "info", title: "Client Deleted", message: `Client removed from directory` });
+      setClientToDelete(null);
       loadClients();
     } catch (err: any) {
       addToast({ type: "danger", title: "Deletion Failed", message: err.message || "Failed to delete client" });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -145,7 +151,7 @@ export const ClientsPage: React.FC = () => {
                       label="Delete client"
                       variant="danger"
                       size="sm"
-                      onClick={() => handleDeleteClient(c.id, c.name)}
+                      onClick={() => setClientToDelete({ id: c.id, name: c.name })}
                     >
                       <Trash2 className="w-4 h-4" />
                     </IconButton>
@@ -163,6 +169,18 @@ export const ClientsPage: React.FC = () => {
           />
         </div>
       )}
+
+      {/* Confirmation Modal for Delete Client */}
+      <ConfirmModal
+        isOpen={!!clientToDelete}
+        onClose={() => setClientToDelete(null)}
+        onConfirm={confirmDeleteClient}
+        isLoading={isDeleting}
+        title="Delete Enterprise Client"
+        message={`Are you sure you want to delete client "${clientToDelete?.name}"? All associated projects and invoices will be permanently affected.`}
+        confirmLabel="Delete Client"
+        variant="danger"
+      />
 
       {/* Modal for Add Client */}
       <Modal

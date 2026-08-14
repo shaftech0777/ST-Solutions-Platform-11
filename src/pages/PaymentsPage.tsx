@@ -203,7 +203,7 @@ export const PaymentsPage: React.FC = () => {
                     <select
                       value={p.paymentStatus}
                       onChange={(e) => handleUpdateStatus(p.id, e.target.value as PaymentStatus)}
-                      className="text-xs bg-slate-900 text-slate-200 border border-slate-800 rounded-lg p-1.5 focus:outline-none focus:ring-1 focus:ring-[#D4AF37]"
+                      className="text-xs bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-200 border border-slate-200 dark:border-slate-800 rounded-lg p-1.5 focus:outline-none focus:ring-1 focus:ring-[#D4AF37]"
                     >
                       <option value="PENDING">PENDING</option>
                       <option value="COMPLETED">COMPLETED</option>
