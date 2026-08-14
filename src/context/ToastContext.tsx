@@ -12,6 +12,7 @@ export interface ToastMessage {
 
 interface ToastContextType {
   addToast: (toast: Omit<ToastMessage, "id">) => void;
+  showToast: (title: string, type?: ToastType, message?: string) => void;
   removeToast: (id: string) => void;
 }
 
@@ -37,8 +38,15 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     [removeToast]
   );
 
+  const showToast = useCallback(
+    (title: string, type: ToastType = "info", message?: string) => {
+      addToast({ title, type, message });
+    },
+    [addToast]
+  );
+
   return (
-    <ToastContext.Provider value={{ addToast, removeToast }}>
+    <ToastContext.Provider value={{ addToast, showToast, removeToast }}>
       {children}
       {/* Toast Render Overlay */}
       <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0">

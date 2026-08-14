@@ -10,7 +10,7 @@ export const ApplicationShell: React.FC<{ children: React.ReactNode }> = ({ chil
   const [isCommandSearchOpen, setIsCommandSearchOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-100 dark:bg-[#090A0F] text-slate-900 dark:text-slate-100 font-sans antialiased transition-colors duration-200">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#090A0F] text-slate-900 dark:text-slate-100 font-sans antialiased transition-colors duration-200 overflow-x-hidden">
       {/* Desktop Sidebar */}
       <div className="hidden lg:block">
         <Sidebar
@@ -25,7 +25,9 @@ export const ApplicationShell: React.FC<{ children: React.ReactNode }> = ({ chil
         onClose={() => setIsMobileSidebarOpen(false)}
         title="ST-SOLUTIONS"
       >
-        <Sidebar isCollapsed={false} onToggleCollapse={() => setIsMobileSidebarOpen(false)} />
+        <div onClick={() => setIsMobileSidebarOpen(false)}>
+          <Sidebar isCollapsed={false} onToggleCollapse={() => setIsMobileSidebarOpen(false)} />
+        </div>
       </Drawer>
 
       {/* Main App Layout Container */}
@@ -39,7 +41,7 @@ export const ApplicationShell: React.FC<{ children: React.ReactNode }> = ({ chil
           onOpenCommandSearch={() => setIsCommandSearchOpen(true)}
         />
 
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
+        <main className="flex-1 p-3 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
           {children}
         </main>
       </div>
@@ -52,3 +54,4 @@ export const ApplicationShell: React.FC<{ children: React.ReactNode }> = ({ chil
     </div>
   );
 };
+
