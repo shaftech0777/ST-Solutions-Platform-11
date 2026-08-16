@@ -88,13 +88,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     try {
       const meRes = await authService.getMe();
-      if (meRes.success && meRes.data?.user) {
-        setCurrentUser(meRes.data.user);
+      const rawData = meRes.data as any;
+      const user = rawData?.user || (rawData?.id ? rawData : null);
+
+      if (meRes.success && user) {
+        setCurrentUser(user);
         
         // Extract permissions array
-        const userPerms = meRes.data.permissions || [];
-        if (meRes.data.user.role?.permissions) {
-          const rolePerms = meRes.data.user.role.permissions.map((p) => p.permission.name);
+        const userPerms = rawData?.permissions || user.permissions || [];
+        if (user.role?.permissions && Array.isArray(user.role.permissions)) {
+          const rolePerms = user.role.permissions.map((p: any) => p.permission?.name || p.name || String(p));
           setPermissions(Array.from(new Set([...userPerms, ...rolePerms])));
         } else {
           setPermissions(userPerms);

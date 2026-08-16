@@ -67,59 +67,73 @@ export const OrganizationsPage: React.FC = () => {
         }
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {organizations.map((org) => {
-          const isCurrent = org.id === currentOrganization?.id;
-          return (
-            <Card
-              key={org.id}
-              className={`flex flex-col justify-between p-6 relative overflow-hidden transition-all ${
-                isCurrent ? "border-[#D4AF37] bg-slate-900/90 ring-1 ring-[#D4AF37]/30" : "hover:border-slate-700"
-              }`}
-            >
-              <div className="space-y-3">
-                <div className="flex items-start justify-between">
-                  <div className="w-10 h-10 rounded-2xl bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/30 font-bold flex items-center justify-center text-base shrink-0">
-                    {org.name[0]}
+      {error && <ErrorState message={error} onRetry={refreshUser} />}
+
+      {isLoading ? (
+        <LoadingSpinner text="Loading organizations..." />
+      ) : organizations.length === 0 ? (
+        <EmptyState
+          title="No Organizations Found"
+          description="Create your first organization to establish tenant context, invite team members, and configure workspaces."
+          actionLabel="Create Organization"
+          onAction={() => setIsModalOpen(true)}
+          icon={<Building2 className="w-8 h-8" />}
+        />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {organizations.map((org) => {
+            const isCurrent = org.id === currentOrganization?.id;
+            return (
+              <Card
+                key={org.id}
+                className={`flex flex-col justify-between p-6 relative overflow-hidden transition-all ${
+                  isCurrent ? "border-[#D4AF37] bg-slate-900/90 ring-1 ring-[#D4AF37]/30" : "hover:border-slate-700"
+                }`}
+              >
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div className="w-10 h-10 rounded-2xl bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/30 font-bold flex items-center justify-center text-base shrink-0">
+                      {org.name[0]}
+                    </div>
+                    {isCurrent && (
+                      <Badge variant="gold" dot>
+                        Active Context
+                      </Badge>
+                    )}
                   </div>
-                  {isCurrent && (
-                    <Badge variant="gold" dot>
-                      Active Context
-                    </Badge>
+
+                  <div>
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">{org.name}</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
+                      Slug: {org.slug || "N/A"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                  <span className="text-[11px] font-mono text-slate-400">
+                    Role: <strong className="text-white">{org.role || "MEMBER"}</strong>
+                  </span>
+
+                  {!isCurrent ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => switchOrganization(org.id)}
+                    >
+                      Switch Context
+                    </Button>
+                  ) : (
+                    <span className="text-xs font-semibold text-[#D4AF37] flex items-center gap-1">
+                      <Check className="w-4 h-4" /> Selected
+                    </span>
                   )}
                 </div>
-
-                <div>
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">{org.name}</h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-                    Slug: {org.slug || "N/A"}
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
-                <span className="text-[11px] font-mono text-slate-400">
-                  Role: <strong className="text-white">{org.role || "MEMBER"}</strong>
-                </span>
-
-                {!isCurrent ? (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => switchOrganization(org.id)}
-                  >
-                    Switch Context
-                  </Button>
-                ) : (
-                  <span className="text-xs font-semibold text-[#D4AF37] flex items-center gap-1">
-                    <Check className="w-4 h-4" /> Selected
-                  </span>
-                )}
-              </div>
-            </Card>
-          );
-        })}
-      </div>
+              </Card>
+            );
+          })}
+        </div>
+      )}
 
       {/* Modal for Creating Organization */}
       <Modal

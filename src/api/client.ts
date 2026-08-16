@@ -180,10 +180,18 @@ export async function apiClient<T = any>(
       }
     }
 
-    const data = await response.json();
+    const text = await response.text();
+    let data: any = {};
+    if (text && text.trim().length > 0) {
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = { message: text };
+      }
+    }
 
     if (!response.ok) {
-      const errorMessage = data.error || data.message || `HTTP error ${response.status}`;
+      const errorMessage = data?.error || data?.message || `HTTP error ${response.status}`;
       throw new ApiError(errorMessage, response.status, data);
     }
 

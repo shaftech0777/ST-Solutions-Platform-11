@@ -73,6 +73,11 @@ model User {
   createdPlatformVersions   PlatformVersion[]   @relation("CreatedPlatformVersions")
   performedMaintenanceLogs  MaintenanceLog[]    @relation("PerformedMaintenanceLogs")
 
+  ownedOrganizations      Organization[]       @relation("OwnedOrganizations")
+  organizationMemberships OrganizationMember[] @relation("UserOrganizationMemberships")
+  workspaceMemberships    WorkspaceMember[]    @relation("UserWorkspaceMemberships")
+  sentInvitations         Invitation[]         @relation("SentInvitations")
+
   @@index([email])
   @@index([status])
   @@index([accountType])
@@ -278,15 +283,21 @@ model Session {
 }
 
 model AuditLog {
-  id          String   @id @default(uuid())
-  userId      String?
-  action      String
-  description String?
-  ipAddress   String?
-  createdAt   DateTime @default(now())
+  id             String   @id @default(uuid())
+  organizationId String?
+  workspaceId    String?
+  userId         String?
+  action         String
+  description    String?
+  ipAddress      String?
+  createdAt      DateTime @default(now())
 
-  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  workspace    Workspace?    @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  user         User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
 
+  @@index([organizationId])
+  @@index([workspaceId])
   @@index([userId])
   @@index([action])
   @@index([createdAt])
@@ -320,6 +331,8 @@ enum PaymentStatus {
 
 model Client {
   id                  String       @id @default(uuid())
+  organizationId      String?
+  workspaceId         String?
   userId              String?      @unique
   companyName         String?
   fullName            String
@@ -336,12 +349,16 @@ model Client {
   createdAt           DateTime     @default(now())
   updatedAt           DateTime     @updatedAt
 
+  organization      Organization?      @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  workspace         Workspace?         @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
   user              User?              @relation("ClientAccount", fields: [userId], references: [id], onDelete: SetNull)
   projects          Project[]
   payments          Payment[]
   ownership         ClientOwnership?
   communicationLogs CommunicationLog[] @relation("ClientCommunicationLogs")
 
+  @@index([organizationId])
+  @@index([workspaceId])
   @@index([email])
   @@index([phoneNumber])
   @@index([clientStatus])
@@ -349,6 +366,8 @@ model Client {
 
 model Project {
   id                     String        @id @default(uuid())
+  organizationId         String?
+  workspaceId            String?
   clientId               String
   createdById            String
   assignedManagerId      String?
@@ -364,13 +383,17 @@ model Project {
   createdAt              DateTime      @default(now())
   updatedAt              DateTime      @updatedAt
 
-  client    Client          @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  createdBy User            @relation("CreatedProjects", fields: [createdById], references: [id], onDelete: Restrict)
-  manager   User?           @relation("ManagedProjects", fields: [assignedManagerId], references: [id], onDelete: SetNull)
-  member    User?           @relation("AssignedProjects", fields: [assignedMemberId], references: [id], onDelete: SetNull)
-  updates   ProjectUpdate[]
-  payments  Payment[]
+  organization Organization?   @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  workspace    Workspace?      @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  client       Client          @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  createdBy    User            @relation("CreatedProjects", fields: [createdById], references: [id], onDelete: Restrict)
+  manager      User?           @relation("ManagedProjects", fields: [assignedManagerId], references: [id], onDelete: SetNull)
+  member       User?           @relation("AssignedProjects", fields: [assignedMemberId], references: [id], onDelete: SetNull)
+  updates      ProjectUpdate[]
+  payments     Payment[]
 
+  @@index([organizationId])
+  @@index([workspaceId])
   @@index([clientId])
   @@index([projectStatus])
   @@index([createdAt])
@@ -1503,3 +1526,128 @@ model MaintenanceLog {
   @@index([performedById])
   @@index([createdAt])
 }
+
+// ====================================================
+// PHASE 13: MULTI-TENANCY & WORKSPACES
+// ====================================================
+
+enum OrganizationStatus {
+  ACTIVE
+  SUSPENDED
+  ARCHIVED
+}
+
+enum OrganizationRole {
+  OWNER
+  ADMIN
+  MEMBER
+  GUEST
+}
+
+enum WorkspaceRole {
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
+model Organization {
+  id          String             @id @default(uuid())
+  name        String
+  slug        String             @unique
+  description String?
+  status      OrganizationStatus @default(ACTIVE)
+  ownerId     String
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  owner       User                 @relation("OwnedOrganizations", fields: [ownerId], references: [id], onDelete: Restrict)
+  members     OrganizationMember[]
+  workspaces  Workspace[]
+  invitations Invitation[]
+  auditLogs   AuditLog[]
+  clients     Client[]
+  projects    Project[]
+
+  @@index([ownerId])
+  @@index([status])
+  @@index([slug])
+}
+
+model OrganizationMember {
+  id             String           @id @default(uuid())
+  organizationId String
+  userId         String
+  role           OrganizationRole @default(MEMBER)
+  joinedAt       DateTime         @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation("UserOrganizationMemberships", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@index([organizationId])
+  @@index([userId])
+}
+
+model Workspace {
+  id             String   @id @default(uuid())
+  organizationId String
+  name           String
+  slug           String
+  description    String?
+  isArchived     Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  members      WorkspaceMember[]
+  auditLogs    AuditLog[]
+  clients      Client[]
+  projects     Project[]
+
+  @@unique([organizationId, slug])
+  @@index([organizationId])
+  @@index([isArchived])
+}
+
+model WorkspaceMember {
+  id          String        @id @default(uuid())
+  workspaceId String
+  userId      String
+  role        WorkspaceRole @default(MEMBER)
+  joinedAt    DateTime      @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation("UserWorkspaceMemberships", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@index([workspaceId])
+  @@index([userId])
+}
+
+model Invitation {
+  id             String           @id @default(uuid())
+  organizationId String
+  email          String
+  role           OrganizationRole @default(MEMBER)
+  token          String           @unique
+  invitedById    String
+  status         InvitationStatus @default(PENDING)
+  expiresAt      DateTime
+  createdAt      DateTime         @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invitedBy    User         @relation("SentInvitations", fields: [invitedById], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([email])
+  @@index([token])
+  @@index([status])
+}
+

@@ -95,6 +95,12 @@ export const LoginPage: React.FC = () => {
             </Button>
           </form>
 
+          <div className="mt-4 text-center">
+            <Link to="/register" className="text-xs text-slate-400 hover:text-[#D4AF37] transition-colors">
+              Don't have an account yet? <span className="font-semibold text-[#D4AF37]">Sign Up</span>
+            </Link>
+          </div>
+
           {/* Quick Demo Login Credentials */}
           <div className="mt-6 pt-5 border-t border-slate-800/80">
             <p className="text-[11px] font-mono text-slate-500 uppercase tracking-wider mb-2 font-bold">

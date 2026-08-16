@@ -27,8 +27,8 @@ import {
   NotificationsRepository,
   NotificationsService,
   NotificationsController,
-  registerNotificationHandlers,
 } from "../../modules/notifications/index.js";
+import { registerNotificationHandlers } from "../../modules/notifications/notification-handlers.js";
 import { eventBus } from "../events/event-bus.js";
 
 /**

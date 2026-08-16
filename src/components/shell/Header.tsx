@@ -167,13 +167,20 @@ export const Header: React.FC<HeaderProps> = ({
                   )}
                 </div>
 
-                <div className="p-2 border-t border-slate-200 dark:border-slate-800 text-center bg-slate-50 dark:bg-slate-950">
+                <div className="p-2 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between px-3 bg-slate-50 dark:bg-slate-950">
                   <Link
-                    to="/settings"
+                    to="/notifications"
                     onClick={() => setIsNotifOpen(false)}
                     className="text-[11px] font-semibold text-[#D4AF37] hover:underline"
                   >
-                    View notification preferences →
+                    View all notifications →
+                  </Link>
+                  <Link
+                    to="/settings"
+                    onClick={() => setIsNotifOpen(false)}
+                    className="text-[10px] text-slate-400 hover:text-white"
+                  >
+                    Preferences
                   </Link>
                 </div>
               </div>

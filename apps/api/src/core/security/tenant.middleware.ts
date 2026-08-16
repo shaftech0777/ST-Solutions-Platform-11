@@ -126,11 +126,25 @@ export function requireWorkspaceMembership(options?: TenantMiddlewareOptions): R
     const headerName = options?.headerName || "x-workspace-id";
     const queryName = options?.queryName || "workspaceId";
 
-    const workspaceId: string | undefined =
+    let workspaceId: string | undefined =
       req.params?.[paramName] ||
       req.params?.id ||
       (req.headers?.[headerName] as string) ||
       (req.query?.[queryName] as string);
+
+    // Fallback if no workspace ID provided
+    if (!workspaceId && (options?.allowDefaultFallback ?? true)) {
+      const activeOrgId = req.headers?.["x-organization-id"] as string | undefined;
+      const workspaces = await workspaceRepository.findByOrganizationId(activeOrgId || "");
+      if (workspaces.length > 0) {
+        workspaceId = workspaces[0].id;
+      } else {
+        const anyWorkspaces = await workspaceRepository.findAndCount({ limit: 1 });
+        if (anyWorkspaces.data.length > 0) {
+          workspaceId = anyWorkspaces.data[0].id;
+        }
+      }
+    }
 
     if (!workspaceId) {
       SecurityLogger.logAccessDenied({

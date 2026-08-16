@@ -1,13 +1,20 @@
 import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Sidebar } from "./Sidebar.js";
 import { Header } from "./Header.js";
 import { Drawer } from "../ui/Modal.js";
 import { CommandSearch } from "../ui/Breadcrumbs.js";
 
 export const ApplicationShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const location = useLocation();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isCommandSearchOpen, setIsCommandSearchOpen] = useState(false);
+
+  // If on login or register screen, render full screen auth layout
+  if (location.pathname === "/login" || location.pathname === "/register") {
+    return <div className="min-h-screen bg-[#090A0F] text-slate-100 font-sans">{children}</div>;
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#090A0F] text-slate-900 dark:text-slate-100 font-sans antialiased transition-colors duration-200 overflow-x-hidden">

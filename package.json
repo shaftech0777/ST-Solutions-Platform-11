@@ -9,10 +9,11 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "vite --port=3000 --host=0.0.0.0",
+    "dev": "tsx server.ts",
+    "build": "vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
+    "start": "node dist/server.cjs",
     "dev:api": "npm run dev --workspace=apps/api",
     "dev:web": "npm run dev --workspace=apps/web",
-    "build": "vite build",
     "lint": "tsc --noEmit",
     "test": "npm run test --workspace=apps/api",
     "format": "prettier --write .",

@@ -14,6 +14,7 @@ import { paymentsRouter } from "../modules/payments/index.js";
 import { settingsRouter } from "../modules/settings/index.js";
 import { auditRouter } from "../modules/audit/index.js";
 import { notificationsRouter } from "../modules/notifications/index.js";
+import { aiRouter } from "../modules/ai/index.js";
 
 export const apiRouter = Router();
 
@@ -33,6 +34,7 @@ apiRouter.use("/payments", paymentsRouter);
 apiRouter.use("/settings", settingsRouter);
 apiRouter.use("/audit-logs", auditRouter);
 apiRouter.use("/notifications", notificationsRouter);
+apiRouter.use("/ai", aiRouter);
 
 
 

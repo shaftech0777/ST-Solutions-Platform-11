@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   FileText,
   Settings,
+  Bell,
   Bot,
   LogOut,
   ChevronLeft,
@@ -63,6 +64,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
       items: [
         { label: "Roles & Access", path: "/roles", icon: ShieldCheck },
         { label: "Audit Logs", path: "/audit", icon: FileText },
+        { label: "Notifications", path: "/notifications", icon: Bell },
         { label: "Settings", path: "/settings", icon: Settings },
       ],
     },

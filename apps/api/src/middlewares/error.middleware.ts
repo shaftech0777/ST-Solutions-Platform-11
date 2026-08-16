@@ -37,6 +37,7 @@ export function globalErrorHandlerMiddleware(
 
   // Log non-operational or internal server errors via Pino Logger
   if (!appError.isOperational || appError.statusCode >= 500) {
+    console.error("DEBUG ERROR STACK:", err);
     Logger.error(logContext, `Unhandled Exception: ${appError.message}`);
   } else {
     Logger.warn(logContext, `Operational Error: ${appError.message}`);

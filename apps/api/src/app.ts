@@ -40,8 +40,8 @@ app.get("/health", async (_req: Request, res: Response) => {
 app.use("/api/v1", apiRouter);
 app.use("/auth", apiRouter); // Alias for top-level /auth/login access
 
-// 6. 404 Route Not Found Middleware
-app.use(notFoundHandlerMiddleware);
+// 6. 404 Route Not Found Middleware (scoped to API routes)
+app.use("/api/*", notFoundHandlerMiddleware);
 
 // 7. Global Error Handling Middleware (MUST BE LAST)
 app.use(globalErrorHandlerMiddleware);

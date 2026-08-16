@@ -12,7 +12,7 @@ import { Settings, Save, Shield, Moon, Sun, Bell, Globe, Database } from "lucide
 
 export const SettingsPage: React.FC = () => {
   const { currentOrganization, currentWorkspace } = useAuth();
-  const { mode, toggleTheme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const { showToast } = useToast();
 
   const [isLoading, setIsLoading] = useState(true);
@@ -156,7 +156,7 @@ export const SettingsPage: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div className="text-xs font-medium text-slate-300">Theme Mode</div>
                   <Button variant="outline" size="sm" type="button" onClick={toggleTheme}>
-                    {mode === "dark" ? (
+                    {theme === "dark" ? (
                       <>
                         <Moon className="w-3.5 h-3.5 mr-1.5 text-amber-400" />
                         <span>Dark Mode</span>

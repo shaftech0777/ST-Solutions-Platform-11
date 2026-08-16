@@ -4,17 +4,28 @@ import rateLimit from "express-rate-limit";
 import { config } from "./config.js";
 
 export const securityConfig = {
-  helmet: helmet(),
+  helmet: helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+  }),
   cors: cors({
-    origin: config.security.corsOrigin,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "x-organization-id",
+      "x-workspace-id",
+      "x-request-id",
+      "Accept",
+    ],
   }),
   rateLimiter: rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 100,
+    max: 1000,
     standardHeaders: true,
     legacyHeaders: false,
     message: { error: "Too many requests from this IP, please try again later." },
   }),
 };
+

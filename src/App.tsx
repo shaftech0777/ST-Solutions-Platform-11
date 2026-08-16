@@ -42,6 +42,7 @@ import { RolesPage } from "./pages/RolesPage.js";
 import { AuditLogsPage } from "./pages/AuditLogsPage.js";
 import { SettingsPage } from "./pages/SettingsPage.js";
 import { AIAssistantPage } from "./pages/AIAssistantPage.js";
+import { NotificationsPage } from "./pages/NotificationsPage.js";
 import { LoginPage } from "./pages/LoginPage.js";
 import { RegisterPage } from "./pages/RegisterPage.js";
 
@@ -387,6 +388,7 @@ export function AppContent() {
               <Route path="/members" element={<MembersPage />} />
               <Route path="/roles" element={<RolesPage />} />
               <Route path="/audit" element={<AuditLogsPage />} />
+              <Route path="/notifications" element={<NotificationsPage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
