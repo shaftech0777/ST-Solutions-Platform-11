@@ -7,10 +7,12 @@ import { Badge } from "../components/ui/Badge.js";
 import { Input } from "../components/ui/Input.js";
 import { LoadingSpinner } from "../components/ui/LoadingSpinner.js";
 import { auditService } from "../api/services/audit.service.js";
+import { useAuth } from "../context/AuthContext.js";
 import { AuditLogItem } from "../types/index.js";
 import { FileText, Search, ShieldCheck, RefreshCw, Terminal } from "lucide-react";
 
 export const AuditLogsPage: React.FC = () => {
+  const { currentUser, isLoading: isAuthLoading } = useAuth();
   const [logs, setLogs] = useState<AuditLogItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -59,6 +61,7 @@ export const AuditLogsPage: React.FC = () => {
   ];
 
   const fetchLogs = async () => {
+    if (!currentUser) return;
     setIsLoading(true);
     try {
       const res = await auditService.getAll();
@@ -71,8 +74,9 @@ export const AuditLogsPage: React.FC = () => {
   };
 
   useEffect(() => {
+    if (isAuthLoading || !currentUser) return;
     fetchLogs();
-  }, []);
+  }, [currentUser?.id, isAuthLoading]);
 
   const filteredLogs = logs.filter(
     (l) =>

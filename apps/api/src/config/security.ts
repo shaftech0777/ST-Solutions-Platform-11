@@ -25,6 +25,7 @@ export const securityConfig = {
     max: 1000,
     standardHeaders: true,
     legacyHeaders: false,
+    validate: { xForwardedForHeader: false, trustProxy: false },
     message: { error: "Too many requests from this IP, please try again later." },
   }),
 };

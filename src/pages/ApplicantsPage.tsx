@@ -10,11 +10,13 @@ import { Select } from "../components/ui/Select.js";
 import { EmptyState, ErrorState } from "../components/ui/EmptyState.js";
 import { LoadingSpinner } from "../components/ui/LoadingSpinner.js";
 import { useToast } from "../context/ToastContext.js";
+import { useAuth } from "../context/AuthContext.js";
 import { applicantsService } from "../api/services/applicants.service.js";
 import { Applicant, ApplicantStatus } from "../types/index.js";
 
 export const ApplicantsPage: React.FC = () => {
   const { addToast } = useToast();
+  const { currentUser, isLoading: isAuthLoading } = useAuth();
 
   const [applicants, setApplicants] = useState<Applicant[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -37,6 +39,7 @@ export const ApplicantsPage: React.FC = () => {
   });
 
   const loadApplicants = async () => {
+    if (!currentUser) return;
     setIsLoading(true);
     setError(null);
     try {
@@ -55,8 +58,9 @@ export const ApplicantsPage: React.FC = () => {
   };
 
   useEffect(() => {
+    if (isAuthLoading || !currentUser) return;
     loadApplicants();
-  }, [statusFilter, search, page]);
+  }, [statusFilter, search, page, currentUser?.id, isAuthLoading]);
 
   const handleCreateApplicant = async (e: React.FormEvent) => {
     e.preventDefault();

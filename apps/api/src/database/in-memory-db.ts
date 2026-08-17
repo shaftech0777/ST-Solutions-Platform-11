@@ -107,6 +107,7 @@ export function createInitialData(): MemoryStore {
     name: "Main Operations",
     slug: "main-operations",
     description: "Primary workspace for ST-Solutions projects and services",
+    isArchived: false,
     createdAt: now,
     updatedAt: now,
   };

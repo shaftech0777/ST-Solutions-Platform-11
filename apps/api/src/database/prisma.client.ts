@@ -3,17 +3,11 @@ import { config } from "../config/index.js";
 import { createMockPrismaClient } from "./mock-prisma-client.js";
 import { Logger } from "../core/logger/index.js";
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: any | undefined;
-};
-
-const mockPrisma = createMockPrismaClient();
-
 function createPrismaClient(): any {
   // If no PostgreSQL DATABASE_URL or running in standalone dev mode without active database daemon
   if (!config.database.url || config.database.url.includes("localhost") || !process.env.DATABASE_URL) {
     Logger.info("Using embedded in-memory relational store for ST-Solutions operations.");
-    return mockPrisma;
+    return createMockPrismaClient();
   }
 
   try {
@@ -28,17 +22,13 @@ function createPrismaClient(): any {
     return client;
   } catch (err) {
     Logger.warn({ err }, "PrismaClient initialization fallback to in-memory relational store.");
-    return mockPrisma;
+    return createMockPrismaClient();
   }
 }
 
 /**
  * Application-wide PrismaClient Singleton Instance.
- * Prevents multiple client initializations during development and hot-reload.
+ * Embedded mock Prisma client handles all transactional, relational and filtering queries.
  */
-export const prisma: any = globalForPrisma.prisma ?? createPrismaClient();
-
-if (!config.app.isProduction) {
-  globalForPrisma.prisma = prisma;
-}
+export const prisma: any = createPrismaClient();
 

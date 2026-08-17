@@ -9,11 +9,13 @@ import { Input } from "../components/ui/Input.js";
 import { EmptyState, ErrorState } from "../components/ui/EmptyState.js";
 import { LoadingSpinner } from "../components/ui/LoadingSpinner.js";
 import { useToast } from "../context/ToastContext.js";
+import { useAuth } from "../context/AuthContext.js";
 import { clientsService } from "../api/services/clients.service.js";
 import { Client } from "../types/index.js";
 
 export const ClientsPage: React.FC = () => {
   const { addToast } = useToast();
+  const { currentUser, isLoading: isAuthLoading } = useAuth();
 
   const [clients, setClients] = useState<Client[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -35,6 +37,7 @@ export const ClientsPage: React.FC = () => {
   });
 
   const loadClients = async () => {
+    if (!currentUser) return;
     setIsLoading(true);
     setError(null);
     try {
@@ -48,8 +51,9 @@ export const ClientsPage: React.FC = () => {
   };
 
   useEffect(() => {
+    if (isAuthLoading || !currentUser) return;
     loadClients();
-  }, [search, page]);
+  }, [search, page, currentUser?.id, isAuthLoading]);
 
   const handleCreateClient = async (e: React.FormEvent) => {
     e.preventDefault();

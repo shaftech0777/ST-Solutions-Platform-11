@@ -24,6 +24,28 @@ settingsRouter.get("/public", settingsController.getPublicSettings);
 settingsRouter.use(authenticate());
 
 /**
+ * @route GET /settings
+ * @desc Retrieves platform website settings
+ * @access Protected (Requires settings.read)
+ */
+settingsRouter.get(
+  "/",
+  requirePermission("settings.read"),
+  settingsController.getWebsiteSettings
+);
+
+/**
+ * @route PUT /settings
+ * @desc Updates platform website settings
+ * @access Protected (Requires settings.update)
+ */
+settingsRouter.put(
+  "/",
+  requirePermission("settings.update"),
+  settingsController.updateWebsiteSettings
+);
+
+/**
  * @route GET /settings/website
  * @desc Retrieves website settings
  * @access Protected (Requires settings.read)

@@ -30,7 +30,7 @@ import { applicantsService } from "../api/services/applicants.service.js";
 import { Project, Payment, Client, Applicant } from "../types/index.js";
 
 export const DashboardPage: React.FC = () => {
-  const { currentOrganization, currentWorkspace, currentUser } = useAuth();
+  const { currentOrganization, currentWorkspace, currentUser, isLoading: isAuthLoading } = useAuth();
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(true);
@@ -42,6 +42,7 @@ export const DashboardPage: React.FC = () => {
   const [applicants, setApplicants] = useState<Applicant[]>([]);
 
   const loadDashboardData = async () => {
+    if (!currentUser) return;
     setIsLoading(true);
     setError(null);
     try {
@@ -52,10 +53,19 @@ export const DashboardPage: React.FC = () => {
         applicantsService.getAll({ limit: 5 }),
       ]);
 
-      setProjects(Array.isArray(projRes.data) ? projRes.data : []);
-      setPayments(Array.isArray(payRes.data) ? payRes.data : []);
-      setClients(Array.isArray(cliRes.data) ? cliRes.data : []);
-      setApplicants(Array.isArray(appRes.data) ? appRes.data : []);
+      const extractArray = (res: any) => {
+        if (!res) return [];
+        if (Array.isArray(res)) return res;
+        if (Array.isArray(res.data)) return res.data;
+        if (Array.isArray(res.data?.items)) return res.data.items;
+        if (Array.isArray(res.items)) return res.items;
+        return [];
+      };
+
+      setProjects(extractArray(projRes));
+      setPayments(extractArray(payRes));
+      setClients(extractArray(cliRes));
+      setApplicants(extractArray(appRes));
     } catch (err: any) {
       setError(err.message || "Failed to load dashboard operational metrics");
     } finally {
@@ -64,8 +74,9 @@ export const DashboardPage: React.FC = () => {
   };
 
   useEffect(() => {
+    if (isAuthLoading || !currentUser) return;
     loadDashboardData();
-  }, [currentOrganization?.id, currentWorkspace?.id]);
+  }, [currentOrganization?.id, currentWorkspace?.id, currentUser?.id, isAuthLoading]);
 
   // Metric aggregates
   const totalBudget = projects.reduce((sum, p) => sum + (p.budget || 0), 0);

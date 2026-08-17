@@ -11,6 +11,9 @@ import {
 
 const app: Express = express();
 
+// Trust proxy for reverse proxies (nginx, Cloud Run)
+app.set("trust proxy", 1);
+
 // 1. Security Middleware
 app.use(securityConfig.helmet);
 app.use(securityConfig.cors);
@@ -26,7 +29,7 @@ app.use(requestLoggerMiddleware);
 app.use(express.json());
 
 // 5. Routes / Health Check
-app.get("/health", async (_req: Request, res: Response) => {
+const healthHandler = async (_req: Request, res: Response) => {
   const dbHealth = await databaseService.healthCheck();
   const isHealthy = dbHealth.status === "up";
   res.status(isHealthy ? 200 : 503).json({
@@ -35,7 +38,10 @@ app.get("/health", async (_req: Request, res: Response) => {
     version: "1.0.0",
     database: dbHealth,
   });
-});
+};
+
+app.get("/health", healthHandler);
+app.get("/api/health", healthHandler);
 
 app.use("/api/v1", apiRouter);
 app.use("/auth", apiRouter); // Alias for top-level /auth/login access

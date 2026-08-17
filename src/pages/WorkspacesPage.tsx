@@ -14,7 +14,7 @@ import { workspacesService } from "../api/services/workspaces.service.js";
 import { Workspace } from "../types/index.js";
 
 export const WorkspacesPage: React.FC = () => {
-  const { currentOrganization, currentWorkspace, switchWorkspace, refreshUser } = useAuth();
+  const { currentOrganization, currentWorkspace, switchWorkspace, refreshUser, currentUser, isLoading: isAuthLoading } = useAuth();
   const { addToast } = useToast();
 
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
@@ -27,6 +27,7 @@ export const WorkspacesPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const loadWorkspaces = async () => {
+    if (!currentUser || !currentOrganization) return;
     setIsLoading(true);
     setError(null);
     try {
@@ -40,8 +41,9 @@ export const WorkspacesPage: React.FC = () => {
   };
 
   useEffect(() => {
+    if (isAuthLoading || !currentUser) return;
     loadWorkspaces();
-  }, [currentOrganization?.id]);
+  }, [currentOrganization?.id, currentUser?.id, isAuthLoading]);
 
   const handleCreateWorkspace = async (e: React.FormEvent) => {
     e.preventDefault();

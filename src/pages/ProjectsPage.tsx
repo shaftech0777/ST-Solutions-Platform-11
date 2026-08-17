@@ -10,12 +10,14 @@ import { Select } from "../components/ui/Select.js";
 import { EmptyState, ErrorState } from "../components/ui/EmptyState.js";
 import { LoadingSpinner } from "../components/ui/LoadingSpinner.js";
 import { useToast } from "../context/ToastContext.js";
+import { useAuth } from "../context/AuthContext.js";
 import { projectsService } from "../api/services/projects.service.js";
 import { clientsService } from "../api/services/clients.service.js";
 import { Project, ProjectStatus, Client } from "../types/index.js";
 
 export const ProjectsPage: React.FC = () => {
   const { addToast } = useToast();
+  const { currentUser, isLoading: isAuthLoading } = useAuth();
 
   const [projects, setProjects] = useState<Project[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
@@ -42,6 +44,7 @@ export const ProjectsPage: React.FC = () => {
   });
 
   const loadData = async () => {
+    if (!currentUser) return;
     setIsLoading(true);
     setError(null);
     try {
@@ -65,8 +68,9 @@ export const ProjectsPage: React.FC = () => {
   };
 
   useEffect(() => {
+    if (isAuthLoading || !currentUser) return;
     loadData();
-  }, [statusFilter, search, page]);
+  }, [statusFilter, search, page, currentUser?.id, isAuthLoading]);
 
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();

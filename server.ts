@@ -9,6 +9,9 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
+  // Trust proxy for reverse proxies (nginx, Cloud Run)
+  app.set("trust proxy", 1);
+
   try {
     await databaseService.connect();
     Logger.info("Database service ready.");

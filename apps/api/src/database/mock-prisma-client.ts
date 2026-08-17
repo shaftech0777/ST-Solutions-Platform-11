@@ -71,6 +71,13 @@ function matchesFilter(item: any, where: any): boolean {
       continue;
     }
 
+    if (val === false) {
+      if (itemVal !== false && itemVal !== undefined && itemVal !== null) {
+        return false;
+      }
+      continue;
+    }
+
     if (itemVal !== val) {
       return false;
     }
@@ -210,31 +217,33 @@ export function createMockPrismaClient(): any {
   const createDelegate = (table: keyof MemoryStore, defaultIdPrefix: string) => {
     return {
       findUnique: async (args: { where: any; include?: any }) => {
-        const list = store[table];
+        if (!args || !args.where) return null;
+        const list = store[table] || [];
         const found = list.find((item) => matchesFilter(item, args.where));
         if (!found) return null;
         return resolveIncludes(table, found, args.include, store);
       },
       findUniqueOrThrow: async (args: { where: any; include?: any }) => {
-        const list = store[table];
+        if (!args || !args.where) throw new Error(`Record not found in ${String(table)}`);
+        const list = store[table] || [];
         const found = list.find((item) => matchesFilter(item, args.where));
         if (!found) throw new Error(`Record not found in ${String(table)}`);
         return resolveIncludes(table, found, args.include, store);
       },
-      findFirst: async (args: { where?: any; include?: any; orderBy?: any }) => {
-        let list = store[table];
-        if (args.where) {
+      findFirst: async (args?: { where?: any; include?: any; orderBy?: any }) => {
+        let list = store[table] || [];
+        if (args?.where) {
           list = list.filter((item) => matchesFilter(item, args.where));
         }
         if (list.length === 0) return null;
-        return resolveIncludes(table, list[0], args.include, store);
+        return resolveIncludes(table, list[0], args?.include, store);
       },
-      findMany: async (args: { where?: any; include?: any; skip?: number; take?: number; orderBy?: any }) => {
-        let list = store[table];
-        if (args.where) {
+      findMany: async (args?: { where?: any; include?: any; skip?: number; take?: number; orderBy?: any }) => {
+        let list = store[table] || [];
+        if (args?.where) {
           list = list.filter((item) => matchesFilter(item, args.where));
         }
-        if (args.orderBy) {
+        if (args?.orderBy) {
           const [field, order] = Object.entries(args.orderBy)[0] as [string, string];
           list = [...list].sort((a, b) => {
             const valA = a[field];
@@ -244,10 +253,10 @@ export function createMockPrismaClient(): any {
             return 0;
           });
         }
-        const skip = args.skip || 0;
-        const take = args.take !== undefined ? args.take : list.length;
+        const skip = args?.skip || 0;
+        const take = args?.take !== undefined ? args.take : list.length;
         const sliced = list.slice(skip, skip + take);
-        return sliced.map((item) => resolveIncludes(table, item, args.include, store));
+        return sliced.map((item) => resolveIncludes(table, item, args?.include, store));
       },
       create: async (args: { data: any; include?: any }) => {
         const id = args.data.id || `${defaultIdPrefix}-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 7)}`;
@@ -337,11 +346,11 @@ export function createMockPrismaClient(): any {
         return store[table].filter((item) => matchesFilter(item, args.where)).length;
       },
       groupBy: async (args: { by: string[]; _count?: any; where?: any }) => {
-        let list = store[table];
-        if (args.where) {
+        let list = store[table] || [];
+        if (args?.where) {
           list = list.filter((item) => matchesFilter(item, args.where));
         }
-        const field = args.by[0];
+        const field = args?.by?.[0] || "id";
         const groups: Record<string, number> = {};
         list.forEach((item) => {
           const val = item[field] || "UNKNOWN";
@@ -352,13 +361,13 @@ export function createMockPrismaClient(): any {
           _count: { [field]: count },
         }));
       },
-      aggregate: async (args: { where?: any; _sum?: any }) => {
-        let list = store[table];
-        if (args.where) {
+      aggregate: async (args?: { where?: any; _sum?: any }) => {
+        let list = store[table] || [];
+        if (args?.where) {
           list = list.filter((item) => matchesFilter(item, args.where));
         }
         const sumResult: Record<string, number> = {};
-        if (args._sum) {
+        if (args?._sum) {
           Object.keys(args._sum).forEach((k) => {
             sumResult[k] = list.reduce((acc, item) => acc + (Number(item[k]) || 0), 0);
           });

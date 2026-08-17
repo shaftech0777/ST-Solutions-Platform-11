@@ -9,10 +9,12 @@ import { Input } from "../components/ui/Input.js";
 import { LoadingSpinner } from "../components/ui/LoadingSpinner.js";
 import { rolesService } from "../api/services/roles.service.js";
 import { useToast } from "../context/ToastContext.js";
+import { useAuth } from "../context/AuthContext.js";
 import { ShieldCheck, Plus, Lock, CheckCircle, ShieldAlert } from "lucide-react";
 
 export const RolesPage: React.FC = () => {
   const { showToast } = useToast();
+  const { currentUser, isLoading: isAuthLoading } = useAuth();
   const [roles, setRoles] = useState<any[]>([]);
   const [permissions, setPermissions] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -72,6 +74,7 @@ export const RolesPage: React.FC = () => {
   ];
 
   const loadData = async () => {
+    if (!currentUser) return;
     setIsLoading(true);
     try {
       const [rRes, pRes] = await Promise.all([
@@ -89,8 +92,9 @@ export const RolesPage: React.FC = () => {
   };
 
   useEffect(() => {
+    if (isAuthLoading || !currentUser) return;
     loadData();
-  }, []);
+  }, [currentUser?.id, isAuthLoading]);
 
   const handleCreateRole = async (e: React.FormEvent) => {
     e.preventDefault();

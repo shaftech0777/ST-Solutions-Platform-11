@@ -10,12 +10,14 @@ import { Select } from "../components/ui/Select.js";
 import { EmptyState, ErrorState } from "../components/ui/EmptyState.js";
 import { LoadingSpinner } from "../components/ui/LoadingSpinner.js";
 import { useToast } from "../context/ToastContext.js";
+import { useAuth } from "../context/AuthContext.js";
 import { paymentsService } from "../api/services/payments.service.js";
 import { projectsService } from "../api/services/projects.service.js";
 import { Payment, PaymentStatus, Project } from "../types/index.js";
 
 export const PaymentsPage: React.FC = () => {
   const { addToast } = useToast();
+  const { currentUser, isLoading: isAuthLoading } = useAuth();
 
   const [payments, setPayments] = useState<Payment[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
@@ -37,6 +39,7 @@ export const PaymentsPage: React.FC = () => {
   });
 
   const loadData = async () => {
+    if (!currentUser) return;
     setIsLoading(true);
     setError(null);
     try {
@@ -59,8 +62,9 @@ export const PaymentsPage: React.FC = () => {
   };
 
   useEffect(() => {
+    if (isAuthLoading || !currentUser) return;
     loadData();
-  }, [statusFilter, page]);
+  }, [statusFilter, page, currentUser?.id, isAuthLoading]);
 
   const handleCreatePayment = async (e: React.FormEvent) => {
     e.preventDefault();

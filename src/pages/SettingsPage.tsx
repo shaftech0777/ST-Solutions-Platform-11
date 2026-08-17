@@ -11,7 +11,7 @@ import { useToast } from "../context/ToastContext.js";
 import { Settings, Save, Shield, Moon, Sun, Bell, Globe, Database } from "lucide-react";
 
 export const SettingsPage: React.FC = () => {
-  const { currentOrganization, currentWorkspace } = useAuth();
+  const { currentOrganization, currentWorkspace, currentUser, isLoading: isAuthLoading } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { showToast } = useToast();
 
@@ -27,6 +27,7 @@ export const SettingsPage: React.FC = () => {
   const [auditLogging, setAuditLogging] = useState(true);
 
   useEffect(() => {
+    if (isAuthLoading || !currentUser) return;
     const fetchSettings = async () => {
       setIsLoading(true);
       try {
@@ -44,7 +45,7 @@ export const SettingsPage: React.FC = () => {
       }
     };
     fetchSettings();
-  }, []);
+  }, [currentUser?.id, isAuthLoading]);
 
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();

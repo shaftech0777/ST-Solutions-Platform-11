@@ -1,12 +1,16 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { Sidebar } from "./Sidebar.js";
 import { Header } from "./Header.js";
 import { Drawer } from "../ui/Modal.js";
 import { CommandSearch } from "../ui/Breadcrumbs.js";
+import { useAuth } from "../../context/AuthContext.js";
+import { Loader2, LogIn, ShieldAlert } from "lucide-react";
+import { Button } from "../ui/Button.js";
 
 export const ApplicationShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
+  const { currentUser, isLoading: isAuthLoading } = useAuth();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isCommandSearchOpen, setIsCommandSearchOpen] = useState(false);
@@ -14,6 +18,43 @@ export const ApplicationShell: React.FC<{ children: React.ReactNode }> = ({ chil
   // If on login or register screen, render full screen auth layout
   if (location.pathname === "/login" || location.pathname === "/register") {
     return <div className="min-h-screen bg-[#090A0F] text-slate-100 font-sans">{children}</div>;
+  }
+
+  // Display clean branded loading splash during initial credential verification
+  if (isAuthLoading) {
+    return (
+      <div className="min-h-screen bg-[#090A0F] text-slate-100 flex flex-col items-center justify-center p-6 space-y-4">
+        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#B88E20] text-black font-extrabold flex items-center justify-center text-lg shadow-xl shadow-amber-500/20 border border-amber-300/40 animate-pulse">
+          ST
+        </div>
+        <div className="flex items-center space-x-2 text-sm text-slate-400 font-mono">
+          <Loader2 className="w-4 h-4 animate-spin text-[#D4AF37]" />
+          <span>Authenticating ST-Solutions secure session...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // If user explicitly logged out or unauthenticated, display authentication required screen
+  if (!currentUser) {
+    return (
+      <div className="min-h-screen bg-[#090A0F] text-slate-100 flex flex-col items-center justify-center p-6 space-y-6">
+        <div className="w-16 h-16 rounded-3xl bg-slate-900 border border-slate-800 flex items-center justify-center text-amber-400 shadow-2xl">
+          <ShieldAlert className="w-8 h-8" />
+        </div>
+        <div className="text-center space-y-2 max-w-md">
+          <h2 className="text-xl font-bold text-white">Authentication Required</h2>
+          <p className="text-sm text-slate-400">
+            Please sign in to access enterprise workspaces, clients, projects, and pipeline telemetry.
+          </p>
+        </div>
+        <Link to="/login">
+          <Button variant="primary" leftIcon={<LogIn className="w-4 h-4" />}>
+            Sign In to ST-Solutions
+          </Button>
+        </Link>
+      </div>
+    );
   }
 
   return (

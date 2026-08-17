@@ -134,12 +134,21 @@ export async function apiClient<T = any>(
           try {
             const refreshRes = await fetch(`${BASE_URL}/auth/refresh`, {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
+              headers: { "Content-Type": "application/json", Accept: "application/json" },
               body: JSON.stringify({ refreshToken }),
             });
 
+            const refreshText = await refreshRes.text();
+            let refreshData: any = {};
+            if (refreshText && refreshText.trim().length > 0) {
+              try {
+                refreshData = JSON.parse(refreshText);
+              } catch {
+                refreshData = { message: refreshText };
+              }
+            }
+
             if (refreshRes.ok) {
-              const refreshData = await refreshRes.json();
               const newAccessToken = refreshData.data?.accessToken;
               if (newAccessToken) {
                 setStoredTokens(newAccessToken);
@@ -167,8 +176,20 @@ export async function apiClient<T = any>(
             try {
               headers["Authorization"] = `Bearer ${newToken}`;
               const retryRes = await fetch(url, { ...config, headers });
-              const retryData = await retryRes.json();
-              resolve(retryData);
+              const retryText = await retryRes.text();
+              let retryData: any = {};
+              if (retryText && retryText.trim().length > 0) {
+                try {
+                  retryData = JSON.parse(retryText);
+                } catch {
+                  retryData = { message: retryText };
+                }
+              }
+              if (!retryRes.ok) {
+                reject(new ApiError(retryData?.error || retryData?.message || `HTTP error ${retryRes.status}`, retryRes.status, retryData));
+              } else {
+                resolve(retryData);
+              }
             } catch (retryErr) {
               reject(retryErr);
             }

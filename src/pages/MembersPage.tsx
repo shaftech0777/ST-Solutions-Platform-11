@@ -14,7 +14,7 @@ import { useToast } from "../context/ToastContext.js";
 import { organizationsService } from "../api/services/organizations.service.js";
 
 export const MembersPage: React.FC = () => {
-  const { currentOrganization, currentUser } = useAuth();
+  const { currentOrganization, currentUser, isLoading: isAuthLoading } = useAuth();
   const { addToast } = useToast();
 
   const [members, setMembers] = useState<any[]>([]);
@@ -30,7 +30,7 @@ export const MembersPage: React.FC = () => {
   const [isRemoving, setIsRemoving] = useState(false);
 
   const loadMembers = async () => {
-    if (!currentOrganization) return;
+    if (!currentUser || !currentOrganization) return;
     setIsLoading(true);
     setError(null);
     try {
@@ -44,8 +44,9 @@ export const MembersPage: React.FC = () => {
   };
 
   useEffect(() => {
+    if (isAuthLoading || !currentUser) return;
     loadMembers();
-  }, [currentOrganization?.id]);
+  }, [currentOrganization?.id, currentUser?.id, isAuthLoading]);
 
   const handleInvite = async (e: React.FormEvent) => {
     e.preventDefault();

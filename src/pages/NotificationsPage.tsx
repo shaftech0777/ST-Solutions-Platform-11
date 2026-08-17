@@ -6,11 +6,13 @@ import { Badge } from "../components/ui/Badge.js";
 import { LoadingSpinner } from "../components/ui/LoadingSpinner.js";
 import { EmptyState } from "../components/ui/EmptyState.js";
 import { notificationsService } from "../api/services/notifications.service.js";
+import { useAuth } from "../context/AuthContext.js";
 import { NotificationItem } from "../types/index.js";
 import { useToast } from "../context/ToastContext.js";
 import { Bell, CheckCheck, Check, Clock, AlertCircle, Info, ShieldAlert, Sparkles } from "lucide-react";
 
 export const NotificationsPage: React.FC = () => {
+  const { currentUser, isLoading: isAuthLoading } = useAuth();
   const { showToast } = useToast();
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -56,6 +58,7 @@ export const NotificationsPage: React.FC = () => {
   ];
 
   const loadNotifications = async () => {
+    if (!currentUser) return;
     setIsLoading(true);
     try {
       const res = await notificationsService.getAll({ unreadOnly: filterUnread });
@@ -72,8 +75,9 @@ export const NotificationsPage: React.FC = () => {
   };
 
   useEffect(() => {
+    if (isAuthLoading || !currentUser) return;
     loadNotifications();
-  }, [filterUnread]);
+  }, [filterUnread, currentUser?.id, isAuthLoading]);
 
   const handleMarkAsRead = async (id: string) => {
     try {
