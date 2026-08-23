@@ -6,9 +6,36 @@ import { AuthProvider } from "./context/AuthContext.js";
 import { ThemeProvider } from "./context/ThemeContext.js";
 import { ToastProvider } from "./context/ToastContext.js";
 import { ApplicationShell } from "./components/shell/ApplicationShell.js";
+import { PublicShell } from "./components/public/PublicShell.js";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute.js";
 
-// Lazy-loaded page components for optimal bundle performance and fast page load
+// Public Visitor-Facing Pages
+const HomePage = lazy(() =>
+  import("./pages/public/HomePage.js").then((m) => ({ default: m.HomePage }))
+);
+const AboutPage = lazy(() =>
+  import("./pages/public/AboutPage.js").then((m) => ({ default: m.AboutPage }))
+);
+const ServicesPage = lazy(() =>
+  import("./pages/public/ServicesPage.js").then((m) => ({ default: m.ServicesPage }))
+);
+const SolutionsPage = lazy(() =>
+  import("./pages/public/SolutionsPage.js").then((m) => ({ default: m.SolutionsPage }))
+);
+const PublicProjectsPage = lazy(() =>
+  import("./pages/public/ProjectsPage.js").then((m) => ({ default: m.ProjectsPage }))
+);
+const ContactPage = lazy(() =>
+  import("./pages/public/ContactPage.js").then((m) => ({ default: m.ContactPage }))
+);
+const ApplyPage = lazy(() =>
+  import("./pages/public/ApplyPage.js").then((m) => ({ default: m.ApplyPage }))
+);
+const StartProjectPage = lazy(() =>
+  import("./pages/public/StartProjectPage.js").then((m) => ({ default: m.StartProjectPage }))
+);
+
+// Platform Internal Management Pages
 const DashboardPage = lazy(() =>
   import("./pages/DashboardPage.js").then((m) => ({ default: m.DashboardPage }))
 );
@@ -24,7 +51,7 @@ const WorkspacesPage = lazy(() =>
 const ClientsPage = lazy(() =>
   import("./pages/ClientsPage.js").then((m) => ({ default: m.ClientsPage }))
 );
-const ProjectsPage = lazy(() =>
+const PlatformProjectsPage = lazy(() =>
   import("./pages/ProjectsPage.js").then((m) => ({ default: m.ProjectsPage }))
 );
 const PaymentsPage = lazy(() =>
@@ -62,11 +89,11 @@ const NotFoundPage = lazy(() =>
 );
 
 const PageSuspenseLoader: React.FC = () => (
-  <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-3 py-12">
+  <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-3 py-16">
     <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/30 flex items-center justify-center">
       <Loader2 className="w-5 h-5 animate-spin" />
     </div>
-    <p className="text-xs font-mono text-slate-500 dark:text-slate-400">Loading module...</p>
+    <p className="text-xs font-mono text-slate-500 dark:text-slate-400">Loading ST-Solutions...</p>
   </div>
 );
 
@@ -76,126 +103,230 @@ export function App() {
       <ToastProvider>
         <AuthProvider>
           <BrowserRouter>
-            <ApplicationShell>
-              <Suspense fallback={<PageSuspenseLoader />}>
-                <Routes>
-                  {/* Public Authentication Routes */}
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/register" element={<RegisterPage />} />
+            <Suspense fallback={<PageSuspenseLoader />}>
+              <Routes>
+                {/* 1. Public Visitor-Facing Website Routes */}
+                <Route
+                  path="/"
+                  element={
+                    <PublicShell>
+                      <HomePage />
+                    </PublicShell>
+                  }
+                />
+                <Route
+                  path="/about"
+                  element={
+                    <PublicShell>
+                      <AboutPage />
+                    </PublicShell>
+                  }
+                />
+                <Route
+                  path="/services"
+                  element={
+                    <PublicShell>
+                      <ServicesPage />
+                    </PublicShell>
+                  }
+                />
+                <Route
+                  path="/solutions"
+                  element={
+                    <PublicShell>
+                      <SolutionsPage />
+                    </PublicShell>
+                  }
+                />
+                <Route
+                  path="/projects"
+                  element={
+                    <PublicShell>
+                      <PublicProjectsPage />
+                    </PublicShell>
+                  }
+                />
+                <Route
+                  path="/contact"
+                  element={
+                    <PublicShell>
+                      <ContactPage />
+                    </PublicShell>
+                  }
+                />
+                <Route
+                  path="/apply"
+                  element={
+                    <PublicShell>
+                      <ApplyPage />
+                    </PublicShell>
+                  }
+                />
+                <Route
+                  path="/start-project"
+                  element={
+                    <PublicShell>
+                      <StartProjectPage />
+                    </PublicShell>
+                  }
+                />
 
-                  {/* Core SaaS Platform Routes with Role-Aware Protection */}
-                  <Route
-                    path="/"
-                    element={
+                {/* 2. Public Authentication Routes */}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+
+                {/* 3. Authenticated Enterprise Platform Dashboard Routes */}
+                <Route
+                  path="/dashboard"
+                  element={
+                    <ApplicationShell>
                       <ProtectedRoute module="dashboard">
                         <DashboardPage />
                       </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/ai"
-                    element={
+                    </ApplicationShell>
+                  }
+                />
+                <Route
+                  path="/ai"
+                  element={
+                    <ApplicationShell>
                       <ProtectedRoute module="ai">
                         <AIAssistantPage />
                       </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/organizations"
-                    element={
+                    </ApplicationShell>
+                  }
+                />
+                <Route
+                  path="/organizations"
+                  element={
+                    <ApplicationShell>
                       <ProtectedRoute module="organizations">
                         <OrganizationsPage />
                       </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/workspaces"
-                    element={
+                    </ApplicationShell>
+                  }
+                />
+                <Route
+                  path="/workspaces"
+                  element={
+                    <ApplicationShell>
                       <ProtectedRoute module="workspaces">
                         <WorkspacesPage />
                       </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/clients"
-                    element={
+                    </ApplicationShell>
+                  }
+                />
+                <Route
+                  path="/clients"
+                  element={
+                    <ApplicationShell>
                       <ProtectedRoute module="clients">
                         <ClientsPage />
                       </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/projects"
-                    element={
+                    </ApplicationShell>
+                  }
+                />
+                <Route
+                  path="/platform/projects"
+                  element={
+                    <ApplicationShell>
                       <ProtectedRoute module="projects">
-                        <ProjectsPage />
+                        <PlatformProjectsPage />
                       </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/payments"
-                    element={
+                    </ApplicationShell>
+                  }
+                />
+                <Route
+                  path="/payments"
+                  element={
+                    <ApplicationShell>
                       <ProtectedRoute module="payments">
                         <PaymentsPage />
                       </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/applicants"
-                    element={
+                    </ApplicationShell>
+                  }
+                />
+                <Route
+                  path="/applicants"
+                  element={
+                    <ApplicationShell>
                       <ProtectedRoute module="applicants">
                         <ApplicantsPage />
                       </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/members"
-                    element={
+                    </ApplicationShell>
+                  }
+                />
+                <Route
+                  path="/members"
+                  element={
+                    <ApplicationShell>
                       <ProtectedRoute module="members">
                         <MembersPage />
                       </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/roles"
-                    element={
+                    </ApplicationShell>
+                  }
+                />
+                <Route
+                  path="/roles"
+                  element={
+                    <ApplicationShell>
                       <ProtectedRoute module="roles">
                         <RolesPage />
                       </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/audit"
-                    element={
+                    </ApplicationShell>
+                  }
+                />
+                <Route
+                  path="/audit"
+                  element={
+                    <ApplicationShell>
                       <ProtectedRoute module="audit">
                         <AuditLogsPage />
                       </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/notifications"
-                    element={
+                    </ApplicationShell>
+                  }
+                />
+                <Route
+                  path="/notifications"
+                  element={
+                    <ApplicationShell>
                       <ProtectedRoute module="notifications">
                         <NotificationsPage />
                       </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/settings"
-                    element={
+                    </ApplicationShell>
+                  }
+                />
+                <Route
+                  path="/settings"
+                  element={
+                    <ApplicationShell>
                       <ProtectedRoute module="settings">
                         <SettingsPage />
                       </ProtectedRoute>
-                    }
-                  />
+                    </ApplicationShell>
+                  }
+                />
 
-                  {/* Error and Fallback Routes */}
-                  <Route path="/403" element={<AccessDeniedPage />} />
-                  <Route path="/404" element={<NotFoundPage />} />
-                  <Route path="*" element={<NotFoundPage />} />
-                </Routes>
-              </Suspense>
-            </ApplicationShell>
+                {/* 4. Error and Fallback Routes */}
+                <Route path="/403" element={<AccessDeniedPage />} />
+                <Route
+                  path="/404"
+                  element={
+                    <PublicShell>
+                      <NotFoundPage />
+                    </PublicShell>
+                  }
+                />
+                <Route
+                  path="*"
+                  element={
+                    <PublicShell>
+                      <NotFoundPage />
+                    </PublicShell>
+                  }
+                />
+              </Routes>
+            </Suspense>
           </BrowserRouter>
         </AuthProvider>
       </ToastProvider>
@@ -204,4 +335,3 @@ export function App() {
 }
 
 export default App;
-

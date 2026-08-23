@@ -1,0 +1,337 @@
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import {
+  Code2,
+  Cpu,
+  Brain,
+  ShieldCheck,
+  CheckCircle2,
+  ArrowRight,
+  Loader2,
+  AlertCircle,
+  Sparkles,
+  Layers,
+  FileText,
+  Briefcase,
+  ExternalLink,
+} from "lucide-react";
+import { apiClient } from "../../api/client.js";
+import { companyConfig } from "../../data/companyConfig.js";
+
+const availableRoles = [
+  "Full-Stack TypeScript Engineer",
+  "Frontend Architecture Specialist (React / Tailwind)",
+  "Backend & PostgreSQL Systems Engineer",
+  "AI / LLM Integration Engineer",
+  "UI / UX Design Engineer",
+  "QA & End-to-End Automation Specialist",
+  "Technical Project Manager",
+];
+
+export const ApplyPage: React.FC = () => {
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    phoneNumber: "",
+    roleApplied: availableRoles[0],
+    experienceYears: 2,
+    skills: "React, TypeScript, Tailwind CSS, Node.js, PostgreSQL",
+    portfolioUrl: "",
+    resumeText: "",
+  });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.fullName.trim() || !formData.email.trim() || !formData.roleApplied) {
+      setErrorMessage("Please complete all required application fields.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrorMessage(null);
+
+    const skillsArray = formData.skills
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    try {
+      await apiClient("/applicants", {
+        method: "POST",
+        body: {
+          fullName: formData.fullName.trim(),
+          email: formData.email.trim(),
+          phoneNumber: formData.phoneNumber.trim() || undefined,
+          roleApplied: formData.roleApplied,
+          experienceYears: Number(formData.experienceYears) || 0,
+          skills: skillsArray,
+          portfolioUrl: formData.portfolioUrl.trim() || undefined,
+          resumeText: formData.resumeText.trim() || undefined,
+        },
+      });
+
+      setIsSuccess(true);
+    } catch (err: any) {
+      setErrorMessage(
+        err.message || "Failed to submit application. Please check your details and try again."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="space-y-16 sm:space-y-24 pb-16 font-sans">
+      {/* Header Banner */}
+      <section className="pt-8 sm:pt-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center space-y-4">
+        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] text-xs font-semibold uppercase tracking-wider">
+          <span>Careers & Talent</span>
+        </div>
+        <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight max-w-3xl mx-auto">
+          Build the future of enterprise software with{" "}
+          <span className="text-[#D4AF37]">ST-Solutions.</span>
+        </h1>
+        <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
+          We are always looking for passionate software engineers, designers, and systems architects dedicated to craftsmanship, high standards, and dependable engineering.
+        </p>
+      </section>
+
+      {/* Engineering Culture Grid */}
+      <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="p-6 rounded-3xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center">
+              <Code2 className="w-5 h-5" />
+            </div>
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">Strict Craftsmanship</h3>
+            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              We care deeply about clean architectures, predictable database models, type safety, and maintainable codebases.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-3xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-[#D4AF37] flex items-center justify-center">
+              <Layers className="w-5 h-5" />
+            </div>
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">Real Enterprise Impact</h3>
+            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              You will build systems used by real clinics, retailers, and high-growth organizations every single day.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-3xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
+              <Brain className="w-5 h-5" />
+            </div>
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">Autonomy & Learning</h3>
+            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              Direct access to leadership, modern AI engineering pipelines, and continuous architectural growth.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Application Form Section */}
+      <section className="px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+        <div className="p-8 sm:p-12 rounded-3xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 shadow-xl">
+          {isSuccess ? (
+            <div className="py-12 flex flex-col items-center justify-center text-center space-y-4 animate-fade-in">
+              <div className="w-16 h-16 rounded-3xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center justify-center">
+                <CheckCircle2 className="w-8 h-8" />
+              </div>
+              <div className="space-y-2 max-w-md">
+                <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
+                  Application Submitted!
+                </h3>
+                <p className="text-sm text-slate-600 dark:text-slate-300">
+                  Thank you, <strong className="text-slate-900 dark:text-white">{formData.fullName}</strong>. Your profile has been registered in the ST-Solutions talent pool. Our engineering review team will contact you if your skills match open client initiatives.
+                </p>
+              </div>
+
+              <div className="pt-4 flex items-center gap-3">
+                <button
+                  onClick={() => {
+                    setIsSuccess(false);
+                    setFormData({
+                      fullName: "",
+                      email: "",
+                      phoneNumber: "",
+                      roleApplied: availableRoles[0],
+                      experienceYears: 2,
+                      skills: "",
+                      portfolioUrl: "",
+                      resumeText: "",
+                    });
+                  }}
+                  className="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-colors"
+                >
+                  Submit Another Profile
+                </button>
+              </div>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="border-b border-slate-100 dark:border-slate-800 pb-4">
+                <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+                  Member Application
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+                  Fill in your credentials to apply for open engineering, design, and project roles.
+                </p>
+              </div>
+
+              {errorMessage && (
+                <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs flex items-center space-x-2 animate-fade-in">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Full Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.fullName}
+                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                    placeholder="e.g. David Zhao"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Email Address *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    placeholder="david@domain.com"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Phone / WhatsApp Number
+                  </label>
+                  <input
+                    type="tel"
+                    value={formData.phoneNumber}
+                    onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                    placeholder="+92 325 7263417"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Years of Relevant Experience *
+                  </label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={30}
+                    required
+                    value={formData.experienceYears}
+                    onChange={(e) =>
+                      setFormData({ ...formData, experienceYears: parseInt(e.target.value) || 0 })
+                    }
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Role Applied For *
+                  </label>
+                  <select
+                    value={formData.roleApplied}
+                    onChange={(e) => setFormData({ ...formData, roleApplied: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                  >
+                    {availableRoles.map((role) => (
+                      <option key={role} value={role}>
+                        {role}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Portfolio / GitHub URL (Optional)
+                  </label>
+                  <input
+                    type="url"
+                    value={formData.portfolioUrl}
+                    onChange={(e) => setFormData({ ...formData, portfolioUrl: e.target.value })}
+                    placeholder="https://github.com/yourhandle"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Primary Technical Skills (Comma-separated)
+                </label>
+                <input
+                  type="text"
+                  value={formData.skills}
+                  onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
+                  placeholder="React, TypeScript, Tailwind, Node.js, Prisma, PostgreSQL, Docker"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Brief Bio / Cover Note / Summary
+                </label>
+                <textarea
+                  rows={4}
+                  value={formData.resumeText}
+                  onChange={(e) => setFormData({ ...formData, resumeText: e.target.value })}
+                  placeholder="Share a brief introduction, your background with modern web/software engineering, and why you would like to contribute at ST-Solutions..."
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-xs sm:text-sm focus:border-[#D4AF37] outline-none resize-none"
+                />
+              </div>
+
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl bg-slate-950 text-white dark:bg-[#D4AF37] dark:text-black font-bold text-xs sm:text-sm shadow-md hover:opacity-95 active:scale-[0.99] transition-all disabled:opacity-50"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Submitting Application...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Submit Application</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </section>
+    </div>
+  );
+};

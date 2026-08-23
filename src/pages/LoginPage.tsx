@@ -33,7 +33,7 @@ export const LoginPage: React.FC = () => {
 
     try {
       await login({ email: trimmedEmail, password });
-      navigate("/");
+      navigate("/dashboard");
     } catch (err: any) {
       const msg = err.data?.message || err.data?.error || err.message || "Invalid email or password";
       setError(msg);
@@ -165,9 +165,12 @@ export const LoginPage: React.FC = () => {
               </Button>
             </form>
 
-            <div className="mt-5 text-center">
-              <Link to="/register" className="text-xs text-slate-400 hover:text-[#D4AF37] transition-colors">
+            <div className="mt-5 text-center space-y-2">
+              <Link to="/register" className="text-xs text-slate-400 hover:text-[#D4AF37] transition-colors block">
                 Don't have an account yet? <span className="font-semibold text-[#D4AF37]">Sign Up</span>
+              </Link>
+              <Link to="/" className="text-xs text-slate-500 hover:text-slate-300 transition-colors inline-flex items-center gap-1">
+                <span>← Return to Public Website</span>
               </Link>
             </div>
           </div>

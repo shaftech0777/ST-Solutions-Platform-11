@@ -48,7 +48,7 @@ export const RegisterPage: React.FC = () => {
         password,
         organizationName: trimmedOrg || undefined,
       });
-      navigate("/");
+      navigate("/dashboard");
     } catch (err: any) {
       const msg = err.data?.message || err.data?.error || err.message || "Registration failed. Please check your details.";
       setError(msg);
@@ -195,9 +195,12 @@ export const RegisterPage: React.FC = () => {
               </Button>
             </form>
 
-            <div className="mt-5 text-center">
-              <Link to="/login" className="text-xs text-slate-400 hover:text-[#D4AF37] transition-colors">
+            <div className="mt-5 text-center space-y-2">
+              <Link to="/login" className="text-xs text-slate-400 hover:text-[#D4AF37] transition-colors block">
                 Already have an account? <span className="font-semibold text-[#D4AF37]">Sign In</span>
+              </Link>
+              <Link to="/" className="text-xs text-slate-500 hover:text-slate-300 transition-colors inline-flex items-center gap-1">
+                <span>← Return to Public Website</span>
               </Link>
             </div>
           </div>

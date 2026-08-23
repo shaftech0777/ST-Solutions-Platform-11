@@ -53,7 +53,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
     {
       title: "Command Center",
       items: [
-        { label: "Dashboard", path: "/", icon: LayoutDashboard, module: "dashboard" },
+        { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard, module: "dashboard" },
       ],
     },
     {
@@ -62,7 +62,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
         { label: "Organizations", path: "/organizations", icon: Building2, module: "organizations" },
         { label: "Workspaces", path: "/workspaces", icon: Briefcase, module: "workspaces" },
         { label: "Clients", path: "/clients", icon: Users, module: "clients" },
-        { label: "Projects", path: "/projects", icon: FolderKanban, module: "projects" },
+        { label: "Projects", path: "/platform/projects", icon: FolderKanban, module: "projects" },
         { label: "Payments", path: "/payments", icon: CreditCard, module: "payments" },
       ],
     },
