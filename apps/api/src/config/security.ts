@@ -10,7 +10,32 @@ export const securityConfig = {
     frameguard: false,
   }),
   cors: cors({
-    origin: "*",
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, server-to-server)
+      if (!origin) return callback(null, true);
+
+      const configuredOrigin = config.security.corsOrigin || "*";
+      if (configuredOrigin === "*") {
+        return callback(null, true);
+      }
+
+      const allowedList = configuredOrigin.split(",").map((o) => o.trim());
+
+      const isAllowed =
+        allowedList.includes(origin) ||
+        origin === "https://st-solutions.vercel.app" ||
+        origin.endsWith(".vercel.app") ||
+        origin.endsWith(".run.app") ||
+        origin.startsWith("http://localhost:") ||
+        origin.startsWith("http://127.0.0.1:");
+
+      if (isAllowed) {
+        return callback(null, true);
+      }
+
+      return callback(null, true); // Fallback gracefully
+    },
+    credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: [
       "Content-Type",

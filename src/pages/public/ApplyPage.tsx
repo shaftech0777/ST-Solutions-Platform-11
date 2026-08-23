@@ -88,14 +88,14 @@ export const ApplyPage: React.FC = () => {
     <div className="space-y-16 sm:space-y-24 pb-16 font-sans">
       {/* Header Banner */}
       <section className="pt-8 sm:pt-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center space-y-4">
-        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] text-xs font-semibold uppercase tracking-wider">
+        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-900 text-xs font-semibold uppercase tracking-wider font-mono">
           <span>Careers & Talent</span>
         </div>
-        <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight max-w-3xl mx-auto">
+        <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-950 tracking-tight max-w-3xl mx-auto">
           Build the future of enterprise software with{" "}
-          <span className="text-[#D4AF37]">ST-Solutions.</span>
+          <span className="text-[#B88E20]">ST-Solutions.</span>
         </h1>
-        <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-base sm:text-lg text-slate-700 max-w-2xl mx-auto leading-relaxed">
           We are always looking for passionate software engineers, designers, and systems architects dedicated to craftsmanship, high standards, and dependable engineering.
         </p>
       </section>
@@ -103,32 +103,32 @@ export const ApplyPage: React.FC = () => {
       {/* Engineering Culture Grid */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-6 rounded-3xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center">
+          <div className="p-6 rounded-3xl bg-white border border-[#E2E5E0] shadow-sm space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-700 flex items-center justify-center">
               <Code2 className="w-5 h-5" />
             </div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">Strict Craftsmanship</h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+            <h3 className="text-base font-bold text-slate-950">Strict Craftsmanship</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
               We care deeply about clean architectures, predictable database models, type safety, and maintainable codebases.
             </p>
           </div>
 
-          <div className="p-6 rounded-3xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-[#D4AF37] flex items-center justify-center">
+          <div className="p-6 rounded-3xl bg-white border border-[#E2E5E0] shadow-sm space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-[#B88E20] flex items-center justify-center">
               <Layers className="w-5 h-5" />
             </div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">Real Enterprise Impact</h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+            <h3 className="text-base font-bold text-slate-950">Real Enterprise Impact</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
               You will build systems used by real clinics, retailers, and high-growth organizations every single day.
             </p>
           </div>
 
-          <div className="p-6 rounded-3xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
+          <div className="p-6 rounded-3xl bg-white border border-[#E2E5E0] shadow-sm space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-700 flex items-center justify-center">
               <Brain className="w-5 h-5" />
             </div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">Autonomy & Learning</h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+            <h3 className="text-base font-bold text-slate-950">Autonomy & Learning</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
               Direct access to leadership, modern AI engineering pipelines, and continuous architectural growth.
             </p>
           </div>
@@ -137,18 +137,18 @@ export const ApplyPage: React.FC = () => {
 
       {/* Main Application Form Section */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
-        <div className="p-8 sm:p-12 rounded-3xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 shadow-xl">
+        <div className="p-8 sm:p-12 rounded-3xl bg-white border border-[#E2E5E0] shadow-md">
           {isSuccess ? (
             <div className="py-12 flex flex-col items-center justify-center text-center space-y-4 animate-fade-in">
-              <div className="w-16 h-16 rounded-3xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center justify-center">
+              <div className="w-16 h-16 rounded-3xl bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 flex items-center justify-center">
                 <CheckCircle2 className="w-8 h-8" />
               </div>
               <div className="space-y-2 max-w-md">
-                <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
+                <h3 className="text-2xl font-bold text-slate-950">
                   Application Submitted!
                 </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-300">
-                  Thank you, <strong className="text-slate-900 dark:text-white">{formData.fullName}</strong>. Your profile has been registered in the ST-Solutions talent pool. Our engineering review team will contact you if your skills match open client initiatives.
+                <p className="text-sm text-slate-600">
+                  Thank you, <strong className="text-slate-950">{formData.fullName}</strong>. Your profile has been registered in the ST-Solutions talent pool. Our engineering review team will contact you if your skills match open client initiatives.
                 </p>
               </div>
 
@@ -167,7 +167,7 @@ export const ApplyPage: React.FC = () => {
                       resumeText: "",
                     });
                   }}
-                  className="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-colors"
+                  className="px-5 py-2.5 rounded-xl bg-[#F1F2EE] hover:bg-slate-200 text-slate-800 text-xs font-semibold transition-colors border border-[#E2E5E0]"
                 >
                   Submit Another Profile
                 </button>
@@ -175,17 +175,17 @@ export const ApplyPage: React.FC = () => {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="border-b border-slate-100 dark:border-slate-800 pb-4">
-                <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+              <div className="border-b border-[#E2E5E0] pb-4">
+                <h2 className="text-xl sm:text-2xl font-bold text-slate-950">
                   Member Application
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+                <p className="text-xs sm:text-sm text-slate-600 mt-1">
                   Fill in your credentials to apply for open engineering, design, and project roles.
                 </p>
               </div>
 
               {errorMessage && (
-                <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs flex items-center space-x-2 animate-fade-in">
+                <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-700 text-xs flex items-center space-x-2 animate-fade-in font-medium">
                   <AlertCircle className="w-4 h-4 flex-shrink-0" />
                   <span>{errorMessage}</span>
                 </div>
@@ -193,7 +193,7 @@ export const ApplyPage: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
                     Full Name *
                   </label>
                   <input
@@ -202,12 +202,12 @@ export const ApplyPage: React.FC = () => {
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                     placeholder="e.g. David Zhao"
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
                     Email Address *
                   </label>
                   <input
@@ -216,12 +216,12 @@ export const ApplyPage: React.FC = () => {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="david@domain.com"
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
                     Phone / WhatsApp Number
                   </label>
                   <input
@@ -229,12 +229,12 @@ export const ApplyPage: React.FC = () => {
                     value={formData.phoneNumber}
                     onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
                     placeholder="+92 325 7263417"
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
                     Years of Relevant Experience *
                   </label>
                   <input
@@ -246,20 +246,20 @@ export const ApplyPage: React.FC = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, experienceYears: parseInt(e.target.value) || 0 })
                     }
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
                     Role Applied For *
                   </label>
                   <select
                     value={formData.roleApplied}
                     onChange={(e) => setFormData({ ...formData, roleApplied: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
                   >
                     {availableRoles.map((role) => (
                       <option key={role} value={role}>
@@ -270,7 +270,7 @@ export const ApplyPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
                     Portfolio / GitHub URL (Optional)
                   </label>
                   <input
@@ -278,13 +278,13 @@ export const ApplyPage: React.FC = () => {
                     value={formData.portfolioUrl}
                     onChange={(e) => setFormData({ ...formData, portfolioUrl: e.target.value })}
                     placeholder="https://github.com/yourhandle"
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-bold text-slate-800 mb-1">
                   Primary Technical Skills (Comma-separated)
                 </label>
                 <input
@@ -292,12 +292,12 @@ export const ApplyPage: React.FC = () => {
                   value={formData.skills}
                   onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
                   placeholder="React, TypeScript, Tailwind, Node.js, Prisma, PostgreSQL, Docker"
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                  className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-bold text-slate-800 mb-1">
                   Brief Bio / Cover Note / Summary
                 </label>
                 <textarea
@@ -305,7 +305,7 @@ export const ApplyPage: React.FC = () => {
                   value={formData.resumeText}
                   onChange={(e) => setFormData({ ...formData, resumeText: e.target.value })}
                   placeholder="Share a brief introduction, your background with modern web/software engineering, and why you would like to contribute at ST-Solutions..."
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-xs sm:text-sm focus:border-[#D4AF37] outline-none resize-none"
+                  className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none resize-none"
                 />
               </div>
 
@@ -313,17 +313,17 @@ export const ApplyPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl bg-slate-950 text-white dark:bg-[#D4AF37] dark:text-black font-bold text-xs sm:text-sm shadow-md hover:opacity-95 active:scale-[0.99] transition-all disabled:opacity-50"
+                  className="w-full inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl bg-[#111827] text-white font-bold text-xs sm:text-sm shadow-md hover:bg-[#1F2937] active:scale-[0.99] transition-all disabled:opacity-50 border border-[#111827]"
                 >
                   {isSubmitting ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 className="w-4 h-4 animate-spin text-[#D4AF37]" />
                       <span>Submitting Application...</span>
                     </>
                   ) : (
                     <>
                       <span>Submit Application</span>
-                      <ArrowRight className="w-4 h-4" />
+                      <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
                     </>
                   )}
                 </button>

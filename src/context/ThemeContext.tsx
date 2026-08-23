@@ -17,7 +17,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (saved === "dark" || saved === "light") {
       return saved;
     }
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    // ST-Solutions Public & Enterprise Platform is strictly LIGHT-FIRST by default
+    return "light";
   });
 
   useEffect(() => {

@@ -65,10 +65,10 @@ export const HeroArchitectureVisual: React.FC = () => {
   const selectedPillar = pillars.find((p) => p.id === activeNode) || pillars[2];
 
   return (
-    <div className="relative w-full max-w-lg mx-auto bg-white dark:bg-[#0B0F17] rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xl p-6 sm:p-7 overflow-hidden font-sans">
+    <div className="relative w-full max-w-lg mx-auto bg-white rounded-3xl border border-[#E2E5E0] shadow-xl p-6 sm:p-7 overflow-hidden font-sans">
       {/* Background Engineering Matrix Grid */}
       <div
-        className="absolute inset-0 opacity-25 dark:opacity-20 pointer-events-none"
+        className="absolute inset-0 opacity-20 pointer-events-none"
         style={{
           backgroundImage: `linear-gradient(to right, #94a3b8 1px, transparent 1px), linear-gradient(to bottom, #94a3b8 1px, transparent 1px)`,
           backgroundSize: "24px 24px",
@@ -76,15 +76,15 @@ export const HeroArchitectureVisual: React.FC = () => {
       />
 
       {/* Top Architecture Status Bar */}
-      <div className="relative z-10 flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800/80">
+      <div className="relative z-10 flex items-center justify-between pb-4 border-b border-[#E2E5E0]">
         <div className="flex items-center space-x-2">
           <div className="w-2.5 h-2.5 rounded-full bg-[#D4AF37] animate-pulse" />
-          <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-slate-800 dark:text-slate-200">
+          <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-slate-900">
             SYSTEM ARCHITECTURE
           </span>
         </div>
         <div className="flex items-center space-x-2">
-          <span className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/60 text-[10px] font-mono text-blue-600 dark:text-blue-300 font-semibold">
+          <span className="px-2.5 py-0.5 rounded-md bg-blue-50 border border-blue-200 text-[10px] font-mono text-blue-700 font-semibold">
             TypeScript + Postgres
           </span>
         </div>
@@ -103,18 +103,18 @@ export const HeroArchitectureVisual: React.FC = () => {
                 onClick={() => setActiveNode(pillar.id)}
                 className={`flex-1 min-w-[70px] p-2 rounded-xl border text-center transition-all flex flex-col items-center space-y-1 ${
                   isSelected
-                    ? "bg-slate-900 text-white dark:bg-slate-800 border-[#D4AF37] shadow-sm ring-1 ring-[#D4AF37]"
-                    : "bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/80"
+                    ? "bg-[#111827] text-white border-[#D4AF37] shadow-sm ring-1 ring-[#D4AF37]"
+                    : "bg-[#F1F2EE] border-[#E2E5E0] text-slate-700 hover:bg-slate-200/80"
                 }`}
               >
                 <div
                   className={`w-6 h-6 rounded-lg flex items-center justify-center ${
-                    isSelected ? "text-[#D4AF37]" : "text-slate-500"
+                    isSelected ? "text-[#D4AF37]" : "text-slate-600"
                   }`}
                 >
                   <Icon className="w-3.5 h-3.5" />
                 </div>
-                <span className="text-[10px] font-semibold tracking-tight truncate w-full">
+                <span className="text-[10px] font-bold tracking-tight truncate w-full">
                   {pillar.id.toUpperCase()}
                 </span>
               </button>
@@ -132,21 +132,21 @@ export const HeroArchitectureVisual: React.FC = () => {
               stroke="#94a3b8"
               strokeWidth="1.5"
               strokeDasharray="4 4"
-              className="opacity-40"
+              className="opacity-50"
             />
             <path
               d="M 125 5 C 150 20, 175 35, 200 35"
               fill="none"
-              stroke="#38bdf8"
+              stroke="#2563EB"
               strokeWidth="1.5"
-              className="opacity-60"
+              className="opacity-70"
             />
             <path
               d="M 275 5 C 250 20, 225 35, 200 35"
               fill="none"
-              stroke="#38bdf8"
+              stroke="#2563EB"
               strokeWidth="1.5"
-              className="opacity-60"
+              className="opacity-70"
             />
             <path
               d="M 350 5 C 300 25, 250 35, 200 35"
@@ -154,7 +154,7 @@ export const HeroArchitectureVisual: React.FC = () => {
               stroke="#94a3b8"
               strokeWidth="1.5"
               strokeDasharray="4 4"
-              className="opacity-40"
+              className="opacity-50"
             />
             {/* Active Highlighted Stream */}
             <path
@@ -168,8 +168,8 @@ export const HeroArchitectureVisual: React.FC = () => {
           </svg>
         </div>
 
-        {/* The Central ST-SOLUTIONS Enterprise Engine Card */}
-        <div className="p-4 rounded-2xl bg-slate-950 text-white border border-slate-800 shadow-lg relative overflow-hidden">
+        {/* The Central ST-SOLUTIONS Enterprise Engine Card (Intentional Dark Contrast Surface) */}
+        <div className="p-4 rounded-2xl bg-[#111827] text-white border border-[#1F2937] shadow-lg relative overflow-hidden">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 rounded-xl bg-slate-900 border border-[#D4AF37]/40 flex items-center justify-center text-[#D4AF37] font-black text-xs font-mono">
@@ -182,24 +182,24 @@ export const HeroArchitectureVisual: React.FC = () => {
                     ACTIVE
                   </span>
                 </div>
-                <div className="text-[11px] text-slate-400 font-mono">
+                <div className="text-[11px] text-slate-300 font-mono">
                   Engineered Execution & Integration Layer
                 </div>
               </div>
             </div>
-            <div className="hidden sm:block text-right text-[10px] font-mono text-slate-400">
+            <div className="hidden sm:block text-right text-[10px] font-mono text-slate-300">
               <div>Strict RBAC</div>
-              <div className="text-amber-400 font-semibold">Zero-Leak Architecture</div>
+              <div className="text-[#D4AF37] font-semibold">Zero-Leak Architecture</div>
             </div>
           </div>
 
           {/* Active Process Spec Preview */}
-          <div className="mt-3 pt-3 border-t border-slate-800/80 grid grid-cols-2 gap-2 text-[10px] font-mono">
-            <div className="bg-slate-900/90 px-2.5 py-1.5 rounded-lg border border-slate-800 flex justify-between items-center">
+          <div className="mt-3 pt-3 border-t border-slate-700 grid grid-cols-2 gap-2 text-[10px] font-mono">
+            <div className="bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-700 flex justify-between items-center">
               <span className="text-slate-400">SELECTED:</span>
               <span className="text-[#D4AF37] font-bold">{selectedPillar.name}</span>
             </div>
-            <div className="bg-slate-900/90 px-2.5 py-1.5 rounded-lg border border-slate-800 flex justify-between items-center">
+            <div className="bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-700 flex justify-between items-center">
               <span className="text-slate-400">STACK:</span>
               <span className="text-blue-400 font-bold truncate ml-1">{selectedPillar.tag}</span>
             </div>
@@ -208,28 +208,28 @@ export const HeroArchitectureVisual: React.FC = () => {
 
         {/* Downward Vector Stream to Business Outcome */}
         <div className="flex flex-col items-center py-1">
-          <div className="w-0.5 h-6 bg-gradient-to-b from-[#D4AF37] to-blue-500" />
-          <div className="w-5 h-5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/30 flex items-center justify-center -mt-1">
+          <div className="w-0.5 h-6 bg-gradient-to-b from-[#D4AF37] to-blue-600" />
+          <div className="w-5 h-5 rounded-full bg-blue-50 text-blue-600 border border-blue-300 flex items-center justify-center -mt-1 shadow-sm">
             <ArrowDown className="w-3 h-3" />
           </div>
         </div>
 
         {/* Target: Business Value Output */}
-        <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div className="p-3.5 rounded-2xl bg-[#F1F2EE] border border-[#E2E5E0] flex items-center justify-between">
           <div className="flex items-center space-x-2.5">
-            <div className="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
+            <div className="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-bold">
               <Check className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-xs font-bold text-slate-900 dark:text-white">
+              <div className="text-xs font-bold text-slate-950">
                 Client Business Execution
               </div>
-              <div className="text-[10px] text-slate-500 dark:text-slate-400">
+              <div className="text-[10px] text-slate-600">
                 Growth, operational velocity, and automated efficiency.
               </div>
             </div>
           </div>
-          <span className="text-[11px] font-mono font-bold text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded-md border border-[#D4AF37]/30">
+          <span className="text-[11px] font-mono font-bold text-slate-900 bg-[#D4AF37]/20 px-2.5 py-0.5 rounded-md border border-[#D4AF37]/40">
             BUSINESS VALUE
           </span>
         </div>

@@ -225,29 +225,29 @@ export const StartProjectPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F7F3] dark:bg-[#090A0F] py-10 sm:py-16 text-slate-900 dark:text-slate-100 font-sans">
+    <div className="min-h-screen bg-[#F7F7F3] py-10 sm:py-16 text-slate-950 font-sans">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         {/* Page Top Header */}
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-[#D4AF37]/15 border border-[#D4AF37]/40 text-[#D4AF37] text-xs font-mono font-bold uppercase tracking-wider">
+          <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-900 text-xs font-mono font-bold uppercase tracking-wider">
             <span>Project Inquiry Builder</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-950 dark:text-white">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-950">
             Start a Project with ST-Solutions
           </h1>
-          <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base text-slate-700 max-w-2xl mx-auto leading-relaxed">
             Follow this progressive project architect to define your technical requirements, goals, and timeline. Receive a structured project brief ready for WhatsApp, Email, or instant consultation.
           </p>
         </div>
 
         {/* Step Indicator Ribbon */}
         {currentStep <= 7 && (
-          <div className="bg-white dark:bg-[#0F172A] p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
+          <div className="bg-white p-4 rounded-2xl border border-[#E2E5E0] shadow-sm">
             <div className="flex items-center justify-between text-xs font-mono mb-2">
-              <span className="font-bold text-slate-900 dark:text-white">
+              <span className="font-bold text-slate-950">
                 Step 0{currentStep} of 07
               </span>
-              <span className="text-[#D4AF37] font-semibold">
+              <span className="text-[#B88E20] font-bold">
                 {currentStep === 1 && "Technology Scope"}
                 {currentStep === 2 && "Business & Industry"}
                 {currentStep === 3 && "Primary Objectives"}
@@ -258,7 +258,7 @@ export const StartProjectPage: React.FC = () => {
               </span>
             </div>
             {/* Progress Bar */}
-            <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+            <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
               <div
                 className="h-full bg-[#D4AF37] transition-all duration-300 rounded-full"
                 style={{ width: `${(currentStep / 7) * 100}%` }}
@@ -269,23 +269,23 @@ export const StartProjectPage: React.FC = () => {
 
         {/* Error Alert if any */}
         {errorMessage && (
-          <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs sm:text-sm flex items-center space-x-2.5 animate-fade-in">
+          <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-700 text-xs sm:text-sm flex items-center space-x-2.5 animate-fade-in font-medium">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
             <span>{errorMessage}</span>
           </div>
         )}
 
         {/* Main Step Card Container */}
-        <div className="bg-white dark:bg-[#0F172A] rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-lg p-6 sm:p-10 space-y-8">
+        <div className="bg-white rounded-3xl border border-[#E2E5E0] shadow-md p-6 sm:p-10 space-y-8">
           {/* STEP 1: What are you looking to build? */}
           {currentStep === 1 && (
             <div className="space-y-6 animate-fade-in">
               <div className="space-y-1">
-                <span className="text-xs font-mono font-bold text-[#D4AF37] uppercase">Step 01</span>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white">
+                <span className="text-xs font-mono font-bold text-[#B88E20] uppercase">Step 01</span>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
                   What are you looking to build?
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                <p className="text-xs sm:text-sm text-slate-600">
                   Select one or more technologies that match your project vision.
                 </p>
               </div>
@@ -301,31 +301,31 @@ export const StartProjectPage: React.FC = () => {
                       onClick={() => toggleSelection("projectTypes", opt.id)}
                       className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between space-y-3 group ${
                         isSelected
-                          ? "bg-[#D4AF37]/10 border-[#D4AF37] ring-2 ring-[#D4AF37]/40 shadow-sm"
-                          : "bg-slate-50/70 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-100/60"
+                          ? "bg-amber-500/10 border-[#D4AF37] ring-2 ring-[#D4AF37]/50 shadow-sm"
+                          : "bg-white border-[#E2E5E0] hover:border-slate-300 hover:bg-[#F1F2EE]"
                       }`}
                     >
                       <div className="flex items-center justify-between">
                         <div
                           className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
                             isSelected
-                              ? "bg-[#D4AF37] text-black font-bold"
-                              : "bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 group-hover:text-[#D4AF37]"
+                              ? "bg-[#D4AF37] text-slate-950 font-bold"
+                              : "bg-[#F1F2EE] text-slate-700 group-hover:text-[#B88E20]"
                           }`}
                         >
                           <Icon className="w-4 h-4" />
                         </div>
                         {isSelected && (
-                          <div className="w-5 h-5 rounded-full bg-[#D4AF37] text-black flex items-center justify-center">
+                          <div className="w-5 h-5 rounded-full bg-[#D4AF37] text-slate-950 flex items-center justify-center">
                             <Check className="w-3 h-3 stroke-[3]" />
                           </div>
                         )}
                       </div>
                       <div>
-                        <div className="font-bold text-sm text-slate-950 dark:text-white">
+                        <div className="font-bold text-sm text-slate-950">
                           {opt.label}
                         </div>
-                        <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-snug">
+                        <div className="text-[11px] text-slate-600 mt-1 leading-snug">
                           {opt.desc}
                         </div>
                       </div>
@@ -340,18 +340,18 @@ export const StartProjectPage: React.FC = () => {
           {currentStep === 2 && (
             <div className="space-y-6 animate-fade-in max-w-xl">
               <div className="space-y-1">
-                <span className="text-xs font-mono font-bold text-[#D4AF37] uppercase">Step 02</span>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white">
+                <span className="text-xs font-mono font-bold text-[#B88E20] uppercase">Step 02</span>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
                   Tell us about your business
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                <p className="text-xs sm:text-sm text-slate-600">
                   Help us understand your organization and domain context.
                 </p>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
                     Business / Project Name (Optional)
                   </label>
                   <input
@@ -359,12 +359,12 @@ export const StartProjectPage: React.FC = () => {
                     value={formData.businessName || ""}
                     onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
                     placeholder="e.g. Apex Health Clinic / Nexora Retail"
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] outline-none transition-all"
+                    className="w-full px-4 py-3 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] outline-none transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
                     Industry Sector
                   </label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
@@ -377,8 +377,8 @@ export const StartProjectPage: React.FC = () => {
                           onClick={() => setFormData({ ...formData, industry: ind })}
                           className={`p-3 rounded-xl border text-xs font-semibold text-center transition-all ${
                             isSelected
-                              ? "bg-[#D4AF37] text-black font-bold border-[#D4AF37] shadow-sm"
-                              : "bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100"
+                              ? "bg-[#D4AF37] text-slate-950 font-bold border-[#D4AF37] shadow-sm"
+                              : "bg-white border-[#E2E5E0] text-slate-800 hover:bg-[#F1F2EE]"
                           }`}
                         >
                           {ind}
@@ -395,11 +395,11 @@ export const StartProjectPage: React.FC = () => {
           {currentStep === 3 && (
             <div className="space-y-6 animate-fade-in">
               <div className="space-y-1">
-                <span className="text-xs font-mono font-bold text-[#D4AF37] uppercase">Step 03</span>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white">
+                <span className="text-xs font-mono font-bold text-[#B88E20] uppercase">Step 03</span>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
                   What do you want to achieve?
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                <p className="text-xs sm:text-sm text-slate-600">
                   Select the primary business outcomes driving this project.
                 </p>
               </div>
@@ -415,23 +415,23 @@ export const StartProjectPage: React.FC = () => {
                       onClick={() => toggleSelection("goals", goal.id)}
                       className={`p-4 rounded-2xl border text-left transition-all flex items-center justify-between ${
                         isSelected
-                          ? "bg-[#D4AF37]/10 border-[#D4AF37] ring-1 ring-[#D4AF37]"
-                          : "bg-slate-50/70 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 hover:bg-slate-100/60 text-slate-700 dark:text-slate-300"
+                          ? "bg-amber-500/10 border-[#D4AF37] ring-1 ring-[#D4AF37] text-slate-950"
+                          : "bg-white border-[#E2E5E0] hover:bg-[#F1F2EE] text-slate-800"
                       }`}
                     >
                       <div className="flex items-center space-x-3">
                         <div
                           className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                            isSelected ? "bg-[#D4AF37] text-black" : "bg-slate-200 dark:bg-slate-800"
+                            isSelected ? "bg-[#D4AF37] text-slate-950" : "bg-[#F1F2EE] text-slate-700"
                           }`}
                         >
                           <Icon className="w-4 h-4" />
                         </div>
-                        <span className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white">
+                        <span className="font-bold text-xs sm:text-sm text-slate-950">
                           {goal.label}
                         </span>
                       </div>
-                      {isSelected && <Check className="w-4 h-4 text-[#D4AF37] stroke-[3]" />}
+                      {isSelected && <Check className="w-4 h-4 text-[#B88E20] stroke-[3]" />}
                     </button>
                   );
                 })}
@@ -443,11 +443,11 @@ export const StartProjectPage: React.FC = () => {
           {currentStep === 4 && (
             <div className="space-y-6 animate-fade-in">
               <div className="space-y-1">
-                <span className="text-xs font-mono font-bold text-[#D4AF37] uppercase">Step 04</span>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white">
+                <span className="text-xs font-mono font-bold text-[#B88E20] uppercase">Step 04</span>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
                   Features & Requirements
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                <p className="text-xs sm:text-sm text-slate-600">
                   Select key components and provide any custom requirements.
                 </p>
               </div>
@@ -463,18 +463,18 @@ export const StartProjectPage: React.FC = () => {
                       onClick={() => toggleSelection("features", feat.id)}
                       className={`p-3 rounded-xl border text-left transition-all flex items-center space-x-2.5 ${
                         isSelected
-                          ? "bg-[#D4AF37]/10 border-[#D4AF37] ring-1 ring-[#D4AF37]"
-                          : "bg-slate-50/70 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 hover:bg-slate-100/60"
+                          ? "bg-amber-500/10 border-[#D4AF37] ring-1 ring-[#D4AF37]"
+                          : "bg-white border-[#E2E5E0] hover:bg-[#F1F2EE]"
                       }`}
                     >
                       <div
                         className={`w-6 h-6 rounded-md flex items-center justify-center ${
-                          isSelected ? "text-[#D4AF37]" : "text-slate-400"
+                          isSelected ? "text-[#B88E20]" : "text-slate-500"
                         }`}
                       >
                         <Icon className="w-3.5 h-3.5" />
                       </div>
-                      <span className="text-xs font-semibold text-slate-900 dark:text-white truncate">
+                      <span className="text-xs font-semibold text-slate-950 truncate">
                         {feat.label}
                       </span>
                     </button>
@@ -484,7 +484,7 @@ export const StartProjectPage: React.FC = () => {
 
               {/* Large Textarea for Additional Requirements */}
               <div className="pt-2">
-                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">
                   Additional Requirements & Specifications
                 </label>
                 <textarea
@@ -492,7 +492,7 @@ export const StartProjectPage: React.FC = () => {
                   value={formData.additionalRequirements || ""}
                   onChange={(e) => setFormData({ ...formData, additionalRequirements: e.target.value })}
                   placeholder="Detail any specific workflows, third-party APIs (e.g. Stripe, WhatsApp, Brevo), existing databases, or reference sites..."
-                  className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] outline-none resize-none leading-relaxed"
+                  className="w-full p-4 rounded-2xl border border-[#E2E5E0] bg-white text-slate-950 text-sm focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] outline-none resize-none leading-relaxed"
                 />
               </div>
             </div>
@@ -502,11 +502,11 @@ export const StartProjectPage: React.FC = () => {
           {currentStep === 5 && (
             <div className="space-y-6 animate-fade-in max-w-2xl">
               <div className="space-y-1">
-                <span className="text-xs font-mono font-bold text-[#D4AF37] uppercase">Step 05</span>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white">
+                <span className="text-xs font-mono font-bold text-[#B88E20] uppercase">Step 05</span>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
                   Estimated Budget
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                <p className="text-xs sm:text-sm text-slate-600">
                   Select a realistic budget range to help us recommend appropriate architecture.
                 </p>
               </div>
@@ -521,20 +521,20 @@ export const StartProjectPage: React.FC = () => {
                       onClick={() => setFormData({ ...formData, budget: b.id })}
                       className={`w-full p-4 rounded-2xl border text-left transition-all flex items-center justify-between ${
                         isSelected
-                          ? "bg-[#D4AF37]/10 border-[#D4AF37] ring-1 ring-[#D4AF37]"
-                          : "bg-slate-50/70 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 hover:bg-slate-100/60"
+                          ? "bg-amber-500/10 border-[#D4AF37] ring-1 ring-[#D4AF37]"
+                          : "bg-white border-[#E2E5E0] hover:bg-[#F1F2EE]"
                       }`}
                     >
                       <div>
-                        <div className="font-bold text-sm text-slate-950 dark:text-white">
+                        <div className="font-bold text-sm text-slate-950">
                           {b.label}
                         </div>
-                        <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        <div className="text-xs text-slate-600 mt-0.5">
                           {b.desc}
                         </div>
                       </div>
                       {isSelected && (
-                        <div className="w-5 h-5 rounded-full bg-[#D4AF37] text-black flex items-center justify-center">
+                        <div className="w-5 h-5 rounded-full bg-[#D4AF37] text-slate-950 flex items-center justify-center">
                           <Check className="w-3 h-3 stroke-[3]" />
                         </div>
                       )}
@@ -549,11 +549,11 @@ export const StartProjectPage: React.FC = () => {
           {currentStep === 6 && (
             <div className="space-y-6 animate-fade-in max-w-2xl">
               <div className="space-y-1">
-                <span className="text-xs font-mono font-bold text-[#D4AF37] uppercase">Step 06</span>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white">
+                <span className="text-xs font-mono font-bold text-[#B88E20] uppercase">Step 06</span>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
                   Expected Timeline
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                <p className="text-xs sm:text-sm text-slate-600">
                   When do you need this system or project completed?
                 </p>
               </div>
@@ -568,20 +568,20 @@ export const StartProjectPage: React.FC = () => {
                       onClick={() => setFormData({ ...formData, timeline: t.id })}
                       className={`w-full p-4 rounded-2xl border text-left transition-all flex items-center justify-between ${
                         isSelected
-                          ? "bg-[#D4AF37]/10 border-[#D4AF37] ring-1 ring-[#D4AF37]"
-                          : "bg-slate-50/70 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 hover:bg-slate-100/60"
+                          ? "bg-amber-500/10 border-[#D4AF37] ring-1 ring-[#D4AF37]"
+                          : "bg-white border-[#E2E5E0] hover:bg-[#F1F2EE]"
                       }`}
                     >
                       <div>
-                        <div className="font-bold text-sm text-slate-950 dark:text-white">
+                        <div className="font-bold text-sm text-slate-950">
                           {t.label}
                         </div>
-                        <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        <div className="text-xs text-slate-600 mt-0.5">
                           {t.desc}
                         </div>
                       </div>
                       {isSelected && (
-                        <div className="w-5 h-5 rounded-full bg-[#D4AF37] text-black flex items-center justify-center">
+                        <div className="w-5 h-5 rounded-full bg-[#D4AF37] text-slate-950 flex items-center justify-center">
                           <Check className="w-3 h-3 stroke-[3]" />
                         </div>
                       )}
@@ -596,18 +596,18 @@ export const StartProjectPage: React.FC = () => {
           {currentStep === 7 && (
             <div className="space-y-6 animate-fade-in max-w-xl">
               <div className="space-y-1">
-                <span className="text-xs font-mono font-bold text-[#D4AF37] uppercase">Step 07</span>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white">
+                <span className="text-xs font-mono font-bold text-[#B88E20] uppercase">Step 07</span>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
                   Your Contact Details
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                <p className="text-xs sm:text-sm text-slate-600">
                   Provide your primary contact information for project scoping.
                 </p>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
                     Your Full Name *
                   </label>
                   <input
@@ -616,12 +616,12 @@ export const StartProjectPage: React.FC = () => {
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                     placeholder="e.g. Alex Morgan"
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:border-[#D4AF37] outline-none"
+                    className="w-full px-4 py-3 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm focus:border-[#D4AF37] outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
                     Email Address *
                   </label>
                   <input
@@ -630,12 +630,12 @@ export const StartProjectPage: React.FC = () => {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="alex@company.com"
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:border-[#D4AF37] outline-none"
+                    className="w-full px-4 py-3 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm focus:border-[#D4AF37] outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
                     Phone / WhatsApp Number
                   </label>
                   <input
@@ -643,12 +643,12 @@ export const StartProjectPage: React.FC = () => {
                     value={formData.phoneNumber || ""}
                     onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
                     placeholder="+92 325 7263417"
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:border-[#D4AF37] outline-none"
+                    className="w-full px-4 py-3 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm focus:border-[#D4AF37] outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
                     Company / Organization (Optional)
                   </label>
                   <input
@@ -656,7 +656,7 @@ export const StartProjectPage: React.FC = () => {
                     value={formData.companyName || ""}
                     onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
                     placeholder="e.g. Apex Global Ltd"
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:border-[#D4AF37] outline-none"
+                    className="w-full px-4 py-3 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm focus:border-[#D4AF37] outline-none"
                   />
                 </div>
               </div>
@@ -667,27 +667,27 @@ export const StartProjectPage: React.FC = () => {
           {currentStep === 8 && (
             <div className="space-y-8 animate-fade-in">
               <div className="space-y-2 text-center sm:text-left">
-                <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-mono font-bold uppercase">
+                <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 text-xs font-mono font-bold uppercase">
                   <span>Project Brief Ready</span>
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white">
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
                   Your Project Brief
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-xs sm:text-sm text-slate-600">
                   Review your specifications below. Choose your preferred dispatch channel to begin technical consultation with ST-Solutions.
                 </p>
               </div>
 
-              {/* Formatted Project Brief Card */}
-              <div className="bg-slate-950 text-slate-100 rounded-2xl p-6 font-mono text-xs sm:text-sm leading-relaxed border border-slate-800 shadow-inner relative group">
-                <pre className="whitespace-pre-wrap font-mono text-xs sm:text-sm leading-relaxed overflow-x-auto text-slate-300">
+              {/* Formatted Project Brief Card (Intentional Dark Contrast Section) */}
+              <div className="bg-[#111827] text-slate-100 rounded-2xl p-6 font-mono text-xs sm:text-sm leading-relaxed border border-[#1F2937] shadow-inner relative group">
+                <pre className="whitespace-pre-wrap font-mono text-xs sm:text-sm leading-relaxed overflow-x-auto text-slate-200">
                   {generatedMessage}
                 </pre>
               </div>
 
               {/* Three Primary Dispatch Action Buttons */}
               <div className="space-y-4">
-                <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                <div className="text-xs font-bold uppercase tracking-wider text-slate-700 font-mono">
                   Send Project Brief
                 </div>
 
@@ -710,7 +710,7 @@ export const StartProjectPage: React.FC = () => {
                       // Also auto-save in background
                       handleDirectApiSubmit();
                     }}
-                    className="p-4 rounded-2xl bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white font-bold text-xs sm:text-sm border border-slate-800 dark:border-slate-700 flex items-center justify-center space-x-2 transition-transform hover:scale-[1.02] active:scale-[0.98]"
+                    className="p-4 rounded-2xl bg-[#111827] hover:bg-[#1F2937] text-white font-bold text-xs sm:text-sm border border-[#111827] flex items-center justify-center space-x-2 transition-transform hover:scale-[1.02] active:scale-[0.98]"
                   >
                     <Mail className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
                     <span>Send via Email →</span>
@@ -720,16 +720,16 @@ export const StartProjectPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={handleCopyMessage}
-                    className="p-4 rounded-2xl bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-bold text-xs sm:text-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center space-x-2 transition-all"
+                    className="p-4 rounded-2xl bg-[#F1F2EE] hover:bg-slate-200 text-slate-950 font-bold text-xs sm:text-sm border border-[#E2E5E0] flex items-center justify-center space-x-2 transition-all"
                   >
                     {copied ? (
                       <>
-                        <Check className="w-5 h-5 text-emerald-500 stroke-[3]" />
-                        <span className="text-emerald-500">✓ Project brief copied</span>
+                        <Check className="w-5 h-5 text-emerald-600 stroke-[3]" />
+                        <span className="text-emerald-700 font-bold">✓ Copied</span>
                       </>
                     ) : (
                       <>
-                        <Copy className="w-5 h-5 text-slate-500" />
+                        <Copy className="w-5 h-5 text-slate-600" />
                         <span>Copy Message</span>
                       </>
                     )}
@@ -737,7 +737,7 @@ export const StartProjectPage: React.FC = () => {
                 </div>
 
                 {submitSuccess && (
-                  <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs flex items-center space-x-2">
+                  <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 text-xs flex items-center space-x-2 font-medium">
                     <Check className="w-4 h-4" />
                     <span>Project brief also recorded securely in ST-Solutions client queue.</span>
                   </div>
@@ -745,16 +745,16 @@ export const StartProjectPage: React.FC = () => {
               </div>
 
               {/* Edit Brief Button */}
-              <div className="pt-2 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
+              <div className="pt-2 flex items-center justify-between border-t border-[#E2E5E0]">
                 <button
                   type="button"
                   onClick={() => setCurrentStep(1)}
-                  className="text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white flex items-center space-x-1.5"
+                  className="text-xs font-bold text-slate-700 hover:text-slate-950 flex items-center space-x-1.5"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   <span>Edit Project Choices</span>
                 </button>
-                <span className="text-[11px] text-slate-500">
+                <span className="text-[11px] text-slate-600 font-mono">
                   Official WhatsApp: +92 325 7263417
                 </span>
               </div>
@@ -763,12 +763,12 @@ export const StartProjectPage: React.FC = () => {
 
           {/* Navigation Controls (Steps 1 through 7) */}
           {currentStep <= 7 && (
-            <div className="pt-6 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
+            <div className="pt-6 flex items-center justify-between border-t border-[#E2E5E0]">
               {currentStep > 1 ? (
                 <button
                   type="button"
                   onClick={handleStepBack}
-                  className="flex items-center space-x-2 px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  className="flex items-center space-x-2 px-5 py-2.5 rounded-xl border border-[#E2E5E0] text-xs font-bold text-slate-700 hover:bg-[#F1F2EE] transition-colors"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   <span>Back</span>
@@ -780,20 +780,20 @@ export const StartProjectPage: React.FC = () => {
               <button
                 type="button"
                 onClick={handleStepNext}
-                className="flex items-center space-x-2 px-6 py-3 rounded-xl bg-slate-950 text-white dark:bg-[#D4AF37] dark:text-black font-bold text-xs sm:text-sm shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all"
+                className="flex items-center space-x-2 px-6 py-3 rounded-xl bg-[#111827] text-white font-bold text-xs sm:text-sm shadow-md hover:bg-[#1F2937] active:scale-[0.98] transition-all border border-[#111827]"
               >
                 <span>{currentStep === 7 ? "Review Project Brief" : "Continue"}</span>
-                <ArrowRight className="w-4 h-4 text-[#D4AF37] dark:text-black" />
+                <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
               </button>
             </div>
           )}
         </div>
 
         {/* Direct Contact Alternative Footer */}
-        <div className="p-6 rounded-2xl bg-white dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+        <div className="p-6 rounded-2xl bg-white border border-[#E2E5E0] flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left shadow-sm">
           <div>
-            <div className="text-xs font-bold uppercase text-slate-500">Direct Engineering Intake</div>
-            <div className="text-sm font-semibold text-slate-900 dark:text-white mt-0.5">
+            <div className="text-xs font-bold uppercase text-slate-500 font-mono">Direct Engineering Intake</div>
+            <div className="text-sm font-semibold text-slate-950 mt-0.5">
               Prefer a direct consultation without the wizard?
             </div>
           </div>
@@ -802,14 +802,14 @@ export const StartProjectPage: React.FC = () => {
               href={companyConfig.contact.whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center space-x-1.5"
+              className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center space-x-1.5 shadow-sm"
             >
               <MessageCircle className="w-3.5 h-3.5" />
               <span>WhatsApp</span>
             </a>
             <Link
               to="/contact"
-              className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold"
+              className="px-4 py-2 rounded-xl bg-[#F1F2EE] hover:bg-slate-200 text-slate-900 text-xs font-bold border border-[#E2E5E0]"
             >
               Contact Center
             </Link>

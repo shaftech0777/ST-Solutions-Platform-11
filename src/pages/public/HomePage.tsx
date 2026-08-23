@@ -33,28 +33,28 @@ export const HomePage: React.FC = () => {
       {/* 1. HERO SECTION (Light-First, Crisp, Yellow+Black Brand Identity with Subtle Tech Accents) */}
       <section className="relative pt-6 sm:pt-12 pb-12 sm:pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden">
         {/* Subtle Tech Grid Background */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f080_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f080_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#1e293b40_1px,transparent_1px),linear-gradient(to_bottom,#1e293b40_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,#000_70%,transparent_100%)] pointer-events-none" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f080_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f080_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,#000_70%,transparent_100%)] pointer-events-none" />
 
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           {/* Left Column: Headline, Description & CTAs */}
           <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
             {/* Enterprise Tag */}
-            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-[#D4AF37] text-xs font-semibold tracking-wide">
+            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-900 text-xs font-semibold tracking-wide">
               <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-pulse" />
               <span>ST-SOLUTIONS • TECHNOLOGY • AI • AUTOMATION</span>
             </div>
 
             {/* Main Headline */}
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.12]">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-950 leading-[1.12]">
               Technology that moves your{" "}
-              <span className="relative inline-block text-slate-950 dark:text-[#D4AF37]">
+              <span className="relative inline-block text-slate-950">
                 business forward.
-                <span className="absolute bottom-1 left-0 right-0 h-1.5 bg-[#D4AF37]/40 -z-10 rounded-full" />
+                <span className="absolute bottom-1 left-0 right-0 h-2 bg-[#D4AF37]/40 -z-10 rounded-full" />
               </span>
             </h1>
 
             {/* Brand Subtitle */}
-            <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+            <p className="text-base sm:text-lg text-slate-700 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
               ST-Solutions builds modern websites, software, AI systems, and business automation solutions designed around real business needs.
             </p>
 
@@ -62,33 +62,33 @@ export const HomePage: React.FC = () => {
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-2">
               <Link
                 to="/start-project"
-                className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-2xl bg-slate-950 text-white dark:bg-[#D4AF37] dark:text-black font-bold text-sm shadow-xl shadow-slate-900/10 hover:opacity-95 hover:scale-[1.02] active:scale-[0.98] transition-all border border-slate-900 dark:border-amber-400"
+                className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-2xl bg-[#111827] text-white font-bold text-sm shadow-xl shadow-slate-900/10 hover:bg-[#1F2937] hover:scale-[1.02] active:scale-[0.98] transition-all border border-[#111827]"
               >
                 <span>Start a Project</span>
-                <ArrowRight className="w-4 h-4 text-[#D4AF37] dark:text-black" />
+                <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
               </Link>
 
               <Link
                 to="/solutions"
-                className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-2xl bg-white dark:bg-slate-900/80 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-white font-semibold text-sm border border-slate-200 dark:border-slate-800 transition-all shadow-sm"
+                className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-100 text-slate-900 font-semibold text-sm border border-[#E2E5E0] transition-all shadow-sm"
               >
                 <span>Explore Solutions</span>
-                <ChevronRight className="w-4 h-4 text-slate-400" />
+                <ChevronRight className="w-4 h-4 text-slate-500" />
               </Link>
             </div>
 
             {/* Quick Trust Checks */}
-            <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2 text-xs text-slate-500 dark:text-slate-400">
+            <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2 text-xs text-slate-700 font-medium">
               <div className="flex items-center space-x-1.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 <span>Zero bloated templates</span>
               </div>
               <div className="flex items-center space-x-1.5">
-                <CheckCircle2 className="w-4 h-4 text-[#D4AF37]" />
+                <CheckCircle2 className="w-4 h-4 text-[#B88E20]" />
                 <span>Direct engineering lead</span>
               </div>
               <div className="flex items-center space-x-1.5">
-                <CheckCircle2 className="w-4 h-4 text-blue-500" />
+                <CheckCircle2 className="w-4 h-4 text-blue-600" />
                 <span>Production-grade quality</span>
               </div>
             </div>
@@ -104,14 +104,14 @@ export const HomePage: React.FC = () => {
       {/* 2. SERVICES SECTION ("What can we build for your business?") */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center space-y-2 mb-8 sm:mb-12">
-          <div className="inline-flex items-center space-x-1.5 text-xs font-bold text-[#D4AF37] uppercase tracking-wider">
+          <div className="inline-flex items-center space-x-1.5 text-xs font-bold text-[#B88E20] uppercase tracking-wider">
             <Layers className="w-3.5 h-3.5" />
             <span>Core Capabilities</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-950 tracking-tight">
             What can we build for your business?
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
+          <p className="text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
             Choose an area below to explore how ST-Solutions engineers technology tailored to your operations.
           </p>
         </div>
@@ -123,11 +123,11 @@ export const HomePage: React.FC = () => {
               <Link
                 key={service.id}
                 to={`/services#${service.id}`}
-                className="group p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-[#D4AF37]/60 dark:hover:border-[#D4AF37]/60 transition-all duration-200 flex flex-col justify-between space-y-5"
+                className="group p-6 sm:p-7 rounded-3xl bg-white border border-[#E2E5E0] shadow-sm hover:shadow-xl hover:border-[#D4AF37] transition-all duration-200 flex flex-col justify-between space-y-5"
               >
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <div className="w-11 h-11 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-[#D4AF37] flex items-center justify-center group-hover:bg-[#D4AF37] group-hover:text-black transition-colors shadow-sm">
+                    <div className="w-11 h-11 rounded-2xl bg-[#F1F2EE] text-slate-900 flex items-center justify-center group-hover:bg-[#D4AF37] group-hover:text-black transition-colors shadow-sm">
                       {service.id === "web-development" && <Globe className="w-5 h-5" />}
                       {service.id === "software-development" && <Code2 className="w-5 h-5" />}
                       {service.id === "ai-solutions" && <Brain className="w-5 h-5" />}
@@ -135,24 +135,24 @@ export const HomePage: React.FC = () => {
                       {service.id === "e-commerce" && <ShoppingBag className="w-5 h-5" />}
                       {service.id === "digital-transformation" && <Cpu className="w-5 h-5" />}
                     </div>
-                    <span className="text-xl font-black font-mono text-slate-300 dark:text-slate-700 group-hover:text-[#D4AF37] transition-colors">
+                    <span className="text-xl font-black font-mono text-slate-300 group-hover:text-[#B88E20] transition-colors">
                       {stepNum}
                     </span>
                   </div>
 
                   <div>
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-[#D4AF37] transition-colors">
+                    <h3 className="text-lg font-bold text-slate-950 group-hover:text-slate-950 transition-colors">
                       {service.title}
                     </h3>
-                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed mt-1.5 line-clamp-2">
+                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mt-1.5 line-clamp-2">
                       {service.shortDesc}
                     </p>
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs font-semibold text-slate-900 dark:text-white group-hover:text-[#D4AF37] transition-colors">
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-slate-900 group-hover:text-slate-950 transition-colors">
                   <span>Explore Engineering Details</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform text-[#B88E20]" />
                 </div>
               </Link>
             );
@@ -164,24 +164,24 @@ export const HomePage: React.FC = () => {
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12 gap-4">
           <div className="space-y-2">
-            <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#D4AF37] uppercase tracking-wider">
+            <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#B88E20] uppercase tracking-wider">
               <Database className="w-3.5 h-3.5" />
               <span>Production Systems</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight">
               Genuine Systems in Production
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-lg">
+            <p className="text-xs sm:text-sm text-slate-600 max-w-lg">
               Explore authentic platforms, multi-agent pipelines, and low-latency infrastructure engineered and maintained by ST-Solutions.
             </p>
           </div>
 
           <Link
             to="/projects"
-            className="inline-flex items-center space-x-1.5 text-xs font-bold text-slate-900 dark:text-white hover:text-[#D4AF37] transition-colors"
+            className="inline-flex items-center space-x-1.5 text-xs font-bold text-slate-900 hover:text-slate-950 transition-colors"
           >
             <span>View all engineering projects</span>
-            <ArrowRight className="w-3.5 h-3.5 text-[#D4AF37]" />
+            <ArrowRight className="w-3.5 h-3.5 text-[#B88E20]" />
           </Link>
         </div>
 
@@ -189,48 +189,48 @@ export const HomePage: React.FC = () => {
           {projectsData.slice(0, 3).map((project) => (
             <div
               key={project.id}
-              className="p-6 rounded-3xl bg-white dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all space-y-5 flex flex-col justify-between group"
+              className="p-6 rounded-3xl bg-white border border-[#E2E5E0] shadow-sm hover:shadow-xl transition-all space-y-5 flex flex-col justify-between group"
             >
               <div className="space-y-4">
                 {/* Visual Architectural Card */}
                 <ProjectCardVisual projectId={project.id} category={project.category} />
 
                 <div className="flex items-center justify-between pt-1">
-                  <span className="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-[10px] font-semibold text-slate-700 dark:text-slate-300 font-mono">
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#F1F2EE] text-[10px] font-semibold text-slate-800 font-mono">
                     {project.category}
                   </span>
-                  <span className="flex items-center space-x-1.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                  <span className="flex items-center space-x-1.5 text-[10px] font-semibold text-emerald-700">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                     <span>{project.status}</span>
                   </span>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-[#D4AF37] transition-colors">
+                  <h3 className="text-lg font-bold text-slate-950 group-hover:text-slate-950 transition-colors">
                     {project.title}
                   </h3>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-1.5 line-clamp-3 leading-relaxed">
+                  <p className="text-xs text-slate-600 mt-1.5 line-clamp-3 leading-relaxed">
                     {project.description}
                   </p>
                 </div>
 
                 {/* Key Metrics */}
-                <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 dark:border-slate-800/80">
+                <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100">
                   {project.metrics.map((m, idx) => (
-                    <div key={idx} className="bg-slate-50 dark:bg-slate-900/80 p-2 rounded-xl text-center">
-                      <div className="text-xs font-bold text-[#D4AF37] font-mono">{m.value}</div>
-                      <div className="text-[9px] text-slate-500 truncate">{m.label}</div>
+                    <div key={idx} className="bg-[#F1F2EE] p-2 rounded-xl text-center border border-[#E2E5E0]">
+                      <div className="text-xs font-bold text-slate-950 font-mono">{m.value}</div>
+                      <div className="text-[9px] text-slate-600 truncate font-medium">{m.label}</div>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800">
+              <div className="flex items-center justify-between pt-2 border-t border-slate-100">
                 <div className="flex flex-wrap gap-1">
                   {project.technologies.slice(0, 2).map((tech, idx) => (
                     <span
                       key={idx}
-                      className="text-[9px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-md"
+                      className="text-[9px] font-mono bg-[#F1F2EE] text-slate-700 px-2 py-0.5 rounded-md border border-[#E2E5E0]"
                     >
                       {tech}
                     </span>
@@ -238,7 +238,7 @@ export const HomePage: React.FC = () => {
                 </div>
                 <Link
                   to="/projects"
-                  className="text-xs font-semibold text-[#D4AF37] hover:underline inline-flex items-center space-x-1"
+                  className="text-xs font-semibold text-[#B88E20] hover:underline inline-flex items-center space-x-1"
                 >
                   <span>Architecture</span>
                   <ChevronRight className="w-3.5 h-3.5" />
@@ -249,18 +249,18 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 4. GUIDED PROJECT INQUIRY CTA BANNER */}
+      {/* 4. GUIDED PROJECT INQUIRY CTA BANNER (Intentional Dark Contrast Section) */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="p-8 sm:p-12 rounded-3xl bg-slate-950 text-white border border-slate-800 shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="p-8 sm:p-12 rounded-3xl bg-[#111827] text-white border border-[#1F2937] shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="space-y-3 text-center md:text-left max-w-xl">
             <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#D4AF37] uppercase tracking-wider font-mono">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Tailored Technical Scoping</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
               Ready to architect your custom solution?
             </h2>
-            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
               Use our 7-step interactive project architect to specify your business requirements, timeline, and goals. Generate an instant brief for WhatsApp or Email.
             </p>
           </div>
@@ -268,10 +268,10 @@ export const HomePage: React.FC = () => {
           <div className="flex flex-col sm:flex-row items-center gap-3">
             <Link
               to="/start-project"
-              className="px-6 py-3.5 rounded-2xl bg-[#D4AF37] hover:bg-amber-400 text-black font-bold text-sm shadow-xl flex items-center space-x-2 transition-transform hover:scale-[1.02] active:scale-[0.98]"
+              className="px-6 py-3.5 rounded-2xl bg-[#D4AF37] hover:bg-[#E5C158] text-slate-950 font-bold text-sm shadow-xl flex items-center space-x-2 transition-transform hover:scale-[1.02] active:scale-[0.98]"
             >
               <span>Start a Project</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4 text-slate-950" />
             </Link>
             <a
               href={companyConfig.contact.whatsappUrl}
@@ -289,13 +289,13 @@ export const HomePage: React.FC = () => {
       {/* 5. PROCESS SECTION (01 Discover -> 06 Support) */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center space-y-2 mb-10 sm:mb-14">
-          <div className="inline-flex items-center space-x-1.5 text-xs font-bold text-[#D4AF37] uppercase tracking-wider">
+          <div className="inline-flex items-center space-x-1.5 text-xs font-bold text-[#B88E20] uppercase tracking-wider">
             <span>Engineering Discipline</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight">
             Our 6-Step Delivery Lifecycle
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-lg mx-auto">
+          <p className="text-xs sm:text-sm text-slate-600 max-w-lg mx-auto">
             From initial problem discovery to ongoing post-launch SLA maintenance, we keep every milestone transparent.
           </p>
         </div>
@@ -304,20 +304,20 @@ export const HomePage: React.FC = () => {
           {processSteps.map((step) => (
             <div
               key={step.step}
-              className="p-6 rounded-3xl bg-white dark:bg-[#0B0F17] border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3 relative group hover:border-[#D4AF37]/50 transition-colors"
+              className="p-6 rounded-3xl bg-white border border-[#E2E5E0] shadow-sm space-y-3 relative group hover:border-[#D4AF37] transition-colors"
             >
               <div className="flex items-center justify-between">
-                <span className="text-2xl font-black font-mono text-slate-300 dark:text-slate-700 group-hover:text-[#D4AF37] transition-colors">
+                <span className="text-2xl font-black font-mono text-slate-300 group-hover:text-[#B88E20] transition-colors">
                   {step.step}
                 </span>
-                <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-[#D4AF37] flex items-center justify-center text-xs font-bold">
+                <div className="w-8 h-8 rounded-xl bg-[#F1F2EE] text-slate-900 flex items-center justify-center text-xs font-bold">
                   {step.title[0]}
                 </div>
               </div>
 
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">{step.title}</h3>
-              <div className="text-[11px] font-semibold text-[#D4AF37]">{step.tagline}</div>
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              <h3 className="text-base font-bold text-slate-950">{step.title}</h3>
+              <div className="text-[11px] font-semibold text-[#B88E20]">{step.tagline}</div>
+              <p className="text-xs text-slate-600 leading-relaxed">
                 {step.description}
               </p>
             </div>
@@ -325,15 +325,15 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 6. FOUNDER / ADMIN PROFILE ("Meet the Founder") */}
+      {/* 6. FOUNDER / ADMIN PROFILE (Intentional Dark Contrast Section) */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="p-8 sm:p-12 rounded-3xl bg-slate-900 text-white border border-slate-800 shadow-2xl relative overflow-hidden">
+        <div className="p-8 sm:p-12 rounded-3xl bg-[#111827] text-white border border-[#1F2937] shadow-2xl relative overflow-hidden">
           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-8 space-y-4">
-              <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#D4AF37] uppercase tracking-wider">
+              <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#D4AF37] uppercase tracking-wider font-mono">
                 <span>Leadership & Systems Architecture</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
                 Meet the Founder — {companyConfig.founder.name}
               </h2>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl">
@@ -345,7 +345,7 @@ export const HomePage: React.FC = () => {
                   href={companyConfig.founder.portfolioUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-[#D4AF37] hover:bg-amber-400 text-black font-bold text-xs shadow-md transition-all group"
+                  className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-[#D4AF37] hover:bg-[#E5C158] text-slate-950 font-bold text-xs shadow-md transition-all group"
                 >
                   <span>View Official Portfolio</span>
                   <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -355,11 +355,11 @@ export const HomePage: React.FC = () => {
 
             <div className="lg:col-span-4 flex justify-center lg:justify-end">
               <div className="w-40 h-40 sm:w-48 sm:h-48 rounded-3xl bg-slate-800 border-2 border-[#D4AF37]/50 flex flex-col items-center justify-center p-6 text-center shadow-2xl space-y-2">
-                <div className="w-16 h-16 rounded-2xl bg-[#D4AF37] text-black font-black text-2xl flex items-center justify-center shadow-lg">
+                <div className="w-16 h-16 rounded-2xl bg-[#D4AF37] text-slate-950 font-black text-2xl flex items-center justify-center shadow-lg">
                   MS
                 </div>
                 <div className="text-sm font-bold text-white">{companyConfig.founder.name}</div>
-                <div className="text-[10px] text-amber-400 font-mono">Founder / Admin</div>
+                <div className="text-[10px] text-amber-300 font-mono">Founder / Admin</div>
               </div>
             </div>
           </div>
@@ -368,12 +368,12 @@ export const HomePage: React.FC = () => {
 
       {/* 7. DIRECT CONTACT & ACTION BANNER */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="p-8 sm:p-12 rounded-3xl bg-white dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 shadow-xl space-y-8">
+        <div className="p-8 sm:p-12 rounded-3xl bg-white border border-[#E2E5E0] shadow-xl space-y-8">
           <div className="text-center space-y-2 max-w-2xl mx-auto">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight">
               Ready to build or modernize your technology?
             </h2>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+            <p className="text-xs sm:text-sm text-slate-600">
               Connect directly with our engineering team through your preferred channel. We respond promptly.
             </p>
           </div>
@@ -384,23 +384,23 @@ export const HomePage: React.FC = () => {
               href={companyConfig.contact.whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 hover:shadow-md transition-all group flex flex-col justify-between space-y-3"
+              className="p-5 rounded-2xl bg-emerald-50/80 border border-emerald-200 hover:shadow-md transition-all group flex flex-col justify-between space-y-3"
             >
               <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center group-hover:scale-110 transition-transform">
+                <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
                   <MessageCircle className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 uppercase">
+                <span className="text-[10px] font-bold text-emerald-800 uppercase">
                   Direct
                 </span>
               </div>
               <div>
-                <div className="text-sm font-bold text-slate-900 dark:text-white">Chat on WhatsApp</div>
-                <div className="text-xs text-slate-600 dark:text-slate-400 font-mono mt-0.5">
+                <div className="text-sm font-bold text-slate-950">Chat on WhatsApp</div>
+                <div className="text-xs text-slate-600 font-mono mt-0.5">
                   {companyConfig.contact.whatsappDisplay}
                 </div>
               </div>
-              <div className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center space-x-1">
+              <div className="text-xs font-semibold text-emerald-700 flex items-center space-x-1">
                 <span>Start chat</span>
                 <ArrowRight className="w-3 h-3" />
               </div>
@@ -409,23 +409,23 @@ export const HomePage: React.FC = () => {
             {/* Phone Call Card */}
             <a
               href={companyConfig.contact.phoneTel}
-              className="p-5 rounded-2xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/60 hover:shadow-md transition-all group flex flex-col justify-between space-y-3"
+              className="p-5 rounded-2xl bg-blue-50/80 border border-blue-200 hover:shadow-md transition-all group flex flex-col justify-between space-y-3"
             >
               <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center group-hover:scale-110 transition-transform">
+                <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
                   <Phone className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] font-bold text-blue-700 dark:text-blue-400 uppercase">
+                <span className="text-[10px] font-bold text-blue-800 uppercase">
                   Call
                 </span>
               </div>
               <div>
-                <div className="text-sm font-bold text-slate-900 dark:text-white">Call Direct</div>
-                <div className="text-xs text-slate-600 dark:text-slate-400 font-mono mt-0.5">
+                <div className="text-sm font-bold text-slate-950">Call Direct</div>
+                <div className="text-xs text-slate-600 font-mono mt-0.5">
                   {companyConfig.contact.phoneDisplay}
                 </div>
               </div>
-              <div className="text-xs font-semibold text-blue-600 dark:text-blue-400 flex items-center space-x-1">
+              <div className="text-xs font-semibold text-blue-700 flex items-center space-x-1">
                 <span>Call now</span>
                 <ArrowRight className="w-3 h-3" />
               </div>
@@ -434,23 +434,23 @@ export const HomePage: React.FC = () => {
             {/* Email Card */}
             <a
               href={`mailto:${companyConfig.contact.email}`}
-              className="p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 hover:shadow-md transition-all group flex flex-col justify-between space-y-3"
+              className="p-5 rounded-2xl bg-amber-50/80 border border-amber-200 hover:shadow-md transition-all group flex flex-col justify-between space-y-3"
             >
               <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-xl bg-[#D4AF37] text-black flex items-center justify-center group-hover:scale-110 transition-transform">
+                <div className="w-10 h-10 rounded-xl bg-[#D4AF37] text-slate-950 flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm font-bold">
                   <Mail className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] font-bold text-amber-800 dark:text-amber-400 uppercase">
+                <span className="text-[10px] font-bold text-amber-900 uppercase">
                   Email
                 </span>
               </div>
               <div className="truncate">
-                <div className="text-sm font-bold text-slate-900 dark:text-white">Email Us</div>
-                <div className="text-xs text-slate-600 dark:text-slate-400 truncate mt-0.5">
+                <div className="text-sm font-bold text-slate-950">Email Us</div>
+                <div className="text-xs text-slate-600 truncate mt-0.5">
                   {companyConfig.contact.email}
                 </div>
               </div>
-              <div className="text-xs font-semibold text-amber-700 dark:text-[#D4AF37] flex items-center space-x-1">
+              <div className="text-xs font-semibold text-amber-800 flex items-center space-x-1">
                 <span>Send message</span>
                 <ArrowRight className="w-3 h-3" />
               </div>
@@ -459,23 +459,23 @@ export const HomePage: React.FC = () => {
             {/* WeChat Card */}
             <button
               onClick={() => setIsWeChatModalOpen(true)}
-              className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all group flex flex-col justify-between space-y-3 text-left"
+              className="p-5 rounded-2xl bg-[#F1F2EE] border border-[#E2E5E0] hover:shadow-md transition-all group flex flex-col justify-between space-y-3 text-left"
             >
               <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-xl bg-slate-800 text-[#D4AF37] flex items-center justify-center group-hover:scale-110 transition-transform">
+                <div className="w-10 h-10 rounded-xl bg-slate-900 text-[#D4AF37] flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
                   <QrCode className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] font-bold text-slate-500 uppercase">WeChat</span>
+                <span className="text-[10px] font-bold text-slate-600 uppercase">WeChat</span>
               </div>
               <div>
-                <div className="text-sm font-bold text-slate-900 dark:text-white">Official WeChat</div>
-                <div className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+                <div className="text-sm font-bold text-slate-950">Official WeChat</div>
+                <div className="text-xs text-slate-600 mt-0.5">
                   Scan to connect
                 </div>
               </div>
-              <div className="text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center space-x-1">
+              <div className="text-xs font-semibold text-slate-900 flex items-center space-x-1">
                 <span>Connect</span>
-                <ArrowRight className="w-3 h-3" />
+                <ArrowRight className="w-3 h-3 text-[#B88E20]" />
               </div>
             </button>
           </div>

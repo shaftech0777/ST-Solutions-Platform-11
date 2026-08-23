@@ -1,6 +1,9 @@
 import { ApiResponse } from "../types/index.js";
 
-const BASE_URL = "/api/v1";
+// Supports Vercel frontend targeting Render API via VITE_API_URL
+const rawApiUrl = (typeof import.meta !== "undefined" && (import.meta as any).env && (import.meta as any).env.VITE_API_URL) ? (import.meta as any).env.VITE_API_URL : "";
+const cleanedApiUrl = typeof rawApiUrl === "string" && rawApiUrl.endsWith("/") ? rawApiUrl.slice(0, -1) : (rawApiUrl || "");
+const BASE_URL = cleanedApiUrl ? `${cleanedApiUrl}/api/v1` : "/api/v1";
 
 const TOKEN_KEY = "st_solutions_access_token";
 const REFRESH_TOKEN_KEY = "st_solutions_refresh_token";

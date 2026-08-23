@@ -9,7 +9,7 @@ interface PublicShellProps {
 
 export const PublicShell: React.FC<PublicShellProps> = ({ children }) => {
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-[#090A0F] text-slate-900 dark:text-slate-100 font-sans selection:bg-[#D4AF37] selection:text-black">
+    <div className="min-h-screen flex flex-col bg-[#F7F7F3] text-slate-900 font-sans selection:bg-[#D4AF37] selection:text-black">
       {/* Top Fixed Public Navbar */}
       <PublicNavbar />
 
