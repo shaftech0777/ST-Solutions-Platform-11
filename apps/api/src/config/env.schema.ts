@@ -20,7 +20,7 @@ export const envSchema = z.object({
     .string()
     .min(1, "JWT_SECRET is required")
     .default("default-development-jwt-secret-key-32charsmin"),
-  JWT_ACCESS_EXPIRES: z.string().default("15m"),
+  JWT_ACCESS_EXPIRES: z.string().default("1h"),
   JWT_REFRESH_EXPIRES: z.string().default("7d"),
 
   // Security Configuration

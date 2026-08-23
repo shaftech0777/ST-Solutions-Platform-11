@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShieldCheck, Lock, Mail, ArrowRight, AlertCircle } from "lucide-react";
+import { ShieldCheck, Lock, Mail, ArrowRight, AlertCircle, Sparkles, Building2, CheckCircle2, Shield } from "lucide-react";
 import { useAuth } from "../context/AuthContext.js";
 import { Input, PasswordInput } from "../components/ui/Input.js";
 import { Button } from "../components/ui/Button.js";
@@ -17,121 +17,168 @@ export const LoginPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
+      setError("Please enter your email address");
+      return;
+    }
+
+    if (!password) {
+      setError("Please enter your password");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      await login({ email, password });
+      await login({ email: trimmedEmail, password });
       navigate("/");
     } catch (err: any) {
-      setError(err.message || "Invalid credentials or unauthorized account");
+      const msg = err.data?.message || err.data?.error || err.message || "Invalid email or password";
+      setError(msg);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const fillQuickAccount = (e: string, p: string) => {
-    setEmail(e);
-    setPassword(p);
-  };
-
   return (
-    <div className="min-h-screen bg-[#090A0F] text-slate-100 flex items-center justify-center p-4 sm:p-6 font-sans">
-      <div className="w-full max-w-md space-y-6">
-        {/* Brand Emblem */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#B88E20] text-black font-black text-xl shadow-xl shadow-amber-500/10 border border-amber-300/40 mb-2">
+    <div className="min-h-screen bg-[#090A0F] text-slate-100 flex flex-col lg:flex-row font-sans">
+      {/* Left Column: Brand Hero Banner (Desktop) */}
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-slate-950 via-slate-900 to-[#12131A] border-r border-slate-800/80 p-12 flex-col justify-between relative overflow-hidden">
+        {/* Subtle decorative gold glow */}
+        <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#D4AF37]/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[#D4AF37]/5 rounded-full blur-3xl pointer-events-none" />
+
+        {/* Top Brand Emblem */}
+        <div className="flex items-center gap-3 relative z-10">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#B88E20] text-black font-black text-xl flex items-center justify-center shadow-xl shadow-amber-500/10 border border-amber-300/40 select-none">
             ST
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-white">ST-SOLUTIONS</h1>
-          <p className="text-xs text-amber-400 font-mono uppercase tracking-widest font-semibold">
-            Shaf Tech Enterprise Gateway
-          </p>
+          <div>
+            <span className="font-bold text-base tracking-tight text-white block">ST-SOLUTIONS</span>
+            <span className="text-[11px] text-[#D4AF37] font-mono tracking-widest uppercase block">
+              Shaf Tech Solutions
+            </span>
+          </div>
         </div>
 
-        {/* Card Form Container */}
-        <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#D4AF37] via-amber-300 to-[#D4AF37]" />
-
-          <h2 className="text-lg font-bold text-white mb-1">Account Authentication</h2>
-          <p className="text-xs text-slate-400 mb-6">
-            Enter your credentials to access your tenant workspace
+        {/* Middle Brand Value Proposition */}
+        <div className="space-y-6 max-w-lg relative z-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] text-xs font-mono font-semibold">
+            <Sparkles className="w-3.5 h-3.5" />
+            Enterprise Operations Platform
+          </div>
+          <h2 className="text-3xl lg:text-4xl font-bold tracking-tight text-white leading-tight">
+            Unified workspace telemetry & organizational governance.
+          </h2>
+          <p className="text-sm text-slate-400 leading-relaxed">
+            Manage multi-tenant organizations, project lifecycles, talent pipelines, and automated intelligence from one command center.
           </p>
 
-          {error && (
-            <div className="mb-5 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-start gap-2.5">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-red-500" />
-              <span>{error}</span>
+          <div className="space-y-3 pt-4 border-t border-slate-800/80">
+            <div className="flex items-center gap-3 text-xs text-slate-300">
+              <CheckCircle2 className="w-4 h-4 text-[#D4AF37] shrink-0" />
+              <span>Multi-tenant isolation with fine-grained RBAC authorization</span>
             </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <Input
-              label="Email Address"
-              type="email"
-              required
-              placeholder="admin@st-solutions.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              leftIcon={<Mail className="w-4 h-4 text-slate-400" />}
-            />
-
-            <PasswordInput
-              label="Password"
-              required
-              placeholder="••••••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              leftIcon={<Lock className="w-4 h-4 text-slate-400" />}
-            />
-
-            <Button
-              type="submit"
-              variant="gold"
-              fullWidth
-              isLoading={isSubmitting}
-              rightIcon={<ArrowRight className="w-4 h-4" />}
-            >
-              Sign In to Platform
-            </Button>
-          </form>
-
-          <div className="mt-4 text-center">
-            <Link to="/register" className="text-xs text-slate-400 hover:text-[#D4AF37] transition-colors">
-              Don't have an account yet? <span className="font-semibold text-[#D4AF37]">Sign Up</span>
-            </Link>
+            <div className="flex items-center gap-3 text-xs text-slate-300">
+              <CheckCircle2 className="w-4 h-4 text-[#D4AF37] shrink-0" />
+              <span>Enterprise financial ledger, client delivery, and recruitment pipeline</span>
+            </div>
+            <div className="flex items-center gap-3 text-xs text-slate-300">
+              <CheckCircle2 className="w-4 h-4 text-[#D4AF37] shrink-0" />
+              <span>Immutable security audit logging and automated AI assistant</span>
+            </div>
           </div>
+        </div>
 
-          {/* Quick Demo Login Credentials */}
-          <div className="mt-6 pt-5 border-t border-slate-800/80">
-            <p className="text-[11px] font-mono text-slate-500 uppercase tracking-wider mb-2 font-bold">
-              Quick Test Credentials
+        {/* Bottom Trust Badge */}
+        <div className="flex items-center justify-between text-xs text-slate-500 font-mono pt-6 border-t border-slate-800/80 relative z-10">
+          <div className="flex items-center gap-2">
+            <Shield className="w-4 h-4 text-[#D4AF37]" />
+            <span>Secure SHA-256 Auth</span>
+          </div>
+          <span>© 2026 Shaf Tech Solutions</span>
+        </div>
+      </div>
+
+      {/* Right Column: Sign In Form */}
+      <div className="flex-1 flex items-center justify-center p-6 sm:p-12">
+        <div className="w-full max-w-md space-y-6">
+          {/* Mobile Brand Emblem */}
+          <div className="lg:hidden text-center space-y-2 mb-6">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#B88E20] text-black font-black text-xl shadow-xl shadow-amber-500/10 border border-amber-300/40 mb-2">
+              ST
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight text-white">ST-SOLUTIONS</h1>
+            <p className="text-xs text-amber-400 font-mono uppercase tracking-widest font-semibold">
+              Shaf Tech Enterprise Gateway
             </p>
-            <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-              <button
-                type="button"
-                onClick={() => fillQuickAccount("admin@st-solutions.com", "AdminPass123!")}
-                className="p-2 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 text-left text-slate-300 hover:text-white transition-colors"
+          </div>
+
+          <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#D4AF37] via-amber-300 to-[#D4AF37]" />
+
+            <div className="mb-6">
+              <h2 className="text-xl font-bold text-white tracking-tight">Sign In</h2>
+              <p className="text-xs text-slate-400 mt-1">
+                Enter your authorized credentials to access your organization workspace
+              </p>
+            </div>
+
+            {error && (
+              <div className="mb-5 p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-start gap-2.5">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-red-500" />
+                <span>{error}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <Input
+                label="Email Address"
+                type="email"
+                required
+                placeholder="admin@st-solutions.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                leftIcon={<Mail className="w-4 h-4 text-slate-400" />}
+              />
+
+              <PasswordInput
+                label="Password"
+                required
+                placeholder="••••••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                leftIcon={<Lock className="w-4 h-4 text-slate-400" />}
+              />
+
+              <Button
+                type="submit"
+                variant="gold"
+                fullWidth
+                size="lg"
+                isLoading={isSubmitting}
+                rightIcon={<ArrowRight className="w-4 h-4" />}
               >
-                <span className="block font-bold text-[#D4AF37]">Super Admin</span>
-                <span className="text-[10px] text-slate-500">admin@st-solutions.com</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => fillQuickAccount("user@st-solutions.com", "UserPass123!")}
-                className="p-2 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 text-left text-slate-300 hover:text-white transition-colors"
-              >
-                <span className="block font-bold text-amber-200">Standard User</span>
-                <span className="text-[10px] text-slate-500">user@st-solutions.com</span>
-              </button>
+                Sign In to Platform
+              </Button>
+            </form>
+
+            <div className="mt-5 text-center">
+              <Link to="/register" className="text-xs text-slate-400 hover:text-[#D4AF37] transition-colors">
+                Don't have an account yet? <span className="font-semibold text-[#D4AF37]">Sign Up</span>
+              </Link>
             </div>
           </div>
-        </div>
 
-        <div className="text-center text-xs text-slate-500 flex items-center justify-center gap-1.5 font-mono">
-          <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
-          <span>Encrypted Tenant JWT Authentication Engine</span>
+          <div className="text-center text-xs text-slate-500 flex items-center justify-center gap-1.5 font-mono">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
+            <span>Encrypted Tenant JWT Authentication Engine</span>
+          </div>
         </div>
       </div>
     </div>
   );
 };
+

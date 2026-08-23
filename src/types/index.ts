@@ -8,7 +8,15 @@ export type OrganizationRole = "OWNER" | "ADMIN" | "MEMBER";
 
 export type WorkspaceRole = "ADMIN" | "MEMBER" | "VIEWER";
 
-export type ProjectStatus = "PENDING" | "IN_PROGRESS" | "ON_HOLD" | "COMPLETED" | "CANCELLED";
+export type ProjectStatus =
+  | "PENDING"
+  | "DISCUSSION"
+  | "CONFIRMED"
+  | "IN_PROGRESS"
+  | "REVIEW"
+  | "COMPLETED"
+  | "CANCELLED"
+  | "ON_HOLD";
 
 export type PaymentStatus = "PENDING" | "PROCESSING" | "PAID" | "FAILED" | "REFUNDED";
 
@@ -69,16 +77,49 @@ export interface Workspace {
   role?: WorkspaceRole;
 }
 
+export type ClientStatus = "LEAD" | "PROSPECT" | "ACTIVE" | "INACTIVE" | "CHURNED" | "ARCHIVED";
+
 export interface Client {
   id: string;
   organizationId?: string | null;
   workspaceId?: string | null;
-  companyName: string;
-  contactName: string;
+  fullName?: string;
+  name?: string;
+  contactName?: string;
+  companyName?: string | null;
   email: string;
   phone?: string | null;
+  phoneNumber?: string | null;
+  whatsappNumber?: string | null;
+  country?: string | null;
+  city?: string | null;
   address?: string | null;
-  status: string;
+  businessType?: string | null;
+  businessDescription?: string | null;
+  clientStatus?: ClientStatus | string;
+  status?: string;
+  notes?: string | null;
+  projectsCount?: number;
+  paymentsCount?: number;
+  recentProjects?: Array<{
+    id: string;
+    title: string;
+    category?: string | null;
+    budget?: number | null;
+    projectStatus: string;
+    startDate?: string | null;
+    expectedCompletionDate?: string | null;
+    createdAt: string;
+  }>;
+  ownership?: {
+    id?: string;
+    memberId?: string | null;
+    memberName?: string | null;
+    assignedManagerId?: string | null;
+    managerName?: string | null;
+    assignedAt?: string;
+    notes?: string | null;
+  } | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -90,49 +131,104 @@ export interface Project {
   clientId: string;
   title: string;
   description?: string | null;
+  category?: string | null;
   projectStatus: ProjectStatus;
   budget?: number | null;
   startDate?: string | null;
   expectedCompletionDate?: string | null;
+  completedDate?: string | null;
   createdAt: string;
   updatedAt: string;
   client?: {
     id: string;
-    companyName: string;
-    contactName: string;
-  };
+    companyName?: string | null;
+    contactName?: string | null;
+    fullName?: string | null;
+    name?: string | null;
+    email?: string | null;
+  } | null;
 }
 
 export interface Payment {
   id: string;
   organizationId?: string | null;
   workspaceId?: string | null;
-  projectId: string;
+  clientId?: string | null;
+  projectId?: string | null;
   amount: number;
   currency: string;
-  paymentStatus: PaymentStatus;
+  paymentStatus: PaymentStatus | string;
   paymentMethod?: string | null;
   transactionReference?: string | null;
+  approvedById?: string | null;
+  approvalNotes?: string | null;
+  submittedAt?: string | null;
+  approvedAt?: string | null;
   paidAt?: string | null;
   createdAt: string;
   updatedAt: string;
+  client?: {
+    id: string;
+    fullName?: string | null;
+    companyName?: string | null;
+    email?: string | null;
+    phoneNumber?: string | null;
+  } | null;
   project?: {
     id: string;
     title: string;
-  };
+    category?: string | null;
+    projectStatus?: string | null;
+  } | null;
+  approvedBy?: {
+    id: string;
+    email: string;
+    fullName?: string | null;
+    profileImage?: string | null;
+  } | null;
 }
 
 export interface Applicant {
   id: string;
   fullName: string;
+  fatherName?: string | null;
   email: string;
+  phoneNumber?: string | null;
   phone?: string | null;
-  positionApplied: string;
-  status: ApplicantStatus;
+  whatsappNumber?: string | null;
+  country?: string | null;
+  city?: string | null;
+  address?: string | null;
+  cnicNumber?: string | null;
+  currentProfession?: string | null;
+  currentQualification?: string | null;
+  skillsDescription?: string | null;
+  positionApplied?: string | null;
+  heardAboutSTSolutions?: string | null;
+  joiningPurpose?: string | null;
+  linkedinUrl?: string | null;
+  githubUrl?: string | null;
+  applicationStatus?: ApplicantStatus | string;
+  status?: ApplicantStatus | string;
+  verificationStatus?: string;
   resumeUrl?: string | null;
   notes?: string | null;
+  reviewNotes?: string | null;
+  approvalNotes?: string | null;
+  rejectionReason?: string | null;
+  appliedDate?: string | null;
   createdAt: string;
   updatedAt: string;
+  answers?: Array<{
+    id: string;
+    questionId: string;
+    answer: string;
+    question?: {
+      id: string;
+      questionText: string;
+      questionType: string;
+    };
+  }>;
 }
 
 export interface NotificationItem {
@@ -142,16 +238,24 @@ export interface NotificationItem {
   title: string;
   message: string;
   read: boolean;
+  isRead?: boolean;
+  link?: string | null;
   data?: Record<string, any> | null;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface AuditLogItem {
   id: string;
   userId?: string | null;
   action: string;
+  entityType?: string | null;
+  entityId?: string | null;
   description?: string | null;
+  details?: Record<string, any> | null;
   ipAddress?: string | null;
+  userAgent?: string | null;
+  status?: string | null;
   createdAt: string;
   user?: {
     id: string;

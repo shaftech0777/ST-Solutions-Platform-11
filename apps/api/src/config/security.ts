@@ -7,6 +7,7 @@ export const securityConfig = {
   helmet: helmet({
     contentSecurityPolicy: false,
     crossOriginEmbedderPolicy: false,
+    frameguard: false,
   }),
   cors: cors({
     origin: "*",

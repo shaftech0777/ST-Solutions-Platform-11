@@ -1,6 +1,7 @@
 {
   "name": "ST-Solutions",
-  "description": "Official source code and architecture of the ST-Solutions Platform monorepo.",
+  "description": "ST-SOLUTIONS Enterprise Operations Platform — Unified multi-tenant workspace telemetry, project delivery, financial ledger, and organizational governance.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
+

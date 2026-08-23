@@ -14,6 +14,11 @@ import {
   Activity,
   DollarSign,
   FileText,
+  UserCheck,
+  CheckCircle2,
+  Clock,
+  Sparkles,
+  ArrowUpRight,
 } from "lucide-react";
 import { PageHeader } from "../components/shell/PageHeader.js";
 import { StatCard, Card } from "../components/ui/Card.js";
@@ -47,10 +52,10 @@ export const DashboardPage: React.FC = () => {
     setError(null);
     try {
       const [projRes, payRes, cliRes, appRes] = await Promise.all([
-        projectsService.getAll({ limit: 5 }),
-        paymentsService.getAll({ limit: 5 }),
-        clientsService.getAll({ limit: 5 }),
-        applicantsService.getAll({ limit: 5 }),
+        projectsService.getAll({ limit: 6 }).catch(() => ({ data: [] })),
+        paymentsService.getAll({ limit: 6 }).catch(() => ({ data: [] })),
+        clientsService.getAll({ limit: 6 }).catch(() => ({ data: [] })),
+        applicantsService.getAll({ limit: 6 }).catch(() => ({ data: [] })),
       ]);
 
       const extractArray = (res: any) => {
@@ -81,7 +86,7 @@ export const DashboardPage: React.FC = () => {
   // Metric aggregates
   const totalBudget = projects.reduce((sum, p) => sum + (p.budget || 0), 0);
   const totalCollected = payments
-    .filter((p) => p.paymentStatus === "COMPLETED")
+    .filter((p) => p.paymentStatus === "COMPLETED" || (p as any).status === "PAID")
     .reduce((sum, p) => sum + (p.amount || 0), 0);
 
   const formatCurrency = (amount: number) => {
@@ -92,20 +97,24 @@ export const DashboardPage: React.FC = () => {
     }).format(amount);
   };
 
+  const activeProjectsCount = projects.filter(
+    (p) => p.projectStatus === "IN_PROGRESS" || (p as any).status === "IN_PROGRESS"
+  ).length;
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* Page Header */}
       <PageHeader
         title="Executive Operations Dashboard"
         description={`Real-time telemetry and management controls for ${
-          currentOrganization?.name || "Shaf Tech Solutions"
-        }${currentWorkspace ? ` / ${currentWorkspace.name}` : ""}`}
+          currentOrganization?.name || "ST-Solutions Enterprise"
+        }${currentWorkspace ? ` • ${currentWorkspace.name}` : ""}`}
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <Button
               variant="outline"
               size="sm"
-              leftIcon={<Bot className="w-4 h-4" />}
+              leftIcon={<Bot className="w-4 h-4 text-[#D4AF37]" />}
               onClick={() => navigate("/ai")}
             >
               Ask ST-AI
@@ -127,15 +136,15 @@ export const DashboardPage: React.FC = () => {
       {/* KPI Metrics Bar */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <StatCard
-          title="Active Projects"
+          title="Active Projects Pipeline"
           value={projects.length}
-          subtitle={`Total Budget: ${formatCurrency(totalBudget)}`}
+          subtitle={`Pipeline Budget: ${formatCurrency(totalBudget)}`}
           icon={FolderKanban}
           isLoading={isLoading}
           onClick={() => navigate("/projects")}
         />
         <StatCard
-          title="Total Invoiced / Collected"
+          title="Revenue & Collected Funds"
           value={formatCurrency(totalCollected)}
           subtitle={`${payments.length} transactions processed`}
           icon={DollarSign}
@@ -143,44 +152,44 @@ export const DashboardPage: React.FC = () => {
           onClick={() => navigate("/payments")}
         />
         <StatCard
-          title="Managed Clients"
+          title="Enterprise Clients"
           value={clients.length}
-          subtitle="Active enterprise accounts"
+          subtitle="Active corporate accounts"
           icon={Users}
           isLoading={isLoading}
           onClick={() => navigate("/clients")}
         />
         <StatCard
-          title="Talent Pipeline"
+          title="Talent & Candidate Pool"
           value={applicants.length}
-          subtitle="Applicants under review"
-          icon={Activity}
+          subtitle="Vetting & screening pipeline"
+          icon={UserCheck}
           isLoading={isLoading}
           onClick={() => navigate("/applicants")}
         />
       </div>
 
-      {/* Quick Launcher & AI Assistant Callout */}
+      {/* Enterprise AI Intelligence Callout + Tenant Security Card */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2 bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 p-6 flex flex-col justify-between relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-8 opacity-10 text-[#D4AF37] pointer-events-none">
-            <Bot className="w-40 h-40" />
+        <Card className="lg:col-span-2 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 border border-slate-800/90 p-6 flex flex-col justify-between relative overflow-hidden shadow-xl">
+          <div className="absolute top-0 right-0 p-6 opacity-10 text-[#D4AF37] pointer-events-none">
+            <Bot className="w-48 h-48" />
           </div>
 
-          <div className="space-y-2 max-w-lg z-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/30 text-xs font-mono font-bold">
-              <Bot className="w-3.5 h-3.5" />
-              <span>ST-SOLUTIONS Intelligence Engine</span>
+          <div className="space-y-3 max-w-lg z-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/30 text-xs font-mono font-bold">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>ST-SOLUTIONS Intelligence Suite</span>
             </div>
-            <h3 className="text-xl font-bold text-white tracking-tight">
+            <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
               Enterprise AI Insights & Workflow Automation
             </h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Query tenant metrics, draft project proposals, analyze pipeline performance, or summarize audit logs using real backend Gemini integration.
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Query tenant metrics, draft project milestones, summarize audit logs, or analyze candidate resumes with real backend Google Gemini models.
             </p>
           </div>
 
-          <div className="mt-6 flex flex-wrap items-center gap-3 z-10">
+          <div className="mt-6 pt-4 border-t border-slate-800/80 flex flex-wrap items-center gap-3 z-10">
             <Button
               variant="gold"
               size="sm"
@@ -190,42 +199,51 @@ export const DashboardPage: React.FC = () => {
               Launch AI Assistant
             </Button>
             <Button
-              variant="dark"
+              variant="outline"
               size="sm"
               leftIcon={<FileText className="w-4 h-4" />}
               onClick={() => navigate("/audit")}
             >
-              View Audit Trails
+              Security Audit Logs
             </Button>
           </div>
         </Card>
 
-        {/* Tenant Architecture Status */}
-        <Card className="p-6 bg-slate-900/60 border border-slate-800 space-y-4">
+        {/* Tenant Architecture & Security Status */}
+        <Card className="p-6 bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 space-y-4 shadow-sm">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
-              Tenant Architecture Status
+            <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider font-mono">
+              Tenant Security Scope
             </h3>
-            <Badge variant="success" dot>
-              Secure
+            <Badge variant="gold" dot>
+              Active Context
             </Badge>
           </div>
 
           <div className="space-y-3 text-xs">
-            <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950/80 border border-slate-800/80">
-              <span className="text-slate-400 font-mono">Authentication</span>
-              <span className="font-bold text-emerald-400">JWT Token Active</span>
-            </div>
-            <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950/80 border border-slate-800/80">
-              <span className="text-slate-400 font-mono">Active Scope</span>
-              <span className="font-bold text-amber-300 truncate max-w-[120px]">
-                {currentOrganization?.name || "Default Org"}
+            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800">
+              <span className="text-slate-500 dark:text-slate-400 font-mono">Organization</span>
+              <span className="font-bold text-slate-900 dark:text-amber-300 truncate max-w-[130px]">
+                {currentOrganization?.name || "Shaf Tech Solutions"}
               </span>
             </div>
-            <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950/80 border border-slate-800/80">
-              <span className="text-slate-400 font-mono">Permission Authority</span>
-              <span className="font-bold text-white">{currentUser?.accountType || "MEMBER"}</span>
+            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800">
+              <span className="text-slate-500 dark:text-slate-400 font-mono">Access Role</span>
+              <span className="font-bold font-mono text-emerald-600 dark:text-emerald-400">
+                {currentUser?.accountType || "ADMIN"}
+              </span>
             </div>
+            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800">
+              <span className="text-slate-500 dark:text-slate-400 font-mono">Active Workspace</span>
+              <span className="font-bold text-slate-900 dark:text-slate-200 truncate max-w-[130px]">
+                {currentWorkspace?.name || "Global Workspace"}
+              </span>
+            </div>
+          </div>
+
+          <div className="pt-2 text-[11px] text-slate-500 dark:text-slate-400 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
+            <span>Isolation: Strict PostgreSQL RBAC</span>
+            <ShieldCheck className="w-4 h-4 text-emerald-500" />
           </div>
         </Card>
       </div>
@@ -237,7 +255,7 @@ export const DashboardPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider font-mono flex items-center gap-2">
               <FolderKanban className="w-4 h-4 text-[#D4AF37]" />
-              Recent Projects Pipeline
+              Projects Pipeline
             </h3>
             <Link
               to="/projects"
@@ -251,8 +269,8 @@ export const DashboardPage: React.FC = () => {
           {isLoading ? (
             <LoadingSpinner text="Fetching projects..." />
           ) : projects.length === 0 ? (
-            <Card className="p-8 text-center text-xs text-slate-500">
-              No active projects in this workspace context.
+            <Card className="p-8 text-center text-xs text-slate-500 border-dashed">
+              No active projects in this tenant context.
             </Card>
           ) : (
             <Table>
@@ -264,27 +282,38 @@ export const DashboardPage: React.FC = () => {
                 </TableRow>
               </TableHeader>
               <tbody>
-                {projects.map((p) => (
-                  <TableRow key={p.id} onClick={() => navigate("/projects")}>
-                    <TableCell className="font-bold">{p.title}</TableCell>
-                    <TableCell className="font-mono">{formatCurrency(p.budget || 0)}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={
-                          p.projectStatus === "COMPLETED"
-                            ? "success"
-                            : p.projectStatus === "IN_PROGRESS"
-                            ? "gold"
-                            : p.projectStatus === "CANCELLED"
-                            ? "danger"
-                            : "warning"
-                        }
-                      >
-                        {p.projectStatus}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {projects.map((p) => {
+                  const status = p.projectStatus || (p as any).status || "PLANNING";
+                  return (
+                    <TableRow
+                      key={p.id}
+                      onClick={() => navigate("/projects")}
+                      className="cursor-pointer"
+                    >
+                      <TableCell className="font-bold text-slate-900 dark:text-white">
+                        {p.title}
+                      </TableCell>
+                      <TableCell className="font-mono text-xs text-slate-600 dark:text-slate-300">
+                        {formatCurrency(p.budget || 0)}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            status === "COMPLETED"
+                              ? "success"
+                              : status === "IN_PROGRESS"
+                              ? "gold"
+                              : status === "CANCELLED"
+                              ? "danger"
+                              : "warning"
+                          }
+                        >
+                          {status}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </tbody>
             </Table>
           )}
@@ -309,8 +338,8 @@ export const DashboardPage: React.FC = () => {
           {isLoading ? (
             <LoadingSpinner text="Fetching payments..." />
           ) : payments.length === 0 ? (
-            <Card className="p-8 text-center text-xs text-slate-500">
-              No recent payments recorded.
+            <Card className="p-8 text-center text-xs text-slate-500 border-dashed">
+              No recent payment transactions recorded.
             </Card>
           ) : (
             <Table>
@@ -322,29 +351,36 @@ export const DashboardPage: React.FC = () => {
                 </TableRow>
               </TableHeader>
               <tbody>
-                {payments.map((p) => (
-                  <TableRow key={p.id} onClick={() => navigate("/payments")}>
-                    <TableCell className="font-bold font-mono">
-                      {formatCurrency(p.amount || 0)}
-                    </TableCell>
-                    <TableCell className="text-slate-400 font-mono text-[11px]">
-                      {p.paymentMethod || "WIRE"}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={
-                          p.paymentStatus === "COMPLETED"
-                            ? "success"
-                            : p.paymentStatus === "FAILED"
-                            ? "danger"
-                            : "warning"
-                        }
-                      >
-                        {p.paymentStatus}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {payments.map((p) => {
+                  const status = p.paymentStatus || (p as any).status || "PENDING";
+                  return (
+                    <TableRow
+                      key={p.id}
+                      onClick={() => navigate("/payments")}
+                      className="cursor-pointer"
+                    >
+                      <TableCell className="font-bold font-mono text-slate-900 dark:text-white">
+                        {formatCurrency(p.amount || 0)}
+                      </TableCell>
+                      <TableCell className="text-slate-500 dark:text-slate-400 font-mono text-xs">
+                        {p.paymentMethod || "WIRE"}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            status === "COMPLETED" || status === "PAID"
+                              ? "success"
+                              : status === "FAILED"
+                              ? "danger"
+                              : "warning"
+                          }
+                        >
+                          {status}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </tbody>
             </Table>
           )}

@@ -47,7 +47,12 @@ app.use("/api/v1", apiRouter);
 app.use("/auth", apiRouter); // Alias for top-level /auth/login access
 
 // 6. 404 Route Not Found Middleware (scoped to API routes)
-app.use("/api/*", notFoundHandlerMiddleware);
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api") || req.path.startsWith("/auth")) {
+    return notFoundHandlerMiddleware(req, res, next);
+  }
+  next();
+});
 
 // 7. Global Error Handling Middleware (MUST BE LAST)
 app.use(globalErrorHandlerMiddleware);

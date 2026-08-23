@@ -64,16 +64,82 @@ interface RequestOptions extends Omit<RequestInit, "body"> {
   params?: Record<string, string | number | boolean | undefined | null>;
 }
 
-let isRefreshing = false;
-let refreshSubscribers: Array<(token: string) => void> = [];
-
-function onRefreshed(newToken: string) {
-  refreshSubscribers.map((cb) => cb(newToken));
-  refreshSubscribers = [];
+export function isTokenExpired(token: string | null, bufferSeconds = 30): boolean {
+  if (!token || typeof token !== "string") return true;
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return true;
+    const base64Url = parts[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
+    );
+    const decoded = JSON.parse(jsonPayload);
+    if (!decoded.exp) return false;
+    return decoded.exp * 1000 <= Date.now() + bufferSeconds * 1000;
+  } catch {
+    return true;
+  }
 }
 
-function subscribeTokenRefresh(cb: (token: string) => void) {
-  refreshSubscribers.push(cb);
+let refreshPromise: Promise<string | null> | null = null;
+
+export async function performTokenRefresh(): Promise<string | null> {
+  if (refreshPromise) {
+    return refreshPromise;
+  }
+
+  refreshPromise = (async () => {
+    try {
+      const refreshToken = getStoredRefreshToken();
+      if (!refreshToken || isTokenExpired(refreshToken, 10)) {
+        clearStoredTokens();
+        return null;
+      }
+
+      const refreshRes = await fetch(`${BASE_URL}/auth/refresh`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ refreshToken }),
+      });
+
+      if (!refreshRes.ok) {
+        clearStoredTokens();
+        return null;
+      }
+
+      const refreshText = await refreshRes.text();
+      let refreshData: any = {};
+      if (refreshText && refreshText.trim().length > 0) {
+        try {
+          refreshData = JSON.parse(refreshText);
+        } catch {
+          refreshData = { message: refreshText };
+        }
+      }
+
+      const newAccessToken = refreshData?.data?.accessToken;
+      const newRefreshToken = refreshData?.data?.refreshToken;
+
+      if (newAccessToken) {
+        setStoredTokens(newAccessToken, newRefreshToken || refreshToken);
+        return newAccessToken;
+      } else {
+        clearStoredTokens();
+        return null;
+      }
+    } catch {
+      clearStoredTokens();
+      return null;
+    } finally {
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
 }
 
 export async function apiClient<T = any>(
@@ -97,7 +163,17 @@ export async function apiClient<T = any>(
     }
   }
 
-  const token = getStoredAccessToken();
+  let token = getStoredAccessToken();
+  const isAuthEndpoint = endpoint.includes("/auth/login") || endpoint.includes("/auth/refresh");
+
+  // Proactively refresh access token if expired before sending request
+  if (token && isTokenExpired(token) && !isAuthEndpoint) {
+    const refreshedToken = await performTokenRefresh();
+    if (refreshedToken) {
+      token = refreshedToken;
+    }
+  }
+
   const orgId = getStoredOrgId();
   const wsId = getStoredWsId();
 
@@ -121,83 +197,24 @@ export async function apiClient<T = any>(
   }
 
   try {
-    const response = await fetch(url, config);
+    let response = await fetch(url, config);
 
-    // Handle Token Expiration and Refresh
-    if (response.status === 401 && !endpoint.includes("/auth/login") && !endpoint.includes("/auth/refresh")) {
-      const refreshToken = getStoredRefreshToken();
+    // Handle Token Expiration (401) and seamless automatic refresh
+    if (response.status === 401 && !isAuthEndpoint) {
+      const newAccessToken = await performTokenRefresh();
 
-      if (refreshToken) {
-        if (!isRefreshing) {
-          isRefreshing = true;
-
-          try {
-            const refreshRes = await fetch(`${BASE_URL}/auth/refresh`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json", Accept: "application/json" },
-              body: JSON.stringify({ refreshToken }),
-            });
-
-            const refreshText = await refreshRes.text();
-            let refreshData: any = {};
-            if (refreshText && refreshText.trim().length > 0) {
-              try {
-                refreshData = JSON.parse(refreshText);
-              } catch {
-                refreshData = { message: refreshText };
-              }
-            }
-
-            if (refreshRes.ok) {
-              const newAccessToken = refreshData.data?.accessToken;
-              if (newAccessToken) {
-                setStoredTokens(newAccessToken);
-                onRefreshed(newAccessToken);
-              } else {
-                throw new Error("Invalid refresh payload");
-              }
-            } else {
-              clearStoredTokens();
-              window.dispatchEvent(new CustomEvent("st_auth_logout"));
-              throw new ApiError("Session expired", 401);
-            }
-          } catch (err) {
-            clearStoredTokens();
-            window.dispatchEvent(new CustomEvent("st_auth_logout"));
-            throw err;
-          } finally {
-            isRefreshing = false;
-          }
-        }
-
-        // Retry original request with new token after refresh completes
-        return new Promise<ApiResponse<T>>((resolve, reject) => {
-          subscribeTokenRefresh(async (newToken: string) => {
-            try {
-              headers["Authorization"] = `Bearer ${newToken}`;
-              const retryRes = await fetch(url, { ...config, headers });
-              const retryText = await retryRes.text();
-              let retryData: any = {};
-              if (retryText && retryText.trim().length > 0) {
-                try {
-                  retryData = JSON.parse(retryText);
-                } catch {
-                  retryData = { message: retryText };
-                }
-              }
-              if (!retryRes.ok) {
-                reject(new ApiError(retryData?.error || retryData?.message || `HTTP error ${retryRes.status}`, retryRes.status, retryData));
-              } else {
-                resolve(retryData);
-              }
-            } catch (retryErr) {
-              reject(retryErr);
-            }
-          });
-        });
+      if (newAccessToken) {
+        // Retry the request with the refreshed access token
+        const retryHeaders = {
+          ...headers,
+          Authorization: `Bearer ${newAccessToken}`,
+        };
+        response = await fetch(url, { ...config, headers: retryHeaders });
       } else {
         clearStoredTokens();
-        window.dispatchEvent(new CustomEvent("st_auth_logout"));
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("st_auth_logout"));
+        }
       }
     }
 

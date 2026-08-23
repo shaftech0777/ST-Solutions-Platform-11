@@ -1,41 +1,102 @@
-import React, { useEffect, useState } from "react";
-import { FolderKanban, Plus, Search, Calendar, DollarSign, Filter, CheckCircle2, Trash2 } from "lucide-react";
+import React, { useEffect, useState, useMemo } from "react";
+import {
+  FolderKanban,
+  Plus,
+  Search,
+  Calendar,
+  DollarSign,
+  Building2,
+  Trash2,
+  Edit2,
+  Eye,
+  CheckCircle2,
+  Clock,
+  AlertCircle,
+  Filter,
+  X,
+  LayoutGrid,
+  List,
+  ArrowRight,
+  TrendingUp,
+  Tag,
+  ChevronRight,
+} from "lucide-react";
 import { PageHeader } from "../components/shell/PageHeader.js";
-import { Table, TableHeader, TableRow, TableHead, TableCell, Pagination } from "../components/ui/Table.js";
+import { Table, TableHeader, TableRow, TableHead, TableCell } from "../components/ui/Table.js";
 import { Button, IconButton } from "../components/ui/Button.js";
 import { Badge } from "../components/ui/Badge.js";
+import { Card } from "../components/ui/Card.js";
 import { Modal, ConfirmModal } from "../components/ui/Modal.js";
 import { Input, Textarea } from "../components/ui/Input.js";
 import { Select } from "../components/ui/Select.js";
 import { EmptyState, ErrorState } from "../components/ui/EmptyState.js";
-import { LoadingSpinner } from "../components/ui/LoadingSpinner.js";
+import { Skeleton } from "../components/ui/LoadingSpinner.js";
 import { useToast } from "../context/ToastContext.js";
 import { useAuth } from "../context/AuthContext.js";
 import { projectsService } from "../api/services/projects.service.js";
 import { clientsService } from "../api/services/clients.service.js";
 import { Project, ProjectStatus, Client } from "../types/index.js";
 
+// Stage 6 Authoritative Status Transitions Matrix
+const ALLOWED_PROJECT_STATUS_TRANSITIONS: Record<string, ProjectStatus[]> = {
+  PENDING: ["DISCUSSION", "CONFIRMED", "CANCELLED"],
+  DISCUSSION: ["CONFIRMED", "PENDING", "CANCELLED"],
+  CONFIRMED: ["IN_PROGRESS", "DISCUSSION", "CANCELLED"],
+  IN_PROGRESS: ["REVIEW", "COMPLETED", "CANCELLED"],
+  REVIEW: ["IN_PROGRESS", "COMPLETED", "CANCELLED"],
+  COMPLETED: ["IN_PROGRESS"],
+  CANCELLED: ["PENDING", "DISCUSSION", "CONFIRMED"],
+  ON_HOLD: ["IN_PROGRESS", "CANCELLED"],
+};
+
+const PROJECT_STATUS_OPTIONS: { value: string; label: string }[] = [
+  { value: "ALL", label: "All Statuses" },
+  { value: "PENDING", label: "Pending" },
+  { value: "DISCUSSION", label: "Discussion" },
+  { value: "CONFIRMED", label: "Confirmed" },
+  { value: "IN_PROGRESS", label: "In Progress" },
+  { value: "REVIEW", label: "Review" },
+  { value: "COMPLETED", label: "Completed" },
+  { value: "CANCELLED", label: "Cancelled" },
+  { value: "ON_HOLD", label: "On Hold" },
+];
+
 export const ProjectsPage: React.FC = () => {
   const { addToast } = useToast();
-  const { currentUser, isLoading: isAuthLoading } = useAuth();
+  const { currentUser, currentOrganization, currentWorkspace, isLoading: isAuthLoading } = useAuth();
 
   const [projects, setProjects] = useState<Project[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [statusFilter, setStatusFilter] = useState<string>("");
+  // Filters & View Mode
   const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
+  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [clientFilter, setClientFilter] = useState("ALL");
+  const [viewMode, setViewMode] = useState<"table" | "grid">("table");
 
+  // Create / Edit Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [projectToDelete, setProjectToDelete] = useState<{ id: string; title: string } | null>(null);
+  const [modalError, setModalError] = useState<string | null>(null);
+
+  // Details Inspection Modal State
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+
+  // Delete State
+  const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // Status transition updating state
+  const [transitioningProjectId, setTransitioningProjectId] = useState<string | null>(null);
+
+  // Form State
   const [formData, setFormData] = useState({
     clientId: "",
     title: "",
+    category: "",
     description: "",
     budget: "",
     startDate: "",
@@ -44,24 +105,35 @@ export const ProjectsPage: React.FC = () => {
   });
 
   const loadData = async () => {
-    if (!currentUser) return;
+    if (!currentUser) {
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
     setError(null);
     try {
       const [projRes, cliRes] = await Promise.all([
         projectsService.getAll({
-          status: statusFilter ? (statusFilter as ProjectStatus) : undefined,
-          search,
-          page,
-          limit: 10,
+          search: search.trim() || undefined,
+          status: statusFilter !== "ALL" ? (statusFilter as ProjectStatus) : undefined,
+          limit: 100,
         }),
         clientsService.getAll({ limit: 100 }),
       ]);
 
-      setProjects(Array.isArray(projRes.data) ? projRes.data : []);
-      setClients(Array.isArray(cliRes.data) ? cliRes.data : []);
+      const extractArray = (res: any) => {
+        if (!res) return [];
+        if (Array.isArray(res)) return res;
+        if (Array.isArray(res.data)) return res.data;
+        if (Array.isArray(res.data?.items)) return res.data.items;
+        if (Array.isArray(res.items)) return res.items;
+        return [];
+      };
+
+      setProjects(extractArray(projRes));
+      setClients(extractArray(cliRes));
     } catch (err: any) {
-      setError(err.message || "Failed to load projects pipeline");
+      setError(err.message || "Failed to load project pipeline data");
     } finally {
       setIsLoading(false);
     }
@@ -70,55 +142,147 @@ export const ProjectsPage: React.FC = () => {
   useEffect(() => {
     if (isAuthLoading || !currentUser) return;
     loadData();
-  }, [statusFilter, search, page, currentUser?.id, isAuthLoading]);
+  }, [search, statusFilter, currentOrganization?.id, currentWorkspace?.id, currentUser?.id, isAuthLoading]);
 
-  const handleCreateProject = async (e: React.FormEvent) => {
+  // Client filtering
+  const filteredProjects = useMemo(() => {
+    return projects.filter((p) => {
+      if (clientFilter !== "ALL" && p.clientId !== clientFilter) {
+        return false;
+      }
+      return true;
+    });
+  }, [projects, clientFilter]);
+
+  const openCreateModal = () => {
+    setEditingProject(null);
+    setFormData({
+      clientId: clients[0]?.id || "",
+      title: "",
+      category: "",
+      description: "",
+      budget: "",
+      startDate: "",
+      expectedCompletionDate: "",
+      projectStatus: "IN_PROGRESS",
+    });
+    setModalError(null);
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (project: Project) => {
+    setEditingProject(project);
+    setFormData({
+      clientId: project.clientId || "",
+      title: project.title || "",
+      category: project.category || "",
+      description: project.description || "",
+      budget: project.budget ? String(project.budget) : "",
+      startDate: project.startDate ? project.startDate.split("T")[0] : "",
+      expectedCompletionDate: project.expectedCompletionDate
+        ? project.expectedCompletionDate.split("T")[0]
+        : "",
+      projectStatus: project.projectStatus,
+    });
+    setModalError(null);
+    setIsModalOpen(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title.trim() || !formData.clientId) {
-      addToast({ type: "warning", title: "Validation Error", message: "Please select a client and project title" });
+    if (!formData.title.trim()) {
+      setModalError("Project title is required");
+      return;
+    }
+    if (!formData.clientId) {
+      setModalError("Please select an enterprise client account");
       return;
     }
 
     setIsSubmitting(true);
-    try {
-      const res = await projectsService.create({
-        clientId: formData.clientId,
-        title: formData.title,
-        description: formData.description || undefined,
-        budget: formData.budget ? parseFloat(formData.budget) : undefined,
-        startDate: formData.startDate || undefined,
-        expectedCompletionDate: formData.expectedCompletionDate || undefined,
-        projectStatus: formData.projectStatus,
-      });
+    setModalError(null);
 
-      if (res.success) {
-        addToast({ type: "success", title: "Project Created", message: `Project "${formData.title}" created successfully` });
-        setIsModalOpen(false);
-        setFormData({
-          clientId: "",
-          title: "",
-          description: "",
-          budget: "",
-          startDate: "",
-          expectedCompletionDate: "",
-          projectStatus: "IN_PROGRESS",
-        });
-        loadData();
+    const payload: any = {
+      clientId: formData.clientId,
+      title: formData.title.trim(),
+      category: formData.category.trim() || undefined,
+      description: formData.description.trim() || undefined,
+      budget: formData.budget ? parseFloat(formData.budget) : undefined,
+      startDate: formData.startDate || undefined,
+      expectedCompletionDate: formData.expectedCompletionDate || undefined,
+      projectStatus: formData.projectStatus,
+    };
+
+    try {
+      if (editingProject) {
+        const res = await projectsService.update(editingProject.id, payload);
+        if (res.success) {
+          addToast({
+            type: "success",
+            title: "Project Updated",
+            message: `Project "${formData.title}" updated successfully`,
+          });
+          setIsModalOpen(false);
+          await loadData();
+        } else {
+          setModalError(res.error || "Failed to update project");
+        }
+      } else {
+        const res = await projectsService.create(payload);
+        if (res.success) {
+          addToast({
+            type: "success",
+            title: "Project Established",
+            message: `Project "${formData.title}" added to pipeline`,
+          });
+          setIsModalOpen(false);
+          await loadData();
+        } else {
+          setModalError(res.error || "Failed to create project");
+        }
       }
     } catch (err: any) {
-      addToast({ type: "danger", title: "Creation Failed", message: err.message || "Failed to create project" });
+      const msg = err.message || "An unexpected error occurred while saving project";
+      setModalError(msg);
+      addToast({ type: "danger", title: "Operation Failed", message: msg });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleUpdateStatus = async (id: string, newStatus: ProjectStatus) => {
+  const handleUpdateStatus = async (projectId: string, currentStatus: string, newStatus: ProjectStatus) => {
+    if (currentStatus === newStatus) return;
+
+    setTransitioningProjectId(projectId);
     try {
-      await projectsService.updateStatus(id, newStatus);
-      addToast({ type: "success", title: "Status Updated", message: `Project status set to ${newStatus}` });
-      loadData();
+      const res = await projectsService.updateStatus(projectId, newStatus);
+      if (res.success) {
+        addToast({
+          type: "success",
+          title: "Status Updated",
+          message: `Project status transitioned to ${newStatus}`,
+        });
+        await loadData();
+        if (selectedProject?.id === projectId) {
+          setSelectedProject((prev) => (prev ? { ...prev, projectStatus: newStatus } : null));
+        }
+      } else {
+        addToast({
+          type: "danger",
+          title: "Transition Invalid",
+          message: res.error || `Cannot transition project from ${currentStatus} to ${newStatus}`,
+        });
+        await loadData(); // Resync UI to prevent stale state
+      }
     } catch (err: any) {
-      addToast({ type: "danger", title: "Update Failed", message: err.message || "Failed to update project status" });
+      addToast({
+        type: "danger",
+        title: "Update Failed",
+        message: err.message || "Failed to update project status",
+      });
+      await loadData(); // Resync UI
+    } finally {
+      setTransitioningProjectId(null);
     }
   };
 
@@ -126,175 +290,635 @@ export const ProjectsPage: React.FC = () => {
     if (!projectToDelete) return;
     setIsDeleting(true);
     try {
-      await projectsService.delete(projectToDelete.id);
-      addToast({ type: "info", title: "Project Deleted", message: `Project "${projectToDelete.title}" removed` });
-      setProjectToDelete(null);
-      loadData();
+      const res = await projectsService.delete(projectToDelete.id);
+      if (res.success) {
+        addToast({
+          type: "info",
+          title: "Project Deleted",
+          message: `Project "${projectToDelete.title}" removed from workspace`,
+        });
+        setProjectToDelete(null);
+        if (selectedProject?.id === projectToDelete.id) {
+          setSelectedProject(null);
+        }
+        await loadData();
+      } else {
+        addToast({
+          type: "danger",
+          title: "Deletion Failed",
+          message: res.error || "Failed to delete project",
+        });
+      }
     } catch (err: any) {
-      addToast({ type: "danger", title: "Deletion Failed", message: err.message || "Failed to delete project" });
+      addToast({
+        type: "danger",
+        title: "Deletion Error",
+        message: err.message || "Failed to delete project",
+      });
     } finally {
       setIsDeleting(false);
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(amount);
+  const formatCurrency = (amount?: number | null) => {
+    if (amount === undefined || amount === null) return "$0";
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 0,
+    }).format(amount);
   };
+
+  const formatDate = (dateStr?: string | null) => {
+    if (!dateStr) return "—";
+    try {
+      return new Date(dateStr).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
+    } catch {
+      return dateStr;
+    }
+  };
+
+  const getStatusBadgeVariant = (status: string) => {
+    switch (status) {
+      case "COMPLETED":
+        return "success";
+      case "IN_PROGRESS":
+        return "gold";
+      case "CONFIRMED":
+      case "DISCUSSION":
+        return "info";
+      case "CANCELLED":
+        return "danger";
+      case "REVIEW":
+      case "ON_HOLD":
+      case "PENDING":
+        return "warning";
+      default:
+        return "default";
+    }
+  };
+
+  const getClientDisplayName = (p: Project) => {
+    if (p.client) {
+      return (
+        p.client.companyName ||
+        p.client.fullName ||
+        p.client.contactName ||
+        p.client.name ||
+        p.client.email ||
+        "Client"
+      );
+    }
+    const matchedClient = clients.find((c) => c.id === p.clientId);
+    if (matchedClient) {
+      return matchedClient.companyName || matchedClient.fullName || matchedClient.name || matchedClient.email;
+    }
+    return `Client #${p.clientId.slice(0, 8)}`;
+  };
+
+  const totalBudget = filteredProjects.reduce((sum, p) => sum + (p.budget || 0), 0);
+
+  const hasActiveFilters = search.trim().length > 0 || statusFilter !== "ALL" || clientFilter !== "ALL";
+
+  const clearFilters = () => {
+    setSearch("");
+    setStatusFilter("ALL");
+    setClientFilter("ALL");
+  };
+
+  const canManage =
+    currentUser?.accountType === "ADMIN" ||
+    currentUser?.accountType === "SUB_ADMIN" ||
+    currentUser?.accountType === "MANAGER";
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <PageHeader
         title="Projects Pipeline"
-        description="Deliverables, budget milestones, client contracts, and status tracking"
+        description={
+          projects.length > 0
+            ? `Client contracts, budget allocations, and delivery tracking (${
+                projects.length
+              } project${projects.length !== 1 ? "s" : ""} • ${formatCurrency(totalBudget)} total pipeline)`
+            : "Deliverables, budget milestones, client contracts, and status tracking"
+        }
         actions={
           <Button
             variant="gold"
             size="sm"
             leftIcon={<Plus className="w-4 h-4" />}
-            onClick={() => setIsModalOpen(true)}
+            onClick={openCreateModal}
           >
             Create New Project
           </Button>
         }
       />
 
-      {/* Filter and Search controls */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="relative flex-1 max-w-md w-full">
-          <Input
-            placeholder="Search projects..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            leftIcon={<Search className="w-4 h-4 text-slate-400" />}
-          />
+      {/* Toolbar */}
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 bg-white dark:bg-slate-900/60 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+        <div className="flex flex-1 flex-wrap items-center gap-2.5">
+          <div className="relative flex-1 min-w-[200px] max-w-sm">
+            <Input
+              placeholder="Search by title, description, or client..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              leftIcon={<Search className="w-4 h-4 text-slate-400" />}
+              className="py-2 text-xs"
+            />
+          </div>
+
+          <div className="w-40">
+            <Select
+              options={PROJECT_STATUS_OPTIONS}
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="py-2 text-xs"
+            />
+          </div>
+
+          {clients.length > 0 && (
+            <div className="w-44">
+              <Select
+                options={[
+                  { value: "ALL", label: "All Clients" },
+                  ...clients.map((c) => ({
+                    value: c.id,
+                    label: c.companyName || c.fullName || c.name || c.email,
+                  })),
+                ]}
+                value={clientFilter}
+                onChange={(e) => setClientFilter(e.target.value)}
+                className="py-2 text-xs"
+              />
+            </div>
+          )}
+
+          {hasActiveFilters && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={clearFilters}
+              leftIcon={<X className="w-3.5 h-3.5" />}
+              className="text-xs text-slate-400 hover:text-slate-100"
+            >
+              Reset
+            </Button>
+          )}
         </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <Select
-            options={[
-              { value: "", label: "All Statuses" },
-              { value: "PLANNING", label: "Planning" },
-              { value: "IN_PROGRESS", label: "In Progress" },
-              { value: "COMPLETED", label: "Completed" },
-              { value: "ON_HOLD", label: "On Hold" },
-              { value: "CANCELLED", label: "Cancelled" },
-            ]}
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          />
+        {/* View Toggle */}
+        <div className="flex items-center gap-1 self-end lg:self-center border-t lg:border-t-0 pt-2 lg:pt-0 border-slate-100 dark:border-slate-800">
+          <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg">
+            <button
+              onClick={() => setViewMode("table")}
+              className={`p-1.5 rounded-md transition-colors ${
+                viewMode === "table"
+                  ? "bg-white dark:bg-slate-900 text-[#D4AF37] shadow-xs"
+                  : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              }`}
+              title="Table view"
+              aria-label="Table view"
+            >
+              <List className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setViewMode("grid")}
+              className={`p-1.5 rounded-md transition-colors ${
+                viewMode === "grid"
+                  ? "bg-white dark:bg-slate-900 text-[#D4AF37] shadow-xs"
+                  : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              }`}
+              title="Grid view"
+              aria-label="Grid view"
+            >
+              <LayoutGrid className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 
       {error && <ErrorState message={error} onRetry={loadData} />}
 
+      {/* Main Content */}
       {isLoading ? (
-        <LoadingSpinner text="Fetching projects..." />
+        <div className="space-y-3">
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-16 w-full" />
+          <Skeleton className="h-16 w-full" />
+          <Skeleton className="h-16 w-full" />
+        </div>
       ) : projects.length === 0 ? (
         <EmptyState
-          title="No Projects Found"
-          description="Create your first client project to assign budgets, start dates, and delivery milestones."
+          title="No Projects in Pipeline"
+          description="Create client projects to establish delivery budgets, milestones, and status workflows."
           actionLabel="Create Project"
-          onAction={() => setIsModalOpen(true)}
+          onAction={openCreateModal}
           icon={<FolderKanban className="w-8 h-8" />}
         />
-      ) : (
+      ) : filteredProjects.length === 0 ? (
+        <EmptyState
+          title="No Matching Projects"
+          description="No projects match your current search query, status, or client criteria."
+          actionLabel="Clear Filters"
+          onAction={clearFilters}
+          icon={<Filter className="w-8 h-8" />}
+        />
+      ) : viewMode === "table" ? (
+        /* Table View */
         <div className="space-y-4">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Project Title</TableHead>
-                <TableHead>Client</TableHead>
+                <TableHead>Project Title & Scope</TableHead>
+                <TableHead>Enterprise Client</TableHead>
                 <TableHead>Budget</TableHead>
-                <TableHead>Timeline</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Update Status</TableHead>
+                <TableHead>Delivery Timeline</TableHead>
+                <TableHead>Current Status</TableHead>
+                <TableHead>Advance Workflow</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <tbody>
-              {projects.map((p) => (
-                <TableRow key={p.id}>
-                  <TableCell className="font-bold text-slate-900 dark:text-white">
-                    <div>
-                      <span>{p.title}</span>
-                      {p.description && <p className="text-[11px] text-slate-500 font-normal mt-0.5 line-clamp-1">{p.description}</p>}
-                    </div>
-                  </TableCell>
-                  <TableCell className="font-mono text-xs">{p.client?.name || p.clientId}</TableCell>
-                  <TableCell className="font-mono font-bold text-xs">{formatCurrency(p.budget || 0)}</TableCell>
-                  <TableCell className="font-mono text-[11px] text-slate-400">
-                    {p.startDate ? new Date(p.startDate).toLocaleDateString() : "—"} →{" "}
-                    {p.expectedCompletionDate ? new Date(p.expectedCompletionDate).toLocaleDateString() : "TBD"}
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        p.projectStatus === "COMPLETED"
-                          ? "success"
-                          : p.projectStatus === "IN_PROGRESS"
-                          ? "gold"
-                          : p.projectStatus === "CANCELLED"
-                          ? "danger"
-                          : "warning"
-                      }
-                    >
-                      {p.projectStatus}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <select
-                        value={p.projectStatus}
-                        onChange={(e) => handleUpdateStatus(p.id, e.target.value as ProjectStatus)}
-                        className="text-xs bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-200 border border-slate-200 dark:border-slate-800 rounded-lg p-1.5 focus:outline-none focus:ring-1 focus:ring-[#D4AF37]"
-                      >
-                        <option value="PLANNING">PLANNING</option>
-                        <option value="IN_PROGRESS">IN_PROGRESS</option>
-                        <option value="COMPLETED">COMPLETED</option>
-                        <option value="ON_HOLD">ON_HOLD</option>
-                        <option value="CANCELLED">CANCELLED</option>
-                      </select>
-                      <IconButton
-                        label="Delete project"
-                        variant="danger"
-                        size="sm"
-                        onClick={() => setProjectToDelete({ id: p.id, title: p.title })}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </IconButton>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {filteredProjects.map((p) => {
+                const currentStatus = p.projectStatus || "PENDING";
+                const allowedNextStatuses =
+                  ALLOWED_PROJECT_STATUS_TRANSITIONS[currentStatus] || [];
+                const isTransitioning = transitioningProjectId === p.id;
+
+                return (
+                  <TableRow key={p.id}>
+                    <TableCell>
+                      <div className="space-y-0.5">
+                        <button
+                          onClick={() => setSelectedProject(p)}
+                          className="font-bold text-slate-900 dark:text-white hover:text-[#D4AF37] dark:hover:text-[#D4AF37] transition-colors text-left block"
+                        >
+                          {p.title}
+                        </button>
+                        {p.category && (
+                          <span className="inline-flex items-center gap-1 text-[11px] font-mono text-slate-400">
+                            <Tag className="w-3 h-3 text-[#D4AF37]" />
+                            {p.category}
+                          </span>
+                        )}
+                        {p.description && (
+                          <p className="text-[11px] text-slate-500 font-normal line-clamp-1 max-w-xs">
+                            {p.description}
+                          </p>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-300 font-medium">
+                        <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                        <span className="truncate max-w-[140px]">{getClientDisplayName(p)}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-mono font-bold text-xs text-slate-900 dark:text-amber-300">
+                      {formatCurrency(p.budget)}
+                    </TableCell>
+                    <TableCell className="font-mono text-[11px] text-slate-500 dark:text-slate-400">
+                      <div>
+                        {formatDate(p.startDate)} → {formatDate(p.expectedCompletionDate) || "TBD"}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={getStatusBadgeVariant(currentStatus)}>
+                        {currentStatus}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {/* Strictly enforce Stage 6 Authoritative Status Transition Matrix */}
+                      {allowedNextStatuses.length > 0 ? (
+                        <div className="flex items-center gap-1">
+                          <select
+                            disabled={isTransitioning || !canManage}
+                            value=""
+                            onChange={(e) => {
+                              if (e.target.value) {
+                                handleUpdateStatus(
+                                  p.id,
+                                  currentStatus,
+                                  e.target.value as ProjectStatus
+                                );
+                              }
+                            }}
+                            className="text-xs bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-800 rounded-lg py-1 px-2 focus:outline-none focus:ring-1 focus:ring-[#D4AF37] cursor-pointer disabled:opacity-50"
+                          >
+                            <option value="" disabled>
+                              Transition to...
+                            </option>
+                            {allowedNextStatuses.map((nxt) => (
+                              <option key={nxt} value={nxt}>
+                                → {nxt}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      ) : (
+                        <span className="text-[11px] text-slate-400 font-mono">Terminal State</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <IconButton
+                          label="View project details"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setSelectedProject(p)}
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                        </IconButton>
+                        {canManage && (
+                          <IconButton
+                            label="Edit project"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => openEditModal(p)}
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </IconButton>
+                        )}
+                        {canManage && (
+                          <IconButton
+                            label="Delete project"
+                            variant="danger"
+                            size="sm"
+                            onClick={() => setProjectToDelete(p)}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </IconButton>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </tbody>
           </Table>
+        </div>
+      ) : (
+        /* Pipeline Grid Cards View */
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredProjects.map((p) => {
+            const currentStatus = p.projectStatus || "PENDING";
+            const allowedNextStatuses =
+              ALLOWED_PROJECT_STATUS_TRANSITIONS[currentStatus] || [];
+            const isTransitioning = transitioningProjectId === p.id;
 
-          <Pagination
-            currentPage={page}
-            totalPages={Math.ceil(projects.length / 10) || 1}
-            onPageChange={(p) => setPage(p)}
-            totalRecords={projects.length}
-          />
+            return (
+              <Card
+                key={p.id}
+                className="flex flex-col justify-between p-6 relative overflow-hidden hover:border-slate-700 bg-white dark:bg-slate-900/60 transition-all duration-200"
+              >
+                <div className="space-y-4">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-[#D4AF37]" />
+                        <span className="text-[11px] font-mono text-slate-400">
+                          {p.category || "Client Contract"}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => setSelectedProject(p)}
+                        className="font-bold text-base text-slate-900 dark:text-white hover:text-[#D4AF37] text-left block"
+                      >
+                        {p.title}
+                      </button>
+                    </div>
+                    <Badge variant={getStatusBadgeVariant(currentStatus)}>
+                      {currentStatus}
+                    </Badge>
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs p-3 rounded-xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800">
+                    <div className="flex items-center gap-2">
+                      <Building2 className="w-4 h-4 text-slate-400" />
+                      <span className="font-semibold text-slate-800 dark:text-slate-200 truncate max-w-[150px]">
+                        {getClientDisplayName(p)}
+                      </span>
+                    </div>
+                    <span className="font-mono font-bold text-slate-900 dark:text-amber-300">
+                      {formatCurrency(p.budget)}
+                    </span>
+                  </div>
+
+                  {p.description && (
+                    <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
+                      {p.description}
+                    </p>
+                  )}
+
+                  <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800/80">
+                    <span className="flex items-center gap-1 font-mono text-[11px]">
+                      <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                      {formatDate(p.startDate)} → {formatDate(p.expectedCompletionDate) || "TBD"}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-3">
+                  {/* Status Transition Control */}
+                  {allowedNextStatuses.length > 0 && canManage && (
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[11px] font-mono text-slate-400">Advance Status:</span>
+                      <select
+                        disabled={isTransitioning}
+                        value=""
+                        onChange={(e) => {
+                          if (e.target.value) {
+                            handleUpdateStatus(
+                              p.id,
+                              currentStatus,
+                              e.target.value as ProjectStatus
+                            );
+                          }
+                        }}
+                        className="text-xs bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-800 rounded-lg py-1 px-2 focus:outline-none focus:ring-1 focus:ring-[#D4AF37] cursor-pointer"
+                      >
+                        <option value="" disabled>
+                          Select transition...
+                        </option>
+                        {allowedNextStatuses.map((nxt) => (
+                          <option key={nxt} value={nxt}>
+                            → {nxt}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between pt-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSelectedProject(p)}
+                      className="text-xs py-1 px-2.5"
+                    >
+                      Details
+                    </Button>
+                    <div className="flex items-center gap-1">
+                      {canManage && (
+                        <IconButton
+                          label="Edit project"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => openEditModal(p)}
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </IconButton>
+                      )}
+                      {canManage && (
+                        <IconButton
+                          label="Delete project"
+                          variant="danger"
+                          size="sm"
+                          onClick={() => setProjectToDelete(p)}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </IconButton>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            );
+          })}
         </div>
       )}
 
-      {/* Confirm Delete Project Modal */}
+      {/* Confirmation Modal for Delete Project */}
       <ConfirmModal
         isOpen={!!projectToDelete}
         onClose={() => setProjectToDelete(null)}
         onConfirm={confirmDeleteProject}
         isLoading={isDeleting}
-        title="Delete Project"
-        message={`Are you sure you want to delete "${projectToDelete?.title}"? All deliverables and milestones associated with this project will be deleted.`}
+        title="Delete Project Contract"
+        message={`Are you sure you want to delete project "${projectToDelete?.title}"? All deliverables, budget milestones, and associated telemetry will be removed.`}
         confirmLabel="Delete Project"
         variant="danger"
       />
 
-      {/* Modal for Create Project */}
+      {/* Project Details Inspection Modal */}
+      {selectedProject && (
+        <Modal
+          isOpen={!!selectedProject}
+          onClose={() => setSelectedProject(null)}
+          title="Project Pipeline Overview"
+          description={`Contract specifications and timeline for ${selectedProject.title}`}
+          footer={
+            <div className="flex items-center justify-between w-full">
+              <span className="text-xs font-mono text-slate-500">
+                Project ID: {selectedProject.id}
+              </span>
+              <div className="flex items-center gap-2">
+                {canManage && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    leftIcon={<Edit2 className="w-3.5 h-3.5" />}
+                    onClick={() => {
+                      const p = selectedProject;
+                      setSelectedProject(null);
+                      openEditModal(p);
+                    }}
+                  >
+                    Edit Project
+                  </Button>
+                )}
+                <Button
+                  variant="gold"
+                  size="sm"
+                  onClick={() => setSelectedProject(null)}
+                >
+                  Close
+                </Button>
+              </div>
+            </div>
+          }
+        >
+          <div className="space-y-6">
+            <div className="flex items-start justify-between p-4 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <h4 className="text-lg font-bold text-slate-900 dark:text-white">
+                    {selectedProject.title}
+                  </h4>
+                  <Badge variant={getStatusBadgeVariant(selectedProject.projectStatus)}>
+                    {selectedProject.projectStatus}
+                  </Badge>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                  <Building2 className="w-3.5 h-3.5 text-slate-400" />
+                  Client: <strong className="text-slate-800 dark:text-slate-200">{getClientDisplayName(selectedProject)}</strong>
+                </p>
+              </div>
+              <div className="text-right">
+                <span className="text-[11px] font-mono text-slate-400 block">Allocated Budget</span>
+                <span className="text-lg font-mono font-bold text-[#D4AF37]">
+                  {formatCurrency(selectedProject.budget)}
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+              <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40">
+                <span className="text-[11px] font-mono text-slate-400 block mb-1">Project Category</span>
+                <span className="font-semibold text-slate-900 dark:text-white">
+                  {selectedProject.category || "Enterprise Software"}
+                </span>
+              </div>
+              <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40">
+                <span className="text-[11px] font-mono text-slate-400 block mb-1">Delivery Timeline</span>
+                <span className="font-semibold text-slate-900 dark:text-white font-mono">
+                  {formatDate(selectedProject.startDate)} → {formatDate(selectedProject.expectedCompletionDate) || "Open"}
+                </span>
+              </div>
+            </div>
+
+            {selectedProject.description && (
+              <div className="p-3.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 text-xs">
+                <span className="text-[11px] font-mono text-slate-400 block mb-1">Contract Scope & Deliverables</span>
+                <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+                  {selectedProject.description}
+                </p>
+              </div>
+            )}
+
+            {/* Allowed Transitions Preview */}
+            <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 space-y-3">
+              <span className="text-xs font-mono font-bold text-[#D4AF37] uppercase tracking-wider block">
+                Workflow Transition Governance
+              </span>
+              <p className="text-xs text-slate-400">
+                Current status is <strong className="text-white">{selectedProject.projectStatus}</strong>.
+                {ALLOWED_PROJECT_STATUS_TRANSITIONS[selectedProject.projectStatus]?.length > 0 ? (
+                  <> Allowed valid transitions: {ALLOWED_PROJECT_STATUS_TRANSITIONS[selectedProject.projectStatus].join(", ")}</>
+                ) : (
+                  <> This is a terminal state.</>
+                )}
+              </p>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* Modal for Create / Edit Project */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Create Client Project"
-        description="Establish a new project contract and milestone tracker."
+        title={editingProject ? "Edit Project Contract" : "Establish New Project"}
+        description={
+          editingProject
+            ? "Modify project scope, budget allocation, and milestones."
+            : "Register a new client deliverable in your workspace pipeline."
+        }
         footer={
           <>
             <Button variant="ghost" size="sm" onClick={() => setIsModalOpen(false)}>
@@ -304,59 +928,58 @@ export const ProjectsPage: React.FC = () => {
               variant="gold"
               size="sm"
               isLoading={isSubmitting}
-              onClick={handleCreateProject}
+              disabled={!formData.title.trim() || !formData.clientId}
+              onClick={handleSubmit}
             >
-              Create Project
+              {editingProject ? "Save Changes" : "Create Project"}
             </Button>
           </>
         }
       >
-        <form onSubmit={handleCreateProject} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+          {modalError && (
+            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-500 text-xs font-medium">
+              {modalError}
+            </div>
+          )}
+
           <Select
             label="Client Account"
             required
-            placeholder="Select Client..."
-            options={clients.map((c) => ({ value: c.id, label: `${c.name} (${c.companyName || c.email})` }))}
+            options={clients.map((c) => ({
+              value: c.id,
+              label: `${c.companyName || c.fullName || c.name || c.email} (${c.email})`,
+            }))}
             value={formData.clientId}
             onChange={(e) => setFormData({ ...formData, clientId: e.target.value })}
+            placeholder={clients.length === 0 ? "No clients available. Add a client first." : "Select Client..."}
           />
 
           <Input
             label="Project Title"
             required
-            placeholder="e.g. Enterprise Cloud Modernization"
+            placeholder="e.g. Multi-Cloud Microservices Modernization"
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           />
 
-          <Textarea
-            label="Description"
-            placeholder="e.g. Full-stack microservices architecture migration and security overhaul"
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          />
-
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
-              label="Budget (USD)"
+              label="Category / Practice"
+              placeholder="e.g. Cloud Infrastructure"
+              value={formData.category}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+            />
+            <Input
+              label="Budget Allocation ($ USD)"
               type="number"
-              placeholder="50000"
+              placeholder="e.g. 75000"
               value={formData.budget}
               onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
             />
-            <Select
-              label="Initial Status"
-              options={[
-                { value: "PLANNING", label: "Planning" },
-                { value: "IN_PROGRESS", label: "In Progress" },
-                { value: "ON_HOLD", label: "On Hold" },
-              ]}
-              value={formData.projectStatus}
-              onChange={(e) => setFormData({ ...formData, projectStatus: e.target.value as ProjectStatus })}
-            />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
               label="Start Date"
               type="date"
@@ -364,12 +987,36 @@ export const ProjectsPage: React.FC = () => {
               onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
             />
             <Input
-              label="Expected Completion"
+              label="Expected Completion Date"
               type="date"
               value={formData.expectedCompletionDate}
               onChange={(e) => setFormData({ ...formData, expectedCompletionDate: e.target.value })}
             />
           </div>
+
+          {!editingProject && (
+            <Select
+              label="Initial Status"
+              options={[
+                { value: "PLANNING", label: "Planning" },
+                { value: "PENDING", label: "Pending" },
+                { value: "DISCUSSION", label: "Discussion" },
+                { value: "CONFIRMED", label: "Confirmed" },
+                { value: "IN_PROGRESS", label: "In Progress" },
+              ]}
+              value={formData.projectStatus}
+              onChange={(e) =>
+                setFormData({ ...formData, projectStatus: e.target.value as ProjectStatus })
+              }
+            />
+          )}
+
+          <Textarea
+            label="Scope & Deliverables Description"
+            placeholder="e.g. Full-stack cloud modernization, backend security hardening, automated CI/CD pipelines, and multi-tenant telemetry..."
+            value={formData.description}
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          />
         </form>
       </Modal>
     </div>

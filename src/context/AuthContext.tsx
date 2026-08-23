@@ -5,12 +5,15 @@ import { organizationsService } from "../api/services/organizations.service.js";
 import { workspacesService } from "../api/services/workspaces.service.js";
 import {
   getStoredAccessToken,
+  getStoredRefreshToken,
   setStoredTokens,
   clearStoredTokens,
   getStoredOrgId,
   setStoredOrgId,
   getStoredWsId,
   setStoredWsId,
+  isTokenExpired,
+  performTokenRefresh,
 } from "../api/client.js";
 
 interface AuthContextType {
@@ -23,7 +26,13 @@ interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (credentials: { email?: string; username?: string; password: string }) => Promise<void>;
-  register: (data: { email: string; password: string; fullName?: string }) => Promise<void>;
+  register: (data: {
+    email: string;
+    password: string;
+    fullName: string;
+    accountType?: "ADMIN" | "SUB_ADMIN" | "MANAGER" | "MEMBER" | "CLIENT";
+    organizationName?: string;
+  }) => Promise<void>;
   logout: () => Promise<void>;
   switchOrganization: (orgId: string) => Promise<void>;
   switchWorkspace: (wsId: string) => Promise<void>;
@@ -79,27 +88,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const refreshUser = useCallback(async () => {
     let token = getStoredAccessToken();
-    const explicitlyLoggedOut = typeof window !== "undefined" && window.sessionStorage?.getItem("st_user_logged_out") === "true";
+    const refreshToken = getStoredRefreshToken();
 
-    if (!token && !explicitlyLoggedOut) {
-      // Auto-initialize default administrator session for real backend verification
-      try {
-        const loginRes = await authService.login({
-          email: "admin@st-solutions.com",
-          password: "Admin@123456",
-        });
-        if (loginRes.data?.accessToken) {
-          setStoredTokens(loginRes.data.accessToken, loginRes.data.refreshToken);
-          token = loginRes.data.accessToken;
-        }
-      } catch (e) {
-        console.warn("Session auto-initialization fallback:", e);
+    // Proactively check if existing access token is expired, and attempt refresh if refreshToken exists
+    if ((!token || isTokenExpired(token)) && refreshToken) {
+      const refreshedToken = await performTokenRefresh();
+      if (refreshedToken) {
+        token = refreshedToken;
+      } else {
+        token = null;
       }
     }
 
     if (!token) {
+      clearStoredTokens();
       setCurrentUser(null);
       setPermissions([]);
+      setOrganizations([]);
+      setCurrentOrganization(null);
+      setWorkspaces([]);
+      setCurrentWorkspace(null);
       setIsLoading(false);
       return;
     }
@@ -107,19 +115,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const meRes = await authService.getMe();
       const rawData = meRes.data as any;
-      const user = rawData?.user || (rawData?.id ? rawData : null);
 
-      if (meRes.success && user) {
-        setCurrentUser(user);
-        
+      if (meRes.success && rawData) {
+        const userObj: User = {
+          id: rawData.id || rawData.user?.id,
+          email: rawData.email || rawData.user?.email,
+          accountType: rawData.accountType || rawData.user?.accountType || "MEMBER",
+          status: rawData.status || rawData.user?.status || "ACTIVE",
+          roleId: rawData.roleId || rawData.user?.roleId || null,
+          createdAt: rawData.createdAt || rawData.user?.createdAt || new Date().toISOString(),
+          updatedAt: rawData.updatedAt || rawData.user?.updatedAt || new Date().toISOString(),
+          profile: rawData.profile || rawData.user?.profile || null,
+          role: rawData.roleName
+            ? {
+                id: rawData.roleId || "",
+                name: rawData.roleName,
+                permissions: (rawData.permissions || []).map((p: string) => ({
+                  permission: { id: p, name: p },
+                })),
+              }
+            : rawData.role || rawData.user?.role || null,
+        };
+
+        setCurrentUser(userObj);
+
         // Extract permissions array
-        const userPerms = rawData?.permissions || user.permissions || [];
-        if (user.role?.permissions && Array.isArray(user.role.permissions)) {
-          const rolePerms = user.role.permissions.map((p: any) => p.permission?.name || p.name || String(p));
-          setPermissions(Array.from(new Set([...userPerms, ...rolePerms])));
-        } else {
-          setPermissions(userPerms);
-        }
+        const userPerms: string[] = Array.isArray(rawData?.permissions)
+          ? rawData.permissions
+          : Array.isArray(userObj.role?.permissions)
+          ? userObj.role.permissions.map((p: any) => p.permission?.name || p.name || String(p))
+          : [];
+        setPermissions(userPerms);
 
         const savedOrgId = getStoredOrgId();
         const savedWsId = getStoredWsId();
@@ -131,7 +157,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       clearStoredTokens();
       setCurrentUser(null);
       setPermissions([]);
+      setOrganizations([]);
       setCurrentOrganization(null);
+      setWorkspaces([]);
       setCurrentWorkspace(null);
     } finally {
       setIsLoading(false);
@@ -144,7 +172,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const handleLogoutEvent = () => {
       setCurrentUser(null);
       setPermissions([]);
+      setOrganizations([]);
       setCurrentOrganization(null);
+      setWorkspaces([]);
       setCurrentWorkspace(null);
     };
 
@@ -156,29 +186,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (credentials: { email?: string; username?: string; password: string }) => {
     setIsLoading(true);
-    if (typeof window !== "undefined") {
-      window.sessionStorage?.removeItem("st_user_logged_out");
-    }
     try {
       const res = await authService.login(credentials);
       if (res.data?.accessToken) {
         setStoredTokens(res.data.accessToken, res.data.refreshToken);
-        setCurrentUser(res.data.user);
-
-        if (res.data.organizations && res.data.organizations.length > 0) {
-          setOrganizations(res.data.organizations);
-          const firstOrg = res.data.organizations[0];
-          setCurrentOrganization(firstOrg);
-          setStoredOrgId(firstOrg.id);
-        }
-
-        if (res.data.workspaces && res.data.workspaces.length > 0) {
-          setWorkspaces(res.data.workspaces);
-          const firstWs = res.data.workspaces[0];
-          setCurrentWorkspace(firstWs);
-          setStoredWsId(firstWs.id);
-        }
-
         await refreshUser();
       } else {
         throw new Error(res.message || "Login failed");
@@ -188,16 +199,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (data: { email: string; password: string; fullName?: string }) => {
+  const register = async (data: {
+    email: string;
+    password: string;
+    fullName: string;
+    accountType?: "ADMIN" | "SUB_ADMIN" | "MANAGER" | "MEMBER" | "CLIENT";
+    organizationName?: string;
+  }) => {
     setIsLoading(true);
-    if (typeof window !== "undefined") {
-      window.sessionStorage?.removeItem("st_user_logged_out");
-    }
     try {
       const res = await authService.register(data);
       if (res.data?.accessToken) {
         setStoredTokens(res.data.accessToken, res.data.refreshToken);
-        setCurrentUser(res.data.user);
         await refreshUser();
       } else {
         throw new Error(res.message || "Registration failed");
@@ -208,13 +221,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = async () => {
-    if (typeof window !== "undefined") {
-      window.sessionStorage?.setItem("st_user_logged_out", "true");
-    }
     try {
       await authService.logout();
     } catch {
-      // Ignore network failure on logout
+      // Clean up client state regardless of server reachability
     } finally {
       clearStoredTokens();
       setCurrentUser(null);

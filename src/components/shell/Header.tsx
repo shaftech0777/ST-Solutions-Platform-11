@@ -195,7 +195,7 @@ export const Header: React.FC<HeaderProps> = ({
             className="flex items-center gap-2 p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50"
             aria-label="User account menu"
           >
-            <Avatar name={currentUser?.fullName || currentUser?.email} size="sm" />
+            <Avatar name={currentUser?.profile?.fullName || currentUser?.email} size="sm" />
           </button>
 
           {isProfileOpen && (
@@ -203,7 +203,7 @@ export const Header: React.FC<HeaderProps> = ({
               <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)} />
               <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl z-50 py-2 animate-in fade-in zoom-in-95 duration-150">
                 <div className="px-4 py-2.5 border-b border-slate-200 dark:border-slate-800">
-                  <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{currentUser?.fullName || "User"}</p>
+                  <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{currentUser?.profile?.fullName || currentUser?.email?.split("@")[0] || "User"}</p>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono truncate">{currentUser?.email}</p>
                   <span className="inline-block mt-1 px-2 py-0.5 rounded text-[9px] font-bold font-mono bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/20 uppercase">
                     {currentUser?.accountType || "USER"}

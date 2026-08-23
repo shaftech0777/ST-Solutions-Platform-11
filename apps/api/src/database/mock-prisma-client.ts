@@ -27,6 +27,13 @@ function matchesFilter(item: any, where: any): boolean {
       continue;
     }
 
+    // Handle composite unique keys (e.g. organizationId_userId: { organizationId, userId })
+    if (key.includes("_") && typeof val === "object" && val !== null && !(val instanceof Date)) {
+      const isCompositeMatch = Object.entries(val).every(([subKey, subVal]) => item[subKey] === subVal);
+      if (!isCompositeMatch) return false;
+      continue;
+    }
+
     const itemVal = item[key];
 
     if (val === null) {
@@ -35,6 +42,24 @@ function matchesFilter(item: any, where: any): boolean {
     }
 
     if (typeof val === "object" && val !== null && !(val instanceof Date)) {
+      // Prisma relation filter: { some: ... }
+      if ("some" in val && typeof val.some === "object") {
+        const store = memoryDb.data;
+        let relatedItems: any[] = [];
+        if (key === "members") {
+          relatedItems = (store.organizationMembers || []).filter((om) => om.organizationId === item.id);
+          if (relatedItems.length === 0) {
+            relatedItems = (store.workspaceMembers || []).filter((wm) => wm.workspaceId === item.id);
+          }
+        } else if (Array.isArray(itemVal)) {
+          relatedItems = itemVal;
+        }
+        if (!relatedItems.some((relItem) => matchesFilter(relItem, val.some))) {
+          return false;
+        }
+        continue;
+      }
+
       if ("equals" in val && val.equals !== undefined) {
         if (itemVal !== val.equals) return false;
       }
@@ -283,11 +308,13 @@ export function createMockPrismaClient(): any {
         }
 
         if (table === "organizations") {
+          let creatorUserId = "";
           if (args.data.members?.create) {
+            creatorUserId = args.data.members.create.userId;
             const om = {
               id: `om-${Date.now().toString(36)}`,
               organizationId: id,
-              userId: args.data.members.create.userId,
+              userId: creatorUserId,
               role: args.data.members.create.role || "MEMBER",
               createdAt: new Date(),
               updatedAt: new Date(),
@@ -296,8 +323,9 @@ export function createMockPrismaClient(): any {
             delete newItem.members;
           }
           if (args.data.workspaces?.create) {
+            const wsId = `ws-${Date.now().toString(36)}`;
             const ws = {
-              id: `ws-${Date.now().toString(36)}`,
+              id: wsId,
               organizationId: id,
               name: args.data.workspaces.create.name,
               slug: args.data.workspaces.create.slug || "default",
@@ -306,8 +334,31 @@ export function createMockPrismaClient(): any {
               updatedAt: new Date(),
             };
             store.workspaces.push(ws);
+            if (creatorUserId) {
+              store.workspaceMembers.push({
+                id: `wm-${Date.now().toString(36)}`,
+                workspaceId: wsId,
+                userId: creatorUserId,
+                role: "ADMIN",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              });
+            }
             delete newItem.workspaces;
           }
+        }
+
+        if (table === "workspaces" && args.data.members?.create) {
+          const wm = {
+            id: `wm-${Date.now().toString(36)}`,
+            workspaceId: id,
+            userId: args.data.members.create.userId,
+            role: args.data.members.create.role || "MEMBER",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          };
+          store.workspaceMembers.push(wm);
+          delete newItem.members;
         }
 
         store[table].push(newItem);

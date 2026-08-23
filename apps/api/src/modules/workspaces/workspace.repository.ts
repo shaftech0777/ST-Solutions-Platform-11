@@ -65,6 +65,24 @@ export class WorkspaceRepository extends BaseRepository {
     });
   }
 
+  public async findByOrganizationId(organizationId: string, tx?: TransactionClient) {
+    return this.findByOrganization(organizationId, tx);
+  }
+
+  public async findAndCount(options?: { limit?: number; offset?: number; where?: any }, tx?: TransactionClient) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      const data = await client.workspace.findMany({
+        where: options?.where,
+        take: options?.limit,
+        skip: options?.offset,
+        orderBy: { createdAt: "desc" },
+      });
+      const total = await client.workspace.count({ where: options?.where });
+      return { data, total };
+    });
+  }
+
   public async update(
     id: string,
     data: {
