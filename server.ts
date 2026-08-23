@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import path from "path";
+import fs from "fs";
 import { createServer as createViteServer } from "vite";
 import apiApp from "./apps/api/src/app.js";
 import { databaseService } from "./apps/api/src/database/index.js";
@@ -31,14 +32,34 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), "dist");
-    app.use(express.static(distPath));
-    app.use((_req: Request, res: Response) => {
-      res.sendFile(path.join(distPath, "index.html"));
-    });
+    const indexPath = path.join(distPath, "index.html");
+
+    if (fs.existsSync(indexPath)) {
+      app.use(express.static(distPath));
+      app.use((_req: Request, res: Response) => {
+        res.sendFile(indexPath);
+      });
+    } else {
+      // Backend-only mode on Render or custom deployment
+      app.use((_req: Request, res: Response) => {
+        res.status(200).json({
+          status: "ok",
+          service: "ST-Solutions API",
+          version: "1.0.0",
+          environment: process.env.NODE_ENV || "production",
+          endpoints: {
+            health: "/health",
+            apiV1: "/api/v1",
+            auth: "/auth/login",
+          },
+          documentation: "Frontend hosted on Vercel connecting via VITE_API_URL",
+        });
+      });
+    }
   }
 
   app.listen(PORT, "0.0.0.0", () => {
-    Logger.info(`ST-Solutions Enterprise Platform running on http://localhost:${PORT}`);
+    Logger.info(`ST-Solutions Enterprise Platform running on http://0.0.0.0:${PORT}`);
   });
 }
 

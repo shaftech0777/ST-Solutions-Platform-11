@@ -6,7 +6,8 @@
   "main": "src/index.ts",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
+    "prebuild": "prisma generate",
+    "build": "prisma generate && tsc",
     "start": "node dist/server.js",
     "lint": "tsc --noEmit",
     "test": "tsx --test src/__tests__/*.test.ts",
