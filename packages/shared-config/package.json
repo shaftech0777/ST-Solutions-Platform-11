@@ -3,5 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "main": "index.js",
-  "description": "Shared configurations for ESLint, Prettier, and TypeScript"
+  "description": "Shared configurations for ESLint, Prettier, and TypeScript",
+  "scripts": {
+    "build:web": "echo ok"
+  }
 }

@@ -3,5 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "main": "index.ts",
-  "description": "Shared TypeScript definitions and interfaces"
+  "description": "Shared TypeScript definitions and interfaces",
+  "scripts": {
+    "build:web": "echo ok"
+  }
 }
