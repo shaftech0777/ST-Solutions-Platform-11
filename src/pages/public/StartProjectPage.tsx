@@ -32,12 +32,16 @@ import {
   Bell,
   BarChart3,
   SlidersHorizontal,
+  Phone,
+  CheckCheck,
+  ChevronDown,
+  Award,
 } from "lucide-react";
 import { apiClient } from "../../api/client.js";
 import { companyConfig } from "../../data/companyConfig.js";
 import { generateProjectInquiryMessage, ProjectInquiryData } from "../../utils/inquiryMessage.js";
 
-// STEP 1 OPTIONS: What are you looking to build?
+// STEP 1 OPTIONS: Technology Scope
 const buildTypeOptions = [
   { id: "Website", label: "Website", desc: "Corporate site, landing page, or high-conversion portfolio", icon: Globe },
   { id: "Web Application", label: "Web Application", desc: "Interactive customer portal, SaaS, or web tool", icon: Code2 },
@@ -45,7 +49,7 @@ const buildTypeOptions = [
   { id: "Business Software", label: "Business Software", desc: "Custom internal ERP, CRM, or management system", icon: Layers },
   { id: "AI System", label: "AI System", desc: "Autonomous agent, vector RAG, LLM or document AI", icon: Brain },
   { id: "Automation", label: "Automation", desc: "Webhook workflows, notification pipelines, sync bridges", icon: Workflow },
-  { id: "Mobile/Custom Application", label: "Mobile / Custom App", desc: "PWA, cross-platform mobile or dedicated tool", icon: Smartphone },
+  { id: "Mobile / Custom App", label: "Mobile / Custom App", desc: "PWA, cross-platform mobile or dedicated tool", icon: Smartphone },
   { id: "Custom System", label: "Custom System", desc: "Bespoke proprietary infrastructure & algorithms", icon: Sparkles },
   { id: "Not Sure", label: "Not Sure", desc: "Explore options with an ST-Solutions systems engineer", icon: HelpCircle },
 ];
@@ -60,62 +64,97 @@ const industryOptions = [
   "Professional Services",
   "Startup",
   "SMB",
+  "Manufacturing",
+  "Logistics",
+  "Real Estate",
   "Other",
 ];
 
 // STEP 3 OPTIONS: Goals
 const goalOptions = [
-  { id: "Grow Sales", label: "Grow Sales", icon: TrendingUp },
-  { id: "Build Online Presence", label: "Build Online Presence", icon: Globe },
-  { id: "Automate Work", label: "Automate Work", icon: Zap },
-  { id: "Reduce Manual Tasks", label: "Reduce Manual Tasks", icon: SlidersHorizontal },
-  { id: "Create Internal Software", label: "Create Internal Software", icon: Layers },
-  { id: "Add AI", label: "Add AI Capabilities", icon: Brain },
-  { id: "Improve Customer Experience", label: "Improve Customer Experience", icon: UserCheck },
-  { id: "Manage Products/Inventory", label: "Manage Products / Inventory", icon: ShoppingBag },
-  { id: "Other", label: "Other Objective", icon: Sparkles },
+  { id: "Grow Sales", label: "Grow Sales", icon: TrendingUp, desc: "Increase revenue, conversions, and market reach" },
+  { id: "Build Online Presence", label: "Build Online Presence", icon: Globe, desc: "Modern brand authority and customer trust" },
+  { id: "Automate Work", label: "Automate Work", icon: Zap, desc: "Eliminate repetitive manual tasks and human errors" },
+  { id: "Reduce Manual Tasks", label: "Reduce Manual Tasks", icon: SlidersHorizontal, desc: "Streamline daily operational workflows" },
+  { id: "Create Internal Software", label: "Create Internal Software", icon: Layers, desc: "Bespoke tools for team coordination and data" },
+  { id: "Add AI Capabilities", label: "Add AI Capabilities", icon: Brain, desc: "Smart search, automated insights, or assistants" },
+  { id: "Improve Customer Experience", label: "Improve Customer Experience", icon: UserCheck, desc: "Fast, delightful user journeys and support" },
+  { id: "Manage Products / Inventory", label: "Manage Products / Inventory", icon: ShoppingBag, desc: "Real-time stock, orders, and catalog sync" },
+  { id: "Other Objective", label: "Other Custom Objective", icon: Sparkles, desc: "Specific domain goals and custom milestones" },
 ];
 
 // STEP 4 OPTIONS: Features
 const featureOptions = [
-  { id: "Authentication", label: "Authentication & User Accounts", icon: Lock },
-  { id: "Admin Panel", label: "Admin Panel & Management Hub", icon: SlidersHorizontal },
+  { id: "Authentication", label: "User Accounts & Authentication", icon: Lock },
+  { id: "Admin Panel", label: "Admin Management Hub", icon: SlidersHorizontal },
   { id: "Payments", label: "Payments & Invoicing", icon: DollarSign },
-  { id: "E-Commerce", label: "E-Commerce & Storefront", icon: ShoppingBag },
+  { id: "E-Commerce", label: "Product Catalog & Storefront", icon: ShoppingBag },
   { id: "Inventory", label: "Inventory & Stock Tracking", icon: Layers },
   { id: "Orders", label: "Orders & Fulfillment Pipeline", icon: CheckCircle2 },
   { id: "Dashboard", label: "Analytics Dashboard & Telemetry", icon: BarChart3 },
-  { id: "AI", label: "AI Integration & Agents", icon: Brain },
+  { id: "AI Integration", label: "AI Integration & Agents", icon: Brain },
   { id: "Automation", label: "Automated Triggers & Webhooks", icon: Workflow },
-  { id: "Notifications", label: "System & Push Notifications", icon: Bell },
-  { id: "Email", label: "Email Notifications & Templates", icon: Mail },
-  { id: "WhatsApp", label: "WhatsApp Alerts & Integration", icon: MessageCircle },
+  { id: "Push Notifications", label: "Push & System Notifications", icon: Bell },
+  { id: "Email Integration", label: "Email Notifications & Templates", icon: Mail },
+  { id: "WhatsApp Alerts", label: "WhatsApp Alerts & Sync", icon: MessageCircle },
   { id: "API Integration", label: "REST / Third-Party API Sync", icon: Code2 },
   { id: "Custom Database", label: "Custom Relational Database", icon: Database },
   { id: "Reports", label: "Automated Reports & Exports", icon: FileText },
   { id: "Other", label: "Other Custom Feature", icon: Sparkles },
 ];
 
-// STEP 5 OPTIONS: Budget
-const budgetOptions = [
-  { id: "Under $500", label: "Under $500", desc: "Starter website or single workflow automation" },
-  { id: "$500–$1,000", label: "$500 – $1,000", desc: "Comprehensive business site or specialized portal" },
-  { id: "$1,000–$2,500", label: "$1,000 – $2,500", desc: "Custom business software, SaaS MVP, or AI system" },
-  { id: "$2,500+", label: "$2,500+", desc: "Enterprise architecture, multi-tenant system, or large project" },
-  { id: "Not Sure", label: "Not Sure", desc: "To be determined following technical scoping" },
+// STEP 5 OPTIONS: Project Quality / Level (5 choices - NO FIXED PRICES)
+const qualityLevels = [
+  {
+    id: "Starter",
+    badge: "Core Essentials",
+    title: "Starter",
+    desc: "A clean and focused solution for getting started with fundamental capabilities.",
+    features: ["Clean UI architecture", "Essential functionality", "Mobile responsive", "Production ready"],
+  },
+  {
+    id: "Professional",
+    badge: "Business Ready",
+    title: "Professional",
+    desc: "A polished business-grade solution with essential features and robust integrations.",
+    features: ["Custom business workflows", "Role access control", "Optimized performance", "Standard third-party sync"],
+  },
+  {
+    id: "Advanced",
+    badge: "Extended Scope",
+    title: "Advanced",
+    desc: "A more powerful system with advanced functionality, custom data flows, and deep logic.",
+    features: ["Advanced automated pipelines", "Multi-role dashboard", "Relational database", "Telemetry & analytics"],
+  },
+  {
+    id: "Premium",
+    badge: "High Craftsmanship",
+    title: "Premium",
+    desc: "A highly refined, feature-rich solution with advanced UX, top-tier reliability, and architecture.",
+    features: ["Bespoke micro-interactions", "High-throughput APIs", "AI / Automation synergy", "Dedicated QA auditing"],
+  },
+  {
+    id: "Enterprise",
+    badge: "Mission Critical",
+    title: "Enterprise",
+    desc: "A large-scale, highly customized solution designed for complex business requirements and scaling.",
+    features: ["Multi-tenant isolation", "Comprehensive audit trails", "Maximum resilience", "Bespoke SLA support"],
+  },
 ];
 
 // STEP 6 OPTIONS: Timeline
 const timelineOptions = [
-  { id: "ASAP", label: "ASAP (High Priority)", desc: "Immediate kickoff and rapid turnaround" },
-  { id: "1–2 Weeks", label: "1–2 Weeks", desc: "Fast-track delivery sprint" },
-  { id: "1 Month", label: "1 Month", desc: "Standard production timeline" },
-  { id: "1–3 Months", label: "1–3 Months", desc: "Deep multi-phase engineering" },
-  { id: "Flexible", label: "Flexible", desc: "Quality and precision focused" },
+  { id: "ASAP", label: "ASAP (High Priority)", desc: "Immediate kickoff and rapid turnaround sprint" },
+  { id: "1–2 Weeks", label: "1–2 Weeks", desc: "Fast-track delivery cycle" },
+  { id: "1 Month", label: "1 Month", desc: "Standard structured production timeline" },
+  { id: "2–3 Months", label: "2–3 Months", desc: "Deep multi-phase engineering and testing" },
+  { id: "Flexible", label: "Flexible", desc: "Quality, iteration, and precision focused" },
 ];
 
+const currencyOptions = ["PKR", "USD", "EUR", "GBP", "AED", "CNY", "Other"];
+
 export const StartProjectPage: React.FC = () => {
-  // Wizard state (1 through 7, plus 8 for Summary/Confirm)
+  // Wizard state (1 through 7, plus 8 for Review & Dispatch)
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [copied, setCopied] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -130,8 +169,12 @@ export const StartProjectPage: React.FC = () => {
     goals: [],
     features: [],
     additionalRequirements: "",
+    qualityLevel: "Professional",
+    timeline: "1 Month",
+    budgetKnown: false,
+    budgetAmount: "",
+    budgetCurrency: "PKR",
     budget: "",
-    timeline: "",
     fullName: "",
     email: "",
     phoneNumber: "",
@@ -154,7 +197,12 @@ export const StartProjectPage: React.FC = () => {
     // Validation per step
     if (currentStep === 1) {
       if (formData.projectTypes.length === 0) {
-        setErrorMessage("Please select at least one technology or project type.");
+        setErrorMessage("Please select at least one technology or project scope option.");
+        return;
+      }
+    } else if (currentStep === 5) {
+      if (!formData.qualityLevel) {
+        setErrorMessage("Please select a project quality level.");
         return;
       }
     } else if (currentStep === 7) {
@@ -169,32 +217,45 @@ export const StartProjectPage: React.FC = () => {
     }
 
     setCurrentStep((prev) => Math.min(prev + 1, 8));
-    window.scrollTo({ top: 120, behavior: "smooth" });
+    window.scrollTo({ top: 80, behavior: "smooth" });
   };
 
   const handleStepBack = () => {
     setErrorMessage(null);
     setCurrentStep((prev) => Math.max(prev - 1, 1));
-    window.scrollTo({ top: 120, behavior: "smooth" });
+    window.scrollTo({ top: 80, behavior: "smooth" });
+  };
+
+  // Compile final budget string based on user inputs
+  const resolvedBudget = formData.budgetKnown && formData.budgetAmount?.trim()
+    ? `${formData.budgetCurrency || "PKR"} ${formData.budgetAmount.trim()}`
+    : "Not decided yet";
+
+  const consolidatedData: ProjectInquiryData = {
+    ...formData,
+    budget: resolvedBudget,
   };
 
   // Generate standardized message
-  const generatedMessage = generateProjectInquiryMessage(formData);
+  const generatedMessage = generateProjectInquiryMessage(consolidatedData);
 
   // Handle Copy to clipboard
   const handleCopyMessage = () => {
     navigator.clipboard.writeText(generatedMessage);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
+    setTimeout(() => setCopied(false), 3000);
   };
 
   // WhatsApp Link
   const whatsappUrl = `https://wa.me/923257263417?text=${encodeURIComponent(generatedMessage)}`;
 
   // Email Mailto Link
-  const mailtoUrl = `mailto:${companyConfig.contact.email}?subject=${encodeURIComponent(
-    "New Project Inquiry — ST-Solutions"
+  const mailtoUrl = `mailto:stsolutionsofficial@gmail.com?subject=${encodeURIComponent(
+    `ST-Solutions Project Inquiry — ${formData.projectTypes.join(", ") || "New Project"}`
   )}&body=${encodeURIComponent(generatedMessage)}`;
+
+  // Direct Phone Link
+  const phoneUrl = `tel:+923257263417`;
 
   // Submit via API Client in background
   const handleDirectApiSubmit = async () => {
@@ -213,12 +274,8 @@ export const StartProjectPage: React.FC = () => {
         },
       });
       setSubmitSuccess(true);
-    } catch (err: any) {
-      // Gracefully handle - allow direct communication still
-      setErrorMessage(
-        err.message ||
-          "Unable to record submission online. Please use direct WhatsApp or Email buttons below."
-      );
+    } catch {
+      // Gracefully silent - direct contact options are always functional
     } finally {
       setIsSubmitting(false);
     }
@@ -230,30 +287,34 @@ export const StartProjectPage: React.FC = () => {
         {/* Page Top Header */}
         <div className="text-center space-y-3">
           <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-900 text-xs font-mono font-bold uppercase tracking-wider">
-            <span>Project Inquiry Builder</span>
+            <Sparkles className="w-3.5 h-3.5 text-[#B88E20]" />
+            <span>Interactive Project Architect</span>
           </div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-950">
             Start a Project with ST-Solutions
           </h1>
           <p className="text-sm sm:text-base text-slate-700 max-w-2xl mx-auto leading-relaxed">
-            Follow this progressive project architect to define your technical requirements, goals, and timeline. Receive a structured project brief ready for WhatsApp, Email, or instant consultation.
+            Follow this progressive project architect to define your scope, features, and timeline. Get an instant structured brief ready for WhatsApp, Email, or direct consultation.
           </p>
         </div>
 
         {/* Step Indicator Ribbon */}
         {currentStep <= 7 && (
-          <div className="bg-white p-4 rounded-2xl border border-[#E2E5E0] shadow-sm">
-            <div className="flex items-center justify-between text-xs font-mono mb-2">
-              <span className="font-bold text-slate-950">
-                Step 0{currentStep} of 07
-              </span>
+          <div className="bg-white p-4 sm:p-5 rounded-2xl border border-[#E2E5E0] shadow-sm">
+            <div className="flex items-center justify-between text-xs font-mono mb-2.5">
+              <div className="flex items-center space-x-2">
+                <span className="w-2 h-2 rounded-full bg-[#D4AF37]" />
+                <span className="font-bold text-slate-950">
+                  Step 0{currentStep} of 07
+                </span>
+              </div>
               <span className="text-[#B88E20] font-bold">
                 {currentStep === 1 && "Technology Scope"}
-                {currentStep === 2 && "Business & Industry"}
-                {currentStep === 3 && "Primary Objectives"}
-                {currentStep === 4 && "Features & Logic"}
-                {currentStep === 5 && "Budget Estimation"}
-                {currentStep === 6 && "Timeline"}
+                {currentStep === 2 && "Industry & Business"}
+                {currentStep === 3 && "Business Goals"}
+                {currentStep === 4 && "Features & Specifications"}
+                {currentStep === 5 && "Project Quality Level"}
+                {currentStep === 6 && "Timeline & Budget"}
                 {currentStep === 7 && "Contact Details"}
               </span>
             </div>
@@ -280,13 +341,16 @@ export const StartProjectPage: React.FC = () => {
           {/* STEP 1: What are you looking to build? */}
           {currentStep === 1 && (
             <div className="space-y-6 animate-fade-in">
-              <div className="space-y-1">
-                <span className="text-xs font-mono font-bold text-[#B88E20] uppercase">Step 01</span>
+              <div className="space-y-1.5">
+                <div className="flex items-center space-x-2 text-xs font-mono font-bold text-[#B88E20] uppercase">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]" />
+                  <span>Step 01 • Technology Scope</span>
+                </div>
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
                   What are you looking to build?
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-600">
-                  Select one or more technologies that match your project vision.
+                  Select one or more technologies and platforms matching your project vision.
                 </p>
               </div>
 
@@ -299,7 +363,7 @@ export const StartProjectPage: React.FC = () => {
                       key={opt.id}
                       type="button"
                       onClick={() => toggleSelection("projectTypes", opt.id)}
-                      className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between space-y-3 group ${
+                      className={`p-4 sm:p-5 rounded-2xl border text-left transition-all flex flex-col justify-between space-y-3 group ${
                         isSelected
                           ? "bg-amber-500/10 border-[#D4AF37] ring-2 ring-[#D4AF37]/50 shadow-sm"
                           : "bg-white border-[#E2E5E0] hover:border-slate-300 hover:bg-[#F1F2EE]"
@@ -307,17 +371,17 @@ export const StartProjectPage: React.FC = () => {
                     >
                       <div className="flex items-center justify-between">
                         <div
-                          className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
+                          className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
                             isSelected
                               ? "bg-[#D4AF37] text-slate-950 font-bold"
                               : "bg-[#F1F2EE] text-slate-700 group-hover:text-[#B88E20]"
                           }`}
                         >
-                          <Icon className="w-4 h-4" />
+                          <Icon className="w-5 h-5" />
                         </div>
                         {isSelected && (
                           <div className="w-5 h-5 rounded-full bg-[#D4AF37] text-slate-950 flex items-center justify-center">
-                            <Check className="w-3 h-3 stroke-[3]" />
+                            <Check className="w-3.5 h-3.5 stroke-[3]" />
                           </div>
                         )}
                       </div>
@@ -325,7 +389,7 @@ export const StartProjectPage: React.FC = () => {
                         <div className="font-bold text-sm text-slate-950">
                           {opt.label}
                         </div>
-                        <div className="text-[11px] text-slate-600 mt-1 leading-snug">
+                        <div className="text-xs text-slate-600 mt-1 leading-snug">
                           {opt.desc}
                         </div>
                       </div>
@@ -336,23 +400,26 @@ export const StartProjectPage: React.FC = () => {
             </div>
           )}
 
-          {/* STEP 2: Tell us about your business */}
+          {/* STEP 2: Business & Industry */}
           {currentStep === 2 && (
-            <div className="space-y-6 animate-fade-in max-w-xl">
-              <div className="space-y-1">
-                <span className="text-xs font-mono font-bold text-[#B88E20] uppercase">Step 02</span>
+            <div className="space-y-6 animate-fade-in max-w-2xl">
+              <div className="space-y-1.5">
+                <div className="flex items-center space-x-2 text-xs font-mono font-bold text-[#B88E20] uppercase">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]" />
+                  <span>Step 02 • Business Context</span>
+                </div>
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
                   Tell us about your business
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-600">
-                  Help us understand your organization and domain context.
+                  Help us tailor the system architecture to your organization and industry regulations.
                 </p>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-5">
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
-                    Business / Project Name (Optional)
+                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-2 font-mono">
+                    Business / Brand Name (Optional)
                   </label>
                   <input
                     type="text"
@@ -364,7 +431,7 @@ export const StartProjectPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-2 font-mono">
                     Industry Sector
                   </label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
@@ -391,16 +458,19 @@ export const StartProjectPage: React.FC = () => {
             </div>
           )}
 
-          {/* STEP 3: What do you want to achieve? */}
+          {/* STEP 3: Business Goals */}
           {currentStep === 3 && (
             <div className="space-y-6 animate-fade-in">
-              <div className="space-y-1">
-                <span className="text-xs font-mono font-bold text-[#B88E20] uppercase">Step 03</span>
+              <div className="space-y-1.5">
+                <div className="flex items-center space-x-2 text-xs font-mono font-bold text-[#B88E20] uppercase">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]" />
+                  <span>Step 03 • Business Objectives</span>
+                </div>
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
                   What do you want to achieve?
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-600">
-                  Select the primary business outcomes driving this project.
+                  Select the primary measurable outcomes driving this technology initiative.
                 </p>
               </div>
 
@@ -413,25 +483,30 @@ export const StartProjectPage: React.FC = () => {
                       key={goal.id}
                       type="button"
                       onClick={() => toggleSelection("goals", goal.id)}
-                      className={`p-4 rounded-2xl border text-left transition-all flex items-center justify-between ${
+                      className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between space-y-2.5 ${
                         isSelected
-                          ? "bg-amber-500/10 border-[#D4AF37] ring-1 ring-[#D4AF37] text-slate-950"
+                          ? "bg-amber-500/10 border-[#D4AF37] ring-1 ring-[#D4AF37] text-slate-950 shadow-sm"
                           : "bg-white border-[#E2E5E0] hover:bg-[#F1F2EE] text-slate-800"
                       }`}
                     >
-                      <div className="flex items-center space-x-3">
+                      <div className="flex items-center justify-between">
                         <div
-                          className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                            isSelected ? "bg-[#D4AF37] text-slate-950" : "bg-[#F1F2EE] text-slate-700"
+                          className={`w-9 h-9 rounded-xl flex items-center justify-center ${
+                            isSelected ? "bg-[#D4AF37] text-slate-950 font-bold" : "bg-[#F1F2EE] text-slate-700"
                           }`}
                         >
                           <Icon className="w-4 h-4" />
                         </div>
-                        <span className="font-bold text-xs sm:text-sm text-slate-950">
+                        {isSelected && <Check className="w-4 h-4 text-[#B88E20] stroke-[3]" />}
+                      </div>
+                      <div>
+                        <span className="font-bold text-sm text-slate-950 block">
                           {goal.label}
                         </span>
+                        <span className="text-xs text-slate-600 mt-0.5 block leading-snug">
+                          {goal.desc}
+                        </span>
                       </div>
-                      {isSelected && <Check className="w-4 h-4 text-[#B88E20] stroke-[3]" />}
                     </button>
                   );
                 })}
@@ -439,16 +514,19 @@ export const StartProjectPage: React.FC = () => {
             </div>
           )}
 
-          {/* STEP 4: Features & Requirements */}
+          {/* STEP 4: Features & Specifications */}
           {currentStep === 4 && (
             <div className="space-y-6 animate-fade-in">
-              <div className="space-y-1">
-                <span className="text-xs font-mono font-bold text-[#B88E20] uppercase">Step 04</span>
+              <div className="space-y-1.5">
+                <div className="flex items-center space-x-2 text-xs font-mono font-bold text-[#B88E20] uppercase">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]" />
+                  <span>Step 04 • Features & Specifications</span>
+                </div>
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
-                  Features & Requirements
+                  Required Modules & Capabilities
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-600">
-                  Select key components and provide any custom requirements.
+                  Select core modules and detail any custom integrations or database specifications.
                 </p>
               </div>
 
@@ -461,15 +539,15 @@ export const StartProjectPage: React.FC = () => {
                       key={feat.id}
                       type="button"
                       onClick={() => toggleSelection("features", feat.id)}
-                      className={`p-3 rounded-xl border text-left transition-all flex items-center space-x-2.5 ${
+                      className={`p-3.5 rounded-xl border text-left transition-all flex items-center space-x-2.5 ${
                         isSelected
                           ? "bg-amber-500/10 border-[#D4AF37] ring-1 ring-[#D4AF37]"
                           : "bg-white border-[#E2E5E0] hover:bg-[#F1F2EE]"
                       }`}
                     >
                       <div
-                        className={`w-6 h-6 rounded-md flex items-center justify-center ${
-                          isSelected ? "text-[#B88E20]" : "text-slate-500"
+                        className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                          isSelected ? "bg-[#D4AF37] text-slate-950" : "bg-[#F1F2EE] text-slate-600"
                         }`}
                       >
                         <Icon className="w-3.5 h-3.5" />
@@ -482,112 +560,236 @@ export const StartProjectPage: React.FC = () => {
                 })}
               </div>
 
-              {/* Large Textarea for Additional Requirements */}
-              <div className="pt-2">
-                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">
-                  Additional Requirements & Specifications
+              {/* Textarea for Custom Specifications */}
+              <div className="pt-3 border-t border-[#E2E5E0] space-y-2">
+                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider font-mono">
+                  Additional Specifications / Notes (Optional)
                 </label>
                 <textarea
-                  rows={4}
+                  rows={3}
                   value={formData.additionalRequirements || ""}
                   onChange={(e) => setFormData({ ...formData, additionalRequirements: e.target.value })}
-                  placeholder="Detail any specific workflows, third-party APIs (e.g. Stripe, WhatsApp, Brevo), existing databases, or reference sites..."
+                  placeholder="Detail any specific third-party APIs (e.g. Stripe, WhatsApp Cloud API, Brevo), existing databases, or reference platforms..."
                   className="w-full p-4 rounded-2xl border border-[#E2E5E0] bg-white text-slate-950 text-sm focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] outline-none resize-none leading-relaxed"
                 />
               </div>
             </div>
           )}
 
-          {/* STEP 5: Estimated Budget */}
+          {/* STEP 5: Project Quality Level (5 Choices - NO PRICES) */}
           {currentStep === 5 && (
-            <div className="space-y-6 animate-fade-in max-w-2xl">
-              <div className="space-y-1">
-                <span className="text-xs font-mono font-bold text-[#B88E20] uppercase">Step 05</span>
+            <div className="space-y-6 animate-fade-in">
+              <div className="space-y-1.5">
+                <div className="flex items-center space-x-2 text-xs font-mono font-bold text-[#B88E20] uppercase">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]" />
+                  <span>Step 05 • Project Quality & Scope Level</span>
+                </div>
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
-                  Estimated Budget
+                  How ambitious should we make it?
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-600">
-                  Select a realistic budget range to help us recommend appropriate architecture.
+                  Select the level of depth, customization, and engineering sophistication you are looking for.
                 </p>
               </div>
 
-              <div className="space-y-3">
-                {budgetOptions.map((b) => {
-                  const isSelected = formData.budget === b.id;
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {qualityLevels.map((lvl) => {
+                  const isSelected = formData.qualityLevel === lvl.id;
                   return (
-                    <button
-                      key={b.id}
-                      type="button"
-                      onClick={() => setFormData({ ...formData, budget: b.id })}
-                      className={`w-full p-4 rounded-2xl border text-left transition-all flex items-center justify-between ${
+                    <div
+                      key={lvl.id}
+                      onClick={() => setFormData({ ...formData, qualityLevel: lvl.id })}
+                      className={`p-5 rounded-3xl border cursor-pointer transition-all duration-200 flex flex-col justify-between space-y-4 ${
                         isSelected
-                          ? "bg-amber-500/10 border-[#D4AF37] ring-1 ring-[#D4AF37]"
-                          : "bg-white border-[#E2E5E0] hover:bg-[#F1F2EE]"
+                          ? "bg-amber-500/10 border-[#D4AF37] ring-2 ring-[#D4AF37] shadow-md -translate-y-0.5"
+                          : "bg-white border-[#E2E5E0] hover:border-slate-300 hover:bg-[#F1F2EE]"
                       }`}
                     >
-                      <div>
-                        <div className="font-bold text-sm text-slate-950">
-                          {b.label}
+                      <div className="space-y-2.5">
+                        <div className="flex items-center justify-between">
+                          <span
+                            className={`text-[10px] font-mono font-bold uppercase px-2.5 py-1 rounded-full ${
+                              isSelected
+                                ? "bg-[#D4AF37] text-slate-950"
+                                : "bg-[#F1F2EE] text-slate-700 border border-[#E2E5E0]"
+                            }`}
+                          >
+                            {lvl.badge}
+                          </span>
+                          {isSelected && (
+                            <div className="w-5 h-5 rounded-full bg-[#D4AF37] text-slate-950 flex items-center justify-center">
+                              <Check className="w-3.5 h-3.5 stroke-[3]" />
+                            </div>
+                          )}
                         </div>
-                        <div className="text-xs text-slate-600 mt-0.5">
-                          {b.desc}
+
+                        <div>
+                          <h3 className="text-lg font-bold text-slate-950">
+                            {lvl.title}
+                          </h3>
+                          <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                            {lvl.desc}
+                          </p>
                         </div>
                       </div>
-                      {isSelected && (
-                        <div className="w-5 h-5 rounded-full bg-[#D4AF37] text-slate-950 flex items-center justify-center">
-                          <Check className="w-3 h-3 stroke-[3]" />
-                        </div>
-                      )}
-                    </button>
+
+                      <div className="pt-2 border-t border-[#E2E5E0]/70 space-y-1.5">
+                        {lvl.features.map((f, idx) => (
+                          <div key={idx} className="flex items-center space-x-1.5 text-[11px] text-slate-700">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-[#B88E20] flex-shrink-0" />
+                            <span>{f}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   );
                 })}
+              </div>
+
+              {/* Informational Callout */}
+              <div className="p-4 rounded-2xl bg-[#F1F2EE] border border-[#E2E5E0] flex items-center space-x-3 text-xs text-slate-700">
+                <Shield className="w-4 h-4 text-[#B88E20] flex-shrink-0" />
+                <span>
+                  These levels reflect architectural depth and custom engineering. Every solution is delivered with 100% genuine code ownership.
+                </span>
               </div>
             </div>
           )}
 
-          {/* STEP 6: Expected Timeline */}
+          {/* STEP 6: Timeline & User Budget */}
           {currentStep === 6 && (
-            <div className="space-y-6 animate-fade-in max-w-2xl">
-              <div className="space-y-1">
-                <span className="text-xs font-mono font-bold text-[#B88E20] uppercase">Step 06</span>
+            <div className="space-y-8 animate-fade-in max-w-2xl">
+              <div className="space-y-1.5">
+                <div className="flex items-center space-x-2 text-xs font-mono font-bold text-[#B88E20] uppercase">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]" />
+                  <span>Step 06 • Timeline & Budget</span>
+                </div>
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
-                  Expected Timeline
+                  Timeline & Budget Preferences
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-600">
-                  When do you need this system or project completed?
+                  Provide your target schedule and optional budget estimate.
                 </p>
               </div>
 
+              {/* Timeline Selection */}
               <div className="space-y-3">
-                {timelineOptions.map((t) => {
-                  const isSelected = formData.timeline === t.id;
-                  return (
-                    <button
-                      key={t.id}
-                      type="button"
-                      onClick={() => setFormData({ ...formData, timeline: t.id })}
-                      className={`w-full p-4 rounded-2xl border text-left transition-all flex items-center justify-between ${
-                        isSelected
-                          ? "bg-amber-500/10 border-[#D4AF37] ring-1 ring-[#D4AF37]"
-                          : "bg-white border-[#E2E5E0] hover:bg-[#F1F2EE]"
-                      }`}
-                    >
-                      <div>
-                        <div className="font-bold text-sm text-slate-950">
-                          {t.label}
+                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider font-mono">
+                  Expected Timeline
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {timelineOptions.map((t) => {
+                    const isSelected = formData.timeline === t.id;
+                    return (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, timeline: t.id })}
+                        className={`p-3.5 rounded-2xl border text-left transition-all flex items-center justify-between ${
+                          isSelected
+                            ? "bg-amber-500/10 border-[#D4AF37] ring-1 ring-[#D4AF37]"
+                            : "bg-white border-[#E2E5E0] hover:bg-[#F1F2EE]"
+                        }`}
+                      >
+                        <div>
+                          <div className="font-bold text-xs sm:text-sm text-slate-950">
+                            {t.label}
+                          </div>
+                          <div className="text-[11px] text-slate-600 mt-0.5">
+                            {t.desc}
+                          </div>
                         </div>
-                        <div className="text-xs text-slate-600 mt-0.5">
-                          {t.desc}
-                        </div>
-                      </div>
-                      {isSelected && (
-                        <div className="w-5 h-5 rounded-full bg-[#D4AF37] text-slate-950 flex items-center justify-center">
-                          <Check className="w-3 h-3 stroke-[3]" />
-                        </div>
-                      )}
-                    </button>
-                  );
-                })}
+                        {isSelected && <Check className="w-4 h-4 text-[#B88E20] stroke-[3]" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* User Budget Section */}
+              <div className="space-y-4 pt-4 border-t border-[#E2E5E0]">
+                <div className="space-y-1">
+                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider font-mono">
+                    Do you already have a budget in mind?
+                  </label>
+                  <p className="text-xs text-slate-600">
+                    You can specify your estimated budget in any currency, or choose to discuss it during technical review.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, budgetKnown: true })}
+                    className={`p-4 rounded-2xl border text-center font-bold text-xs sm:text-sm transition-all ${
+                      formData.budgetKnown
+                        ? "bg-[#D4AF37] text-slate-950 border-[#D4AF37] shadow-sm"
+                        : "bg-white border-[#E2E5E0] text-slate-700 hover:bg-[#F1F2EE]"
+                    }`}
+                  >
+                    Yes, I'll provide it
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormData({
+                        ...formData,
+                        budgetKnown: false,
+                        budgetAmount: "",
+                        budget: "Not decided yet",
+                      })
+                    }
+                    className={`p-4 rounded-2xl border text-center font-bold text-xs sm:text-sm transition-all ${
+                      !formData.budgetKnown
+                        ? "bg-[#111827] text-white border-[#111827] shadow-sm"
+                        : "bg-white border-[#E2E5E0] text-slate-700 hover:bg-[#F1F2EE]"
+                    }`}
+                  >
+                    I'm not sure yet
+                  </button>
+                </div>
+
+                {/* If Yes: Show Amount Input & Currency Selector */}
+                {formData.budgetKnown && (
+                  <div className="p-4 rounded-2xl bg-[#F1F2EE] border border-[#E2E5E0] space-y-3 animate-fade-in">
+                    <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider font-mono">
+                      Approximate Budget Amount
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={formData.budgetCurrency || "PKR"}
+                        onChange={(e) => setFormData({ ...formData, budgetCurrency: e.target.value })}
+                        className="px-3 py-3 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 font-mono font-bold text-xs outline-none focus:border-[#D4AF37]"
+                      >
+                        {currencyOptions.map((c) => (
+                          <option key={c} value={c}>
+                            {c}
+                          </option>
+                        ))}
+                      </select>
+
+                      <input
+                        type="text"
+                        value={formData.budgetAmount || ""}
+                        onChange={(e) => setFormData({ ...formData, budgetAmount: e.target.value })}
+                        placeholder="e.g. 150,000"
+                        className="flex-1 px-4 py-3 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm focus:border-[#D4AF37] outline-none"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Pricing Notice */}
+                <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 text-xs flex items-start space-x-2.5">
+                  <Sparkles className="w-4 h-4 text-[#B88E20] flex-shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold block">Pricing is negotiable</span>
+                    <span>
+                      Final investment is discussed transparently after reviewing your technical scope, integrations, and milestones.
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -595,19 +797,22 @@ export const StartProjectPage: React.FC = () => {
           {/* STEP 7: Your Contact Details */}
           {currentStep === 7 && (
             <div className="space-y-6 animate-fade-in max-w-xl">
-              <div className="space-y-1">
-                <span className="text-xs font-mono font-bold text-[#B88E20] uppercase">Step 07</span>
+              <div className="space-y-1.5">
+                <div className="flex items-center space-x-2 text-xs font-mono font-bold text-[#B88E20] uppercase">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]" />
+                  <span>Step 07 • Contact Details</span>
+                </div>
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
                   Your Contact Details
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-600">
-                  Provide your primary contact information for project scoping.
+                  Provide your primary contact information for technical consultation.
                 </p>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5 font-mono">
                     Your Full Name *
                   </label>
                   <input
@@ -615,13 +820,13 @@ export const StartProjectPage: React.FC = () => {
                     required
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                    placeholder="e.g. Alex Morgan"
+                    placeholder="e.g. Muhammad / Alex Morgan"
                     className="w-full px-4 py-3 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm focus:border-[#D4AF37] outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5 font-mono">
                     Email Address *
                   </label>
                   <input
@@ -629,13 +834,13 @@ export const StartProjectPage: React.FC = () => {
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="alex@company.com"
+                    placeholder="example@company.com"
                     className="w-full px-4 py-3 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm focus:border-[#D4AF37] outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5 font-mono">
                     Phone / WhatsApp Number
                   </label>
                   <input
@@ -648,14 +853,14 @@ export const StartProjectPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5 font-mono">
                     Company / Organization (Optional)
                   </label>
                   <input
                     type="text"
                     value={formData.companyName || ""}
                     onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                    placeholder="e.g. Apex Global Ltd"
+                    placeholder="e.g. Apex Global Enterprises"
                     className="w-full px-4 py-3 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm focus:border-[#D4AF37] outline-none"
                   />
                 </div>
@@ -663,96 +868,269 @@ export const StartProjectPage: React.FC = () => {
             </div>
           )}
 
-          {/* STEP 8: Project Brief Summary & Direct Dispatch Channels */}
+          {/* STEP 8: Structured Project Summary & Contact Channels */}
           {currentStep === 8 && (
             <div className="space-y-8 animate-fade-in">
               <div className="space-y-2 text-center sm:text-left">
                 <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 text-xs font-mono font-bold uppercase">
-                  <span>Project Brief Ready</span>
+                  <CheckCheck className="w-3.5 h-3.5" />
+                  <span>Project Brief Generated</span>
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
-                  Your Project Brief
+                  Project Brief & Review
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-600">
-                  Review your specifications below. Choose your preferred dispatch channel to begin technical consultation with ST-Solutions.
+                  Review your project specifications below. Everything is compiled and ready to dispatch to ST-Solutions.
                 </p>
               </div>
 
-              {/* Formatted Project Brief Card (Intentional Dark Contrast Section) */}
-              <div className="bg-[#111827] text-slate-100 rounded-2xl p-6 font-mono text-xs sm:text-sm leading-relaxed border border-[#1F2937] shadow-inner relative group">
-                <pre className="whitespace-pre-wrap font-mono text-xs sm:text-sm leading-relaxed overflow-x-auto text-slate-200">
-                  {generatedMessage}
-                </pre>
-              </div>
-
-              {/* Three Primary Dispatch Action Buttons */}
-              <div className="space-y-4">
-                <div className="text-xs font-bold uppercase tracking-wider text-slate-700 font-mono">
-                  Send Project Brief
+              {/* Beautiful Two-Column Summary Card */}
+              <div className="bg-white rounded-3xl border border-[#E2E5E0] shadow-sm p-6 sm:p-8 space-y-6">
+                <div className="flex items-center justify-between border-b border-[#E2E5E0] pb-4">
+                  <div className="flex items-center space-x-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#D4AF37]" />
+                    <span className="font-mono font-bold text-xs uppercase tracking-wider text-slate-900">
+                      ST-Solutions Intake Specification
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setCurrentStep(1)}
+                    className="text-xs font-bold text-[#B88E20] hover:underline flex items-center space-x-1"
+                  >
+                    <span>Edit Project</span>
+                    <ArrowRight className="w-3 h-3 text-[#B88E20]" />
+                  </button>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-                  {/* WhatsApp Button */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Left Column */}
+                  <div className="space-y-4">
+                    <div className="p-4 rounded-2xl bg-[#F1F2EE] border border-[#E2E5E0] space-y-1">
+                      <span className="text-[10px] font-mono font-bold uppercase text-slate-500">
+                        Project Type
+                      </span>
+                      <div className="text-sm font-bold text-slate-950">
+                        {formData.projectTypes.join(", ") || "Custom Solution"}
+                      </div>
+                    </div>
+
+                    <div className="p-4 rounded-2xl bg-[#F1F2EE] border border-[#E2E5E0] space-y-1">
+                      <span className="text-[10px] font-mono font-bold uppercase text-slate-500">
+                        Industry & Brand
+                      </span>
+                      <div className="text-sm font-bold text-slate-950">
+                        {formData.industry || "General Commercial"}
+                        {formData.businessName ? ` • ${formData.businessName}` : ""}
+                      </div>
+                    </div>
+
+                    <div className="p-4 rounded-2xl bg-[#F1F2EE] border border-[#E2E5E0] space-y-1">
+                      <span className="text-[10px] font-mono font-bold uppercase text-slate-500">
+                        Primary Goals
+                      </span>
+                      <div className="text-xs font-semibold text-slate-900">
+                        {formData.goals.length > 0 ? formData.goals.join(", ") : "Standard business expansion"}
+                      </div>
+                    </div>
+
+                    <div className="p-4 rounded-2xl bg-[#F1F2EE] border border-[#E2E5E0] space-y-1">
+                      <span className="text-[10px] font-mono font-bold uppercase text-slate-500">
+                        Required Features ({formData.features.length})
+                      </span>
+                      <div className="text-xs font-semibold text-slate-900">
+                        {formData.features.length > 0 ? formData.features.join(", ") : "Core feature set"}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column */}
+                  <div className="space-y-4">
+                    <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-1">
+                      <span className="text-[10px] font-mono font-bold uppercase text-amber-900">
+                        Quality Level
+                      </span>
+                      <div className="text-sm font-extrabold text-slate-950 flex items-center space-x-1.5">
+                        <Award className="w-4 h-4 text-[#B88E20]" />
+                        <span>{formData.qualityLevel?.toUpperCase()}</span>
+                      </div>
+                    </div>
+
+                    <div className="p-4 rounded-2xl bg-[#F1F2EE] border border-[#E2E5E0] space-y-1">
+                      <span className="text-[10px] font-mono font-bold uppercase text-slate-500">
+                        Timeline
+                      </span>
+                      <div className="text-sm font-bold text-slate-950">
+                        {formData.timeline || "1 Month"}
+                      </div>
+                    </div>
+
+                    <div className="p-4 rounded-2xl bg-[#F1F2EE] border border-[#E2E5E0] space-y-1">
+                      <span className="text-[10px] font-mono font-bold uppercase text-slate-500">
+                        Estimated Budget
+                      </span>
+                      <div className="text-sm font-bold text-slate-950">
+                        {resolvedBudget}
+                      </div>
+                      <div className="text-[10px] text-slate-500 font-medium">
+                        Pricing: Negotiable (after technical review)
+                      </div>
+                    </div>
+
+                    <div className="p-4 rounded-2xl bg-[#F1F2EE] border border-[#E2E5E0] space-y-1">
+                      <span className="text-[10px] font-mono font-bold uppercase text-slate-500">
+                        Contact Person
+                      </span>
+                      <div className="text-xs font-bold text-slate-950">
+                        {formData.fullName} ({formData.email})
+                      </div>
+                      {formData.phoneNumber && (
+                        <div className="text-[11px] text-slate-600">
+                          {formData.phoneNumber}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Text Preview Box */}
+              <div className="space-y-2">
+                <div className="text-xs font-mono font-bold text-slate-700 uppercase tracking-wider flex items-center justify-between">
+                  <span>Structured Inquiry Message</span>
+                  <span className="text-slate-500">Ready to send</span>
+                </div>
+                <div className="bg-[#111827] text-slate-100 rounded-2xl p-5 font-mono text-xs leading-relaxed border border-[#1F2937] shadow-inner max-h-48 overflow-y-auto">
+                  <pre className="whitespace-pre-wrap font-mono text-xs leading-relaxed text-slate-200">
+                    {generatedMessage}
+                  </pre>
+                </div>
+              </div>
+
+              {/* Contact Method Cards (Part 18) */}
+              <div className="space-y-3">
+                <div className="text-xs font-mono font-bold uppercase tracking-wider text-slate-800">
+                  Choose Your Preferred Contact Method
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                  {/* WhatsApp Card */}
                   <a
                     href={whatsappUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-md flex items-center justify-center space-x-2 transition-transform hover:scale-[1.02] active:scale-[0.98]"
+                    onClick={handleDirectApiSubmit}
+                    className="p-5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-md flex flex-col justify-between space-y-4 transition-all hover:scale-[1.02] active:scale-[0.98] group"
                   >
-                    <MessageCircle className="w-5 h-5 flex-shrink-0" />
-                    <span>Send via WhatsApp →</span>
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <MessageCircle className="w-6 h-6 text-white" />
+                        <span className="text-[10px] font-mono uppercase bg-white/20 px-2 py-0.5 rounded-full">
+                          Fastest
+                        </span>
+                      </div>
+                      <div className="text-base font-extrabold mt-3">WhatsApp</div>
+                      <div className="text-[11px] text-emerald-100 font-normal mt-0.5">
+                        Instant engineering chat
+                      </div>
+                    </div>
+                    <div className="inline-flex items-center space-x-1.5 text-xs font-bold pt-2 border-t border-emerald-500/40">
+                      <span>Continue with WhatsApp</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </div>
                   </a>
 
-                  {/* Email Button */}
+                  {/* Email Card */}
                   <a
                     href={mailtoUrl}
-                    onClick={() => {
-                      // Also auto-save in background
-                      handleDirectApiSubmit();
-                    }}
-                    className="p-4 rounded-2xl bg-[#111827] hover:bg-[#1F2937] text-white font-bold text-xs sm:text-sm border border-[#111827] flex items-center justify-center space-x-2 transition-transform hover:scale-[1.02] active:scale-[0.98]"
+                    onClick={handleDirectApiSubmit}
+                    className="p-5 rounded-2xl bg-[#111827] hover:bg-[#1F2937] text-white font-bold text-xs sm:text-sm border border-[#111827] shadow-md flex flex-col justify-between space-y-4 transition-all hover:scale-[1.02] active:scale-[0.98] group"
                   >
-                    <Mail className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
-                    <span>Send via Email →</span>
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <Mail className="w-6 h-6 text-[#D4AF37]" />
+                        <span className="text-[10px] font-mono uppercase bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full">
+                          Formal
+                        </span>
+                      </div>
+                      <div className="text-base font-extrabold mt-3">Email</div>
+                      <div className="text-[11px] text-slate-300 font-normal mt-0.5">
+                        Detailed project brief
+                      </div>
+                    </div>
+                    <div className="inline-flex items-center space-x-1.5 text-xs font-bold pt-2 border-t border-slate-700 text-[#D4AF37]">
+                      <span>Continue with Email</span>
+                      <ArrowRight className="w-3.5 h-3.5 text-[#D4AF37]" />
+                    </div>
                   </a>
 
-                  {/* Copy Button */}
+                  {/* Copy Card */}
                   <button
                     type="button"
                     onClick={handleCopyMessage}
-                    className="p-4 rounded-2xl bg-[#F1F2EE] hover:bg-slate-200 text-slate-950 font-bold text-xs sm:text-sm border border-[#E2E5E0] flex items-center justify-center space-x-2 transition-all"
+                    className="p-5 rounded-2xl bg-white hover:bg-[#F1F2EE] text-slate-950 font-bold text-xs sm:text-sm border border-[#E2E5E0] shadow-sm flex flex-col justify-between space-y-4 transition-all text-left group"
                   >
-                    {copied ? (
-                      <>
-                        <Check className="w-5 h-5 text-emerald-600 stroke-[3]" />
-                        <span className="text-emerald-700 font-bold">✓ Copied</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-5 h-5 text-slate-600" />
-                        <span>Copy Message</span>
-                      </>
-                    )}
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <Copy className="w-6 h-6 text-slate-700" />
+                        <span className="text-[10px] font-mono uppercase bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+                          Clipboard
+                        </span>
+                      </div>
+                      <div className="text-base font-extrabold mt-3">Copy Brief</div>
+                      <div className="text-[11px] text-slate-600 font-normal mt-0.5">
+                        {copied ? "Project brief copied!" : "Copy complete text"}
+                      </div>
+                    </div>
+                    <div className="inline-flex items-center space-x-1.5 text-xs font-bold pt-2 border-t border-[#E2E5E0] text-slate-900">
+                      {copied ? (
+                        <>
+                          <Check className="w-3.5 h-3.5 text-emerald-600 stroke-[3]" />
+                          <span className="text-emerald-700">Copied to Clipboard</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Copy Project Brief</span>
+                          <ArrowRight className="w-3.5 h-3.5 text-slate-600" />
+                        </>
+                      )}
+                    </div>
                   </button>
-                </div>
 
-                {submitSuccess && (
-                  <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 text-xs flex items-center space-x-2 font-medium">
-                    <Check className="w-4 h-4" />
-                    <span>Project brief also recorded securely in ST-Solutions client queue.</span>
-                  </div>
-                )}
+                  {/* Phone Call Card */}
+                  <a
+                    href={phoneUrl}
+                    className="p-5 rounded-2xl bg-white hover:bg-[#F1F2EE] text-slate-950 font-bold text-xs sm:text-sm border border-[#E2E5E0] shadow-sm flex flex-col justify-between space-y-4 transition-all group"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <Phone className="w-6 h-6 text-[#B88E20]" />
+                        <span className="text-[10px] font-mono uppercase bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+                          Direct
+                        </span>
+                      </div>
+                      <div className="text-base font-extrabold mt-3">Phone</div>
+                      <div className="text-[11px] text-slate-600 font-normal mt-0.5">
+                        +92 325 7263417
+                      </div>
+                    </div>
+                    <div className="inline-flex items-center space-x-1.5 text-xs font-bold pt-2 border-t border-[#E2E5E0] text-slate-900">
+                      <span>Call ST-Solutions</span>
+                      <ArrowRight className="w-3.5 h-3.5 text-[#B88E20]" />
+                    </div>
+                  </a>
+                </div>
               </div>
 
-              {/* Edit Brief Button */}
-              <div className="pt-2 flex items-center justify-between border-t border-[#E2E5E0]">
+              {/* Bottom Actions */}
+              <div className="pt-4 flex items-center justify-between border-t border-[#E2E5E0]">
                 <button
                   type="button"
                   onClick={() => setCurrentStep(1)}
                   className="text-xs font-bold text-slate-700 hover:text-slate-950 flex items-center space-x-1.5"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
-                  <span>Edit Project Choices</span>
+                  <span>Restart / Edit Choices</span>
                 </button>
                 <span className="text-[11px] text-slate-600 font-mono">
                   Official WhatsApp: +92 325 7263417
@@ -792,26 +1170,28 @@ export const StartProjectPage: React.FC = () => {
         {/* Direct Contact Alternative Footer */}
         <div className="p-6 rounded-2xl bg-white border border-[#E2E5E0] flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left shadow-sm">
           <div>
-            <div className="text-xs font-bold uppercase text-slate-500 font-mono">Direct Engineering Intake</div>
+            <div className="text-xs font-bold uppercase text-slate-500 font-mono">
+              Direct Engineering Consultation
+            </div>
             <div className="text-sm font-semibold text-slate-950 mt-0.5">
-              Prefer a direct consultation without the wizard?
+              Need immediate assistance or bespoke technical architecture?
             </div>
           </div>
           <div className="flex items-center space-x-3">
             <a
-              href={companyConfig.contact.whatsappUrl}
+              href="https://wa.me/923257263417"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center space-x-1.5 shadow-sm"
+              className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all"
             >
-              <MessageCircle className="w-3.5 h-3.5" />
+              <MessageCircle className="w-4 h-4" />
               <span>WhatsApp</span>
             </a>
             <Link
               to="/contact"
-              className="px-4 py-2 rounded-xl bg-[#F1F2EE] hover:bg-slate-200 text-slate-900 text-xs font-bold border border-[#E2E5E0]"
+              className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl border border-[#E2E5E0] text-slate-800 hover:bg-[#F1F2EE] font-bold text-xs transition-colors"
             >
-              Contact Center
+              <span>Contact Page</span>
             </Link>
           </div>
         </div>
