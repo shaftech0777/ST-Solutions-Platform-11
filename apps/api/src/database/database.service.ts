@@ -20,6 +20,8 @@ export class DatabaseService {
     try {
       Logger.info("Initializing database connection...");
       await prisma.$connect();
+      // Probe table availability to ensure schema is synchronized
+      await prisma.user.findFirst({ select: { id: true } });
       this.isConnected = true;
       Logger.info("Database service ready.");
     } catch (error) {

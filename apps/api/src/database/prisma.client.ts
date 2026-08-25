@@ -15,12 +15,12 @@ function getMockClient(): any {
 
 let realPrismaClient: PrismaClient | null = null;
 
-function isConnectionError(err: any): boolean {
+function isConnectionOrSchemaError(err: any): boolean {
   if (!err) return false;
   const msg = (
     (typeof err === "string" ? err : err.message || String(err) || (err.target ? String(err.target) : ""))
   ).toLowerCase();
-  const code = err.code;
+  const code = String(err.code || err.errorCode || "");
   return (
     msg.includes("closed") ||
     msg.includes("econnrefused") ||
@@ -38,11 +38,24 @@ function isConnectionError(err: any): boolean {
     msg.includes("connection pool is closed") ||
     msg.includes("unexpected eof") ||
     msg.includes("ssl connection has been closed unexpectedly") ||
+    msg.includes("does not exist") ||
+    msg.includes("relation") ||
+    msg.includes("undefined table") ||
+    msg.includes("table `public.") ||
+    msg.includes("table \"public.") ||
+    msg.includes("column") ||
+    msg.includes("prismaclientknownrequesterror") ||
+    msg.includes("prismaclientinitializationerror") ||
     code === "P1000" ||
     code === "P1001" ||
     code === "P1002" ||
     code === "P1003" ||
-    code === "P1017"
+    code === "P1017" ||
+    code === "P2021" ||
+    code === "P2022" ||
+    code === "P2010" ||
+    code === "P2028" ||
+    code === "42P01"
   );
 }
 
@@ -87,7 +100,7 @@ function initializeClient(): void {
 
     (client as any).$on("error", (e: any) => {
       const errMsg = e?.message || String(e);
-      if (isConnectionError(e) || errMsg.includes("kind: Closed") || errMsg.includes("Closed")) {
+      if (isConnectionOrSchemaError(e) || errMsg.includes("kind: Closed") || errMsg.includes("Closed")) {
         switchToMock(errMsg);
       } else {
         Logger.warn({ error: errMsg }, "Prisma runtime engine event");
@@ -154,7 +167,7 @@ export const prisma: any = new Proxy(
           try {
             return await (realPrismaClient as any).$queryRaw(...args);
           } catch (err: any) {
-            if (isConnectionError(err)) {
+            if (isConnectionOrSchemaError(err)) {
               switchToMock(err?.message);
               return getMockClient().$queryRaw(...args);
             }
@@ -171,7 +184,7 @@ export const prisma: any = new Proxy(
           try {
             return await (realPrismaClient as any).$transaction(fnOrArray);
           } catch (err: any) {
-            if (isConnectionError(err)) {
+            if (isConnectionOrSchemaError(err)) {
               switchToMock(err?.message);
               return getMockClient().$transaction(fnOrArray);
             }
@@ -210,7 +223,7 @@ export const prisma: any = new Proxy(
                 }
                 return null;
               } catch (err: any) {
-                if (isConnectionError(err)) {
+                if (isConnectionOrSchemaError(err)) {
                   switchToMock(err?.message);
                   const mockDelegate = getMockClient()[prop];
                   if (mockDelegate && typeof mockDelegate[method] === "function") {

@@ -18,7 +18,9 @@ import {
   Database,
   Sparkles,
   Layers,
-  Check,
+  Shield,
+  Clock,
+  Terminal,
 } from "lucide-react";
 import { companyConfig, servicesData, projectsData, processSteps } from "../../data/companyConfig.js";
 import { HeroArchitectureVisual } from "../../components/public/HeroArchitectureVisual.js";
@@ -31,17 +33,17 @@ export const HomePage: React.FC = () => {
   return (
     <div className="space-y-16 sm:space-y-24 pb-16 font-sans">
       {/* 1. HERO SECTION (Light-First, Crisp, Yellow+Black Brand Identity with Subtle Tech Accents) */}
-      <section className="relative pt-6 sm:pt-12 pb-12 sm:pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden">
+      <section className="relative pt-6 sm:pt-12 pb-8 sm:pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden">
         {/* Subtle Tech Grid Background */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f080_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f080_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,#000_70%,transparent_100%)] pointer-events-none" />
 
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
           {/* Left Column: Headline, Description & CTAs */}
           <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
             {/* Enterprise Tag */}
-            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-900 text-xs font-semibold tracking-wide">
+            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-900 text-xs font-semibold tracking-wide font-mono">
               <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-pulse" />
-              <span>ST-SOLUTIONS • TECHNOLOGY • AI • AUTOMATION</span>
+              <span>ST-SOLUTIONS • ENGINEERING • AI • AUTOMATION</span>
             </div>
 
             {/* Main Headline */}
@@ -55,7 +57,7 @@ export const HomePage: React.FC = () => {
 
             {/* Brand Subtitle */}
             <p className="text-base sm:text-lg text-slate-700 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-              ST-Solutions builds modern websites, software, AI systems, and business automation solutions designed around real business needs.
+              ST-Solutions engineers custom web applications, mission-critical business software, multi-agent AI systems, and automated pipelines designed around real enterprise workflows.
             </p>
 
             {/* CTA Action Buttons */}
@@ -80,16 +82,16 @@ export const HomePage: React.FC = () => {
             {/* Quick Trust Checks */}
             <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2 text-xs text-slate-700 font-medium">
               <div className="flex items-center space-x-1.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                 <span>Zero bloated templates</span>
               </div>
               <div className="flex items-center space-x-1.5">
-                <CheckCircle2 className="w-4 h-4 text-[#B88E20]" />
-                <span>Direct engineering lead</span>
+                <CheckCircle2 className="w-4 h-4 text-[#B88E20] flex-shrink-0" />
+                <span>Direct lead architect oversight</span>
               </div>
               <div className="flex items-center space-x-1.5">
-                <CheckCircle2 className="w-4 h-4 text-blue-600" />
-                <span>Production-grade quality</span>
+                <CheckCircle2 className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                <span>100% Source code ownership</span>
               </div>
             </div>
           </div>
@@ -99,12 +101,51 @@ export const HomePage: React.FC = () => {
             <HeroArchitectureVisual />
           </div>
         </div>
+
+        {/* Structured Engineering Metrics Ribbon */}
+        <div className="mt-12 sm:mt-16 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 max-w-7xl mx-auto">
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E2E5E0] shadow-sm flex flex-col justify-between space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono font-bold uppercase text-slate-500">SLA Guarantee</span>
+              <Clock className="w-3.5 h-3.5 text-[#B88E20]" />
+            </div>
+            <div className="text-xl sm:text-2xl font-extrabold text-slate-950 font-mono">24h</div>
+            <div className="text-[11px] text-slate-600 font-medium">Technical scoping response</div>
+          </div>
+
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E2E5E0] shadow-sm flex flex-col justify-between space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono font-bold uppercase text-slate-500">Stack Standard</span>
+              <Terminal className="w-3.5 h-3.5 text-blue-600" />
+            </div>
+            <div className="text-xl sm:text-2xl font-extrabold text-slate-950 font-mono">100%</div>
+            <div className="text-[11px] text-slate-600 font-medium">Full-stack TypeScript & SQL</div>
+          </div>
+
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E2E5E0] shadow-sm flex flex-col justify-between space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono font-bold uppercase text-slate-500">Security</span>
+              <Shield className="w-3.5 h-3.5 text-emerald-600" />
+            </div>
+            <div className="text-xl sm:text-2xl font-extrabold text-slate-950 font-mono">RBAC</div>
+            <div className="text-[11px] text-slate-600 font-medium">Isolated multi-tenant data</div>
+          </div>
+
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E2E5E0] shadow-sm flex flex-col justify-between space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono font-bold uppercase text-slate-500">Code Rights</span>
+              <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+            </div>
+            <div className="text-xl sm:text-2xl font-extrabold text-slate-950 font-mono">Direct</div>
+            <div className="text-[11px] text-slate-600 font-medium">Zero vendor lock-in</div>
+          </div>
+        </div>
       </section>
 
       {/* 2. SERVICES SECTION ("What can we build for your business?") */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center space-y-2 mb-8 sm:mb-12">
-          <div className="inline-flex items-center space-x-1.5 text-xs font-bold text-[#B88E20] uppercase tracking-wider">
+          <div className="inline-flex items-center space-x-1.5 text-xs font-bold text-[#B88E20] uppercase tracking-wider font-mono">
             <Layers className="w-3.5 h-3.5" />
             <span>Core Capabilities</span>
           </div>
@@ -148,6 +189,16 @@ export const HomePage: React.FC = () => {
                       {service.shortDesc}
                     </p>
                   </div>
+
+                  {/* Highlights Bullet List */}
+                  <div className="space-y-1.5 pt-2 border-t border-[#E2E5E0]/60">
+                    {service.builds.slice(0, 2).map((b, bIdx) => (
+                      <div key={bIdx} className="flex items-center space-x-1.5 text-xs text-slate-700">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#B88E20] flex-shrink-0" />
+                        <span className="truncate">{b}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-slate-900 group-hover:text-slate-950 transition-colors">
@@ -164,7 +215,7 @@ export const HomePage: React.FC = () => {
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12 gap-4">
           <div className="space-y-2">
-            <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#B88E20] uppercase tracking-wider">
+            <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#B88E20] uppercase tracking-wider font-mono">
               <Database className="w-3.5 h-3.5" />
               <span>Production Systems</span>
             </div>
@@ -289,7 +340,7 @@ export const HomePage: React.FC = () => {
       {/* 5. PROCESS SECTION (01 Discover -> 06 Support) */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center space-y-2 mb-10 sm:mb-14">
-          <div className="inline-flex items-center space-x-1.5 text-xs font-bold text-[#B88E20] uppercase tracking-wider">
+          <div className="inline-flex items-center space-x-1.5 text-xs font-bold text-[#B88E20] uppercase tracking-wider font-mono">
             <span>Engineering Discipline</span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight">
@@ -310,13 +361,13 @@ export const HomePage: React.FC = () => {
                 <span className="text-2xl font-black font-mono text-slate-300 group-hover:text-[#B88E20] transition-colors">
                   {step.step}
                 </span>
-                <div className="w-8 h-8 rounded-xl bg-[#F1F2EE] text-slate-900 flex items-center justify-center text-xs font-bold">
-                  {step.title[0]}
+                <div className="w-8 h-8 rounded-xl bg-[#F1F2EE] text-slate-900 flex items-center justify-center text-xs font-bold font-mono">
+                  {step.step}
                 </div>
               </div>
 
               <h3 className="text-base font-bold text-slate-950">{step.title}</h3>
-              <div className="text-[11px] font-semibold text-[#B88E20]">{step.tagline}</div>
+              <div className="text-[11px] font-semibold text-[#B88E20] font-mono">{step.tagline}</div>
               <p className="text-xs text-slate-600 leading-relaxed">
                 {step.description}
               </p>
@@ -390,7 +441,7 @@ export const HomePage: React.FC = () => {
                 <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
                   <MessageCircle className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] font-bold text-emerald-800 uppercase">
+                <span className="text-[10px] font-bold text-emerald-800 uppercase font-mono">
                   Direct
                 </span>
               </div>
@@ -415,7 +466,7 @@ export const HomePage: React.FC = () => {
                 <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
                   <Phone className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] font-bold text-blue-800 uppercase">
+                <span className="text-[10px] font-bold text-blue-800 uppercase font-mono">
                   Call
                 </span>
               </div>
@@ -440,7 +491,7 @@ export const HomePage: React.FC = () => {
                 <div className="w-10 h-10 rounded-xl bg-[#D4AF37] text-slate-950 flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm font-bold">
                   <Mail className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] font-bold text-amber-900 uppercase">
+                <span className="text-[10px] font-bold text-amber-900 uppercase font-mono">
                   Email
                 </span>
               </div>
@@ -465,7 +516,7 @@ export const HomePage: React.FC = () => {
                 <div className="w-10 h-10 rounded-xl bg-slate-900 text-[#D4AF37] flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
                   <QrCode className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] font-bold text-slate-600 uppercase">WeChat</span>
+                <span className="text-[10px] font-bold text-slate-600 uppercase font-mono">WeChat</span>
               </div>
               <div>
                 <div className="text-sm font-bold text-slate-950">Official WeChat</div>
@@ -487,3 +538,4 @@ export const HomePage: React.FC = () => {
     </div>
   );
 };
+

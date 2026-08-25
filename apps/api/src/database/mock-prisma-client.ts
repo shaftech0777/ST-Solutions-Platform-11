@@ -382,6 +382,29 @@ export function createMockPrismaClient(): any {
         store[table][index] = updated;
         return resolveIncludes(table, updated, args.include, store);
       },
+      upsert: async (args: { where: any; update: any; create: any; include?: any }) => {
+        const index = store[table].findIndex((item) => matchesFilter(item, args.where));
+        if (index >= 0) {
+          const existing = store[table][index];
+          const updated = {
+            ...existing,
+            ...args.update,
+            updatedAt: new Date(),
+          };
+          store[table][index] = updated;
+          return resolveIncludes(table, updated, args.include, store);
+        } else {
+          const id = args.create.id || `${defaultIdPrefix}-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 7)}`;
+          const newItem: any = {
+            id,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            ...args.create,
+          };
+          store[table].push(newItem);
+          return resolveIncludes(table, newItem, args.include, store);
+        }
+      },
       delete: async (args: { where: any }) => {
         const index = store[table].findIndex((item) => matchesFilter(item, args.where));
         if (index === -1) throw new Error(`Record to delete not found in ${String(table)}`);
