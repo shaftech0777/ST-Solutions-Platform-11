@@ -17,7 +17,9 @@ let realPrismaClient: PrismaClient | null = null;
 
 function isConnectionError(err: any): boolean {
   if (!err) return false;
-  const msg = (err.message || String(err)).toLowerCase();
+  const msg = (
+    (typeof err === "string" ? err : err.message || String(err) || (err.target ? String(err.target) : ""))
+  ).toLowerCase();
   const code = err.code;
   return (
     msg.includes("closed") ||
@@ -30,7 +32,12 @@ function isConnectionError(err: any): boolean {
     msg.includes("failed to connect") ||
     msg.includes("authentication failed") ||
     msg.includes("kind: closed") ||
+    msg.includes("kind:closed") ||
     msg.includes("error in postgresql connection") ||
+    msg.includes("server has closed the connection") ||
+    msg.includes("connection pool is closed") ||
+    msg.includes("unexpected eof") ||
+    msg.includes("ssl connection has been closed unexpectedly") ||
     code === "P1000" ||
     code === "P1001" ||
     code === "P1002" ||
@@ -45,26 +52,53 @@ function switchToMock(reason?: string): void {
     Logger.warn(
       `[DATABASE RESILIENCE] PostgreSQL connection unavailable or closed (${reason || "Closed"}). Seamlessly activating embedded in-memory database engine.`
     );
+    if (realPrismaClient) {
+      try {
+        const clientToCleanup = realPrismaClient;
+        realPrismaClient = null;
+        clientToCleanup.$disconnect().catch(() => {});
+      } catch {
+        realPrismaClient = null;
+      }
+    }
   }
 }
 
 function initializeClient(): void {
   const dbUrl = config?.database?.url || process.env.DATABASE_URL;
-  if (!dbUrl || dbUrl.includes("localhost")) {
+  if (!dbUrl || dbUrl.includes("localhost") || dbUrl.includes("postgres:postgres@localhost")) {
     isUsingMock = true;
     Logger.info("Using embedded in-memory relational store for ST-Solutions operations.");
     return;
   }
 
   try {
-    realPrismaClient = new PrismaClient({
+    const client = new PrismaClient({
       datasources: {
         db: {
           url: dbUrl,
         },
       },
-      log: config.database.logQueries ? ["query", "error", "warn"] : ["error"],
+      log: [
+        { emit: "event", level: "error" },
+        { emit: "event", level: "warn" },
+      ],
     });
+
+    (client as any).$on("error", (e: any) => {
+      const errMsg = e?.message || String(e);
+      if (isConnectionError(e) || errMsg.includes("kind: Closed") || errMsg.includes("Closed")) {
+        switchToMock(errMsg);
+      } else {
+        Logger.warn({ error: errMsg }, "Prisma runtime engine event");
+      }
+    });
+
+    (client as any).$on("warn", (e: any) => {
+      Logger.debug({ warning: e?.message }, "Prisma engine warning");
+    });
+
+    realPrismaClient = client;
   } catch (err: any) {
     switchToMock(err?.message || "PrismaClient constructor failure");
   }

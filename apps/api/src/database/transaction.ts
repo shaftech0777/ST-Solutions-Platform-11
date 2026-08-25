@@ -25,7 +25,7 @@ export async function withTransaction<T>(
 ): Promise<T> {
   try {
     return await prisma.$transaction(
-      async (tx) => {
+      async (tx: any) => {
         return await fn(tx as TransactionClient);
       },
       {

@@ -76,22 +76,27 @@ function matchesFilter(item: any, where: any): boolean {
           return false;
         }
       }
-      if ("contains" in val && typeof val.contains === "string") {
-        const needle = val.mode === "insensitive" ? val.contains.toLowerCase() : val.contains;
-        const haystack = val.mode === "insensitive" ? String(itemVal || "").toLowerCase() : String(itemVal || "");
+      if ("contains" in val && typeof (val as any).contains === "string") {
+        const filterObj = val as { contains: string; mode?: string };
+        const needle = filterObj.mode === "insensitive" ? filterObj.contains.toLowerCase() : filterObj.contains;
+        const haystack = filterObj.mode === "insensitive" ? String(itemVal || "").toLowerCase() : String(itemVal || "");
         if (!haystack.includes(needle)) return false;
       }
       if ("gte" in val) {
-        if (!(itemVal >= val.gte)) return false;
+        const filterObj = val as { gte?: any };
+        if (!(itemVal >= filterObj.gte)) return false;
       }
       if ("lte" in val) {
-        if (!(itemVal <= val.lte)) return false;
+        const filterObj = val as { lte?: any };
+        if (!(itemVal <= filterObj.lte)) return false;
       }
       if ("gt" in val) {
-        if (!(itemVal > val.gt)) return false;
+        const filterObj = val as { gt?: any };
+        if (!(itemVal > filterObj.gt)) return false;
       }
       if ("lt" in val) {
-        if (!(itemVal < val.lt)) return false;
+        const filterObj = val as { lt?: any };
+        if (!(itemVal < filterObj.lt)) return false;
       }
       continue;
     }

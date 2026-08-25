@@ -53,7 +53,7 @@ export class AuthService {
     });
 
     const permissions: string[] = user.role?.permissions
-      ? user.role.permissions.map((rp) => rp.permission.name)
+      ? user.role.permissions.map((rp: any) => rp.permission.name)
       : [];
 
     const tokenPair = this.jwtService.signTokenPair({
@@ -145,7 +145,7 @@ export class AuthService {
 
     // Extract permissions
     const permissions: string[] = user.role?.permissions
-      ? user.role.permissions.map((rp) => rp.permission.name)
+      ? user.role.permissions.map((rp: any) => rp.permission.name)
       : [];
 
     // Issue JWT tokens
@@ -201,7 +201,7 @@ export class AuthService {
     }
 
     const permissions: string[] = user.role?.permissions
-      ? user.role.permissions.map((rp) => rp.permission.name)
+      ? user.role.permissions.map((rp: any) => rp.permission.name)
       : [];
 
     const tokenPair = this.jwtService.signTokenPair({
