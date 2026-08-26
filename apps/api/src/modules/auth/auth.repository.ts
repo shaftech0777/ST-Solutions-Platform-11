@@ -104,6 +104,39 @@ export class AuthRepository extends BaseRepository {
   }
 
   /**
+   * Finds a user entity by email address or User ID with authentication-related relations.
+   */
+  public async findByIdentifier(identifier: string, tx?: TransactionClient) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      const trimmed = identifier.trim();
+      const normalized = trimmed.toLowerCase();
+
+      // 1. Try finding by email
+      const userByEmail = await client.user.findFirst({
+        where: {
+          OR: [
+            { email: normalized },
+            { email: trimmed },
+            { id: trimmed },
+          ],
+        },
+        include: this.userAuthInclude,
+      });
+
+      if (userByEmail) return userByEmail;
+
+      // 2. Try finding by ID
+      const userById = await client.user.findUnique({
+        where: { id: trimmed },
+        include: this.userAuthInclude,
+      });
+
+      return userById;
+    });
+  }
+
+  /**
    * Finds a user entity by email address with authentication-related relations.
    */
   public async findByEmail(email: string, tx?: TransactionClient) {

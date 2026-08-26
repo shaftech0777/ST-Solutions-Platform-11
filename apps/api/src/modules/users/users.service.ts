@@ -1,6 +1,7 @@
 import { AccountType, UserStatus } from "@prisma/client";
 import { AuthorizationError, ConflictError, NotFoundError, ValidationError } from "../../core/errors/app-error.js";
 import { ERROR_CODES } from "../../core/errors/error.codes.js";
+import { canActorAssignRole, canActorManageTargetRole } from "../../core/security/permissions.js";
 import { passwordService as defaultPasswordService, PasswordService } from "../../core/security/password.service.js";
 import { sanitizeUserResponse } from "./users.mapper.js";
 import { usersRepository as defaultUsersRepository, UsersRepository } from "./users.repository.js";
@@ -29,21 +30,39 @@ export class UsersService {
   }
 
   /**
-   * Retrieves paginated list of users.
+   * Retrieves paginated list of users filtered by actor scope.
    */
-  public async getUsers(filters: UserQueryInput): Promise<{
+  public async getUsers(
+    filters: UserQueryInput,
+    actor?: { userId?: string; accountType?: AccountType }
+  ): Promise<{
     items: readonly UserResponse[];
     totalRecords: number;
     page: number;
     limit: number;
   }> {
-    const { items, totalRecords, page, limit } = await this.usersRepository.findAndCount(filters);
+    const queryFilters = { ...filters };
 
-    const sanitizedItems = items.map((user) => sanitizeUserResponse(user));
+    // Apply role-based filtering scope
+    if (actor?.accountType === AccountType.MANAGER) {
+      queryFilters.accountType = AccountType.MEMBER;
+    }
+
+    const { items, totalRecords, page, limit } = await this.usersRepository.findAndCount(queryFilters);
+
+    // If actor is SUB_ADMIN, hide ADMIN accounts unless actor is ADMIN
+    const filteredItems = items.filter((user) => {
+      if (actor?.accountType === AccountType.SUB_ADMIN && user.accountType === AccountType.ADMIN) {
+        return false;
+      }
+      return true;
+    });
+
+    const sanitizedItems = filteredItems.map((user) => sanitizeUserResponse(user));
 
     return {
       items: sanitizedItems,
-      totalRecords,
+      totalRecords: actor?.accountType === AccountType.SUB_ADMIN ? sanitizedItems.length : totalRecords,
       page,
       limit,
     };
@@ -52,11 +71,30 @@ export class UsersService {
   /**
    * Retrieves a single user profile by ID.
    */
-  public async getUserById(id: string): Promise<UserResponse> {
+  public async getUserById(
+    id: string,
+    actor?: { userId?: string; accountType?: AccountType }
+  ): Promise<UserResponse> {
     const user = await this.usersRepository.findById(id);
 
     if (!user) {
       throw new NotFoundError(`User with ID '${id}' was not found`, ERROR_CODES.USER_NOT_FOUND);
+    }
+
+    // Role visibility checks
+    if (actor && actor.userId !== id) {
+      if (actor.accountType === AccountType.SUB_ADMIN && user.accountType === AccountType.ADMIN) {
+        throw new AuthorizationError(
+          "Sub-administrators cannot view Administrator profiles",
+          ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
+        );
+      }
+      if (actor.accountType === AccountType.MANAGER && user.accountType !== AccountType.MEMBER) {
+        throw new AuthorizationError(
+          "Managers can only view Member profiles",
+          ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
+        );
+      }
     }
 
     return sanitizeUserResponse(user);
@@ -69,11 +107,21 @@ export class UsersService {
     dto: CreateUserInput,
     actor?: { userId?: string; accountType?: AccountType }
   ): Promise<UserResponse> {
-    const normalizedEmail = dto.email.toLowerCase().trim();
+    const rawUserId = (dto.id || dto.userId || dto.username || "").trim();
+    const explicitEmail = dto.email ? dto.email.toLowerCase().trim() : "";
+    const normalizedEmail = explicitEmail || (rawUserId ? `${rawUserId.toLowerCase()}@st-solutions.internal` : `user-${Date.now().toString(36)}@st-solutions.internal`);
+    const targetAccountType = dto.accountType ?? AccountType.MEMBER;
+
+    if (rawUserId) {
+      const existingById = await this.usersRepository.findById(rawUserId);
+      if (existingById) {
+        throw new ConflictError(`User ID '${rawUserId}' is already assigned to an existing account`, ERROR_CODES.USER_ALREADY_EXISTS);
+      }
+    }
 
     const existingUser = await this.usersRepository.findByEmail(normalizedEmail);
     if (existingUser) {
-      throw new ConflictError("Email address is already registered", ERROR_CODES.USER_ALREADY_EXISTS);
+      throw new ConflictError("Email address is already registered to another account", ERROR_CODES.USER_ALREADY_EXISTS);
     }
 
     if (dto.roleId) {
@@ -83,10 +131,10 @@ export class UsersService {
       }
     }
 
-    // Prevent privilege escalation: only ADMIN can assign ADMIN account type
-    if (dto.accountType === AccountType.ADMIN && actor?.accountType !== AccountType.ADMIN) {
+    // Enforce role hierarchy: Actor must be allowed to assign the target role
+    if (actor && !canActorAssignRole(actor.accountType, targetAccountType)) {
       throw new AuthorizationError(
-        "Only administrators can create users with ADMIN account type",
+        `Your role (${actor.accountType}) cannot create users with account type '${targetAccountType}'`,
         ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
       );
     }
@@ -94,10 +142,11 @@ export class UsersService {
     const passwordHash = await this.passwordService.hashPassword(dto.password);
 
     const createdUser = await this.usersRepository.create({
+      id: rawUserId || undefined,
       email: normalizedEmail,
       passwordHash,
-      accountType: dto.accountType ?? AccountType.MEMBER,
-      status: dto.status ?? UserStatus.PENDING,
+      accountType: targetAccountType,
+      status: dto.status ?? UserStatus.ACTIVE,
       roleId: dto.roleId ?? null,
       profile: dto.profile
         ? {
@@ -117,10 +166,24 @@ export class UsersService {
   /**
    * Updates non-sensitive user profile and account properties.
    */
-  public async updateUser(id: string, dto: UpdateUserInput): Promise<UserResponse> {
+  public async updateUser(
+    id: string,
+    dto: UpdateUserInput,
+    actor?: { userId?: string; accountType?: AccountType }
+  ): Promise<UserResponse> {
     const existingUser = await this.usersRepository.findById(id);
     if (!existingUser) {
       throw new NotFoundError(`User with ID '${id}' was not found`, ERROR_CODES.USER_NOT_FOUND);
+    }
+
+    // Role hierarchy check when editing another user
+    if (actor && actor.userId !== id) {
+      if (actor.accountType !== AccountType.ADMIN && !canActorManageTargetRole(actor.accountType, existingUser.accountType)) {
+        throw new AuthorizationError(
+          `Your role (${actor.accountType}) is not authorized to edit user accounts with '${existingUser.accountType}' level`,
+          ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
+        );
+      }
     }
 
     let normalizedEmail: string | undefined;
@@ -155,7 +218,7 @@ export class UsersService {
   public async updateUserStatus(
     id: string,
     dto: UpdateUserStatusInput,
-    actorUserId?: string
+    actor?: { userId?: string; accountType?: AccountType }
   ): Promise<UserResponse> {
     const existingUser = await this.usersRepository.findById(id);
     if (!existingUser) {
@@ -163,10 +226,29 @@ export class UsersService {
     }
 
     // Prevent self suspension / deactivation
-    if (actorUserId === id && (dto.status === UserStatus.SUSPENDED || dto.status === UserStatus.INACTIVE)) {
+    if (actor?.userId === id && (dto.status === UserStatus.SUSPENDED || dto.status === UserStatus.INACTIVE)) {
       throw new ValidationError(
         "Users are strictly forbidden from suspending or deactivating their own account"
       );
+    }
+
+    // Enforce hierarchy
+    if (actor && actor.accountType !== AccountType.ADMIN && !canActorManageTargetRole(actor.accountType, existingUser.accountType)) {
+      throw new AuthorizationError(
+        `Your role (${actor.accountType}) cannot change status of users with '${existingUser.accountType}' level`,
+        ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
+      );
+    }
+
+    // Last admin protection: cannot suspend or deactivate the last active admin
+    if (
+      existingUser.accountType === AccountType.ADMIN &&
+      (dto.status === UserStatus.SUSPENDED || dto.status === UserStatus.INACTIVE)
+    ) {
+      const activeAdmins = await this.usersRepository.countActiveAdmins();
+      if (activeAdmins <= 1) {
+        throw new ValidationError("Cannot suspend or deactivate the last active administrator account in the system");
+      }
     }
 
     const updatedUser = await this.usersRepository.updateStatus(id, dto.status);
@@ -191,6 +273,27 @@ export class UsersService {
       throw new NotFoundError(`User with ID '${id}' was not found`, ERROR_CODES.USER_NOT_FOUND);
     }
 
+    // Prevent self role changes
+    if (actor?.userId === id) {
+      throw new ValidationError("Users are strictly forbidden from modifying their own role or account type");
+    }
+
+    // Role hierarchy check on target
+    if (actor && actor.accountType !== AccountType.ADMIN && !canActorManageTargetRole(actor.accountType, existingUser.accountType)) {
+      throw new AuthorizationError(
+        `Your role (${actor.accountType}) cannot change role of users with '${existingUser.accountType}' level`,
+        ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
+      );
+    }
+
+    // Role hierarchy check on new assigned role
+    if (dto.accountType && actor && !canActorAssignRole(actor.accountType, dto.accountType)) {
+      throw new AuthorizationError(
+        `Your role (${actor.accountType}) cannot promote or assign users to '${dto.accountType}' level`,
+        ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
+      );
+    }
+
     if (dto.roleId) {
       const role = await this.usersRepository.findRoleById(dto.roleId);
       if (!role) {
@@ -198,12 +301,16 @@ export class UsersService {
       }
     }
 
-    // Prevent privilege escalation
-    if (dto.accountType === AccountType.ADMIN && actor?.accountType !== AccountType.ADMIN) {
-      throw new AuthorizationError(
-        "Only administrators can promote users to ADMIN account type",
-        ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
-      );
+    // Last admin protection: cannot demote last active admin
+    if (
+      existingUser.accountType === AccountType.ADMIN &&
+      dto.accountType &&
+      dto.accountType !== AccountType.ADMIN
+    ) {
+      const activeAdmins = await this.usersRepository.countActiveAdmins();
+      if (activeAdmins <= 1) {
+        throw new ValidationError("Cannot change the account type of the last active administrator account");
+      }
     }
 
     const updatedUser = await this.usersRepository.updateRole(id, {
@@ -217,16 +324,34 @@ export class UsersService {
   /**
    * Deletes user record or deactivates user safely.
    */
-  public async deleteUser(id: string, actorUserId?: string): Promise<{ message: string }> {
+  public async deleteUser(
+    id: string,
+    actor?: { userId?: string; accountType?: AccountType }
+  ): Promise<{ message: string }> {
     const existingUser = await this.usersRepository.findById(id);
     if (!existingUser) {
       throw new NotFoundError(`User with ID '${id}' was not found`, ERROR_CODES.USER_NOT_FOUND);
     }
 
-    if (actorUserId === id) {
+    if (actor?.userId === id) {
       throw new ValidationError(
         "Users are strictly forbidden from deleting their own account"
       );
+    }
+
+    if (actor && actor.accountType !== AccountType.ADMIN && !canActorManageTargetRole(actor.accountType, existingUser.accountType)) {
+      throw new AuthorizationError(
+        `Your role (${actor.accountType}) cannot delete user accounts with '${existingUser.accountType}' level`,
+        ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
+      );
+    }
+
+    // Last admin protection
+    if (existingUser.accountType === AccountType.ADMIN) {
+      const activeAdmins = await this.usersRepository.countActiveAdmins();
+      if (activeAdmins <= 1) {
+        throw new ValidationError("Cannot delete the last active administrator account in the system");
+      }
     }
 
     // Revoke sessions first

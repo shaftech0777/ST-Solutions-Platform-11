@@ -23,6 +23,12 @@ export const envSchema = z.object({
   JWT_ACCESS_EXPIRES: z.string().default("1h"),
   JWT_REFRESH_EXPIRES: z.string().default("7d"),
 
+  // Root Administrator & Sub-Administrator Credentials
+  ADMIN_EMAIL: z.string().email().default("admin@st-solutions.com"),
+  ADMIN_PASSWORD: z.string().min(6).default("Admin@123456"),
+  SUB_ADMIN_EMAIL: z.string().email().default("subadmin@st-solutions.com"),
+  SUB_ADMIN_PASSWORD: z.string().min(6).default("SubAdmin@123456"),
+
   // Security Configuration
   CORS_ORIGIN: z.string().default("*"),
 

@@ -27,8 +27,12 @@ export class UsersController {
    */
   public getUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      const authReq = req as AuthenticatedRequest;
+      const actor = authReq.user
+        ? { userId: authReq.user.userId, accountType: authReq.user.accountType as AccountType }
+        : undefined;
       const query = req.query as unknown as UserQueryInput;
-      const result = await this.usersService.getUsers(query);
+      const result = await this.usersService.getUsers(query, actor);
 
       ResponseBuilder.paginated(res, result.items, {
         page: result.page,
@@ -47,7 +51,11 @@ export class UsersController {
   public getUserById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;
-      const user = await this.usersService.getUserById(id);
+      const authReq = req as AuthenticatedRequest;
+      const actor = authReq.user
+        ? { userId: authReq.user.userId, accountType: authReq.user.accountType as AccountType }
+        : undefined;
+      const user = await this.usersService.getUserById(id, actor);
 
       ResponseBuilder.success(res, user, {
         message: "User profile retrieved successfully",
@@ -86,9 +94,13 @@ export class UsersController {
   public updateUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;
+      const authReq = req as AuthenticatedRequest;
+      const actor = authReq.user
+        ? { userId: authReq.user.userId, accountType: authReq.user.accountType as AccountType }
+        : undefined;
       const dto = req.body as UpdateUserInput;
 
-      const updatedUser = await this.usersService.updateUser(id, dto);
+      const updatedUser = await this.usersService.updateUser(id, dto, actor);
 
       ResponseBuilder.success(res, updatedUser, {
         message: "User profile updated successfully",
@@ -106,10 +118,12 @@ export class UsersController {
     try {
       const { id } = req.params;
       const authReq = req as AuthenticatedRequest;
-      const actorUserId = authReq.user?.userId;
+      const actor = authReq.user
+        ? { userId: authReq.user.userId, accountType: authReq.user.accountType as AccountType }
+        : undefined;
       const dto = req.body as UpdateUserStatusInput;
 
-      const updatedUser = await this.usersService.updateUserStatus(id, dto, actorUserId);
+      const updatedUser = await this.usersService.updateUserStatus(id, dto, actor);
 
       ResponseBuilder.success(res, updatedUser, {
         message: "User status updated successfully",
@@ -150,9 +164,11 @@ export class UsersController {
     try {
       const { id } = req.params;
       const authReq = req as AuthenticatedRequest;
-      const actorUserId = authReq.user?.userId;
+      const actor = authReq.user
+        ? { userId: authReq.user.userId, accountType: authReq.user.accountType as AccountType }
+        : undefined;
 
-      const result = await this.usersService.deleteUser(id, actorUserId);
+      const result = await this.usersService.deleteUser(id, actor);
 
       ResponseBuilder.success(res, result, {
         message: result.message,

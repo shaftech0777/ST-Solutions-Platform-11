@@ -1,4 +1,5 @@
 export * from "./security.types.js";
+export * from "./permissions.js";
 export * from "./jwt.service.js";
 export * from "./password.service.js";
 export * from "./security.logger.js";

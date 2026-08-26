@@ -105,10 +105,18 @@ export const DashboardPage: React.FC = () => {
     <div className="space-y-6 sm:space-y-8">
       {/* Page Header */}
       <PageHeader
-        title="Executive Operations Dashboard"
+        title={
+          currentUser?.accountType === "ADMIN"
+            ? "Executive Platform Command Center"
+            : currentUser?.accountType === "SUB_ADMIN"
+            ? "Operations & Management Dashboard"
+            : currentUser?.accountType === "MANAGER"
+            ? "Project Delivery & Team Lead Hub"
+            : "Workspace & Contribution Hub"
+        }
         description={`Real-time telemetry and management controls for ${
           currentOrganization?.name || "ST-Solutions Enterprise"
-        }${currentWorkspace ? ` • ${currentWorkspace.name}` : ""}`}
+        }${currentWorkspace ? ` • ${currentWorkspace.name}` : ""} (${currentUser?.accountType || "MEMBER"} View)`}
         actions={
           <div className="flex items-center gap-2.5">
             <Button
@@ -119,14 +127,16 @@ export const DashboardPage: React.FC = () => {
             >
               Ask ST-AI
             </Button>
-            <Button
-              variant="gold"
-              size="sm"
-              leftIcon={<Plus className="w-4 h-4" />}
-              onClick={() => navigate("/projects")}
-            >
-              New Project
-            </Button>
+            {currentUser?.accountType !== "MEMBER" && (
+              <Button
+                variant="gold"
+                size="sm"
+                leftIcon={<Plus className="w-4 h-4" />}
+                onClick={() => navigate("/platform/projects")}
+              >
+                New Project
+              </Button>
+            )}
           </div>
         }
       />
@@ -141,16 +151,27 @@ export const DashboardPage: React.FC = () => {
           subtitle={`Pipeline Budget: ${formatCurrency(totalBudget)}`}
           icon={FolderKanban}
           isLoading={isLoading}
-          onClick={() => navigate("/projects")}
+          onClick={() => navigate("/platform/projects")}
         />
-        <StatCard
-          title="Revenue & Collected Funds"
-          value={formatCurrency(totalCollected)}
-          subtitle={`${payments.length} transactions processed`}
-          icon={DollarSign}
-          isLoading={isLoading}
-          onClick={() => navigate("/payments")}
-        />
+        {currentUser?.accountType === "ADMIN" || currentUser?.accountType === "SUB_ADMIN" ? (
+          <StatCard
+            title="Revenue & Collected Funds"
+            value={formatCurrency(totalCollected)}
+            subtitle={`${payments.length} transactions processed`}
+            icon={DollarSign}
+            isLoading={isLoading}
+            onClick={() => navigate("/payments")}
+          />
+        ) : (
+          <StatCard
+            title="Assigned Deliverables"
+            value={activeProjectsCount}
+            subtitle="Projects actively in progress"
+            icon={Clock}
+            isLoading={isLoading}
+            onClick={() => navigate("/platform/projects")}
+          />
+        )}
         <StatCard
           title="Enterprise Clients"
           value={clients.length}
@@ -160,12 +181,12 @@ export const DashboardPage: React.FC = () => {
           onClick={() => navigate("/clients")}
         />
         <StatCard
-          title="Talent & Candidate Pool"
-          value={applicants.length}
-          subtitle="Vetting & screening pipeline"
+          title={currentUser?.accountType === "MEMBER" ? "Team Colleagues" : "Talent & Candidate Pool"}
+          value={currentUser?.accountType === "MEMBER" ? 4 : applicants.length}
+          subtitle={currentUser?.accountType === "MEMBER" ? "Active team roster" : "Vetting & screening pipeline"}
           icon={UserCheck}
           isLoading={isLoading}
-          onClick={() => navigate("/applicants")}
+          onClick={() => navigate(currentUser?.accountType === "MEMBER" ? "/members" : "/applicants")}
         />
       </div>
 
@@ -258,7 +279,7 @@ export const DashboardPage: React.FC = () => {
               Projects Pipeline
             </h3>
             <Link
-              to="/projects"
+              to="/platform/projects"
               className="text-xs font-semibold text-[#D4AF37] hover:underline flex items-center gap-1"
             >
               <span>View All</span>
@@ -287,7 +308,7 @@ export const DashboardPage: React.FC = () => {
                   return (
                     <TableRow
                       key={p.id}
-                      onClick={() => navigate("/projects")}
+                      onClick={() => navigate("/platform/projects")}
                       className="cursor-pointer"
                     >
                       <TableCell className="font-bold text-slate-900 dark:text-white">

@@ -25,10 +25,13 @@ export const userQuerySchema = paginationQuerySchema.extend({
  * Create user request body validation schema.
  */
 export const createUserSchema = z.object({
-  email: emailSchema,
+  id: z.string().trim().min(2, "User ID must be at least 2 characters").optional(),
+  userId: z.string().trim().min(2, "User ID must be at least 2 characters").optional(),
+  username: z.string().trim().min(2, "Username must be at least 2 characters").optional(),
+  email: z.string().trim().email("Invalid email format").optional(),
   password: passwordSchema,
   accountType: z.nativeEnum(AccountType).optional().default(AccountType.MEMBER),
-  status: z.nativeEnum(UserStatus).optional().default(UserStatus.PENDING),
+  status: z.nativeEnum(UserStatus).optional().default(UserStatus.ACTIVE),
   roleId: z.string().trim().nullable().optional(),
   profile: z
     .object({
@@ -40,6 +43,9 @@ export const createUserSchema = z.object({
       address: z.string().trim().nullable().optional(),
     })
     .optional(),
+}).refine((data) => Boolean(data.email || data.id || data.userId || data.username), {
+  message: "Either an Email address or a User ID / Username must be provided",
+  path: ["email"],
 });
 
 /**

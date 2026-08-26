@@ -120,6 +120,7 @@ export class UsersRepository extends BaseRepository {
    */
   public async create(
     data: {
+      id?: string;
       email: string;
       passwordHash: string;
       accountType: AccountType;
@@ -140,6 +141,7 @@ export class UsersRepository extends BaseRepository {
       const client = this.getClient(tx);
       return client.user.create({
         data: {
+          id: data.id,
           email: data.email,
           passwordHash: data.passwordHash,
           accountType: data.accountType,
@@ -249,6 +251,21 @@ export class UsersRepository extends BaseRepository {
         where: { id },
         data,
         include: this.userIncludes,
+      });
+    });
+  }
+
+  /**
+   * Counts active administrators in the system.
+   */
+  public async countActiveAdmins(tx?: TransactionClient): Promise<number> {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      return client.user.count({
+        where: {
+          accountType: AccountType.ADMIN,
+          status: UserStatus.ACTIVE,
+        },
       });
     });
   }

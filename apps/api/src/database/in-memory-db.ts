@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import { config } from "../config/index.js";
 
 // Types
 export interface MemoryStore {
@@ -27,7 +28,15 @@ function generateId(prefix: string = "id"): string {
 }
 
 export function createInitialData(): MemoryStore {
-  const adminPasswordHash = bcrypt.hashSync("Admin@123456", 10);
+  const adminEmail = (config?.auth?.adminEmail || process.env.ADMIN_EMAIL || "admin@st-solutions.com").toLowerCase().trim();
+  const adminPassword = config?.auth?.adminPassword || process.env.ADMIN_PASSWORD || "Admin@123456";
+  const subAdminEmail = (config?.auth?.subAdminEmail || process.env.SUB_ADMIN_EMAIL || "subadmin@st-solutions.com").toLowerCase().trim();
+  const subAdminPassword = config?.auth?.subAdminPassword || process.env.SUB_ADMIN_PASSWORD || "SubAdmin@123456";
+
+  const adminPasswordHash = bcrypt.hashSync(adminPassword, 10);
+  const subAdminPasswordHash = bcrypt.hashSync(subAdminPassword, 10);
+  const managerPasswordHash = bcrypt.hashSync("Manager@123456", 10);
+  const memberPasswordHash = bcrypt.hashSync("Member@123456", 10);
   const now = new Date();
 
   const permissions = [
@@ -54,6 +63,10 @@ export function createInitialData(): MemoryStore {
     { id: "perm-21", name: "organizations.update", description: "Manage organization", module: "ORGANIZATIONS" },
     { id: "perm-22", name: "audit.read", description: "View audit logs", module: "AUDIT" },
     { id: "perm-23", name: "ai.query", description: "Access AI Assistant", module: "AI" },
+    { id: "perm-24", name: "users.create", description: "Create user accounts", module: "USERS" },
+    { id: "perm-25", name: "users.read", description: "View user accounts", module: "USERS" },
+    { id: "perm-26", name: "users.update", description: "Update user accounts", module: "USERS" },
+    { id: "perm-27", name: "users.delete", description: "Delete user accounts", module: "USERS" },
   ];
 
   const roles = [
@@ -70,9 +83,9 @@ export function createInitialData(): MemoryStore {
     permissionId: p.id,
   }));
 
-  const user = {
+  const userAdmin = {
     id: "user-admin-1",
-    email: "admin@st-solutions.com",
+    email: adminEmail,
     passwordHash: adminPasswordHash,
     accountType: "ADMIN",
     status: "ACTIVE",
@@ -81,11 +94,74 @@ export function createInitialData(): MemoryStore {
     updatedAt: now,
   };
 
-  const profile = {
+  const userSubAdmin = {
+    id: "user-subadmin-1",
+    email: subAdminEmail,
+    passwordHash: subAdminPasswordHash,
+    accountType: "SUB_ADMIN",
+    status: "ACTIVE",
+    roleId: "role-subadmin",
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  const userManager = {
+    id: "user-manager-1",
+    email: "manager@st-solutions.com",
+    passwordHash: managerPasswordHash,
+    accountType: "MANAGER",
+    status: "ACTIVE",
+    roleId: "role-manager",
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  const userMember = {
+    id: "user-member-1",
+    email: "member@st-solutions.com",
+    passwordHash: memberPasswordHash,
+    accountType: "MEMBER",
+    status: "ACTIVE",
+    roleId: "role-member",
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  const profileAdmin = {
     id: "profile-admin-1",
     userId: "user-admin-1",
     fullName: "Shaf Tech Admin",
     title: "Executive Director",
+    avatarUrl: null,
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  const profileSubAdmin = {
+    id: "profile-subadmin-1",
+    userId: "user-subadmin-1",
+    fullName: "Jordan Lee (Sub-Admin)",
+    title: "Deputy Operations Lead",
+    avatarUrl: null,
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  const profileManager = {
+    id: "profile-manager-1",
+    userId: "user-manager-1",
+    fullName: "Morgan Taylor (Manager)",
+    title: "Project Delivery Manager",
+    avatarUrl: null,
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  const profileMember = {
+    id: "profile-member-1",
+    userId: "user-member-1",
+    fullName: "Alex Rivera (Member)",
+    title: "Full-Stack Specialist",
     avatarUrl: null,
     createdAt: now,
     updatedAt: now,
@@ -306,8 +382,8 @@ export function createInitialData(): MemoryStore {
   ];
 
   return {
-    users: [user],
-    profiles: [profile],
+    users: [userAdmin, userSubAdmin, userManager, userMember],
+    profiles: [profileAdmin, profileSubAdmin, profileManager, profileMember],
     sessions: [],
     roles,
     permissions,

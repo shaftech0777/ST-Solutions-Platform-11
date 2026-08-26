@@ -1,9 +1,11 @@
-import { AuthenticationError, ConflictError, NotFoundError } from "../../core/errors/app-error.js";
+import { config } from "../../config/index.js";
+import { AuthenticationError, AuthorizationError, ConflictError, NotFoundError } from "../../core/errors/app-error.js";
 import { ERROR_CODES } from "../../core/errors/error.codes.js";
 import { domainEventBus } from "../../core/events/event-bus.js";
 import { DOMAIN_EVENTS } from "../../core/events/domain-event.types.js";
 import { jwtService as defaultJwtService, JwtService } from "../../core/security/jwt.service.js";
 import { passwordService as defaultPasswordService, PasswordService } from "../../core/security/password.service.js";
+import { getPermissionsForRole } from "../../core/security/permissions.js";
 import { SecurityLogger } from "../../core/security/security.logger.js";
 import { sanitizeUser } from "./auth.mapper.js";
 import { authRepository as defaultAuthRepository, AuthRepository } from "./auth.repository.js";
@@ -29,124 +31,154 @@ export class AuthService {
   }
 
   /**
-   * Registers a new user, hashes password, creates profile and optional default organization.
+   * Registers a new user account.
+   * Public self-registration is strictly disabled across ST-Solutions.
+   * Only Administrators and Sub-Administrators can provision subordinate accounts.
    */
   public async register(
-    dto: RegisterDto,
+    _dto: RegisterDto,
     metadata?: { ipAddress?: string; userAgent?: string }
   ): Promise<AuthTokenPayload> {
-    const normalizedEmail = dto.email.toLowerCase().trim();
-
-    const existingUser = await this.authRepository.findByEmail(normalizedEmail);
-    if (existingUser) {
-      throw new ConflictError("Email address is already registered", ERROR_CODES.USER_ALREADY_EXISTS);
-    }
-
-    const passwordHash = await this.passwordService.hashPassword(dto.password);
-
-    const user = await this.authRepository.createUserWithRegistration({
-      email: normalizedEmail,
-      passwordHash,
-      fullName: dto.fullName.trim(),
-      accountType: dto.accountType,
-      organizationName: dto.organizationName,
-    });
-
-    const permissions: string[] = user.role?.permissions
-      ? user.role.permissions.map((rp: any) => rp.permission.name)
-      : [];
-
-    const tokenPair = this.jwtService.signTokenPair({
-      sub: user.id,
-      email: user.email ?? undefined,
-      accountType: user.accountType,
-      role: user.role?.name,
-      permissions,
-    });
-
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    await this.authRepository.createSession({
-      userId: user.id,
-      tokenHash: tokenPair.refreshToken,
+    SecurityLogger.logAuthFailure({
+      reason: "Public self-registration attempt blocked - registration endpoint is disabled",
+      endpoint: "/auth/register",
       ipAddress: metadata?.ipAddress,
       userAgent: metadata?.userAgent,
-      expiresAt,
     });
 
-    await domainEventBus.publish({
-      eventName: DOMAIN_EVENTS.USER_REGISTERED,
-      entityType: "User",
-      entityId: user.id,
-      actorId: user.id,
-      timestamp: new Date(),
-      payload: {
-        userId: user.id,
-        email: user.email,
-        fullName: dto.fullName,
-      },
-    });
-
-    const safeUser = sanitizeUser(user);
-
-    return {
-      user: safeUser,
-      accessToken: tokenPair.accessToken,
-      refreshToken: tokenPair.refreshToken,
-      expiresIn: tokenPair.expiresIn,
-      tokenType: "Bearer",
-    };
+    throw new AuthorizationError(
+      "Public registration is disabled. Accounts can only be provisioned by an Administrator or Sub-Administrator via the internal management portal.",
+      ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
+    );
   }
 
   /**
    * Authenticates user credentials, verifies account status, issues JWT token pair, and tracks session.
+   * Supports:
+   * 1. Environment-variable root authentication for Administrator & Sub-Administrator.
+   * 2. Database User ID or Email authentication for Managers and Members.
    */
   public async login(
     dto: LoginDto,
     metadata?: { ipAddress?: string; userAgent?: string }
   ): Promise<AuthTokenPayload> {
-    const user = await this.authRepository.findByEmail(dto.email);
+    const rawIdentifier = dto.identifier || dto.email || "";
+    const identifier = rawIdentifier.trim();
 
-    if (!user) {
-      SecurityLogger.logAuthFailure({
-        reason: "Invalid email credentials provided",
-        endpoint: "/auth/login",
-        ipAddress: metadata?.ipAddress,
-        userAgent: metadata?.userAgent,
-      });
-      throw new AuthenticationError("Invalid email or password", ERROR_CODES.AUTH_INVALID_CREDENTIALS);
+    if (!identifier || !dto.password) {
+      throw new AuthenticationError("Identifier and password are required", ERROR_CODES.AUTH_INVALID_CREDENTIALS);
     }
 
-    // Verify password first
-    const isPasswordValid = await this.passwordService.comparePassword(dto.password, user.passwordHash);
-    if (!isPasswordValid) {
-      SecurityLogger.logAuthFailure({
-        reason: "Invalid password provided",
-        userId: user.id,
-        endpoint: "/auth/login",
-        ipAddress: metadata?.ipAddress,
-        userAgent: metadata?.userAgent,
-      });
-      throw new AuthenticationError("Invalid email or password", ERROR_CODES.AUTH_INVALID_CREDENTIALS);
+    const adminEmail = (config.auth.adminEmail || "admin@st-solutions.com").toLowerCase().trim();
+    const adminPassword = config.auth.adminPassword || "Admin@123456";
+    const subAdminEmail = (config.auth.subAdminEmail || "subadmin@st-solutions.com").toLowerCase().trim();
+    const subAdminPassword = config.auth.subAdminPassword || "SubAdmin@123456";
+
+    let user: any = null;
+    let isRootEnvAuth = false;
+
+    // 1. Check Root Administrator environment variable credentials
+    if (identifier.toLowerCase() === adminEmail) {
+      if (dto.password === adminPassword) {
+        isRootEnvAuth = true;
+        user = await this.authRepository.findByEmail(adminEmail);
+        if (!user) {
+          try {
+            const passwordHash = await this.passwordService.hashPassword(adminPassword);
+            user = await this.authRepository.createUserWithRegistration({
+              email: adminEmail,
+              passwordHash,
+              fullName: "Shaf Tech Admin",
+              accountType: "ADMIN" as any,
+            });
+          } catch {
+            user = await this.authRepository.findByEmail(adminEmail);
+          }
+        }
+      }
+    }
+
+    // 2. Check Root Sub-Administrator environment variable credentials
+    if (!isRootEnvAuth && identifier.toLowerCase() === subAdminEmail) {
+      if (dto.password === subAdminPassword) {
+        isRootEnvAuth = true;
+        user = await this.authRepository.findByEmail(subAdminEmail);
+        if (!user) {
+          try {
+            const passwordHash = await this.passwordService.hashPassword(subAdminPassword);
+            user = await this.authRepository.createUserWithRegistration({
+              email: subAdminEmail,
+              passwordHash,
+              fullName: "Sub-Administrator",
+              accountType: "SUB_ADMIN" as any,
+            });
+          } catch {
+            user = await this.authRepository.findByEmail(subAdminEmail);
+          }
+        }
+      }
+    }
+
+    // 3. If not root env matched, find user in database via User ID or Email
+    if (!isRootEnvAuth) {
+      user = await this.authRepository.findByIdentifier(identifier);
+
+      if (!user) {
+        SecurityLogger.logAuthFailure({
+          reason: `Invalid credentials provided for identifier: ${identifier}`,
+          endpoint: "/auth/login",
+          ipAddress: metadata?.ipAddress,
+          userAgent: metadata?.userAgent,
+        });
+        throw new AuthenticationError("Invalid email, User ID, or password", ERROR_CODES.AUTH_INVALID_CREDENTIALS);
+      }
+
+      // Verify password
+      let isPasswordValid = false;
+      if (user.passwordHash) {
+        isPasswordValid = await this.passwordService.comparePassword(dto.password, user.passwordHash);
+      }
+
+      // Allow fallback check against root admin/subadmin passwords if accounts match email
+      if (!isPasswordValid && user.email?.toLowerCase() === adminEmail && dto.password === adminPassword) {
+        isPasswordValid = true;
+      }
+      if (!isPasswordValid && user.email?.toLowerCase() === subAdminEmail && dto.password === subAdminPassword) {
+        isPasswordValid = true;
+      }
+
+      if (!isPasswordValid) {
+        SecurityLogger.logAuthFailure({
+          reason: "Invalid password provided",
+          userId: user.id,
+          endpoint: "/auth/login",
+          ipAddress: metadata?.ipAddress,
+          userAgent: metadata?.userAgent,
+        });
+        throw new AuthenticationError("Invalid email, User ID, or password", ERROR_CODES.AUTH_INVALID_CREDENTIALS);
+      }
     }
 
     // Check account status
     if (user.status === "SUSPENDED") {
-      throw new AuthenticationError("Your account has been suspended", ERROR_CODES.AUTH_ACCOUNT_DISABLED);
+      throw new AuthenticationError("Your account has been suspended by an administrator", ERROR_CODES.AUTH_ACCOUNT_DISABLED);
     }
     if (user.status === "INACTIVE") {
-      throw new AuthenticationError("Your account is currently inactive", ERROR_CODES.AUTH_ACCOUNT_DISABLED);
+      throw new AuthenticationError("Your account is currently deactivated", ERROR_CODES.AUTH_ACCOUNT_DISABLED);
     }
     if (user.status === "PENDING") {
       throw new AuthenticationError(
-        "Your account registration is pending approval",
+        "Your account is pending administrator activation",
         ERROR_CODES.AUTH_ACCOUNT_DISABLED
       );
     }
 
-    // Extract permissions
-    const permissions: string[] = user.role?.permissions
-      ? user.role.permissions.map((rp: any) => rp.permission.name)
+    // Extract authoritative permissions for accountType
+    const dbPermissions: string[] = user.role?.permissions
+      ? user.role.permissions.map((rp: any) => rp.permission?.name || rp)
       : [];
+    const staticPermissions = getPermissionsForRole(user.accountType || user.role?.name);
+    const permissions = Array.from(new Set([...staticPermissions, ...dbPermissions]));
 
     // Issue JWT tokens
     const tokenPair = this.jwtService.signTokenPair({
@@ -159,13 +191,17 @@ export class AuthService {
 
     // Store active session in database
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
-    await this.authRepository.createSession({
-      userId: user.id,
-      tokenHash: tokenPair.refreshToken,
-      ipAddress: metadata?.ipAddress,
-      userAgent: metadata?.userAgent,
-      expiresAt,
-    });
+    try {
+      await this.authRepository.createSession({
+        userId: user.id,
+        tokenHash: tokenPair.refreshToken,
+        ipAddress: metadata?.ipAddress,
+        userAgent: metadata?.userAgent,
+        expiresAt,
+      });
+    } catch {
+      // Session storage non-fatal fallback
+    }
 
     SecurityLogger.logAuthSuccess({
       userId: user.id,
@@ -200,9 +236,11 @@ export class AuthService {
       throw new AuthenticationError("Account is not active", ERROR_CODES.AUTH_ACCOUNT_DISABLED);
     }
 
-    const permissions: string[] = user.role?.permissions
-      ? user.role.permissions.map((rp: any) => rp.permission.name)
+    const dbPermissions: string[] = user.role?.permissions
+      ? user.role.permissions.map((rp: any) => rp.permission?.name || rp)
       : [];
+    const staticPermissions = getPermissionsForRole(user.accountType || user.role?.name);
+    const permissions = Array.from(new Set([...staticPermissions, ...dbPermissions]));
 
     const tokenPair = this.jwtService.signTokenPair({
       sub: user.id,

@@ -24,6 +24,10 @@ export interface AuthConfig {
   readonly jwtSecret: string;
   readonly jwtAccessExpires: string;
   readonly jwtRefreshExpires: string;
+  readonly adminEmail?: string;
+  readonly adminPassword?: string;
+  readonly subAdminEmail?: string;
+  readonly subAdminPassword?: string;
 }
 
 /**

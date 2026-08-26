@@ -19,11 +19,18 @@ export const registerSchema = z.object({
 
 /**
  * Login request validation schema.
+ * Supports Email (Admins/Sub-Admins/Managers/Members) and User ID / Username (Managers/Members).
  */
-export const loginSchema = z.object({
-  email: emailSchema,
-  password: z.string({ required_error: "Password is required" }).min(1, { message: "Password cannot be empty" }),
-});
+export const loginSchema = z
+  .object({
+    identifier: z.string().trim().min(1, { message: "Identifier cannot be empty" }).optional(),
+    email: z.string().trim().optional(),
+    password: z.string({ required_error: "Password is required" }).min(1, { message: "Password cannot be empty" }),
+  })
+  .refine((data) => Boolean(data.identifier || data.email), {
+    message: "Email address or User ID is required",
+    path: ["identifier"],
+  });
 
 /**
  * Refresh token request validation schema.

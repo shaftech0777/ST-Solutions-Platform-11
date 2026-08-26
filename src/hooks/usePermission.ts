@@ -15,25 +15,31 @@ export function usePermission() {
     if (!currentUser) return false;
     if (isAdmin) return true; // Super admin override
     if (permissions.includes("*") || permissions.includes("all")) return true;
-    return permissions.includes(requiredPermission);
+    if (permissions.includes(requiredPermission)) return true;
+    
+    // Check dot and colon variant
+    const dotVariant = requiredPermission.replace(":", ".");
+    const colonVariant = requiredPermission.replace(".", ":");
+    return permissions.includes(dotVariant) || permissions.includes(colonVariant);
   };
 
   const hasAnyPermission = (requiredPermissions: string[]): boolean => {
     if (!currentUser) return false;
     if (isAdmin) return true;
     if (permissions.includes("*") || permissions.includes("all")) return true;
-    return requiredPermissions.some((perm) => permissions.includes(perm));
+    return requiredPermissions.some((perm) => hasPermission(perm));
   };
 
   const hasAllPermissions = (requiredPermissions: string[]): boolean => {
     if (!currentUser) return false;
     if (isAdmin) return true;
     if (permissions.includes("*") || permissions.includes("all")) return true;
-    return requiredPermissions.every((perm) => permissions.includes(perm));
+    return requiredPermissions.every((perm) => hasPermission(perm));
   };
 
   const hasRole = (targetRole: string): boolean => {
     if (!currentUser) return false;
+    if (isAdmin) return true;
     const target = targetRole.toUpperCase();
     return accountType === target || roleName === target;
   };

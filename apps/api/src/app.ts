@@ -2,6 +2,7 @@ import express, { Express, Request, Response } from "express";
 import { securityConfig } from "./config/security.js";
 import { databaseService } from "./database/index.js";
 import { apiRouter } from "./routes/api.router.js";
+import { authRouter } from "./modules/auth/index.js";
 import {
   globalErrorHandlerMiddleware,
   notFoundHandlerMiddleware,
@@ -43,8 +44,10 @@ const healthHandler = async (_req: Request, res: Response) => {
 app.get("/health", healthHandler);
 app.get("/api/health", healthHandler);
 
+// Mount API routers
 app.use("/api/v1", apiRouter);
-app.use("/auth", apiRouter); // Alias for top-level /auth/login access
+app.use("/auth", authRouter); // Direct access for /auth/login, /auth/register, etc.
+app.use("/api/auth", authRouter); // Alias for /api/auth/login
 
 // 6. 404 Route Not Found Middleware (scoped to API routes)
 app.use((req, res, next) => {
@@ -58,3 +61,4 @@ app.use((req, res, next) => {
 app.use(globalErrorHandlerMiddleware);
 
 export default app;
+

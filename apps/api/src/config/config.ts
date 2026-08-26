@@ -23,6 +23,10 @@ export const config: ApiConfig & { port: number; env: string } = {
     jwtSecret: env.JWT_SECRET,
     jwtAccessExpires: env.JWT_ACCESS_EXPIRES,
     jwtRefreshExpires: env.JWT_REFRESH_EXPIRES,
+    adminEmail: env.ADMIN_EMAIL,
+    adminPassword: env.ADMIN_PASSWORD,
+    subAdminEmail: env.SUB_ADMIN_EMAIL,
+    subAdminPassword: env.SUB_ADMIN_PASSWORD,
   },
   security: {
     corsOrigin: env.CORS_ORIGIN,

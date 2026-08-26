@@ -7,13 +7,12 @@ export const authRouter = Router();
 
 /**
  * @route POST /auth/register
- * @desc Registers a new user account with profile and optional organization
- * @access Public (Rate Limited)
+ * @desc Public registration is disabled across ST-Solutions platform.
+ * @access Disabled (Returns 403 Forbidden)
  */
-authRouter.post(
+authRouter.all(
   "/register",
   authRateLimiter,
-  validate({ body: registerSchema }),
   authController.register
 );
 

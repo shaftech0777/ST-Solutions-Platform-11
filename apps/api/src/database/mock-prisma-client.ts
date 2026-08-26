@@ -289,6 +289,17 @@ export function createMockPrismaClient(): any {
         return sliced.map((item) => resolveIncludes(table, item, args?.include, store));
       },
       create: async (args: { data: any; include?: any }) => {
+        if (args.data.id && store[table].some((item: any) => item.id === args.data.id)) {
+          const err: any = new Error(`Unique constraint failed on the fields: (id)`);
+          err.code = "P2002";
+          throw err;
+        }
+        if (table === "users" && args.data.email && store.users.some((u: any) => u.email?.toLowerCase() === args.data.email?.toLowerCase())) {
+          const err: any = new Error(`Unique constraint failed on the fields: (email)`);
+          err.code = "P2002";
+          throw err;
+        }
+
         const id = args.data.id || `${defaultIdPrefix}-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 7)}`;
         const newItem: any = {
           id,

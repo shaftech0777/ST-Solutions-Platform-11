@@ -1,3 +1,4 @@
+import type { RequestHandler } from "express";
 import helmet from "helmet";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
@@ -46,13 +47,13 @@ export const securityConfig = {
       "Accept",
     ],
   }),
-  rateLimiter: rateLimit({
+  rateLimiter: (rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 1000,
     standardHeaders: true,
     legacyHeaders: false,
     validate: { xForwardedForHeader: false, trustProxy: false },
     message: { error: "Too many requests from this IP, please try again later." },
-  }),
+  }) as unknown as RequestHandler),
 };
 

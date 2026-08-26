@@ -10,7 +10,7 @@ import { CreateRoleInput, RoleQueryInput, UpdateRoleInput } from "./roles.valida
 /**
  * System-critical protected role names that cannot be deleted or renamed.
  */
-export const SYSTEM_PROTECTED_ROLES = ["ADMIN", "MANAGER", "MEMBER", "CLIENT"] as const;
+export const SYSTEM_PROTECTED_ROLES = ["ADMIN", "SUB_ADMIN", "MANAGER", "MEMBER", "CLIENT"] as const;
 
 /**
  * Service encapsulating Roles & Role-Permissions management and business rules.

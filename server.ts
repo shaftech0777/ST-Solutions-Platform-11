@@ -8,7 +8,7 @@ import { Logger } from "./apps/api/src/core/logger/index.js";
 
 async function startServer() {
   const app = express();
-  const PORT = Number(process.env.PORT) || 3000;
+  const PORT = 3000;
 
   // Trust proxy for reverse proxies (Render, Cloud Run, nginx)
   app.set("trust proxy", 1);

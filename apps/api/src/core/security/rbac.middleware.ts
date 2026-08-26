@@ -1,6 +1,7 @@
 import { NextFunction, Request, RequestHandler, Response } from "express";
 import { AuthenticationError, AuthorizationError } from "../errors/app-error.js";
 import { ERROR_CODES } from "../errors/error.codes.js";
+import { getPermissionsForRole, normalizeRoleKey } from "./permissions.js";
 import { SecurityLogger } from "./security.logger.js";
 import { AuthenticatedRequest } from "./security.types.js";
 
@@ -10,12 +11,40 @@ export function formatEndpoint(req: Request): string {
   return `${method} ${path}`;
 }
 
+function normalizePerm(perm: string): string {
+  return perm.trim().toLowerCase().replace(/[:/]/g, ".");
+}
+
+function hasPermissionMatch(userPermissions: Set<string>, requiredPerm: string): boolean {
+  const normRequired = normalizePerm(requiredPerm);
+
+  if (userPermissions.has("*") || userPermissions.has("all")) {
+    return true;
+  }
+
+  if (userPermissions.has(normRequired)) {
+    return true;
+  }
+
+  // Check domain wildcard (e.g. "users.*" matches "users.read")
+  const [domain] = normRequired.split(".");
+  if (domain && (userPermissions.has(`${domain}.*`) || userPermissions.has(`${domain}.all`))) {
+    return true;
+  }
+
+  // Check management fallback (e.g. having "projects.update" satisfies "projects.manage_status")
+  if (normRequired.endsWith(".manage_status") || normRequired.endsWith(".manage_ownership") || normRequired.endsWith(".manage_updates")) {
+    if (userPermissions.has(`${domain}.update`) || userPermissions.has(`${domain}.manage`)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 /**
- * Middleware restricting route access to users with specified account types (e.g. ADMIN, MANAGER, MEMBER, CLIENT).
+ * Middleware restricting route access to users with specified account types (e.g. ADMIN, SUB_ADMIN, MANAGER, MEMBER, CLIENT).
  * ADMIN account type automatically bypasses restrictions.
- *
- * @param allowedAccountTypes List of allowed AccountType strings
- * @returns Express RequestHandler
  */
 export function requireAccountType(...allowedAccountTypes: string[]): RequestHandler {
   return (req: Request, _res: Response, next: NextFunction): void => {
@@ -29,12 +58,18 @@ export function requireAccountType(...allowedAccountTypes: string[]): RequestHan
       );
     }
 
+    const normAccountType = normalizeRoleKey(user.accountType);
+    const normRole = normalizeRoleKey(user.role);
+
     // ADMIN override
-    if (user.accountType === "ADMIN") {
+    if (normAccountType === "ADMIN" || normRole === "ADMIN") {
       return next();
     }
 
-    if (!user.accountType || !allowedAccountTypes.includes(user.accountType)) {
+    const normAllowed = allowedAccountTypes.map((t) => normalizeRoleKey(t));
+    const isAllowed = normAllowed.includes(normAccountType) || normAllowed.includes(normRole);
+
+    if (!isAllowed) {
       SecurityLogger.logAccessDenied({
         userId: user.userId,
         requiredRoleOrPermission: `AccountTypes: [${allowedAccountTypes.join(", ")}]`,
@@ -57,9 +92,6 @@ export function requireAccountType(...allowedAccountTypes: string[]): RequestHan
 /**
  * Middleware restricting route access to users possessing specific custom roles.
  * ADMIN account type automatically bypasses restrictions.
- *
- * @param allowedRoles List of allowed role names or identifiers
- * @returns Express RequestHandler
  */
 export function requireRole(...allowedRoles: string[]): RequestHandler {
   return (req: Request, _res: Response, next: NextFunction): void => {
@@ -73,14 +105,16 @@ export function requireRole(...allowedRoles: string[]): RequestHandler {
       );
     }
 
+    const normAccountType = normalizeRoleKey(user.accountType);
+    const normRole = normalizeRoleKey(user.role);
+
     // ADMIN override
-    if (user.accountType === "ADMIN") {
+    if (normAccountType === "ADMIN" || normRole === "ADMIN") {
       return next();
     }
 
-    const hasRole =
-      (user.role !== undefined && allowedRoles.includes(user.role)) ||
-      (user.accountType !== undefined && allowedRoles.includes(user.accountType));
+    const normAllowed = allowedRoles.map((r) => normalizeRoleKey(r));
+    const hasRole = normAllowed.includes(normRole) || normAllowed.includes(normAccountType);
 
     if (!hasRole) {
       SecurityLogger.logAccessDenied({
@@ -105,9 +139,6 @@ export function requireRole(...allowedRoles: string[]): RequestHandler {
 /**
  * Middleware restricting route access to users with specified required permissions.
  * ADMIN account type automatically bypasses restrictions.
- *
- * @param requiredPermissions List of granular permission string names required
- * @returns Express RequestHandler
  */
 export function requirePermission(...requiredPermissions: string[]): RequestHandler {
   return (req: Request, _res: Response, next: NextFunction): void => {
@@ -121,13 +152,32 @@ export function requirePermission(...requiredPermissions: string[]): RequestHand
       );
     }
 
+    const normAccountType = normalizeRoleKey(user.accountType);
+    const normRole = normalizeRoleKey(user.role);
+
     // ADMIN override
-    if (user.accountType === "ADMIN") {
+    if (normAccountType === "ADMIN" || normRole === "ADMIN") {
       return next();
     }
 
-    const userPermissions = user.permissions ?? [];
-    const hasAllPermissions = requiredPermissions.every((perm) => userPermissions.includes(perm));
+    const rawPermissions = [
+      ...(user.permissions ?? []),
+      ...getPermissionsForRole(user.accountType),
+      ...getPermissionsForRole(user.role),
+    ];
+
+    const normalizedUserPermissions = new Set<string>();
+    for (const p of rawPermissions) {
+      if (typeof p === "string") {
+        normalizedUserPermissions.add(normalizePerm(p));
+      } else if (p && typeof p === "object" && "name" in p) {
+        normalizedUserPermissions.add(normalizePerm((p as any).name));
+      }
+    }
+
+    const hasAllPermissions = requiredPermissions.every((perm) =>
+      hasPermissionMatch(normalizedUserPermissions, perm)
+    );
 
     if (!hasAllPermissions) {
       SecurityLogger.logAccessDenied({
@@ -148,3 +198,4 @@ export function requirePermission(...requiredPermissions: string[]): RequestHand
     return next();
   };
 }
+
