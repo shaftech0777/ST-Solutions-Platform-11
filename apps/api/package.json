@@ -3,17 +3,20 @@
   "version": "1.0.0",
   "private": true,
   "description": "Backend API Service for ST-Solutions",
-  "main": "src/index.ts",
+  "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "prisma generate && tsc",
+    "build": "prisma generate --schema=./prisma/schema.prisma && tsc",
     "start": "node dist/server.js",
     "lint": "tsc --noEmit",
     "test": "tsx --test src/__tests__/*.test.ts",
     "prisma:init": "prisma init",
-    "prisma:generate": "prisma generate",
-    "prisma:format": "prisma format",
-    "prisma:validate": "prisma validate"
+    "prisma:generate": "prisma generate --schema=./prisma/schema.prisma",
+    "prisma:format": "prisma format --schema=./prisma/schema.prisma",
+    "prisma:validate": "prisma validate --schema=./prisma/schema.prisma"
+  },
+  "prisma": {
+    "schema": "prisma/schema.prisma"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

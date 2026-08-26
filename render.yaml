@@ -2,10 +2,11 @@ services:
   - type: web
     name: st-solutions-api
     env: node
+    rootDir: apps/api
     plan: free
     region: oregon
-    buildCommand: npm install && npm run build
-    startCommand: npm start
+    buildCommand: bun install && bunx prisma generate && bun run build
+    startCommand: bun run start
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
