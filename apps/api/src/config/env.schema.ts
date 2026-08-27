@@ -19,15 +19,17 @@ export const envSchema = z.object({
   JWT_SECRET: z
     .string()
     .min(1, "JWT_SECRET is required")
-    .default("default-development-jwt-secret-key-32charsmin"),
+    .default(() => process.env.JWT_ACCESS_SECRET || process.env.JWT_SECRET || "default-development-jwt-secret-key-32charsmin"),
   JWT_ACCESS_EXPIRES: z.string().default("1h"),
   JWT_REFRESH_EXPIRES: z.string().default("7d"),
+  JWT_ACCESS_SECRET: z.string().optional(),
+  JWT_REFRESH_SECRET: z.string().optional(),
 
   // Root Administrator & Sub-Administrator Credentials
-  ADMIN_EMAIL: z.string().email().default("admin@st-solutions.com"),
-  ADMIN_PASSWORD: z.string().min(6).default("Admin@123456"),
-  SUB_ADMIN_EMAIL: z.string().email().default("subadmin@st-solutions.com"),
-  SUB_ADMIN_PASSWORD: z.string().min(6).default("SubAdmin@123456"),
+  ADMIN_EMAIL: z.string().email().default(() => process.env.ADMIN_EMAIL || "admin@st-solutions.com"),
+  ADMIN_PASSWORD: z.string().min(6).default(() => process.env.BOOTSTRAP_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || "Admin@123456"),
+  SUB_ADMIN_EMAIL: z.string().email().default(() => process.env.SUB_ADMIN_EMAIL || "subadmin@st-solutions.com"),
+  SUB_ADMIN_PASSWORD: z.string().min(6).default(() => process.env.SUB_ADMIN_PASSWORD || "SubAdmin@123456"),
 
   // Security Configuration
   CORS_ORIGIN: z.string().default("*"),

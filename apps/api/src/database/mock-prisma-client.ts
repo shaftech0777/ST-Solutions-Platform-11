@@ -61,7 +61,24 @@ function matchesFilter(item: any, where: any): boolean {
       }
 
       if ("equals" in val && val.equals !== undefined) {
-        if (itemVal !== val.equals) return false;
+        const filterObj = val as { equals: any; mode?: string };
+        if (filterObj.mode === "insensitive" && typeof filterObj.equals === "string") {
+          if (String(itemVal || "").toLowerCase() !== filterObj.equals.toLowerCase()) return false;
+        } else {
+          if (itemVal !== val.equals) return false;
+        }
+      }
+      if ("startsWith" in val && typeof (val as any).startsWith === "string") {
+        const filterObj = val as { startsWith: string; mode?: string };
+        const needle = filterObj.mode === "insensitive" ? filterObj.startsWith.toLowerCase() : filterObj.startsWith;
+        const haystack = filterObj.mode === "insensitive" ? String(itemVal || "").toLowerCase() : String(itemVal || "");
+        if (!haystack.startsWith(needle)) return false;
+      }
+      if ("endsWith" in val && typeof (val as any).endsWith === "string") {
+        const filterObj = val as { endsWith: string; mode?: string };
+        const needle = filterObj.mode === "insensitive" ? filterObj.endsWith.toLowerCase() : filterObj.endsWith;
+        const haystack = filterObj.mode === "insensitive" ? String(itemVal || "").toLowerCase() : String(itemVal || "");
+        if (!haystack.endsWith(needle)) return false;
       }
       if ("in" in val && Array.isArray(val.in)) {
         if (!val.in.includes(itemVal)) return false;

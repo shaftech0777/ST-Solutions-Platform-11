@@ -83,10 +83,29 @@ export class UsersRepository extends BaseRepository {
   public async findById(id: string, tx?: TransactionClient) {
     return this.execute(async () => {
       const client = this.getClient(tx);
-      return client.user.findUnique({
-        where: { id },
+      const trimmed = id.trim();
+      const normalized = trimmed.toLowerCase();
+      const user = await client.user.findFirst({
+        where: {
+          OR: [
+            { id: trimmed },
+            { id: { equals: normalized, mode: "insensitive" } },
+            { id: { equals: trimmed, mode: "insensitive" } },
+          ],
+        },
         include: this.userIncludes,
       });
+
+      if (user) return user;
+
+      try {
+        return await client.user.findUnique({
+          where: { id: trimmed },
+          include: this.userIncludes,
+        });
+      } catch {
+        return null;
+      }
     });
   }
 
@@ -96,10 +115,30 @@ export class UsersRepository extends BaseRepository {
   public async findByEmail(email: string, tx?: TransactionClient) {
     return this.execute(async () => {
       const client = this.getClient(tx);
-      return client.user.findUnique({
-        where: { email },
+      const trimmed = email.trim();
+      const normalized = trimmed.toLowerCase();
+      const user = await client.user.findFirst({
+        where: {
+          OR: [
+            { email: { equals: normalized, mode: "insensitive" } },
+            { email: { equals: trimmed, mode: "insensitive" } },
+            { email: normalized },
+            { email: trimmed },
+          ],
+        },
         include: this.userIncludes,
       });
+
+      if (user) return user;
+
+      try {
+        return await client.user.findUnique({
+          where: { email: normalized },
+          include: this.userIncludes,
+        });
+      } catch {
+        return null;
+      }
     });
   }
 

@@ -62,7 +62,7 @@ export class AuthService {
     dto: LoginDto,
     metadata?: { ipAddress?: string; userAgent?: string }
   ): Promise<AuthTokenPayload> {
-    const rawIdentifier = dto.identifier || dto.email || "";
+    const rawIdentifier = dto.identifier || dto.username || dto.userId || dto.email || "";
     const identifier = rawIdentifier.trim();
 
     if (!identifier || !dto.password) {

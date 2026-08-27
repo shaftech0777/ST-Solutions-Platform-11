@@ -105,34 +105,49 @@ export class AuthRepository extends BaseRepository {
 
   /**
    * Finds a user entity by email address or User ID with authentication-related relations.
+   * Supports:
+   * 1. Exact or case-insensitive User ID
+   * 2. Exact or case-insensitive Email address
+   * 3. Generated internal email addresses (@st-solutions.internal)
    */
   public async findByIdentifier(identifier: string, tx?: TransactionClient) {
     return this.execute(async () => {
       const client = this.getClient(tx);
       const trimmed = identifier.trim();
       const normalized = trimmed.toLowerCase();
+      const internalEmail = `${normalized}@st-solutions.internal`;
 
-      // 1. Try finding by email
-      const userByEmail = await client.user.findFirst({
+      // 1. Try finding by email or User ID using comprehensive lookup conditions
+      const user = await client.user.findFirst({
         where: {
           OR: [
+            { email: { equals: normalized, mode: "insensitive" } },
+            { email: { equals: trimmed, mode: "insensitive" } },
+            { email: { equals: internalEmail, mode: "insensitive" } },
+            { id: { equals: trimmed, mode: "insensitive" } },
+            { id: { equals: normalized, mode: "insensitive" } },
+            { id: trimmed },
             { email: normalized },
             { email: trimmed },
-            { id: trimmed },
           ],
         },
         include: this.userAuthInclude,
       });
 
-      if (userByEmail) return userByEmail;
+      if (user) return user;
 
-      // 2. Try finding by ID
-      const userById = await client.user.findUnique({
-        where: { id: trimmed },
-        include: this.userAuthInclude,
-      });
+      // 2. Direct unique ID lookup fallback
+      try {
+        const userById = await client.user.findUnique({
+          where: { id: trimmed },
+          include: this.userAuthInclude,
+        });
+        if (userById) return userById;
+      } catch {
+        // Non-fatal if findUnique fails with non-standard where format
+      }
 
-      return userById;
+      return null;
     });
   }
 

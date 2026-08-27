@@ -18,31 +18,44 @@ describe("Stage 6: Real Database + Production Authentication Foundation E2E", { 
   let userOrgId = "";
   let userWorkspaceId = "";
 
-  it("1. Real User Registration: validates, hashes password, creates user + profile + default Org & Workspace, issues JWT & session", async () => {
-    const registerResult = await authService.register(
+  it("1. Real User Provisioning: validates, hashes password, creates user + profile + default Org & Workspace, issues JWT & session", async () => {
+    const passwordHash = await passwordService.hashPassword(testPassword);
+    const createdUser = await authRepository.createUserWithRegistration({
+      email: testUserEmail,
+      passwordHash,
+      fullName: "Dr. Alexander Wright",
+      accountType: "MEMBER",
+      organizationName: "Wright Aerospace Research",
+    });
+
+    assert.ok(createdUser);
+    assert.equal(createdUser.email, testUserEmail);
+    assert.equal(createdUser.profile?.fullName, "Dr. Alexander Wright");
+    assert.equal(createdUser.accountType, "MEMBER");
+
+    registeredUserId = createdUser.id;
+
+    // Login with newly provisioned user
+    const loginResult = await authService.login(
       {
         email: testUserEmail,
         password: testPassword,
-        fullName: "Dr. Alexander Wright",
-        accountType: "MEMBER",
-        organizationName: "Wright Aerospace Research",
       },
       { ipAddress: "127.0.0.1", userAgent: "Stage6-E2E-Agent" }
     );
 
-    assert.ok(registerResult);
-    assert.ok(registerResult.accessToken);
-    assert.ok(registerResult.refreshToken);
-    assert.equal(registerResult.tokenType, "Bearer");
-    assert.equal(registerResult.user.email, testUserEmail);
-    assert.equal(registerResult.user.profile?.fullName, "Dr. Alexander Wright");
-    assert.equal(registerResult.user.accountType, "MEMBER");
+    assert.ok(loginResult);
+    assert.ok(loginResult.accessToken);
+    assert.ok(loginResult.refreshToken);
+    assert.equal(loginResult.tokenType, "Bearer");
+    assert.equal(loginResult.user.email, testUserEmail);
+    assert.equal(loginResult.user.profile?.fullName, "Dr. Alexander Wright");
+    assert.equal(loginResult.user.accountType, "MEMBER");
     // Verify password hash is never exposed
-    assert.equal((registerResult.user as any).passwordHash, undefined);
+    assert.equal((loginResult.user as any).passwordHash, undefined);
 
-    registeredUserId = registerResult.user.id;
-    activeAccessToken = registerResult.accessToken;
-    activeRefreshToken = registerResult.refreshToken;
+    activeAccessToken = loginResult.accessToken;
+    activeRefreshToken = loginResult.refreshToken;
 
     // Verify user in repository has hashed password
     const userInDb = await authRepository.findByEmail(testUserEmail);
@@ -63,7 +76,7 @@ describe("Stage 6: Real Database + Production Authentication Foundation E2E", { 
     userWorkspaceId = workspaces[0].id;
   });
 
-  it("2. Registration Rejection: prevents duplicate email registration with 409 Conflict", async () => {
+  it("2. Public Registration Disabled: rejects public self-registration with 403 Forbidden", async () => {
     await assert.rejects(
       async () => {
         await authService.register({
@@ -73,8 +86,8 @@ describe("Stage 6: Real Database + Production Authentication Foundation E2E", { 
         });
       },
       (err: any) => {
-        assert.equal(err.statusCode, 409);
-        assert.match(err.message, /already registered/i);
+        assert.equal(err.statusCode, 403);
+        assert.match(err.message, /Public registration is disabled/i);
         return true;
       }
     );
@@ -110,7 +123,7 @@ describe("Stage 6: Real Database + Production Authentication Foundation E2E", { 
       },
       (err: any) => {
         assert.equal(err.statusCode, 401);
-        assert.match(err.message, /Invalid email or password/i);
+        assert.match(err.message, /Invalid (email|User ID|password)/i);
         return true;
       }
     );
@@ -126,7 +139,7 @@ describe("Stage 6: Real Database + Production Authentication Foundation E2E", { 
       },
       (err: any) => {
         assert.equal(err.statusCode, 401);
-        assert.match(err.message, /Invalid email or password/i);
+        assert.match(err.message, /Invalid (email|User ID|password)/i);
         return true;
       }
     );

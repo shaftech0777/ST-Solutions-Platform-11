@@ -6,37 +6,40 @@ This guide provides the exact configuration required to deploy the **Backend API
 
 ## 1. Root Cause of Previous Failures
 
-### A. Render Failure (`Cannot find module '/opt/render/project/src/dist/server.cjs'`)
-- **Root Cause**: Render was executing only `bun install` (the install command) as its build step and skipping `npm run build` / `bun run build`. Because the build script never ran, `dist/server.cjs` was never generated before `bun run start` was invoked.
-- **Solution**: 
-  1. Updated the Render **Build Command** to `npm install && npm run build` (or `bun install && bun run build`).
-  2. Created a native `render.yaml` blueprint with automatic configuration.
-  3. Made `server.ts` resilient with automatic fallback if deployed in API-only mode without static frontend assets.
+### A. Render Backend Setup
+- **Root Directory**: `apps/api`
+- **Build Command**: `npm install && npx prisma generate && npm run build`
+- **Start Command**: `node dist/server.js` (or `npm start`)
+- **Native Blueprint**: Configured via `render.yaml` at the project root for automated 1-click deployments.
 
 ### B. Vercel SPA Routing & Build
-- **Root Cause**: Vite Single Page Applications (SPAs) require client-side routing rewrites (`/(.*) -> /index.html`) on Vercel, and must target the `dist` output directory.
-- **Solution**: 
-  1. Created `vercel.json` with framework configuration, SPA rewrites, and `buildCommand: "vite build"`.
-  2. Integrated client-side `VITE_API_URL` environment variable support in `src/api/client.ts`.
+- **Framework Preset**: `Vite` (configured via `vercel.json`)
+- **Build Command**: `npm run build`
+- **Output Directory**: `dist`
+- **Client-Side API Config**: Handled via `VITE_API_URL` with robust URL normalization in `src/api/client.ts`.
 
 ---
 
 ## 2. Render Backend Deployment Steps
 
-1. In Render Dashboard, click **New +** → **Web Service** (or use Blueprint with `render.yaml`).
+1. In Render Dashboard, click **New +** → **Web Service** (or deploy using Blueprint with `render.yaml`).
 2. Connect your GitHub repository `shaftech0777/ST-Solutions-Platform-11`.
 3. Configure the following settings:
    - **Name**: `st-solutions-api`
-   - **Environment**: `Node` (or `Bun`)
-   - **Root Directory**: `.` (leave empty / root)
-   - **Build Command**: `npm install && npm run build` (or `bun install && bun run build`)
-   - **Start Command**: `node dist/server.cjs` (or `npm start`)
+   - **Environment**: `Node`
+   - **Root Directory**: `apps/api`
+   - **Build Command**: `npm install && npx prisma generate && npm run build`
+   - **Start Command**: `node dist/server.js`
 4. Add **Environment Variables** in Render:
    - `NODE_ENV`: `production`
    - `PORT`: `10000` (Render will automatically route traffic)
    - `CORS_ORIGIN`: `*` (or your Vercel URL, e.g. `https://st-solutions.vercel.app`)
    - `JWT_SECRET`: (Any secure random 32+ character string)
-   - `DATABASE_URL`: (Optional - your PostgreSQL connection string, e.g. Supabase, Neon, or Render PostgreSQL)
+   - `DATABASE_URL`: (Your PostgreSQL connection string)
+   - `ADMIN_EMAIL`: `admin@st-solutions.com`
+   - `ADMIN_PASSWORD`: `[Your Strong Admin Password]`
+   - `SUB_ADMIN_EMAIL`: `subadmin@st-solutions.com`
+   - `SUB_ADMIN_PASSWORD`: `[Your Strong SubAdmin Password]`
 5. Click **Create Web Service**. Your backend API will be live at `https://st-solutions-api.onrender.com`.
 
 ---
@@ -48,7 +51,7 @@ This guide provides the exact configuration required to deploy the **Backend API
 3. Configure project settings:
    - **Framework Preset**: `Vite` (automatically detected via `vercel.json`)
    - **Root Directory**: `./`
-   - **Build Command**: `npm run build:web` or `vite build`
+   - **Build Command**: `npm run build`
    - **Output Directory**: `dist`
 4. Add **Environment Variables** in Vercel:
    - `VITE_API_URL`: `https://your-render-service.onrender.com` (e.g. `https://st-solutions-api.onrender.com`)

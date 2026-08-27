@@ -1,9 +1,82 @@
 import { ApiResponse } from "../types/index.js";
 
+/**
+ * Normalizes any base URL provided via environment variables (e.g. VITE_API_URL).
+ * Handles all formats:
+ * - https://backend.onrender.com
+ * - https://backend.onrender.com/
+ * - https://backend.onrender.com/api
+ * - https://backend.onrender.com/api/v1
+ * - https://backend.onrender.com/api/v1/
+ * - /api/v1
+ * - "" (empty)
+ * Always guarantees output is either an origin + /api/v1 or standard /api/v1.
+ */
+export function normalizeBaseUrl(raw?: string): string {
+  if (!raw || typeof raw !== "string") return "/api/v1";
+  let trimmed = raw.trim();
+  if (!trimmed) return "/api/v1";
+
+  // Strip trailing slashes
+  while (trimmed.endsWith("/")) {
+    trimmed = trimmed.slice(0, -1);
+  }
+
+  // Strip trailing /api/v1, api/v1, /api, api
+  if (trimmed.endsWith("/api/v1")) {
+    trimmed = trimmed.slice(0, -7);
+  } else if (trimmed.endsWith("api/v1")) {
+    trimmed = trimmed.slice(0, -6);
+  } else if (trimmed.endsWith("/api")) {
+    trimmed = trimmed.slice(0, -4);
+  } else if (trimmed.endsWith("api")) {
+    trimmed = trimmed.slice(0, -3);
+  }
+
+  while (trimmed.endsWith("/")) {
+    trimmed = trimmed.slice(0, -1);
+  }
+
+  return trimmed ? `${trimmed}/api/v1` : "/api/v1";
+}
+
+/**
+ * Computes a clean API request URL without duplicated segments (e.g. preventing /api/api/v1 or /api/v1/api/v1).
+ */
+export function normalizeApiUrl(endpoint: string, customBase?: string): string {
+  const effectiveBase = customBase !== undefined ? normalizeBaseUrl(customBase) : BASE_URL;
+  let cleanEndpoint = (endpoint || "").trim();
+
+  // If already an absolute URL (e.g. https://domain.com/path), return as-is
+  if (cleanEndpoint.startsWith("http://") || cleanEndpoint.startsWith("https://")) {
+    return cleanEndpoint;
+  }
+
+  // Strip duplicate leading /api/v1, api/v1, /api, api
+  if (cleanEndpoint.startsWith("/api/v1/")) {
+    cleanEndpoint = cleanEndpoint.slice(7);
+  } else if (cleanEndpoint.startsWith("api/v1/")) {
+    cleanEndpoint = cleanEndpoint.slice(6);
+  } else if (cleanEndpoint === "/api/v1" || cleanEndpoint === "api/v1") {
+    cleanEndpoint = "";
+  } else if (cleanEndpoint.startsWith("/api/")) {
+    cleanEndpoint = cleanEndpoint.slice(4);
+  } else if (cleanEndpoint.startsWith("api/")) {
+    cleanEndpoint = cleanEndpoint.slice(3);
+  } else if (cleanEndpoint === "/api" || cleanEndpoint === "api") {
+    cleanEndpoint = "";
+  }
+
+  if (cleanEndpoint && !cleanEndpoint.startsWith("/")) {
+    cleanEndpoint = "/" + cleanEndpoint;
+  }
+
+  return `${effectiveBase}${cleanEndpoint}`;
+}
+
 // Supports Vercel frontend targeting Render API via VITE_API_URL
 const rawApiUrl = (typeof import.meta !== "undefined" && (import.meta as any).env && (import.meta as any).env.VITE_API_URL) ? (import.meta as any).env.VITE_API_URL : "";
-const cleanedApiUrl = typeof rawApiUrl === "string" && rawApiUrl.endsWith("/") ? rawApiUrl.slice(0, -1) : (rawApiUrl || "");
-const BASE_URL = cleanedApiUrl ? `${cleanedApiUrl}/api/v1` : "/api/v1";
+export const BASE_URL = normalizeBaseUrl(rawApiUrl);
 
 const TOKEN_KEY = "st_solutions_access_token";
 const REFRESH_TOKEN_KEY = "st_solutions_refresh_token";
@@ -151,7 +224,7 @@ export async function apiClient<T = any>(
 ): Promise<ApiResponse<T>> {
   const { body, params, headers: customHeaders, ...customConfig } = options;
 
-  let url = endpoint.startsWith("http") ? endpoint : `${BASE_URL}${endpoint.startsWith("/") ? "" : "/"}${endpoint}`;
+  let url = normalizeApiUrl(endpoint);
 
   if (params) {
     const searchParams = new URLSearchParams();
