@@ -169,4 +169,40 @@ export class NotificationsService {
         return true;
     }
   }
+
+  public async getNotices(actor?: { userId: string; accountType?: string }) {
+    return this.repository.findNotices(actor?.accountType, actor?.userId);
+  }
+
+  public async getAllNotices(actor?: { userId: string; accountType?: string }) {
+    if (actor && actor.accountType !== "ADMIN" && actor.accountType !== "SUB_ADMIN") {
+      throw new BusinessError("Only ADMIN and SUB_ADMIN can view all administrative notices", ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS);
+    }
+    return this.repository.getAllNotices();
+  }
+
+  public async createNotice(input: any, actor: { userId: string; accountType?: string }) {
+    if (actor.accountType !== "ADMIN" && actor.accountType !== "SUB_ADMIN") {
+      throw new BusinessError("Only ADMIN and SUB_ADMIN can broadcast administrative notices", ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS);
+    }
+    return this.repository.createNotice({
+      ...input,
+      authorId: actor.userId,
+    });
+  }
+
+  public async updateNotice(id: string, input: any, actor: { userId: string; accountType?: string }) {
+    if (actor.accountType !== "ADMIN" && actor.accountType !== "SUB_ADMIN") {
+      throw new BusinessError("Only ADMIN and SUB_ADMIN can modify administrative notices", ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS);
+    }
+    return this.repository.updateNotice(id, input);
+  }
+
+  public async deleteNotice(id: string, actor: { userId: string; accountType?: string }) {
+    if (actor.accountType !== "ADMIN" && actor.accountType !== "SUB_ADMIN") {
+      throw new BusinessError("Only ADMIN and SUB_ADMIN can delete administrative notices", ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS);
+    }
+    return this.repository.deleteNotice(id);
+  }
 }
+

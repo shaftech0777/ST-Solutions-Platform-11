@@ -212,6 +212,85 @@ export class SettingsController {
       next(error);
     }
   };
+
+  /**
+   * GET /api/v1/settings/theme
+   * Retrieves theme settings.
+   */
+  public getThemeSettings = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const theme = await this.settingsService.getThemeSettings();
+      ResponseBuilder.success(res, theme, {
+        message: "Theme settings retrieved successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * PATCH /api/v1/settings/theme
+   * Updates theme settings (ADMIN ONLY).
+   */
+  public updateThemeSettings = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const authReq = req as any;
+      const updated = await this.settingsService.updateThemeSettings(req.body, authReq.user);
+      ResponseBuilder.success(res, updated, {
+        message: "Theme settings updated successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * GET /api/v1/settings/cms
+   * Retrieves all CMS sections.
+   */
+  public getCMSSections = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const sections = await this.settingsService.getCMSSections();
+      ResponseBuilder.success(res, sections, {
+        message: "CMS sections retrieved successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * GET /api/v1/settings/cms/:key
+   * Retrieves single CMS section by key.
+   */
+  public getCMSSectionByKey = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { key } = req.params;
+      const section = await this.settingsService.getCMSSectionByKey(key);
+      ResponseBuilder.success(res, section, {
+        message: "CMS section retrieved successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * PUT /api/v1/settings/cms/:key
+   * Upserts a CMS section (ADMIN ONLY).
+   */
+  public updateCMSSection = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const authReq = req as any;
+      const { key } = req.params;
+      const section = await this.settingsService.updateCMSSection(key, req.body, authReq.user);
+      ResponseBuilder.success(res, section, {
+        message: "CMS section updated successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export const settingsController = new SettingsController();

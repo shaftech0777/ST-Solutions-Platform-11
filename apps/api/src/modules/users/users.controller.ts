@@ -157,6 +157,51 @@ export class UsersController {
   };
 
   /**
+   * Suspends a user with an administrative reason.
+   * POST /api/v1/users/:id/suspend
+   */
+  public suspendUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { id } = req.params;
+      const authReq = req as AuthenticatedRequest;
+      const actor = authReq.user
+        ? { userId: authReq.user.userId, accountType: authReq.user.accountType as AccountType }
+        : undefined;
+      const reason = req.body.reason || "Suspended by supervisor";
+
+      const updatedUser = await this.usersService.suspendUser(id, reason, actor);
+
+      ResponseBuilder.success(res, updatedUser, {
+        message: "User account suspended successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * Reactivates a suspended user.
+   * POST /api/v1/users/:id/reactivate
+   */
+  public reactivateUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { id } = req.params;
+      const authReq = req as AuthenticatedRequest;
+      const actor = authReq.user
+        ? { userId: authReq.user.userId, accountType: authReq.user.accountType as AccountType }
+        : undefined;
+
+      const updatedUser = await this.usersService.reactivateUser(id, actor);
+
+      ResponseBuilder.success(res, updatedUser, {
+        message: "User account reactivated successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
    * Deletes or deactivates a user record.
    * DELETE /api/v1/users/:id
    */
@@ -172,6 +217,81 @@ export class UsersController {
 
       ResponseBuilder.success(res, result, {
         message: result.message,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * Retrieves performance metrics for a user.
+   * GET /api/v1/users/:id/performance
+   */
+  public getUserPerformance = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { id } = req.params;
+      const authReq = req as AuthenticatedRequest;
+      const actor = authReq.user
+        ? { userId: authReq.user.userId, accountType: authReq.user.accountType as AccountType }
+        : undefined;
+
+      const performance = await this.usersService.getUserPerformance(id, actor);
+
+      ResponseBuilder.success(res, performance, {
+        message: "User performance retrieved successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * Updates user performance metrics (Supervisor/Admin only).
+   * PATCH /api/v1/users/:id/performance
+   */
+  public updateUserPerformance = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { id } = req.params;
+      const authReq = req as AuthenticatedRequest;
+      const actor = authReq.user
+        ? { userId: authReq.user.userId, accountType: authReq.user.accountType as AccountType }
+        : undefined;
+
+      const updated = await this.usersService.updateUserPerformance(id, req.body, actor);
+
+      ResponseBuilder.success(res, updated, {
+        message: "User performance updated successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * Retrieves available ranks.
+   * GET /api/v1/users/meta/ranks
+   */
+  public getRanks = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const ranks = await this.usersService.getRanks();
+      ResponseBuilder.success(res, ranks, {
+        message: "Ranks retrieved successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * Retrieves performance leaderboard.
+   * GET /api/v1/users/meta/leaderboard
+   */
+  public getLeaderboard = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const limit = req.query.limit ? Number(req.query.limit) : 10;
+      const leaderboard = await this.usersService.getLeaderboard(limit);
+      ResponseBuilder.success(res, leaderboard, {
+        message: "Leaderboard retrieved successfully",
       });
     } catch (error) {
       next(error);

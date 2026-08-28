@@ -204,4 +204,70 @@ export class NotificationsRepository {
       },
     });
   }
+
+  public async findNotices(accountType?: string, userId?: string) {
+    const notices = await (this.db as any).administrativeNotice.findMany({
+      where: { isActive: true },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return notices.filter((notice: any) => {
+      if (notice.expiresAt && new Date(notice.expiresAt) < new Date()) {
+        return false;
+      }
+      if (!notice.targetRoles?.length && !notice.targetUserIds?.length) {
+        return true;
+      }
+      if (accountType && notice.targetRoles?.includes(accountType)) {
+        return true;
+      }
+      if (userId && notice.targetUserIds?.includes(userId)) {
+        return true;
+      }
+      return false;
+    });
+  }
+
+  public async getAllNotices() {
+    return (this.db as any).administrativeNotice.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
+  public async createNotice(data: {
+    title: string;
+    content: string;
+    targetRoles?: string[];
+    targetUserIds?: string[];
+    priority?: string;
+    authorId: string;
+    expiresAt?: Date | null;
+  }) {
+    return (this.db as any).administrativeNotice.create({
+      data: {
+        title: data.title,
+        content: data.content,
+        targetRoles: data.targetRoles || [],
+        targetUserIds: data.targetUserIds || [],
+        priority: data.priority || "NORMAL",
+        authorId: data.authorId,
+        expiresAt: data.expiresAt || null,
+        isActive: true,
+      },
+    });
+  }
+
+  public async updateNotice(id: string, data: any) {
+    return (this.db as any).administrativeNotice.update({
+      where: { id },
+      data,
+    });
+  }
+
+  public async deleteNotice(id: string) {
+    return (this.db as any).administrativeNotice.delete({
+      where: { id },
+    });
+  }
 }
+

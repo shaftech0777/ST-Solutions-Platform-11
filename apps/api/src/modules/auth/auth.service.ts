@@ -160,8 +160,12 @@ export class AuthService {
     }
 
     // Check account status
+    if (user.status === "DELETED") {
+      throw new AuthenticationError("This account has been deleted", ERROR_CODES.AUTH_ACCOUNT_DISABLED);
+    }
     if (user.status === "SUSPENDED") {
-      throw new AuthenticationError("Your account has been suspended by an administrator", ERROR_CODES.AUTH_ACCOUNT_DISABLED);
+      const reason = user.suspensionReason ? `: ${user.suspensionReason}` : "";
+      throw new AuthenticationError(`Your account has been suspended by an administrator${reason}`, ERROR_CODES.AUTH_ACCOUNT_DISABLED);
     }
     if (user.status === "INACTIVE") {
       throw new AuthenticationError("Your account is currently deactivated", ERROR_CODES.AUTH_ACCOUNT_DISABLED);

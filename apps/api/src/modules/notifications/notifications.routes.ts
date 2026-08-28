@@ -101,3 +101,58 @@ notificationsRouter.post(
   requirePermission("notifications.manage"),
   (req, res, next) => getController().markAllAsRead(req, res, next)
 );
+
+/**
+ * @route GET /api/v1/notifications/notices
+ * @desc Get administrative notices active for current user
+ * @access Protected
+ */
+notificationsRouter.get(
+  "/notices",
+  (req, res, next) => getController().getNotices(req, res, next)
+);
+
+/**
+ * @route GET /api/v1/notifications/notices/all
+ * @desc Get all administrative notices (Admin/Sub-Admin)
+ * @access Protected
+ */
+notificationsRouter.get(
+  "/notices/all",
+  requirePermission("notifications.manage"),
+  (req, res, next) => getController().getAllNotices(req, res, next)
+);
+
+/**
+ * @route POST /api/v1/notifications/notices
+ * @desc Create a new administrative notice
+ * @access Protected (Admin/Sub-Admin)
+ */
+notificationsRouter.post(
+  "/notices",
+  requirePermission("notifications.manage"),
+  (req, res, next) => getController().createNotice(req, res, next)
+);
+
+/**
+ * @route PATCH /api/v1/notifications/notices/:id
+ * @desc Update an administrative notice
+ * @access Protected (Admin/Sub-Admin)
+ */
+notificationsRouter.patch(
+  "/notices/:id",
+  requirePermission("notifications.manage"),
+  (req, res, next) => getController().updateNotice(req, res, next)
+);
+
+/**
+ * @route DELETE /api/v1/notifications/notices/:id
+ * @desc Delete an administrative notice
+ * @access Protected (Admin/Sub-Admin)
+ */
+notificationsRouter.delete(
+  "/notices/:id",
+  requirePermission("notifications.manage"),
+  (req, res, next) => getController().deleteNotice(req, res, next)
+);
+

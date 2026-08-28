@@ -27,8 +27,12 @@ export class ClientsController {
    */
   public getClients = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      const authReq = req as AuthenticatedRequest;
+      const actor = authReq.user
+        ? { userId: authReq.user.userId, accountType: authReq.user.accountType as AccountType }
+        : undefined;
       const query = req.query as any;
-      const result = await this.clientsService.getClients(query);
+      const result = await this.clientsService.getClients(query, actor);
 
       ResponseBuilder.paginated(res, result.items, {
         page: result.pagination.page,
@@ -63,7 +67,11 @@ export class ClientsController {
   public getClientById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { clientId } = req.params;
-      const client = await this.clientsService.getClientById(clientId);
+      const authReq = req as AuthenticatedRequest;
+      const actor = authReq.user
+        ? { userId: authReq.user.userId, accountType: authReq.user.accountType as AccountType }
+        : undefined;
+      const client = await this.clientsService.getClientById(clientId, actor);
 
       ResponseBuilder.success(res, client, {
         message: "Client details retrieved successfully",

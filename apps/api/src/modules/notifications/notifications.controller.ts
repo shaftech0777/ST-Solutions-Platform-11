@@ -105,4 +105,67 @@ export class NotificationsController {
       next(error);
     }
   };
+
+  public getNotices = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const user = (req as any).user;
+      const notices = await this.notificationsService.getNotices(user ? { userId: user.userId || user.id, accountType: user.accountType } : undefined);
+      ResponseBuilder.success(res, notices, {
+        message: "Administrative notices retrieved successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getAllNotices = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const user = (req as any).user;
+      const notices = await this.notificationsService.getAllNotices(user ? { userId: user.userId || user.id, accountType: user.accountType } : undefined);
+      ResponseBuilder.success(res, notices, {
+        message: "All administrative notices retrieved successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public createNotice = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const user = (req as any).user;
+      const notice = await this.notificationsService.createNotice(req.body, { userId: user.userId || user.id, accountType: user.accountType });
+      ResponseBuilder.created(res, notice, {
+        message: "Administrative notice created successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public updateNotice = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const user = (req as any).user;
+      const { id } = req.params;
+      const notice = await this.notificationsService.updateNotice(id, req.body, { userId: user.userId || user.id, accountType: user.accountType });
+      ResponseBuilder.success(res, notice, {
+        message: "Administrative notice updated successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public deleteNotice = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const user = (req as any).user;
+      const { id } = req.params;
+      await this.notificationsService.deleteNotice(id, { userId: user.userId || user.id, accountType: user.accountType });
+      ResponseBuilder.success(res, null, {
+        message: "Administrative notice deleted successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
+

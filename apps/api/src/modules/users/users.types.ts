@@ -34,6 +34,12 @@ export interface UserResponse {
   readonly roleId: string | null;
   readonly roleName?: string;
   readonly permissions: readonly string[];
+  readonly createdByUserId?: string | null;
+  readonly managedByUserId?: string | null;
+  readonly organizationId?: string | null;
+  readonly workspaceId?: string | null;
+  readonly suspensionReason?: string | null;
+  readonly suspendedAt?: Date | null;
   readonly profile?: UserProfileData | null;
   readonly createdAt: Date;
   readonly updatedAt: Date;

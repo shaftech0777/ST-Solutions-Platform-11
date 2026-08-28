@@ -248,6 +248,106 @@ export class SettingsRepository extends BaseRepository {
       });
     });
   }
+
+  /**
+   * Retrieves ThemeSettings (or creates default if none exists).
+   */
+  public async getThemeSettings(tx?: TransactionClient) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      let theme = await client.themeSettings?.findFirst();
+      if (!theme) {
+        theme = await client.themeSettings?.create({
+          data: {
+            themeMode: "DARK",
+            primaryColor: "#3B82F6",
+            accentColor: "#8B5CF6",
+            sidebarCollapsedDefault: false,
+          },
+        });
+      }
+      return theme;
+    });
+  }
+
+  /**
+   * Updates ThemeSettings record.
+   */
+  public async upsertThemeSettings(data: any, tx?: TransactionClient) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      const existing = await client.themeSettings?.findFirst();
+      if (existing) {
+        return client.themeSettings.update({
+          where: { id: existing.id },
+          data,
+        });
+      }
+      return client.themeSettings.create({
+        data: {
+          themeMode: data.themeMode || "DARK",
+          primaryColor: data.primaryColor || "#3B82F6",
+          accentColor: data.accentColor || "#8B5CF6",
+          sidebarCollapsedDefault: data.sidebarCollapsedDefault ?? false,
+          customCss: data.customCss || null,
+        },
+      });
+    });
+  }
+
+  /**
+   * Retrieves all CMS sections ordered by displayOrder.
+   */
+  public async getCMSSections(tx?: TransactionClient) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      return client.cmsSection.findMany({
+        orderBy: { displayOrder: "asc" },
+      });
+    });
+  }
+
+  /**
+   * Retrieves a CMS section by sectionKey.
+   */
+  public async getCMSSectionByKey(sectionKey: string, tx?: TransactionClient) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      return client.cmsSection.findUnique({
+        where: { sectionKey: sectionKey.trim() },
+      });
+    });
+  }
+
+  /**
+   * Upserts a CMS section record.
+   */
+  public async upsertCMSSection(sectionKey: string, data: any, tx?: TransactionClient) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      const key = sectionKey.trim();
+      const existing = await client.cmsSection.findUnique({ where: { sectionKey: key } });
+      if (existing) {
+        return client.cmsSection.update({
+          where: { id: existing.id },
+          data: {
+            ...data,
+            updatedAt: new Date(),
+          },
+        });
+      }
+      return client.cmsSection.create({
+        data: {
+          sectionKey: key,
+          title: data.title || key,
+          subtitle: data.subtitle || null,
+          content: data.content || {},
+          isVisible: data.isVisible ?? true,
+          displayOrder: data.displayOrder ?? 0,
+        },
+      });
+    });
+  }
 }
 
 export const settingsRepository = new SettingsRepository();

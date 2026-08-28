@@ -165,6 +165,10 @@ export class UsersRepository extends BaseRepository {
       accountType: AccountType;
       status: UserStatus;
       roleId?: string | null;
+      createdByUserId?: string | null;
+      managedByUserId?: string | null;
+      organizationId?: string | null;
+      workspaceId?: string | null;
       profile?: {
         fullName?: string;
         profileImage?: string | null;
@@ -186,6 +190,10 @@ export class UsersRepository extends BaseRepository {
           accountType: data.accountType,
           status: data.status,
           roleId: data.roleId ?? null,
+          createdByUserId: data.createdByUserId ?? null,
+          managedByUserId: data.managedByUserId ?? null,
+          organizationId: data.organizationId ?? null,
+          workspaceId: data.workspaceId ?? null,
           profile: data.profile
             ? {
                 create: {
@@ -211,6 +219,9 @@ export class UsersRepository extends BaseRepository {
     id: string,
     data: {
       email?: string;
+      managedByUserId?: string | null;
+      organizationId?: string | null;
+      workspaceId?: string | null;
       profile?: {
         fullName?: string | null;
         profileImage?: string | null;
@@ -229,6 +240,15 @@ export class UsersRepository extends BaseRepository {
 
       if (data.email !== undefined) {
         updateData.email = data.email;
+      }
+      if (data.managedByUserId !== undefined) {
+        updateData.managedByUser = data.managedByUserId ? { connect: { id: data.managedByUserId } } : { disconnect: true };
+      }
+      if (data.organizationId !== undefined) {
+        updateData.organizationId = data.organizationId;
+      }
+      if (data.workspaceId !== undefined) {
+        updateData.workspaceId = data.workspaceId;
       }
 
       if (data.profile !== undefined) {
@@ -263,14 +283,30 @@ export class UsersRepository extends BaseRepository {
   }
 
   /**
-   * Updates user status.
+   * Updates user status with optional suspension metadata.
    */
-  public async updateStatus(id: string, status: UserStatus, tx?: TransactionClient) {
+  public async updateStatus(
+    id: string,
+    status: UserStatus,
+    options?: { suspensionReason?: string | null; suspendedAt?: Date | null },
+    tx?: TransactionClient
+  ) {
     return this.execute(async () => {
       const client = this.getClient(tx);
+      const updateData: any = { status };
+      if (status === UserStatus.SUSPENDED) {
+        updateData.suspensionReason = options?.suspensionReason ?? "Administrative suspension";
+        updateData.suspendedAt = options?.suspendedAt ?? new Date();
+      } else if (status === UserStatus.ACTIVE) {
+        updateData.suspensionReason = null;
+        updateData.suspendedAt = null;
+      } else if (status === UserStatus.DELETED) {
+        updateData.deletedAt = new Date();
+      }
+
       return client.user.update({
         where: { id },
-        data: { status },
+        data: updateData,
         include: this.userIncludes,
       });
     });
@@ -329,6 +365,87 @@ export class UsersRepository extends BaseRepository {
       const client = this.getClient(tx);
       return client.user.delete({
         where: { id },
+      });
+    });
+  }
+
+  /**
+   * Retrieves performance records for a user.
+   */
+  public async getUserPerformance(userId: string, tx?: TransactionClient) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      return (client as any).userPerformance?.findUnique({
+        where: { userId },
+        include: { rank: true, user: { include: { profile: true } } },
+      });
+    });
+  }
+
+  /**
+   * Upserts performance metrics for a user.
+   */
+  public async upsertUserPerformance(
+    userId: string,
+    data: {
+      clientAcquisitionCount?: number;
+      revenueGenerated?: number;
+      activeProjectsCount?: number;
+      completedTasksCount?: number;
+      rating?: number;
+      rankId?: string | null;
+    },
+    tx?: TransactionClient
+  ) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      const existing = await (client as any).userPerformance?.findUnique({ where: { userId } });
+      if (existing) {
+        return (client as any).userPerformance.update({
+          where: { userId },
+          data: {
+            ...data,
+            evaluatedAt: new Date(),
+          },
+        });
+      }
+      return (client as any).userPerformance.create({
+        data: {
+          userId,
+          clientAcquisitionCount: data.clientAcquisitionCount ?? 0,
+          revenueGenerated: data.revenueGenerated ?? 0,
+          activeProjectsCount: data.activeProjectsCount ?? 0,
+          completedTasksCount: data.completedTasksCount ?? 0,
+          rating: data.rating ?? 5.0,
+          rankId: data.rankId ?? null,
+          evaluatedAt: new Date(),
+        },
+      });
+    });
+  }
+
+  /**
+   * Retrieves all ranks ordered by level.
+   */
+  public async getRanks(tx?: TransactionClient) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      return (client as any).rank?.findMany({
+        orderBy: { level: "asc" },
+      });
+    });
+  }
+
+  /**
+   * Retrieves top performers leaderboard.
+   */
+  public async getLeaderboard(limit = 10, tx?: TransactionClient) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      return (client as any).userPerformance?.findMany({
+        take: limit,
+        orderBy: { revenueGenerated: "desc" },
+        include: { rank: true, user: { include: { profile: true } } },
       });
     });
   }

@@ -14,6 +14,7 @@ enum UserStatus {
   INACTIVE
   SUSPENDED
   PENDING
+  DELETED
 }
 
 enum AccountType {
@@ -25,30 +26,44 @@ enum AccountType {
 }
 
 model User {
-  id           String      @id @default(uuid())
-  email        String?     @unique
-  passwordHash String
-  accountType  AccountType @default(MEMBER)
-  status       UserStatus  @default(PENDING)
-  roleId       String?
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  id                String      @id @default(uuid())
+  email             String?     @unique
+  passwordHash      String
+  accountType       AccountType @default(MEMBER)
+  status            UserStatus  @default(PENDING)
+  roleId            String?
+  createdByUserId   String?
+  managedByUserId   String?
+  organizationId    String?
+  workspaceId       String?
+  suspensionReason  String?
+  suspendedAt       DateTime?
+  deletedAt         DateTime?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
 
-  role      Role?        @relation(fields: [roleId], references: [id], onDelete: SetNull)
-  profile   UserProfile?
-  sessions  Session[]
-  auditLogs AuditLog[]
+  role            Role?        @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  profile         UserProfile?
+  sessions        Session[]
+  auditLogs       AuditLog[]
+  createdByUser   User?        @relation("CreatedUsers", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  createdUsers    User[]       @relation("CreatedUsers")
+  managedByUser   User?        @relation("ManagedUsers", fields: [managedByUserId], references: [id], onDelete: SetNull)
+  managedUsers    User[]       @relation("ManagedUsers")
 
   reviewedApplications MemberApplication[]  @relation("ReviewedApplications")
   verificationsDone    MemberVerification[] @relation("VerifiedByUsers")
   memberProfiles       MemberProfile[]      @relation("UserMemberProfiles")
 
-  clientAccount    Client?         @relation("ClientAccount")
-  createdProjects  Project[]       @relation("CreatedProjects")
-  managedProjects  Project[]       @relation("ManagedProjects")
-  assignedProjects Project[]       @relation("AssignedProjects")
-  projectUpdates   ProjectUpdate[] @relation("ProjectUpdates")
-  approvedPayments Payment[]       @relation("ApprovedPayments")
+  clientAccount      Client?         @relation("ClientAccount")
+  createdClients     Client[]        @relation("CreatedClients")
+  ownedClients       Client[]        @relation("OwnedClients")
+  supervisedClients  Client[]        @relation("SupervisedClients")
+  createdProjects    Project[]       @relation("CreatedProjects")
+  managedProjects    Project[]       @relation("ManagedProjects")
+  assignedProjects   Project[]       @relation("AssignedProjects")
+  projectUpdates     ProjectUpdate[] @relation("ProjectUpdates")
+  approvedPayments   Payment[]       @relation("ApprovedPayments")
 
   memberAccount               Member?             @relation("UserMember")
   rankChangesAuthored         MemberRankHistory[] @relation("RankChangeAuthor")
@@ -61,6 +76,9 @@ model User {
   createdAnnouncements    Announcement[]          @relation("CreatedAnnouncements")
   communicationLogs       CommunicationLog[]      @relation("UserCommunicationLogs")
   notificationPreference  NotificationPreference? @relation("UserNotificationPreference")
+  sentNotices             AdministrativeNotice[]  @relation("SentNotices")
+  receivedNotices         AdministrativeNotice[]  @relation("ReceivedNotices")
+  performance             UserPerformance?
 
   aiConversations AIConversation[] @relation("UserAIConversations")
   aiTrainingNotes AITrainingNote[] @relation("CreatedAITrainingNotes")
@@ -81,6 +99,10 @@ model User {
   @@index([email])
   @@index([status])
   @@index([accountType])
+  @@index([createdByUserId])
+  @@index([managedByUserId])
+  @@index([organizationId])
+  @@index([workspaceId])
 }
 
 enum ApplicationStatus {
@@ -334,6 +356,9 @@ model Client {
   organizationId      String?
   workspaceId         String?
   userId              String?      @unique
+  createdById         String?
+  ownerId             String?
+  supervisorId        String?
   companyName         String?
   fullName            String
   email               String
@@ -352,6 +377,9 @@ model Client {
   organization      Organization?      @relation(fields: [organizationId], references: [id], onDelete: SetNull)
   workspace         Workspace?         @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
   user              User?              @relation("ClientAccount", fields: [userId], references: [id], onDelete: SetNull)
+  createdBy         User?              @relation("CreatedClients", fields: [createdById], references: [id], onDelete: SetNull)
+  owner             User?              @relation("OwnedClients", fields: [ownerId], references: [id], onDelete: SetNull)
+  supervisor        User?              @relation("SupervisedClients", fields: [supervisorId], references: [id], onDelete: SetNull)
   projects          Project[]
   payments          Payment[]
   ownership         ClientOwnership?
@@ -359,6 +387,9 @@ model Client {
 
   @@index([organizationId])
   @@index([workspaceId])
+  @@index([createdById])
+  @@index([ownerId])
+  @@index([supervisorId])
   @@index([email])
   @@index([phoneNumber])
   @@index([clientStatus])
@@ -1650,4 +1681,106 @@ model Invitation {
   @@index([token])
   @@index([status])
 }
+
+enum NoticeType {
+  SUSPICIOUS_ACTIVITY
+  PERFORMANCE_WARNING
+  POLICY_WARNING
+  ADMINISTRATIVE_NOTICE
+  POSITIVE_FEEDBACK
+  SYSTEM_NOTICE
+}
+
+enum NoticeSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum NoticeStatus {
+  UNREAD
+  READ
+  ARCHIVED
+}
+
+model AdministrativeNotice {
+  id              String         @id @default(uuid())
+  senderUserId    String
+  recipientUserId String
+  title           String
+  message         String
+  severity        NoticeSeverity @default(MEDIUM)
+  type            NoticeType     @default(ADMINISTRATIVE_NOTICE)
+  status          NoticeStatus   @default(UNREAD)
+  metadata        Json?
+  createdAt       DateTime       @default(now())
+  readAt          DateTime?
+  updatedAt       DateTime       @updatedAt
+
+  sender    User @relation("SentNotices", fields: [senderUserId], references: [id], onDelete: Cascade)
+  recipient User @relation("ReceivedNotices", fields: [recipientUserId], references: [id], onDelete: Cascade)
+
+  @@index([senderUserId])
+  @@index([recipientUserId])
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model UserPerformance {
+  id                String    @id @default(uuid())
+  userId            String    @unique
+  tasksCompleted    Int       @default(0)
+  projectsCompleted Int       @default(0)
+  clientsManaged    Int       @default(0)
+  responseRate      Float     @default(100.0)
+  completionRate    Float     @default(100.0)
+  warningCount      Int       @default(0)
+  positiveFeedback  Int       @default(0)
+  performanceScore  Float     @default(100.0)
+  lastActivityAt    DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([performanceScore])
+}
+
+model ThemeSettings {
+  id              String   @id @default(uuid())
+  primaryColor    String   @default("#D4AF37")
+  secondaryColor  String   @default("#1E293B")
+  accentColor     String   @default("#3B82F6")
+  backgroundColor String   @default("#F8FAFC")
+  textColor       String   @default("#0F172A")
+  borderColor     String   @default("#E2E8F0")
+  buttonRadius    String   @default("12px")
+  fontFamily      String   @default("sans")
+  darkMode        Boolean  @default(false)
+  logoUrl         String?
+  faviconUrl      String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model CMSSection {
+  id           String   @id @default(uuid())
+  sectionKey   String   @unique
+  title        String
+  subtitle     String?
+  content      String?
+  badgeText    String?
+  isVisible    Boolean  @default(true)
+  metadata     Json?
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([sectionKey])
+  @@index([isVisible])
+}
+
 

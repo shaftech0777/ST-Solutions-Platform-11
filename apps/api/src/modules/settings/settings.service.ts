@@ -187,6 +187,51 @@ export class SettingsService {
     const updated = await this.settingsRepository.updateFeatureFlag(key, input);
     return sanitizeFeatureFlagResponse(updated);
   }
+
+  /**
+   * Retrieves theme settings.
+   */
+  public async getThemeSettings() {
+    return this.settingsRepository.getThemeSettings();
+  }
+
+  /**
+   * Updates theme settings (ADMIN ONLY).
+   */
+  public async updateThemeSettings(input: any, actor?: { userId: string; accountType?: string }) {
+    if (actor && actor.accountType !== "ADMIN") {
+      throw new BusinessError("Only ADMIN can update platform theme settings", ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS);
+    }
+    return this.settingsRepository.upsertThemeSettings(input);
+  }
+
+  /**
+   * Retrieves all CMS sections for website rendering.
+   */
+  public async getCMSSections() {
+    return this.settingsRepository.getCMSSections();
+  }
+
+  /**
+   * Retrieves single CMS section by key.
+   */
+  public async getCMSSectionByKey(sectionKey: string) {
+    const section = await this.settingsRepository.getCMSSectionByKey(sectionKey);
+    if (!section) {
+      throw new NotFoundError(`CMS section '${sectionKey}' not found`, ERROR_CODES.SETTINGS_NOT_FOUND);
+    }
+    return section;
+  }
+
+  /**
+   * Upserts a CMS section (ADMIN ONLY).
+   */
+  public async updateCMSSection(sectionKey: string, input: any, actor?: { userId: string; accountType?: string }) {
+    if (actor && actor.accountType !== "ADMIN") {
+      throw new BusinessError("Only ADMIN can modify website CMS content", ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS);
+    }
+    return this.settingsRepository.upsertCMSSection(sectionKey, input);
+  }
 }
 
 export const settingsService = new SettingsService();

@@ -10,6 +10,12 @@ export function sanitizeUserResponse(user: {
   accountType: any;
   status: any;
   roleId: string | null;
+  createdByUserId?: string | null;
+  managedByUserId?: string | null;
+  organizationId?: string | null;
+  workspaceId?: string | null;
+  suspensionReason?: string | null;
+  suspendedAt?: Date | null;
   role?: {
     name: string;
     permissions?: {
@@ -41,6 +47,12 @@ export function sanitizeUserResponse(user: {
     roleId: user.roleId,
     roleName: user.role?.name,
     permissions,
+    createdByUserId: user.createdByUserId ?? null,
+    managedByUserId: user.managedByUserId ?? null,
+    organizationId: user.organizationId ?? null,
+    workspaceId: user.workspaceId ?? null,
+    suspensionReason: user.suspensionReason ?? null,
+    suspendedAt: user.suspendedAt ?? null,
     profile: user.profile
       ? {
           fullName: user.profile.fullName,

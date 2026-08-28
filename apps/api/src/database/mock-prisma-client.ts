@@ -563,6 +563,11 @@ export function createMockPrismaClient(): any {
     changelog: "changelogs",
     auditLog: "auditLogs",
     systemSettings: "systemSettings",
+    administrativeNotice: "administrativeNotices",
+    userPerformance: "userPerformances",
+    themeSettings: "themeSettings",
+    cMSSection: "cmsSections",
+    cmsSection: "cmsSections",
   };
 
   const delegatesCache: Record<string, any> = {};

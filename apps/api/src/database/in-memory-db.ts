@@ -21,6 +21,12 @@ export interface MemoryStore {
   auditLogs: any[];
   notifications: any[];
   systemSettings: any[];
+  administrativeNotices: any[];
+  userPerformances: any[];
+  themeSettings: any[];
+  cmsSections: any[];
+  members: any[];
+  ranks: any[];
 }
 
 function generateId(prefix: string = "id"): string {
@@ -381,6 +387,62 @@ export function createInitialData(): MemoryStore {
     { id: "set-4", key: "maintenance_mode", value: "false", category: "SECURITY" },
   ];
 
+  const defaultTheme = {
+    id: "theme-default-1",
+    primaryColor: "#D4AF37",
+    secondaryColor: "#1E293B",
+    accentColor: "#3B82F6",
+    backgroundColor: "#F8FAFC",
+    textColor: "#0F172A",
+    borderColor: "#E2E8F0",
+    buttonRadius: "12px",
+    fontFamily: "sans",
+    darkMode: false,
+    logoUrl: "/brand-logo.png",
+    faviconUrl: "/favicon.ico",
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  const defaultCMSSections = [
+    {
+      id: "cms-hero-1",
+      sectionKey: "HERO",
+      title: "Pioneering Software, Cloud & AI Engineering",
+      subtitle: "Enterprise-grade digital solutions tailored for exponential scalability and mission-critical execution.",
+      content: "Shaf Tech Solutions delivers bespoke software engineering, AI automation, cloud architectures, and digital security solutions.",
+      badgeText: "ST-SOLUTIONS PLATFORM 11",
+      isVisible: true,
+      displayOrder: 1,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      id: "cms-about-1",
+      sectionKey: "ABOUT",
+      title: "Engineering Excellence with Global Impact",
+      subtitle: "A trusted technology partner for global enterprises and ambitious startups.",
+      content: "We blend deep technical capability with strategic execution to build software that scales globally.",
+      badgeText: "ABOUT US",
+      isVisible: true,
+      displayOrder: 2,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      id: "cms-services-1",
+      sectionKey: "SERVICES",
+      title: "Specialized Technology Capabilities",
+      subtitle: "End-to-end technical execution across modern cloud, web, mobile, and AI stacks.",
+      content: "From custom full-stack web platforms to autonomous AI workflows, our engineers build robust solutions.",
+      badgeText: "OUR EXPERTISE",
+      isVisible: true,
+      displayOrder: 3,
+      createdAt: now,
+      updatedAt: now,
+    },
+  ];
+
   return {
     users: [userAdmin, userSubAdmin, userManager, userMember],
     profiles: [profileAdmin, profileSubAdmin, profileManager, profileMember],
@@ -400,6 +462,52 @@ export function createInitialData(): MemoryStore {
     auditLogs: [auditLog1],
     notifications: [notification1],
     systemSettings,
+    administrativeNotices: [],
+    userPerformances: [
+      {
+        id: "perf-member-1",
+        userId: "user-member-1",
+        tasksCompleted: 42,
+        projectsCompleted: 8,
+        clientsManaged: 5,
+        responseRate: 98.5,
+        completionRate: 96.0,
+        warningCount: 0,
+        positiveFeedback: 14,
+        performanceScore: 97.5,
+        lastActivityAt: now,
+        createdAt: now,
+        updatedAt: now,
+      },
+    ],
+    themeSettings: [defaultTheme],
+    cmsSections: defaultCMSSections,
+    members: [
+      {
+        id: "mem-1",
+        userId: "user-member-1",
+        memberCode: "ST-MEM-001",
+        rankId: "rank-1",
+        managerId: "mem-manager-1",
+        currentPoints: 1250,
+        createdAt: now,
+        updatedAt: now,
+      },
+      {
+        id: "mem-manager-1",
+        userId: "user-manager-1",
+        memberCode: "ST-MGR-001",
+        rankId: "rank-2",
+        managerId: null,
+        currentPoints: 4500,
+        createdAt: now,
+        updatedAt: now,
+      },
+    ],
+    ranks: [
+      { id: "rank-1", name: "Specialist", level: 1, colorCode: "#3B82F6" },
+      { id: "rank-2", name: "Lead Manager", level: 2, colorCode: "#D4AF37" },
+    ],
   };
 }
 

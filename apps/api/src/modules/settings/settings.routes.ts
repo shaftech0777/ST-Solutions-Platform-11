@@ -20,6 +20,27 @@ export const settingsRouter = Router();
  */
 settingsRouter.get("/public", settingsController.getPublicSettings);
 
+/**
+ * @route GET /settings/cms
+ * @desc Retrieves all CMS content sections
+ * @access Public
+ */
+settingsRouter.get("/cms", settingsController.getCMSSections);
+
+/**
+ * @route GET /settings/cms/:key
+ * @desc Retrieves single CMS section
+ * @access Public
+ */
+settingsRouter.get("/cms/:key", settingsController.getCMSSectionByKey);
+
+/**
+ * @route GET /settings/theme
+ * @desc Retrieves theme settings
+ * @access Public
+ */
+settingsRouter.get("/theme", settingsController.getThemeSettings);
+
 // Protect remaining administrative settings routes with Authentication
 settingsRouter.use(authenticate());
 
@@ -171,3 +192,37 @@ settingsRouter.patch(
   validate({ params: featureFlagParamSchema, body: updateFeatureFlagSchema }),
   settingsController.updateFeatureFlag
 );
+
+/**
+ * @route PATCH /settings/theme
+ * @desc Updates platform theme settings
+ * @access Protected (Requires settings.manage or ADMIN)
+ */
+settingsRouter.patch(
+  "/theme",
+  requirePermission("settings.manage"),
+  settingsController.updateThemeSettings
+);
+
+/**
+ * @route PUT /settings/cms/:key
+ * @desc Upserts a CMS content section
+ * @access Protected (Requires settings.manage or ADMIN)
+ */
+settingsRouter.put(
+  "/cms/:key",
+  requirePermission("settings.manage"),
+  settingsController.updateCMSSection
+);
+
+/**
+ * @route PATCH /settings/cms/:key
+ * @desc Updates a CMS content section
+ * @access Protected (Requires settings.manage or ADMIN)
+ */
+settingsRouter.patch(
+  "/cms/:key",
+  requirePermission("settings.manage"),
+  settingsController.updateCMSSection
+);
+

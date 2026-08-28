@@ -6,3 +6,4 @@ export * from "./security.logger.js";
 export * from "./auth.middleware.js";
 export * from "./rbac.middleware.js";
 export * from "./rate-limit.middleware.js";
+export * from "./authorization.policy.js";

@@ -1,6 +1,7 @@
 import { AccountType, UserStatus } from "@prisma/client";
 import { AuthorizationError, ConflictError, NotFoundError, ValidationError } from "../../core/errors/app-error.js";
 import { ERROR_CODES } from "../../core/errors/error.codes.js";
+import { AuthorizationPolicy } from "../../core/security/authorization.policy.js";
 import { canActorAssignRole, canActorManageTargetRole } from "../../core/security/permissions.js";
 import { passwordService as defaultPasswordService, PasswordService } from "../../core/security/password.service.js";
 import { sanitizeUserResponse } from "./users.mapper.js";
@@ -50,26 +51,27 @@ export class UsersService {
 
     const { items, totalRecords, page, limit } = await this.usersRepository.findAndCount(queryFilters);
 
-    // If actor is SUB_ADMIN, hide ADMIN accounts unless actor is ADMIN
+    // Apply centralized isolation filter
     const filteredItems = items.filter((user) => {
-      if (actor?.accountType === AccountType.SUB_ADMIN && user.accountType === AccountType.ADMIN) {
-        return false;
-      }
-      return true;
+      if (!actor) return true;
+      return AuthorizationPolicy.canAccessUser(
+        { userId: actor.userId || "", accountType: actor.accountType || AccountType.MEMBER },
+        user
+      );
     });
 
     const sanitizedItems = filteredItems.map((user) => sanitizeUserResponse(user));
 
     return {
       items: sanitizedItems,
-      totalRecords: actor?.accountType === AccountType.SUB_ADMIN ? sanitizedItems.length : totalRecords,
+      totalRecords: sanitizedItems.length,
       page,
       limit,
     };
   }
 
   /**
-   * Retrieves a single user profile by ID.
+   * Retrieves a single user profile by ID with strict hierarchy check.
    */
   public async getUserById(
     id: string,
@@ -81,20 +83,11 @@ export class UsersService {
       throw new NotFoundError(`User with ID '${id}' was not found`, ERROR_CODES.USER_NOT_FOUND);
     }
 
-    // Role visibility checks
-    if (actor && actor.userId !== id) {
-      if (actor.accountType === AccountType.SUB_ADMIN && user.accountType === AccountType.ADMIN) {
-        throw new AuthorizationError(
-          "Sub-administrators cannot view Administrator profiles",
-          ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
-        );
-      }
-      if (actor.accountType === AccountType.MANAGER && user.accountType !== AccountType.MEMBER) {
-        throw new AuthorizationError(
-          "Managers can only view Member profiles",
-          ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
-        );
-      }
+    if (actor) {
+      AuthorizationPolicy.enforceCanAccessUser(
+        { userId: actor.userId || "", accountType: actor.accountType || AccountType.MEMBER },
+        user
+      );
     }
 
     return sanitizeUserResponse(user);
@@ -132,11 +125,13 @@ export class UsersService {
     }
 
     // Enforce role hierarchy: Actor must be allowed to assign the target role
-    if (actor && !canActorAssignRole(actor.accountType, targetAccountType)) {
-      throw new AuthorizationError(
-        `Your role (${actor.accountType}) cannot create users with account type '${targetAccountType}'`,
-        ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
-      );
+    if (actor) {
+      if (!canActorAssignRole(actor.accountType, targetAccountType)) {
+        throw new AuthorizationError(
+          `Your role (${actor.accountType}) cannot create users with account type '${targetAccountType}'`,
+          ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
+        );
+      }
     }
 
     const passwordHash = await this.passwordService.hashPassword(dto.password);
@@ -148,6 +143,8 @@ export class UsersService {
       accountType: targetAccountType,
       status: dto.status ?? UserStatus.ACTIVE,
       roleId: dto.roleId ?? null,
+      createdByUserId: actor?.userId ?? null,
+      managedByUserId: actor?.accountType === AccountType.MANAGER ? actor.userId : null,
       profile: dto.profile
         ? {
             fullName: dto.profile.fullName,
@@ -178,7 +175,7 @@ export class UsersService {
 
     // Role hierarchy check when editing another user
     if (actor && actor.userId !== id) {
-      if (actor.accountType !== AccountType.ADMIN && !canActorManageTargetRole(actor.accountType, existingUser.accountType)) {
+      if (!AuthorizationPolicy.canManageUser({ userId: actor.userId || "", accountType: actor.accountType || AccountType.MEMBER }, existingUser)) {
         throw new AuthorizationError(
           `Your role (${actor.accountType}) is not authorized to edit user accounts with '${existingUser.accountType}' level`,
           ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
@@ -217,7 +214,7 @@ export class UsersService {
    */
   public async updateUserStatus(
     id: string,
-    dto: UpdateUserStatusInput,
+    dto: UpdateUserStatusInput & { suspensionReason?: string },
     actor?: { userId?: string; accountType?: AccountType }
   ): Promise<UserResponse> {
     const existingUser = await this.usersRepository.findById(id);
@@ -225,25 +222,18 @@ export class UsersService {
       throw new NotFoundError(`User with ID '${id}' was not found`, ERROR_CODES.USER_NOT_FOUND);
     }
 
-    // Prevent self suspension / deactivation
-    if (actor?.userId === id && (dto.status === UserStatus.SUSPENDED || dto.status === UserStatus.INACTIVE)) {
-      throw new ValidationError(
-        "Users are strictly forbidden from suspending or deactivating their own account"
-      );
-    }
-
-    // Enforce hierarchy
-    if (actor && actor.accountType !== AccountType.ADMIN && !canActorManageTargetRole(actor.accountType, existingUser.accountType)) {
-      throw new AuthorizationError(
-        `Your role (${actor.accountType}) cannot change status of users with '${existingUser.accountType}' level`,
-        ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
+    if (actor) {
+      AuthorizationPolicy.enforceCanManageUserStatus(
+        { userId: actor.userId || "", accountType: actor.accountType || AccountType.MEMBER },
+        existingUser,
+        dto.status
       );
     }
 
     // Last admin protection: cannot suspend or deactivate the last active admin
     if (
       existingUser.accountType === AccountType.ADMIN &&
-      (dto.status === UserStatus.SUSPENDED || dto.status === UserStatus.INACTIVE)
+      (dto.status === UserStatus.SUSPENDED || dto.status === UserStatus.INACTIVE || dto.status === UserStatus.DELETED)
     ) {
       const activeAdmins = await this.usersRepository.countActiveAdmins();
       if (activeAdmins <= 1) {
@@ -251,9 +241,12 @@ export class UsersService {
       }
     }
 
-    const updatedUser = await this.usersRepository.updateStatus(id, dto.status);
+    const updatedUser = await this.usersRepository.updateStatus(id, dto.status, {
+      suspensionReason: dto.suspensionReason,
+      suspendedAt: dto.status === UserStatus.SUSPENDED ? new Date() : null,
+    });
 
-    if (dto.status === UserStatus.SUSPENDED || dto.status === UserStatus.INACTIVE) {
+    if (dto.status === UserStatus.SUSPENDED || dto.status === UserStatus.INACTIVE || dto.status === UserStatus.DELETED) {
       await this.usersRepository.deleteUserSessions(id);
     }
 
@@ -273,25 +266,21 @@ export class UsersService {
       throw new NotFoundError(`User with ID '${id}' was not found`, ERROR_CODES.USER_NOT_FOUND);
     }
 
-    // Prevent self role changes
-    if (actor?.userId === id) {
-      throw new ValidationError("Users are strictly forbidden from modifying their own role or account type");
-    }
-
-    // Role hierarchy check on target
-    if (actor && actor.accountType !== AccountType.ADMIN && !canActorManageTargetRole(actor.accountType, existingUser.accountType)) {
-      throw new AuthorizationError(
-        `Your role (${actor.accountType}) cannot change role of users with '${existingUser.accountType}' level`,
-        ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
-      );
-    }
-
-    // Role hierarchy check on new assigned role
-    if (dto.accountType && actor && !canActorAssignRole(actor.accountType, dto.accountType)) {
-      throw new AuthorizationError(
-        `Your role (${actor.accountType}) cannot promote or assign users to '${dto.accountType}' level`,
-        ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
-      );
+    if (actor) {
+      if (dto.accountType) {
+        AuthorizationPolicy.enforceCanAssignRole(
+          { userId: actor.userId || "", accountType: actor.accountType || AccountType.MEMBER },
+          existingUser,
+          dto.accountType
+        );
+      } else {
+        if (!AuthorizationPolicy.canManageUser({ userId: actor.userId || "", accountType: actor.accountType || AccountType.MEMBER }, existingUser)) {
+          throw new AuthorizationError(
+            `Your role (${actor.accountType}) cannot change role of users with '${existingUser.accountType}' level`,
+            ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
+          );
+        }
+      }
     }
 
     if (dto.roleId) {
@@ -322,6 +311,27 @@ export class UsersService {
   }
 
   /**
+   * Suspends a user with an explicit reason.
+   */
+  public async suspendUser(
+    id: string,
+    reason: string,
+    actor?: { userId?: string; accountType?: AccountType }
+  ): Promise<UserResponse> {
+    return this.updateUserStatus(id, { status: UserStatus.SUSPENDED, suspensionReason: reason }, actor);
+  }
+
+  /**
+   * Reactivates a suspended or inactive user.
+   */
+  public async reactivateUser(
+    id: string,
+    actor?: { userId?: string; accountType?: AccountType }
+  ): Promise<UserResponse> {
+    return this.updateUserStatus(id, { status: UserStatus.ACTIVE }, actor);
+  }
+
+  /**
    * Deletes user record or deactivates user safely.
    */
   public async deleteUser(
@@ -333,16 +343,10 @@ export class UsersService {
       throw new NotFoundError(`User with ID '${id}' was not found`, ERROR_CODES.USER_NOT_FOUND);
     }
 
-    if (actor?.userId === id) {
-      throw new ValidationError(
-        "Users are strictly forbidden from deleting their own account"
-      );
-    }
-
-    if (actor && actor.accountType !== AccountType.ADMIN && !canActorManageTargetRole(actor.accountType, existingUser.accountType)) {
-      throw new AuthorizationError(
-        `Your role (${actor.accountType}) cannot delete user accounts with '${existingUser.accountType}' level`,
-        ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
+    if (actor) {
+      AuthorizationPolicy.enforceCanDeleteUser(
+        { userId: actor.userId || "", accountType: actor.accountType || AccountType.MEMBER },
+        existingUser
       );
     }
 
@@ -362,9 +366,77 @@ export class UsersService {
       return { message: `User '${id}' deleted successfully` };
     } catch {
       // Deactivation fallback if foreign keys prevent hard delete
-      await this.usersRepository.updateStatus(id, UserStatus.INACTIVE);
-      return { message: `User '${id}' deactivated successfully due to existing active references` };
+      await this.usersRepository.updateStatus(id, UserStatus.DELETED);
+      return { message: `User '${id}' soft-deleted successfully due to existing active references` };
     }
+  }
+
+  /**
+   * Retrieves performance records for a user with authorization check.
+   */
+  public async getUserPerformance(
+    userId: string,
+    actor?: { userId?: string; accountType?: AccountType }
+  ) {
+    const user = await this.usersRepository.findById(userId);
+    if (!user) {
+      throw new NotFoundError(`User with ID '${userId}' was not found`, ERROR_CODES.USER_NOT_FOUND);
+    }
+
+    if (actor) {
+      AuthorizationPolicy.enforceCanAccessUser(
+        { userId: actor.userId || "", accountType: actor.accountType || AccountType.MEMBER },
+        user
+      );
+    }
+
+    const performance = await this.usersRepository.getUserPerformance(userId);
+    return performance || {
+      userId,
+      clientAcquisitionCount: 0,
+      revenueGenerated: 0,
+      activeProjectsCount: 0,
+      completedTasksCount: 0,
+      rating: 5.0,
+      rank: null,
+    };
+  }
+
+  /**
+   * Updates user performance metrics (Supervisor/Admin only).
+   */
+  public async updateUserPerformance(
+    userId: string,
+    data: any,
+    actor?: { userId?: string; accountType?: AccountType }
+  ) {
+    const user = await this.usersRepository.findById(userId);
+    if (!user) {
+      throw new NotFoundError(`User with ID '${userId}' was not found`, ERROR_CODES.USER_NOT_FOUND);
+    }
+
+    if (actor) {
+      AuthorizationPolicy.enforceCanManageUser(
+        { userId: actor.userId || "", accountType: actor.accountType || AccountType.MEMBER },
+        user
+      );
+    }
+
+    return this.usersRepository.upsertUserPerformance(userId, data);
+  }
+
+  /**
+   * Retrieves all ranks.
+   */
+  public async getRanks() {
+    return this.usersRepository.getRanks();
+  }
+
+  /**
+   * Retrieves leaderboard.
+   */
+  public async getLeaderboard(limit = 10) {
+    return this.usersRepository.getLeaderboard(limit);
   }
 }
 

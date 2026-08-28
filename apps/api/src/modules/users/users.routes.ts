@@ -16,6 +16,26 @@ export const usersRouter = Router();
 usersRouter.use(authenticate());
 
 /**
+ * @route GET /users/meta/ranks
+ * @desc Retrieves list of organizational rank levels
+ * @access Protected
+ */
+usersRouter.get(
+  "/meta/ranks",
+  usersController.getRanks
+);
+
+/**
+ * @route GET /users/meta/leaderboard
+ * @desc Retrieves performance leaderboard
+ * @access Protected
+ */
+usersRouter.get(
+  "/meta/leaderboard",
+  usersController.getLeaderboard
+);
+
+/**
  * @route GET /users
  * @desc Retrieves paginated list of users with search and filter capabilities
  * @access Protected (Requires users.read permission or ADMIN)
@@ -85,6 +105,53 @@ usersRouter.patch(
   requirePermission("users.manage_role"),
   validate({ params: userIdParamSchema, body: updateUserRoleSchema }),
   usersController.updateUserRole
+);
+
+/**
+ * @route GET /users/:id/performance
+ * @desc Retrieves performance metrics for a user
+ * @access Protected
+ */
+usersRouter.get(
+  "/:id/performance",
+  validate({ params: userIdParamSchema }),
+  usersController.getUserPerformance
+);
+
+/**
+ * @route PATCH /users/:id/performance
+ * @desc Updates performance metrics for a user
+ * @access Protected (Supervisor/Admin)
+ */
+usersRouter.patch(
+  "/:id/performance",
+  requirePermission("users.update"),
+  validate({ params: userIdParamSchema }),
+  usersController.updateUserPerformance
+);
+
+/**
+ * @route POST /users/:id/suspend
+ * @desc Suspends a user with an administrative reason
+ * @access Protected (Requires users.suspend or users.manage_status permission or ADMIN)
+ */
+usersRouter.post(
+  "/:id/suspend",
+  requirePermission("users.manage_status"),
+  validate({ params: userIdParamSchema }),
+  usersController.suspendUser
+);
+
+/**
+ * @route POST /users/:id/reactivate
+ * @desc Reactivates a suspended user
+ * @access Protected (Requires users.manage_status permission or ADMIN)
+ */
+usersRouter.post(
+  "/:id/reactivate",
+  requirePermission("users.manage_status"),
+  validate({ params: userIdParamSchema }),
+  usersController.reactivateUser
 );
 
 /**

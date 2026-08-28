@@ -1,8 +1,9 @@
 import { AccountType, ClientStatus } from "@prisma/client";
-import { BusinessError, ConflictError, NotFoundError } from "../../core/errors/app-error.js";
+import { AuthorizationError, BusinessError, ConflictError, NotFoundError } from "../../core/errors/app-error.js";
 import { ERROR_CODES } from "../../core/errors/error.codes.js";
 import { DOMAIN_EVENTS } from "../../core/events/domain-event.types.js";
 import { eventBus } from "../../core/events/event-bus.js";
+import { AuthorizationPolicy } from "../../core/security/authorization.policy.js";
 import { sanitizeClientDetailResponse, sanitizeClientResponse } from "./clients.mapper.js";
 import { clientsRepository as defaultClientsRepository, ClientsRepository } from "./clients.repository.js";
 import {
@@ -27,9 +28,12 @@ export class ClientsService {
   }
 
   /**
-   * Retrieves a paginated list of clients.
+   * Retrieves a paginated list of clients with role-based isolation.
    */
-  public async getClients(filters: ClientQueryFilters): Promise<{
+  public async getClients(
+    filters: ClientQueryFilters,
+    actor?: { userId: string; accountType?: string; role?: string }
+  ): Promise<{
     items: ClientSummaryResponse[];
     pagination: {
       total: number;
@@ -41,21 +45,43 @@ export class ClientsService {
     };
   }> {
     const { data, meta } = await this.clientsRepository.findAndCount(filters);
-    const sanitizedItems = data.map((client) => sanitizeClientResponse(client));
+
+    const filtered = data.filter((client) => {
+      if (!actor) return true;
+      return AuthorizationPolicy.canAccessClient(
+        { userId: actor.userId, accountType: actor.accountType || "MEMBER" },
+        client
+      );
+    });
+
+    const sanitizedItems = filtered.map((client) => sanitizeClientResponse(client));
 
     return {
       items: sanitizedItems,
-      pagination: meta,
+      pagination: {
+        ...meta,
+        total: sanitizedItems.length,
+      },
     };
   }
 
   /**
-   * Retrieves detailed client record by client ID.
+   * Retrieves detailed client record by client ID with authorization enforcement.
    */
-  public async getClientById(clientId: string): Promise<ClientDetailResponse> {
+  public async getClientById(
+    clientId: string,
+    actor?: { userId: string; accountType?: string; role?: string }
+  ): Promise<ClientDetailResponse> {
     const client = await this.clientsRepository.findById(clientId);
     if (!client) {
       throw new NotFoundError("Client not found", ERROR_CODES.CLIENT_NOT_FOUND);
+    }
+
+    if (actor) {
+      AuthorizationPolicy.enforceCanAccessClient(
+        { userId: actor.userId, accountType: actor.accountType || "MEMBER" },
+        client
+      );
     }
 
     return sanitizeClientDetailResponse(client);
@@ -66,7 +92,7 @@ export class ClientsService {
    */
   public async createClient(
     input: CreateClientInput,
-    _actor?: { userId: string; accountType?: string }
+    actor?: { userId: string; accountType?: string }
   ): Promise<ClientDetailResponse> {
     const normalizedEmail = input.email.trim().toLowerCase();
 
@@ -103,6 +129,9 @@ export class ClientsService {
           businessType: input.businessType?.trim() || null,
           businessDescription: input.businessDescription?.trim() || null,
           clientStatus: input.clientStatus || ClientStatus.LEAD,
+          createdById: actor?.userId || null,
+          ownerId: actor?.accountType === "MEMBER" ? actor.userId : null,
+          supervisorId: actor?.accountType === "MANAGER" ? actor.userId : null,
         },
         tx
       );
@@ -124,7 +153,7 @@ export class ClientsService {
       eventName: DOMAIN_EVENTS.CLIENT_CREATED,
       entityType: "CLIENT",
       entityId: createdClient!.id,
-      actorId: _actor?.userId,
+      actorId: actor?.userId,
       timestamp: new Date(),
       payload: {
         clientId: createdClient!.id,
@@ -145,11 +174,18 @@ export class ClientsService {
   public async updateClient(
     clientId: string,
     input: UpdateClientInput,
-    _actor?: { userId: string; accountType?: string }
+    actor?: { userId: string; accountType?: string }
   ): Promise<ClientDetailResponse> {
     const existingClient = await this.clientsRepository.findById(clientId);
     if (!existingClient) {
       throw new NotFoundError("Client not found", ERROR_CODES.CLIENT_NOT_FOUND);
+    }
+
+    if (actor) {
+      AuthorizationPolicy.enforceCanAccessClient(
+        { userId: actor.userId, accountType: actor.accountType || "MEMBER" },
+        existingClient
+      );
     }
 
     const updateData: any = {};
@@ -186,11 +222,18 @@ export class ClientsService {
   public async updateClientStatus(
     clientId: string,
     input: UpdateClientStatusInput,
-    _actor?: { userId: string; accountType?: string }
+    actor?: { userId: string; accountType?: string }
   ): Promise<ClientDetailResponse> {
     const client = await this.clientsRepository.findById(clientId);
     if (!client) {
       throw new NotFoundError("Client not found", ERROR_CODES.CLIENT_NOT_FOUND);
+    }
+
+    if (actor) {
+      AuthorizationPolicy.enforceCanAccessClient(
+        { userId: actor.userId, accountType: actor.accountType || "MEMBER" },
+        client
+      );
     }
 
     const currentStatus = client.clientStatus;
@@ -224,7 +267,7 @@ export class ClientsService {
       eventName: DOMAIN_EVENTS.CLIENT_STATUS_CHANGED,
       entityType: "CLIENT",
       entityId: clientId,
-      actorId: _actor?.userId,
+      actorId: actor?.userId,
       timestamp: new Date(),
       payload: {
         clientId,
@@ -245,11 +288,19 @@ export class ClientsService {
   public async updateClientOwnership(
     clientId: string,
     input: UpdateClientOwnershipInput,
-    _actor?: { userId: string; accountType?: string }
+    actor?: { userId: string; accountType?: string }
   ): Promise<ClientDetailResponse> {
     const client = await this.clientsRepository.findById(clientId);
     if (!client) {
       throw new NotFoundError("Client not found", ERROR_CODES.CLIENT_NOT_FOUND);
+    }
+
+    // Only Admin, Sub-Admin, or Manager can reassign ownership
+    if (actor && actor.accountType === "MEMBER") {
+      throw new AuthorizationError(
+        "Members cannot reassign client ownership",
+        ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
+      );
     }
 
     const member = await this.clientsRepository.findMemberById(input.memberId);
@@ -277,7 +328,7 @@ export class ClientsService {
       eventName: DOMAIN_EVENTS.CLIENT_OWNERSHIP_CHANGED,
       entityType: "CLIENT",
       entityId: clientId,
-      actorId: _actor?.userId,
+      actorId: actor?.userId,
       timestamp: new Date(),
       payload: {
         clientId,
