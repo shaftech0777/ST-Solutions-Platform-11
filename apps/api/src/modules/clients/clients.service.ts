@@ -129,9 +129,9 @@ export class ClientsService {
           businessType: input.businessType?.trim() || null,
           businessDescription: input.businessDescription?.trim() || null,
           clientStatus: input.clientStatus || ClientStatus.LEAD,
-          createdById: actor?.userId || null,
-          ownerId: actor?.accountType === "MEMBER" ? actor.userId : null,
-          supervisorId: actor?.accountType === "MANAGER" ? actor.userId : null,
+          createdBy: actor?.userId ? { connect: { id: actor.userId } } : undefined,
+          owner: (actor?.accountType === "MEMBER" && actor?.userId) ? { connect: { id: actor.userId } } : undefined,
+          supervisor: (actor?.accountType === "MANAGER" && actor?.userId) ? { connect: { id: actor.userId } } : undefined,
         },
         tx
       );

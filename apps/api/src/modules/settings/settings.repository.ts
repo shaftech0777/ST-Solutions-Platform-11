@@ -259,10 +259,15 @@ export class SettingsRepository extends BaseRepository {
       if (!theme) {
         theme = await client.themeSettings?.create({
           data: {
-            themeMode: "DARK",
-            primaryColor: "#3B82F6",
-            accentColor: "#8B5CF6",
-            sidebarCollapsedDefault: false,
+            primaryColor: "#D4AF37",
+            secondaryColor: "#1E293B",
+            accentColor: "#3B82F6",
+            backgroundColor: "#F8FAFC",
+            textColor: "#0F172A",
+            borderColor: "#E2E8F0",
+            buttonRadius: "12px",
+            fontFamily: "sans",
+            darkMode: false,
           },
         });
       }
@@ -277,20 +282,33 @@ export class SettingsRepository extends BaseRepository {
     return this.execute(async () => {
       const client = this.getClient(tx);
       const existing = await client.themeSettings?.findFirst();
+
+      const darkMode = data.darkMode !== undefined 
+        ? Boolean(data.darkMode)
+        : (data.themeMode === "DARK" || data.themeMode === "dark");
+
+      const payload = {
+        primaryColor: data.primaryColor ?? (existing?.primaryColor || "#D4AF37"),
+        secondaryColor: data.secondaryColor ?? (existing?.secondaryColor || "#1E293B"),
+        accentColor: data.accentColor ?? (existing?.accentColor || "#3B82F6"),
+        backgroundColor: data.backgroundColor ?? (existing?.backgroundColor || "#F8FAFC"),
+        textColor: data.textColor ?? (existing?.textColor || "#0F172A"),
+        borderColor: data.borderColor ?? (existing?.borderColor || "#E2E8F0"),
+        buttonRadius: data.buttonRadius ?? (existing?.buttonRadius || "12px"),
+        fontFamily: data.fontFamily ?? (existing?.fontFamily || "sans"),
+        darkMode: (data.darkMode !== undefined || data.themeMode !== undefined) ? darkMode : (existing?.darkMode ?? false),
+        logoUrl: data.logoUrl !== undefined ? data.logoUrl : existing?.logoUrl,
+        faviconUrl: data.faviconUrl !== undefined ? data.faviconUrl : existing?.faviconUrl,
+      };
+
       if (existing) {
         return client.themeSettings.update({
           where: { id: existing.id },
-          data,
+          data: payload,
         });
       }
       return client.themeSettings.create({
-        data: {
-          themeMode: data.themeMode || "DARK",
-          primaryColor: data.primaryColor || "#3B82F6",
-          accentColor: data.accentColor || "#8B5CF6",
-          sidebarCollapsedDefault: data.sidebarCollapsedDefault ?? false,
-          customCss: data.customCss || null,
-        },
+        data: payload,
       });
     });
   }
@@ -301,7 +319,7 @@ export class SettingsRepository extends BaseRepository {
   public async getCMSSections(tx?: TransactionClient) {
     return this.execute(async () => {
       const client = this.getClient(tx);
-      return client.cmsSection.findMany({
+      return client.cMSSection.findMany({
         orderBy: { displayOrder: "asc" },
       });
     });
@@ -313,7 +331,7 @@ export class SettingsRepository extends BaseRepository {
   public async getCMSSectionByKey(sectionKey: string, tx?: TransactionClient) {
     return this.execute(async () => {
       const client = this.getClient(tx);
-      return client.cmsSection.findUnique({
+      return client.cMSSection.findUnique({
         where: { sectionKey: sectionKey.trim() },
       });
     });
@@ -326,9 +344,9 @@ export class SettingsRepository extends BaseRepository {
     return this.execute(async () => {
       const client = this.getClient(tx);
       const key = sectionKey.trim();
-      const existing = await client.cmsSection.findUnique({ where: { sectionKey: key } });
+      const existing = await client.cMSSection.findUnique({ where: { sectionKey: key } });
       if (existing) {
-        return client.cmsSection.update({
+        return client.cMSSection.update({
           where: { id: existing.id },
           data: {
             ...data,
@@ -336,7 +354,7 @@ export class SettingsRepository extends BaseRepository {
           },
         });
       }
-      return client.cmsSection.create({
+      return client.cMSSection.create({
         data: {
           sectionKey: key,
           title: data.title || key,

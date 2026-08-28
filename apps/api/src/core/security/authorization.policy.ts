@@ -192,6 +192,21 @@ export class AuthorizationPolicy {
   }
 
   /**
+   * Enforces that an actor can modify or manage a target user account.
+   */
+  public static enforceCanManageUser(
+    actor: ActorContext,
+    target: TargetUserContext
+  ): void {
+    if (!this.canManageUser(actor, target)) {
+      throw new AuthorizationError(
+        `Your role (${actor.accountType}) is not authorized to manage '${target.accountType}' user accounts`,
+        ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
+      );
+    }
+  }
+
+  /**
    * Checks if an actor can update status of a target user account.
    */
   public static canManageUserStatus(

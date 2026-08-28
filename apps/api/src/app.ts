@@ -43,6 +43,7 @@ const healthHandler = async (_req: Request, res: Response) => {
 
 app.get("/health", healthHandler);
 app.get("/api/health", healthHandler);
+app.get("/api/v1/health", healthHandler);
 
 // Mount API routers
 app.use("/api/v1", apiRouter);

@@ -8,9 +8,10 @@ import rateLimit from "express-rate-limit";
  */
 export const authRateLimiter: RequestHandler = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // Limit each IP to 10 requests per window
+  max: 20, // Limit each IP to 20 requests per window
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === "test",
   message: {
     success: false,
     statusCode: 429,
@@ -28,6 +29,7 @@ export const apiRateLimiter: RequestHandler = rateLimit({
   max: 100, // Limit each IP to 100 requests per window
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === "test",
   message: {
     success: false,
     statusCode: 429,

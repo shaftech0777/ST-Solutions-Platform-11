@@ -207,7 +207,10 @@ export class ClientsRepository extends BaseRepository {
   /**
    * Creates a new client record.
    */
-  public async create(data: Prisma.ClientCreateInput, tx?: TransactionClient) {
+  public async create(
+    data: Prisma.ClientCreateInput | Prisma.ClientUncheckedCreateInput,
+    tx?: TransactionClient
+  ) {
     return this.execute(async () => {
       const client = this.getClient(tx);
       return client.client.create({

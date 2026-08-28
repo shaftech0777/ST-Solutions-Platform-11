@@ -5,9 +5,9 @@ services:
     rootDir: apps/api
     plan: free
     region: oregon
-    buildCommand: npm install && npx prisma generate && npm run build
-    startCommand: node dist/server.js
-    healthCheckPath: /health
+    buildCommand: bun install && bun run build
+    startCommand: bun run start
+    healthCheckPath: /api/v1/health
     envVars:
       - key: NODE_ENV
         value: production
