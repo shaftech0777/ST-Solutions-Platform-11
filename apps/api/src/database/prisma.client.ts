@@ -3,240 +3,128 @@ import { config } from "../config/index.js";
 import { createMockPrismaClient } from "./mock-prisma-client.js";
 import { Logger } from "../core/logger/index.js";
 
-let isUsingMock = false;
-let mockClientInstance: any = null;
-
-function getMockClient(): any {
-  if (!mockClientInstance) {
-    mockClientInstance = createMockPrismaClient();
-  }
-  return mockClientInstance;
-}
-
-let realPrismaClient: PrismaClient | null = null;
-
-function isConnectionOrSchemaError(err: any): boolean {
-  if (!err) return false;
-  const msg = (
-    (typeof err === "string" ? err : err.message || String(err) || (err.target ? String(err.target) : ""))
-  ).toLowerCase();
-  const code = String(err.code || err.errorCode || "");
-  return (
-    msg.includes("closed") ||
-    msg.includes("econnrefused") ||
-    msg.includes("etimedout") ||
-    msg.includes("enotfound") ||
-    msg.includes("connection closed") ||
-    msg.includes("can't reach database server") ||
-    msg.includes("cannot reach database") ||
-    msg.includes("failed to connect") ||
-    msg.includes("authentication failed") ||
-    msg.includes("kind: closed") ||
-    msg.includes("kind:closed") ||
-    msg.includes("error in postgresql connection") ||
-    msg.includes("server has closed the connection") ||
-    msg.includes("connection pool is closed") ||
-    msg.includes("unexpected eof") ||
-    msg.includes("ssl connection has been closed unexpectedly") ||
-    msg.includes("does not exist") ||
-    msg.includes("relation") ||
-    msg.includes("undefined table") ||
-    msg.includes("table `public.") ||
-    msg.includes("table \"public.") ||
-    msg.includes("column") ||
-    msg.includes("prismaclientknownrequesterror") ||
-    msg.includes("prismaclientinitializationerror") ||
-    code === "P1000" ||
-    code === "P1001" ||
-    code === "P1002" ||
-    code === "P1003" ||
-    code === "P1017" ||
-    code === "P2021" ||
-    code === "P2022" ||
-    code === "P2010" ||
-    code === "P2028" ||
-    code === "42P01"
-  );
-}
-
-function switchToMock(reason?: string): void {
-  if (!isUsingMock) {
-    isUsingMock = true;
-    Logger.warn(
-      `[DATABASE RESILIENCE] PostgreSQL connection unavailable or closed (${reason || "Closed"}). Seamlessly activating embedded in-memory database engine.`
-    );
-    if (realPrismaClient) {
-      try {
-        const clientToCleanup = realPrismaClient;
-        realPrismaClient = null;
-        clientToCleanup.$disconnect().catch(() => {});
-      } catch {
-        realPrismaClient = null;
-      }
-    }
-  }
-}
-
-function initializeClient(): void {
-  const dbUrl = config?.database?.url || process.env.DATABASE_URL;
-  if (!dbUrl || dbUrl.includes("localhost") || dbUrl.includes("postgres:postgres@localhost")) {
-    isUsingMock = true;
-    Logger.info("Using embedded in-memory relational store for ST-Solutions operations.");
-    return;
+/**
+ * Sanitizes and normalizes the PostgreSQL connection URL for Prisma.
+ * Preserves the exact provider parameters (Render, Neon, Supabase, self-hosted)
+ * without forcibly injecting incompatible SSL or timeout overrides.
+ */
+export function normalizePostgresDatabaseUrl(rawUrl?: string): string | undefined {
+  if (!rawUrl || typeof rawUrl !== "string") {
+    return undefined;
   }
 
-  try {
-    const client = new PrismaClient({
-      datasources: {
-        db: {
-          url: dbUrl,
-        },
-      },
-      log: [
-        { emit: "event", level: "error" },
-        { emit: "event", level: "warn" },
-      ],
-    });
+  let dbUrl = rawUrl.trim();
+  if (!dbUrl) return undefined;
 
-    (client as any).$on("error", (e: any) => {
-      const errMsg = e?.message || String(e);
-      if (isConnectionOrSchemaError(e) || errMsg.includes("kind: Closed") || errMsg.includes("Closed")) {
-        switchToMock(errMsg);
-      } else {
-        Logger.warn({ error: errMsg }, "Prisma runtime engine event");
-      }
-    });
-
-    (client as any).$on("warn", (e: any) => {
-      Logger.debug({ warning: e?.message }, "Prisma engine warning");
-    });
-
-    realPrismaClient = client;
-  } catch (err: any) {
-    switchToMock(err?.message || "PrismaClient constructor failure");
+  // Convert postgres:// to postgresql:// for standard PostgreSQL URI schema compatibility
+  if (dbUrl.startsWith("postgres://")) {
+    dbUrl = "postgresql://" + dbUrl.slice(11);
   }
-}
 
-initializeClient();
+  return dbUrl;
+}
 
 /**
- * Enterprise Resilient Prisma Proxy.
- * Intercepts connection errors (e.g. Closed, Timeout, Host unreachable)
- * and seamlessly routes queries to the embedded relational engine.
+ * Safely masks database credentials for logging without leaking passwords.
  */
-export const prisma: any = new Proxy(
-  {},
-  {
-    get(_target, prop: string | symbol) {
-      if (typeof prop !== "string") {
-        return (getMockClient() as any)[prop];
-      }
-
-      if (prop === "$connect") {
-        return async () => {
-          if (isUsingMock || !realPrismaClient) {
-            return true;
-          }
-          try {
-            return await realPrismaClient.$connect();
-          } catch (err: any) {
-            switchToMock(err?.message || "Connection closed/failed");
-            return true;
-          }
-        };
-      }
-
-      if (prop === "$disconnect") {
-        return async () => {
-          if (isUsingMock || !realPrismaClient) {
-            return true;
-          }
-          try {
-            return await realPrismaClient.$disconnect();
-          } catch {
-            return true;
-          }
-        };
-      }
-
-      if (prop === "$queryRaw") {
-        return async (...args: any[]) => {
-          if (isUsingMock || !realPrismaClient) {
-            return getMockClient().$queryRaw(...args);
-          }
-          try {
-            return await (realPrismaClient as any).$queryRaw(...args);
-          } catch (err: any) {
-            if (isConnectionOrSchemaError(err)) {
-              switchToMock(err?.message);
-              return getMockClient().$queryRaw(...args);
-            }
-            throw err;
-          }
-        };
-      }
-
-      if (prop === "$transaction") {
-        return async (fnOrArray: any) => {
-          if (isUsingMock || !realPrismaClient) {
-            return getMockClient().$transaction(fnOrArray);
-          }
-          try {
-            return await (realPrismaClient as any).$transaction(fnOrArray);
-          } catch (err: any) {
-            if (isConnectionOrSchemaError(err)) {
-              switchToMock(err?.message);
-              return getMockClient().$transaction(fnOrArray);
-            }
-            throw err;
-          }
-        };
-      }
-
-      // Model delegates (e.g. prisma.user, prisma.project, prisma.client, etc.)
-      return new Proxy(
-        {},
-        {
-          get(_subTarget, method: string | symbol) {
-            if (typeof method !== "string") {
-              const mockDelegate = getMockClient()[prop];
-              return mockDelegate ? mockDelegate[method] : undefined;
-            }
-
-            return async (...methodArgs: any[]) => {
-              if (isUsingMock || !realPrismaClient) {
-                const mockDelegate = getMockClient()[prop];
-                if (mockDelegate && typeof mockDelegate[method] === "function") {
-                  return mockDelegate[method](...methodArgs);
-                }
-                return null;
-              }
-
-              try {
-                const realDelegate = (realPrismaClient as any)[prop];
-                if (realDelegate && typeof realDelegate[method] === "function") {
-                  return await realDelegate[method](...methodArgs);
-                }
-                const mockDelegate = getMockClient()[prop];
-                if (mockDelegate && typeof mockDelegate[method] === "function") {
-                  return mockDelegate[method](...methodArgs);
-                }
-                return null;
-              } catch (err: any) {
-                if (isConnectionOrSchemaError(err)) {
-                  switchToMock(err?.message);
-                  const mockDelegate = getMockClient()[prop];
-                  if (mockDelegate && typeof mockDelegate[method] === "function") {
-                    return mockDelegate[method](...methodArgs);
-                  }
-                }
-                throw err;
-              }
-            };
-          },
-        }
-      );
-    },
+export function maskDatabaseUrl(rawUrl?: string): string {
+  if (!rawUrl || typeof rawUrl !== "string") return "[UNSET]";
+  try {
+    const parsed = new URL(rawUrl.startsWith("postgres://") ? "postgresql://" + rawUrl.slice(11) : rawUrl);
+    const host = parsed.hostname;
+    const port = parsed.port || "5432";
+    const database = parsed.pathname.replace(/^\//, "");
+    const user = parsed.username ? `${parsed.username}@` : "";
+    return `postgresql://${user}***:${port}/${database}`;
+  } catch {
+    return "[MALFORMED_URL]";
   }
-);
+}
 
+const isProduction = process.env.NODE_ENV === "production";
+const isTest = process.env.NODE_ENV === "test";
+const rawDbUrl = config?.database?.url || process.env.DATABASE_URL;
+const normalizedDbUrl = normalizePostgresDatabaseUrl(rawDbUrl);
+
+let authoritativePrismaClient: PrismaClient | null = null;
+let mockPrismaClient: any = null;
+
+function getMockClient(): any {
+  if (!mockPrismaClient) {
+    mockPrismaClient = createMockPrismaClient();
+  }
+  return mockPrismaClient;
+}
+
+if (normalizedDbUrl) {
+  try {
+    authoritativePrismaClient = new PrismaClient({
+      datasources: {
+        db: {
+          url: normalizedDbUrl,
+        },
+      },
+      log: isProduction
+        ? [
+            { emit: "event", level: "error" },
+            { emit: "event", level: "warn" },
+          ]
+        : [
+            { emit: "event", level: "error" },
+            { emit: "event", level: "warn" },
+          ],
+    });
+
+    (authoritativePrismaClient as any).$on("error", (e: any) => {
+      const msg = e?.message || "";
+      // When hosted PostgreSQL providers (Render, Neon, Supabase, RDS) terminate idle sockets,
+      // Prisma's connection pool detects the closed socket and safely re-establishes connections on subsequent queries.
+      if (
+        msg.includes("kind: Closed") ||
+        msg.includes("Closed, cause: None") ||
+        msg.includes("connection closed") ||
+        msg.includes("socket closed")
+      ) {
+        Logger.debug({ message: msg, target: e?.target }, "Prisma PostgreSQL idle connection recycled by pool.");
+        return;
+      }
+      Logger.error({ message: msg, target: e?.target }, "Prisma PostgreSQL engine error encountered.");
+    });
+
+    (authoritativePrismaClient as any).$on("warn", (e: any) => {
+      Logger.warn({ message: e?.message }, "Prisma PostgreSQL warning encountered.");
+    });
+
+    Logger.info(
+      { dbTarget: maskDatabaseUrl(normalizedDbUrl) },
+      "Authoritative PostgreSQL PrismaClient initialized."
+    );
+  } catch (err: any) {
+    Logger.error(
+      { error: err?.message, dbTarget: maskDatabaseUrl(normalizedDbUrl) },
+      "Failed to instantiate PrismaClient."
+    );
+    if (isProduction) {
+      throw new Error(`FATAL: PostgreSQL PrismaClient initialization failed in production: ${err?.message}`);
+    }
+  }
+} else if (isProduction) {
+  throw new Error("FATAL: DATABASE_URL is missing or invalid in production environment. PostgreSQL is strictly required.");
+}
+
+/**
+ * Authoritative Prisma Client Export.
+ * IN PRODUCTION: Strictly routes all operations to the single authoritative PrismaClient connected to PostgreSQL.
+ * IN TEST: Uses isolated test client for lightning-fast, zero-dependency unit and regression testing.
+ * IN DEV: Uses authoritative PostgreSQL connection when DATABASE_URL is available, otherwise mock store for local dev.
+ */
+export const prisma: PrismaClient = (
+  isProduction
+    ? (authoritativePrismaClient ||
+        (() => {
+          throw new Error("FATAL: PostgreSQL PrismaClient is not initialized in production environment.");
+        })())
+    : isTest
+    ? getMockClient()
+    : authoritativePrismaClient || getMockClient()
+) as PrismaClient;

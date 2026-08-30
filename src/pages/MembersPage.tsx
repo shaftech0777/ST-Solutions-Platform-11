@@ -14,6 +14,7 @@ import {
   RefreshCw,
   Award,
   Plus,
+  KeyRound,
 } from "lucide-react";
 import { PageHeader } from "../components/shell/PageHeader.js";
 import { Table, TableHeader, TableRow, TableHead, TableCell } from "../components/ui/Table.js";
@@ -67,6 +68,8 @@ export const MembersPage: React.FC = () => {
   const [selectedMember, setSelectedMember] = useState<any | null>(null);
   const [memberToEditRole, setMemberToEditRole] = useState<any | null>(null);
   const [memberToEditStatus, setMemberToEditStatus] = useState<any | null>(null);
+  const [memberToResetPassword, setMemberToResetPassword] = useState<any | null>(null);
+  const [resetPasswordValue, setResetPasswordValue] = useState("");
   const [memberToRemove, setMemberToRemove] = useState<any | null>(null);
 
   // Create User Form State
@@ -372,6 +375,35 @@ export const MembersPage: React.FC = () => {
         title: "Status Update Failed",
         message: err.message || "Could not update member status.",
       });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleResetPasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!memberToResetPassword) return;
+    if (!resetPasswordValue || resetPasswordValue.length < 8) {
+      setModalError("New password must be at least 8 characters long.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setModalError(null);
+    try {
+      const targetUserId = memberToResetPassword.user?.id || memberToResetPassword.userId || memberToResetPassword.id;
+      await usersService.resetPassword(targetUserId, resetPasswordValue);
+
+      addToast({
+        type: "success",
+        title: "Password Reset Complete",
+        message: `Password has been reset for ${memberToResetPassword.user?.profile?.fullName || memberToResetPassword.fullName || memberToResetPassword.email || targetUserId}. Previous sessions have been revoked.`,
+      });
+
+      setMemberToResetPassword(null);
+      setResetPasswordValue("");
+    } catch (err: any) {
+      setModalError(err.data?.message || err.message || "Failed to reset user password.");
     } finally {
       setIsSubmitting(false);
     }
@@ -718,6 +750,18 @@ export const MembersPage: React.FC = () => {
                                 <IconButton
                                   variant="ghost"
                                   size="sm"
+                                  icon={<KeyRound className="w-4 h-4 text-amber-500" />}
+                                  title="Reset Password"
+                                  onClick={() => {
+                                    setModalError(null);
+                                    setResetPasswordValue("");
+                                    setMemberToResetPassword(member);
+                                  }}
+                                />
+
+                                <IconButton
+                                  variant="ghost"
+                                  size="sm"
                                   icon={<Trash2 className="w-4 h-4 text-rose-500" />}
                                   title="Delete User"
                                   onClick={() => setMemberToRemove(member)}
@@ -795,6 +839,17 @@ export const MembersPage: React.FC = () => {
                             onClick={() => {
                               setMemberToEditStatus(member);
                               setNewStatus(status);
+                            }}
+                          />
+                          <IconButton
+                            variant="ghost"
+                            size="sm"
+                            icon={<KeyRound className="w-4 h-4 text-amber-500" />}
+                            title="Reset Password"
+                            onClick={() => {
+                              setModalError(null);
+                              setResetPasswordValue("");
+                              setMemberToResetPassword(member);
                             }}
                           />
                           <IconButton
@@ -1017,8 +1072,8 @@ export const MembersPage: React.FC = () => {
       <Modal
         isOpen={!!selectedMember}
         onClose={() => setSelectedMember(null)}
-        title="User Profile Inspection"
-        size="md"
+        title="User Profile & Security Scope Inspection"
+        size="lg"
       >
         {selectedMember && (
           <div className="space-y-6">
@@ -1041,41 +1096,159 @@ export const MembersPage: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div className="space-y-1">
-                <span className="text-text-muted">Assigned Role:</span>
+              <div className="p-3 rounded-lg bg-surface border border-border/60 space-y-1">
+                <span className="text-text-muted block">Account Type / Hierarchy:</span>
                 <div>
                   {getRoleBadge(selectedMember.role?.name || selectedMember.user?.accountType || selectedMember.accountType || "MEMBER")}
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <span className="text-text-muted">User ID:</span>
-                <div className="text-text font-mono text-[11px]">
+              <div className="p-3 rounded-lg bg-surface border border-border/60 space-y-1">
+                <span className="text-text-muted block">Database User ID:</span>
+                <div className="text-text font-mono text-[11px] select-all font-semibold">
                   {selectedMember.user?.id || selectedMember.userId || selectedMember.id}
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <span className="text-text-muted">Account Registered:</span>
+              <div className="p-3 rounded-lg bg-surface border border-border/60 space-y-1">
+                <span className="text-text-muted block">Account Creation Timestamp:</span>
                 <div className="text-text font-medium">
                   {new Date(selectedMember.createdAt).toLocaleString()}
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <span className="text-text-muted">Last Updated:</span>
+              <div className="p-3 rounded-lg bg-surface border border-border/60 space-y-1">
+                <span className="text-text-muted block">Last Record Update:</span>
                 <div className="text-text font-medium">
                   {new Date(selectedMember.updatedAt || selectedMember.createdAt).toLocaleString()}
                 </div>
               </div>
+
+              <div className="p-3 rounded-lg bg-surface border border-border/60 space-y-1">
+                <span className="text-text-muted block">Contact Phone:</span>
+                <div className="text-text font-medium">
+                  {selectedMember.user?.profile?.phoneNumber || selectedMember.phoneNumber || "Not registered"}
+                </div>
+              </div>
+
+              <div className="p-3 rounded-lg bg-surface border border-border/60 space-y-1">
+                <span className="text-text-muted block">Location / City:</span>
+                <div className="text-text font-medium">
+                  {selectedMember.user?.profile?.city || selectedMember.city
+                    ? `${selectedMember.user?.profile?.city || selectedMember.city}, ${selectedMember.user?.profile?.country || selectedMember.country || ""}`
+                    : "Not specified"}
+                </div>
+              </div>
             </div>
 
-            <div className="flex justify-end pt-2">
+            {/* Security Notice */}
+            <div className="p-3.5 bg-slate-900/60 border border-slate-800 rounded-xl text-xs text-slate-300 flex items-start gap-2.5">
+              <Shield className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold text-[#D4AF37] block">Credential Protection & Hashing:</span>
+                <span>User passwords are securely encrypted using bcrypt (12 rounds) in PostgreSQL. Plaintext passwords cannot be decrypted. To issue a new credential, use the Administrative Password Reset workflow below.</span>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-border/60">
+              <div className="flex items-center gap-2">
+                {canManageUsers && canActorManageTarget(selectedMember.role?.name || selectedMember.user?.accountType || selectedMember.accountType, selectedMember.user?.id || selectedMember.userId || selectedMember.id) && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    leftIcon={<KeyRound className="w-4 h-4 text-amber-500" />}
+                    onClick={() => {
+                      const m = selectedMember;
+                      setSelectedMember(null);
+                      setModalError(null);
+                      setResetPasswordValue("");
+                      setMemberToResetPassword(m);
+                    }}
+                  >
+                    Reset Password
+                  </Button>
+                )}
+              </div>
               <Button variant="outline" size="sm" onClick={() => setSelectedMember(null)}>
                 Close
               </Button>
             </div>
           </div>
+        )}
+      </Modal>
+
+      {/* Admin Reset Password Modal */}
+      <Modal
+        isOpen={!!memberToResetPassword}
+        onClose={() => setMemberToResetPassword(null)}
+        title="Administrative Password Reset"
+        size="md"
+      >
+        {memberToResetPassword && (
+          <form onSubmit={handleResetPasswordSubmit} className="space-y-4">
+            {modalError && (
+              <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-xs text-rose-500 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{modalError}</span>
+              </div>
+            )}
+
+            <p className="text-xs text-text-muted">
+              Provisioning a new credential for{" "}
+              <span className="font-semibold text-text">
+                {memberToResetPassword.user?.profile?.fullName || memberToResetPassword.fullName || memberToResetPassword.email || "this user"}
+              </span>. This will immediately invalidate all active sessions for this account in the database.
+            </p>
+
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-xs font-semibold text-slate-300">
+                  New Temporary Password <span className="text-amber-400">*</span>
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%^&*";
+                    let pass = "ST@";
+                    for (let i = 0; i < 8; i++) {
+                      pass += chars.charAt(Math.floor(Math.random() * chars.length));
+                    }
+                    setResetPasswordValue(pass);
+                  }}
+                  className="text-[11px] text-[#D4AF37] hover:underline font-mono"
+                >
+                  + Generate Strong Password
+                </button>
+              </div>
+              <PasswordInput
+                required
+                placeholder="Minimum 8 characters"
+                value={resetPasswordValue}
+                onChange={(e) => setResetPasswordValue(e.target.value)}
+              />
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-4 border-t border-border/60">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setMemberToResetPassword(null)}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="gold"
+                size="sm"
+                disabled={isSubmitting}
+                isLoading={isSubmitting}
+              >
+                Set New Password
+              </Button>
+            </div>
+          </form>
         )}
       </Modal>
 

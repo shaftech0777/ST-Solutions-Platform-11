@@ -136,6 +136,23 @@ export class UsersService {
 
     const passwordHash = await this.passwordService.hashPassword(dto.password);
 
+    let validCreatedByUserId: string | null = null;
+    let validManagedByUserId: string | null = null;
+
+    if (actor?.userId) {
+      try {
+        const actorUser = await this.usersRepository.findById(actor.userId);
+        if (actorUser) {
+          validCreatedByUserId = actorUser.id;
+          if (actor.accountType === AccountType.MANAGER) {
+            validManagedByUserId = actorUser.id;
+          }
+        }
+      } catch {
+        // Non-fatal if actor user check fails
+      }
+    }
+
     const createdUser = await this.usersRepository.create({
       id: rawUserId || undefined,
       email: normalizedEmail,
@@ -143,8 +160,8 @@ export class UsersService {
       accountType: targetAccountType,
       status: dto.status ?? UserStatus.ACTIVE,
       roleId: dto.roleId ?? null,
-      createdByUserId: actor?.userId ?? null,
-      managedByUserId: actor?.accountType === AccountType.MANAGER ? actor.userId : null,
+      createdByUserId: validCreatedByUserId,
+      managedByUserId: validManagedByUserId,
       profile: dto.profile
         ? {
             fullName: dto.profile.fullName,
@@ -261,6 +278,13 @@ export class UsersService {
     dto: UpdateUserRoleInput,
     actor?: { userId?: string; accountType?: AccountType }
   ): Promise<UserResponse> {
+    if (actor && actor.accountType === AccountType.MEMBER) {
+      throw new AuthorizationError(
+        "Members cannot change roles or permissions of any user",
+        ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
+      );
+    }
+
     const existingUser = await this.usersRepository.findById(id);
     if (!existingUser) {
       throw new NotFoundError(`User with ID '${id}' was not found`, ERROR_CODES.USER_NOT_FOUND);
@@ -308,6 +332,35 @@ export class UsersService {
     });
 
     return sanitizeUserResponse(updatedUser);
+  }
+
+  /**
+   * Securely resets a user's password and revokes all active sessions.
+   */
+  public async resetUserPassword(
+    id: string,
+    newPassword: string,
+    actor?: { userId?: string; accountType?: AccountType }
+  ): Promise<{ message: string }> {
+    const existingUser = await this.usersRepository.findById(id);
+    if (!existingUser) {
+      throw new NotFoundError(`User with ID '${id}' was not found`, ERROR_CODES.USER_NOT_FOUND);
+    }
+
+    if (actor) {
+      if (!AuthorizationPolicy.canManageUser({ userId: actor.userId || "", accountType: actor.accountType || AccountType.MEMBER }, existingUser)) {
+        throw new AuthorizationError(
+          `Your role (${actor.accountType}) is not authorized to reset password for accounts at '${existingUser.accountType}' level`,
+          ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
+        );
+      }
+    }
+
+    const passwordHash = await this.passwordService.hashPassword(newPassword);
+    await this.usersRepository.updatePassword(id, passwordHash);
+    await this.usersRepository.deleteUserSessions(id);
+
+    return { message: "Password has been successfully updated and previous sessions invalidated." };
   }
 
   /**

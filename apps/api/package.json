@@ -12,6 +12,7 @@
     "test": "tsx --test src/__tests__/*.test.ts",
     "prisma:init": "prisma init",
     "prisma:generate": "prisma generate --schema=./prisma/schema.prisma",
+    "prisma:migrate:deploy": "prisma migrate deploy --schema=./prisma/schema.prisma",
     "prisma:format": "prisma format --schema=./prisma/schema.prisma",
     "prisma:validate": "prisma validate --schema=./prisma/schema.prisma"
   },

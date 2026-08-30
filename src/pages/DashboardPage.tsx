@@ -181,12 +181,12 @@ export const DashboardPage: React.FC = () => {
           onClick={() => navigate("/clients")}
         />
         <StatCard
-          title={currentUser?.accountType === "MEMBER" ? "Team Colleagues" : "Talent & Candidate Pool"}
-          value={currentUser?.accountType === "MEMBER" ? 4 : applicants.length}
-          subtitle={currentUser?.accountType === "MEMBER" ? "Active team roster" : "Vetting & screening pipeline"}
+          title={currentUser?.accountType === "MEMBER" ? "Candidate Pipeline" : "Talent & Candidate Pool"}
+          value={applicants.length}
+          subtitle={currentUser?.accountType === "MEMBER" ? "Active applicant submissions" : "Vetting & screening pipeline"}
           icon={UserCheck}
           isLoading={isLoading}
-          onClick={() => navigate(currentUser?.accountType === "MEMBER" ? "/members" : "/applicants")}
+          onClick={() => navigate(currentUser?.accountType === "MEMBER" ? "/platform/projects" : "/applicants")}
         />
       </div>
 

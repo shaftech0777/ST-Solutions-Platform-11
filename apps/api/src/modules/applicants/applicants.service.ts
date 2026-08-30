@@ -114,8 +114,15 @@ export class ApplicantsService {
   /**
    * Creates a new member application. Prevents active duplicate applications.
    */
-  public async createApplication(dto: CreateApplicationInput): Promise<ApplicationResponse> {
-    const existing = await this.applicantsRepository.findByEmailOrPhone(dto.email, dto.phoneNumber);
+  public async createApplication(dto: CreateApplicationInput & {
+    roleApplied?: string | null;
+    experienceYears?: number | null;
+    skills?: string | string[] | null;
+    portfolioUrl?: string | null;
+    resumeText?: string | null;
+  }): Promise<ApplicationResponse> {
+    const phone = (dto.phoneNumber || "+10000000000").trim();
+    const existing = await this.applicantsRepository.findByEmailOrPhone(dto.email, phone);
 
     if (
       existing &&
@@ -124,7 +131,7 @@ export class ApplicantsService {
         existing.applicationStatus === ApplicationStatus.APPROVED)
     ) {
       throw new ConflictError(
-        `An active application with email '${dto.email}' or phone number '${dto.phoneNumber}' already exists with status '${existing.applicationStatus}'`,
+        `An active application with email '${dto.email}' or phone number '${phone}' already exists with status '${existing.applicationStatus}'`,
         ERROR_CODES.APPLICATION_ALREADY_EXISTS
       );
     }
@@ -142,28 +149,39 @@ export class ApplicantsService {
       }
     }
 
+    let skillsSummary = dto.skillsDescription?.trim() || "";
+    if (!skillsSummary && (dto.skills || dto.roleApplied || dto.experienceYears || dto.portfolioUrl || dto.resumeText)) {
+      const parts: string[] = [];
+      if (dto.roleApplied) parts.push(`Role: ${dto.roleApplied}`);
+      if (dto.experienceYears) parts.push(`Experience: ${dto.experienceYears} years`);
+      if (dto.skills) parts.push(`Skills: ${Array.isArray(dto.skills) ? dto.skills.join(", ") : dto.skills}`);
+      if (dto.portfolioUrl) parts.push(`Portfolio: ${dto.portfolioUrl}`);
+      if (dto.resumeText) parts.push(`Summary: ${dto.resumeText}`);
+      skillsSummary = parts.join(" | ");
+    }
+
     const createdApp = await this.applicantsRepository.createApplication({
       fullName: dto.fullName.trim(),
-      fatherName: dto.fatherName.trim(),
+      fatherName: (dto.fatherName || "N/A").trim(),
       email: dto.email.trim().toLowerCase(),
-      phoneNumber: dto.phoneNumber.trim(),
-      whatsappNumber: dto.whatsappNumber.trim(),
-      country: dto.country.trim(),
-      city: dto.city.trim(),
-      address: dto.address.trim(),
+      phoneNumber: phone,
+      whatsappNumber: (dto.whatsappNumber || phone).trim(),
+      country: (dto.country || "Global").trim(),
+      city: (dto.city || "Remote").trim(),
+      address: (dto.address || "Remote Operations").trim(),
       cnicNumber: dto.cnicNumber?.trim() ?? null,
       cnicIssueDate: dto.cnicIssueDate ?? null,
       cnicExpiryDate: dto.cnicExpiryDate ?? null,
-      currentProfession: dto.currentProfession?.trim() ?? null,
+      currentProfession: dto.currentProfession?.trim() || dto.roleApplied?.trim() || null,
       currentQualification: dto.currentQualification?.trim() ?? null,
-      skillsDescription: dto.skillsDescription?.trim() ?? null,
+      skillsDescription: skillsSummary || null,
       linkedinUrl: dto.linkedinUrl?.trim() || null,
       instagramUrl: dto.instagramUrl?.trim() || null,
       facebookUrl: dto.facebookUrl?.trim() || null,
       tiktokUrl: dto.tiktokUrl?.trim() || null,
       githubUrl: dto.githubUrl?.trim() || null,
-      heardAboutSTSolutions: dto.heardAboutSTSolutions.trim(),
-      joiningPurpose: dto.joiningPurpose.trim(),
+      heardAboutSTSolutions: (dto.heardAboutSTSolutions || "Direct Website Application").trim(),
+      joiningPurpose: (dto.joiningPurpose || `Candidate application for ${dto.roleApplied || dto.currentProfession || "Engineering Team"}`).trim(),
       profileImageUrl: dto.profileImageUrl?.trim() || null,
       applicationStatus: ApplicationStatus.PENDING,
       verificationStatus: VerificationStatus.NOT_VERIFIED,
@@ -203,13 +221,13 @@ export class ApplicantsService {
     }
 
     const updated = await this.applicantsRepository.updateApplication(id, {
-      ...(dto.fullName !== undefined && { fullName: dto.fullName.trim() }),
-      ...(dto.fatherName !== undefined && { fatherName: dto.fatherName.trim() }),
-      ...(dto.phoneNumber !== undefined && { phoneNumber: dto.phoneNumber.trim() }),
-      ...(dto.whatsappNumber !== undefined && { whatsappNumber: dto.whatsappNumber.trim() }),
-      ...(dto.country !== undefined && { country: dto.country.trim() }),
-      ...(dto.city !== undefined && { city: dto.city.trim() }),
-      ...(dto.address !== undefined && { address: dto.address.trim() }),
+      ...(dto.fullName !== undefined && { fullName: dto.fullName?.trim() || "" }),
+      ...(dto.fatherName !== undefined && { fatherName: dto.fatherName?.trim() || "" }),
+      ...(dto.phoneNumber !== undefined && { phoneNumber: dto.phoneNumber?.trim() || "" }),
+      ...(dto.whatsappNumber !== undefined && { whatsappNumber: dto.whatsappNumber?.trim() || "" }),
+      ...(dto.country !== undefined && { country: dto.country?.trim() || "" }),
+      ...(dto.city !== undefined && { city: dto.city?.trim() || "" }),
+      ...(dto.address !== undefined && { address: dto.address?.trim() || "" }),
       ...(dto.cnicNumber !== undefined && { cnicNumber: dto.cnicNumber?.trim() ?? null }),
       ...(dto.cnicIssueDate !== undefined && { cnicIssueDate: dto.cnicIssueDate }),
       ...(dto.cnicExpiryDate !== undefined && { cnicExpiryDate: dto.cnicExpiryDate }),
@@ -221,8 +239,8 @@ export class ApplicantsService {
       ...(dto.facebookUrl !== undefined && { facebookUrl: dto.facebookUrl?.trim() || null }),
       ...(dto.tiktokUrl !== undefined && { tiktokUrl: dto.tiktokUrl?.trim() || null }),
       ...(dto.githubUrl !== undefined && { githubUrl: dto.githubUrl?.trim() || null }),
-      ...(dto.heardAboutSTSolutions !== undefined && { heardAboutSTSolutions: dto.heardAboutSTSolutions.trim() }),
-      ...(dto.joiningPurpose !== undefined && { joiningPurpose: dto.joiningPurpose.trim() }),
+      ...(dto.heardAboutSTSolutions !== undefined && { heardAboutSTSolutions: dto.heardAboutSTSolutions?.trim() || "" }),
+      ...(dto.joiningPurpose !== undefined && { joiningPurpose: dto.joiningPurpose?.trim() || "" }),
       ...(dto.profileImageUrl !== undefined && { profileImageUrl: dto.profileImageUrl?.trim() || null }),
     });
 

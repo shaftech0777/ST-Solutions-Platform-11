@@ -35,9 +35,9 @@ const healthHandler = async (_req: Request, res: Response) => {
   const isHealthy = dbHealth.status === "up";
   res.status(isHealthy ? 200 : 503).json({
     status: isHealthy ? "ok" : "degraded",
-    service: "st-solutions-api",
-    version: "1.0.0",
-    database: dbHealth,
+    database: isHealthy ? "connected" : "disconnected",
+    latencyMs: dbHealth.latencyMs,
+    ...(isHealthy ? {} : { error: dbHealth.error }),
   });
 };
 

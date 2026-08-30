@@ -157,6 +157,29 @@ export class UsersController {
   };
 
   /**
+   * Securely resets a user's password (Supervisor/Admin only).
+   * POST /api/v1/users/:id/reset-password
+   */
+  public resetUserPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { id } = req.params;
+      const authReq = req as AuthenticatedRequest;
+      const actor = authReq.user
+        ? { userId: authReq.user.userId, accountType: authReq.user.accountType as AccountType }
+        : undefined;
+      const { newPassword } = req.body;
+
+      const result = await this.usersService.resetUserPassword(id, newPassword, actor);
+
+      ResponseBuilder.success(res, result, {
+        message: result.message,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
    * Suspends a user with an administrative reason.
    * POST /api/v1/users/:id/suspend
    */

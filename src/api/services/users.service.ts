@@ -85,4 +85,15 @@ export const usersService = {
       method: "DELETE",
     });
   },
+
+  async resetPassword(id: string, newPassword: string) {
+    return apiClient<{ message: string }>(`/users/${id}/reset-password`, {
+      method: "POST",
+      body: { newPassword },
+    });
+  },
+
+  async getPerformance(id: string) {
+    return apiClient<any>(`/users/${id}/performance`);
+  },
 };

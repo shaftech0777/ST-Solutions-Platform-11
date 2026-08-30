@@ -87,8 +87,16 @@ export const updateUserRoleSchema = z
     message: "At least one of 'roleId' or 'accountType' must be provided",
   });
 
+/**
+ * Admin reset password schema.
+ */
+export const adminResetPasswordSchema = z.object({
+  newPassword: passwordSchema,
+});
+
 export type UserQueryInput = z.infer<typeof userQuerySchema>;
 export type CreateUserInput = z.infer<typeof createUserSchema>;
 export type UpdateUserInput = z.infer<typeof updateUserSchema>;
 export type UpdateUserStatusInput = z.infer<typeof updateUserStatusSchema>;
 export type UpdateUserRoleInput = z.infer<typeof updateUserRoleSchema>;
+export type AdminResetPasswordInput = z.infer<typeof adminResetPasswordSchema>;

@@ -55,4 +55,6 @@ export interface DatabaseHealthStatus {
   readonly status: "up" | "down";
   readonly latencyMs: number;
   readonly message?: string;
+  readonly error?: string;
+  readonly details?: Record<string, unknown>;
 }

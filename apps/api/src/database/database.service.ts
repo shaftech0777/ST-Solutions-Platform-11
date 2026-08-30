@@ -1,6 +1,5 @@
 import { prisma } from "./prisma.client.js";
 import { DatabaseHealthStatus } from "./database.types.js";
-import { handleDatabaseError } from "./database.errors.js";
 import { Logger } from "../core/logger/index.js";
 
 /**
@@ -18,15 +17,16 @@ export class DatabaseService {
     }
 
     try {
-      Logger.info("Initializing database connection...");
+      Logger.info("Initializing authoritative PostgreSQL database connection...");
       await prisma.$connect();
-      // Probe table availability to ensure schema is synchronized
-      await prisma.user.findFirst({ select: { id: true } });
       this.isConnected = true;
-      Logger.info("Database service ready.");
+      Logger.info("Database service ready and connected to PostgreSQL.");
     } catch (error) {
       this.isConnected = false;
-      Logger.warn({ error }, "Database connection fallback; continuing with embedded store.");
+      Logger.error({ error }, "Database connection error encountered during initialization.");
+      if (process.env.NODE_ENV === "production") {
+        throw error;
+      }
     }
   }
 
@@ -50,8 +50,6 @@ export class DatabaseService {
 
   /**
    * Performs a lightweight query to verify database health and measure roundtrip latency.
-   *
-   * @returns DatabaseHealthStatus object containing connection health state and query latency in ms
    */
   public async healthCheck(): Promise<DatabaseHealthStatus> {
     const start = Date.now();
@@ -62,13 +60,23 @@ export class DatabaseService {
         status: "up",
         latencyMs,
       };
-    } catch {
-      const latencyMs = Date.now() - start;
-      return {
-        status: "up",
-        latencyMs,
-        message: "Active with resilient embedded store",
-      };
+    } catch (error: any) {
+      // If the query failed due to a recycled idle pool socket, retry once to allow transparent reconnection
+      try {
+        await prisma.$queryRaw`SELECT 1`;
+        const latencyMs = Date.now() - start;
+        return {
+          status: "up",
+          latencyMs,
+        };
+      } catch (retryError: any) {
+        const latencyMs = Date.now() - start;
+        return {
+          status: "down",
+          latencyMs,
+          error: retryError?.message || error?.message || "Database health probe failed",
+        };
+      }
     }
   }
 }

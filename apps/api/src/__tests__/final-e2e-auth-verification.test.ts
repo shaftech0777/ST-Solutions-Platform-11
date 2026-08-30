@@ -1,4 +1,4 @@
-import { describe, it } from "node:test";
+import { test } from "node:test";
 import assert from "node:assert/strict";
 import { AccountType, UserStatus } from "@prisma/client";
 import { authService } from "../modules/auth/auth.service.js";
@@ -8,8 +8,12 @@ import { usersRepository } from "../modules/users/users.repository.js";
 import { passwordService } from "../core/security/password.service.js";
 import { jwtService } from "../core/security/jwt.service.js";
 import { config } from "../config/index.js";
+import { memoryDb } from "../database/in-memory-db.js";
+import { prisma } from "../database/prisma.client.js";
 
-describe("FINAL End-to-End Production Authentication Verification", { concurrency: 1 }, () => {
+test("FINAL End-to-End Production Authentication Verification", { concurrency: 1 }, async (t) => {
+  memoryDb.reset();
+
   const managerUserId = "test-manager-final-001";
   const managerPassword = "ManagerSecretPass@2026!";
   const managerEmail = "manager.final.001@st-solutions.io";
@@ -17,6 +21,29 @@ describe("FINAL End-to-End Production Authentication Verification", { concurrenc
   const memberUserId = "test-member-final-001";
   const memberPassword = "MemberSecretPass@2026!";
   const memberEmail = "member.final.001@st-solutions.io";
+
+  try {
+    await prisma.session.deleteMany({
+      where: {
+        userId: { in: [managerUserId, memberUserId, "test-inactive-user-001", "test-suspended-user-001"] },
+      },
+    });
+    await prisma.userProfile.deleteMany({
+      where: {
+        userId: { in: [managerUserId, memberUserId, "test-inactive-user-001", "test-suspended-user-001"] },
+      },
+    });
+    await prisma.user.deleteMany({
+      where: {
+        OR: [
+          { id: { in: [managerUserId, memberUserId, "test-inactive-user-001", "test-suspended-user-001"] } },
+          { email: { in: [managerEmail, memberEmail, "inactive.user@st-solutions.io", "suspended.user@st-solutions.io"] } },
+        ],
+      },
+    });
+  } catch {
+    // Non-fatal if database cleanup throws
+  }
 
   let managerAccessToken = "";
   let managerRefreshToken = "";
@@ -26,7 +53,7 @@ describe("FINAL End-to-End Production Authentication Verification", { concurrenc
   // -------------------------------------------------------------
   // TEST 1 — MANAGER
   // -------------------------------------------------------------
-  it("TEST 1 — MANAGER: Complete creation, DB persistence, bcrypt hashing, User ID login, and /auth/me lookup", async () => {
+  await t.test("TEST 1 — MANAGER: Complete creation, DB persistence, bcrypt hashing, User ID login, and /auth/me lookup", async () => {
     // 1. Create fresh MANAGER through admin user-management flow
     const createdManager = await usersService.createUser(
       {
@@ -93,7 +120,7 @@ describe("FINAL End-to-End Production Authentication Verification", { concurrenc
   // -------------------------------------------------------------
   // TEST 2 — MEMBER
   // -------------------------------------------------------------
-  it("TEST 2 — MEMBER: Complete creation, DB persistence, User ID login, and /auth/me lookup", async () => {
+  await t.test("TEST 2 — MEMBER: Complete creation, DB persistence, User ID login, and /auth/me lookup", async () => {
     // 1. Create fresh MEMBER through admin user-management flow
     const createdMember = await usersService.createUser(
       {
@@ -153,7 +180,7 @@ describe("FINAL End-to-End Production Authentication Verification", { concurrenc
   // -------------------------------------------------------------
   // TEST 3 — EMAIL LOGIN
   // -------------------------------------------------------------
-  it("TEST 3 — EMAIL LOGIN: Manager and Member can authenticate using Email + password", async () => {
+  await t.test("TEST 3 — EMAIL LOGIN: Manager and Member can authenticate using Email + password", async () => {
     // 1. Manager authenticates with email
     const managerEmailLogin = await authService.login(
       {
@@ -184,7 +211,7 @@ describe("FINAL End-to-End Production Authentication Verification", { concurrenc
   // -------------------------------------------------------------
   // TEST 4 — NEGATIVE AUTHENTICATION
   // -------------------------------------------------------------
-  it("TEST 4 — NEGATIVE AUTHENTICATION: rejects wrong password, unknown user, inactive and suspended accounts", async () => {
+  await t.test("TEST 4 — NEGATIVE AUTHENTICATION: rejects wrong password, unknown user, inactive and suspended accounts", async () => {
     // 1. Wrong password -> 401
     await assert.rejects(
       async () => {
@@ -285,7 +312,7 @@ describe("FINAL End-to-End Production Authentication Verification", { concurrenc
   // -------------------------------------------------------------
   // TEST 5 — ADMIN / SUB_ADMIN
   // -------------------------------------------------------------
-  it("TEST 5 — ADMIN/SUB_ADMIN: ADMIN_EMAIL + ADMIN_PASSWORD and SUB_ADMIN_EMAIL + SUB_ADMIN_PASSWORD work", async () => {
+  await t.test("TEST 5 — ADMIN/SUB_ADMIN: ADMIN_EMAIL + ADMIN_PASSWORD and SUB_ADMIN_EMAIL + SUB_ADMIN_PASSWORD work", async () => {
     const adminEmail = config.auth.adminEmail || "admin@st-solutions.com";
     const adminPassword = config.auth.adminPassword || "Admin@123456";
     const subAdminEmail = config.auth.subAdminEmail || "subadmin@st-solutions.com";
@@ -313,7 +340,7 @@ describe("FINAL End-to-End Production Authentication Verification", { concurrenc
   // -------------------------------------------------------------
   // TEST 6 — PUBLIC REGISTRATION
   // -------------------------------------------------------------
-  it("TEST 6 — PUBLIC REGISTRATION: POST /api/v1/auth/register returns 403 Forbidden", async () => {
+  await t.test("TEST 6 — PUBLIC REGISTRATION: POST /api/v1/auth/register returns 403 Forbidden", async () => {
     await assert.rejects(
       async () => {
         await authService.register({
@@ -333,7 +360,7 @@ describe("FINAL End-to-End Production Authentication Verification", { concurrenc
   // -------------------------------------------------------------
   // TEST 7 — API URL NORMALIZATION
   // -------------------------------------------------------------
-  it("TEST 7 — API URL: ensures clean /api/v1 prefix without /api/api/v1 duplication", () => {
+  await t.test("TEST 7 — API URL: ensures clean /api/v1 prefix without /api/api/v1 duplication", () => {
     const normalizeUrl = (endpoint: string, base = "/api/v1") => {
       let clean = endpoint;
       if (clean.startsWith("/api/v1/")) clean = clean.slice(7);
@@ -355,7 +382,7 @@ describe("FINAL End-to-End Production Authentication Verification", { concurrenc
   // -------------------------------------------------------------
   // TEST 8 — SESSION (Refresh & Logout)
   // -------------------------------------------------------------
-  it("TEST 8 — SESSION: /auth/me, /auth/refresh, and /auth/logout work for Manager & Member", async () => {
+  await t.test("TEST 8 — SESSION: /auth/me, /auth/refresh, and /auth/logout work for Manager & Member", async () => {
     // 1. Refresh Manager Token
     const refreshedManager = await authService.refreshToken(managerRefreshToken);
     assert.ok(refreshedManager.accessToken);
@@ -379,7 +406,7 @@ describe("FINAL End-to-End Production Authentication Verification", { concurrenc
   // -------------------------------------------------------------
   // TEST 9 — RBAC
   // -------------------------------------------------------------
-  it("TEST 9 — RBAC: MANAGER cannot create/promote ADMIN/SUB_ADMIN; MEMBER cannot create users or manage roles", async () => {
+  await t.test("TEST 9 — RBAC: MANAGER cannot create/promote ADMIN/SUB_ADMIN; MEMBER cannot create users or manage roles", async () => {
     // 1. MANAGER cannot create ADMIN
     await assert.rejects(
       async () => {
@@ -456,3 +483,4 @@ describe("FINAL End-to-End Production Authentication Verification", { concurrenc
     );
   });
 });
+

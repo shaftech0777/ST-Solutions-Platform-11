@@ -331,6 +331,19 @@ export class UsersRepository extends BaseRepository {
   }
 
   /**
+   * Updates user password hash and invalidates previous credentials.
+   */
+  public async updatePassword(id: string, passwordHash: string, tx?: TransactionClient) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      return client.user.update({
+        where: { id },
+        data: { passwordHash },
+      });
+    });
+  }
+
+  /**
    * Counts active administrators in the system.
    */
   public async countActiveAdmins(tx?: TransactionClient): Promise<number> {

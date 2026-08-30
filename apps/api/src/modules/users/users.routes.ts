@@ -2,6 +2,7 @@ import { Router } from "express";
 import { authenticate, requirePermission, validate } from "../../middlewares/index.js";
 import { usersController } from "./users.controller.js";
 import {
+  adminResetPasswordSchema,
   createUserSchema,
   updateUserRoleSchema,
   updateUserSchema,
@@ -105,6 +106,18 @@ usersRouter.patch(
   requirePermission("users.manage_role"),
   validate({ params: userIdParamSchema, body: updateUserRoleSchema }),
   usersController.updateUserRole
+);
+
+/**
+ * @route POST /users/:id/reset-password
+ * @desc Administratively resets user password and revokes active sessions
+ * @access Protected (Requires users.update permission or ADMIN)
+ */
+usersRouter.post(
+  "/:id/reset-password",
+  requirePermission("users.update"),
+  validate({ params: userIdParamSchema, body: adminResetPasswordSchema }),
+  usersController.resetUserPassword
 );
 
 /**

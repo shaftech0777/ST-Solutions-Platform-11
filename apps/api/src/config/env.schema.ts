@@ -50,9 +50,12 @@ export const envSchema = z.object({
   SMTP_PASSWORD: z.string().optional(),
 }).superRefine((data, ctx) => {
   if (data.NODE_ENV === "production") {
-    if (!data.DATABASE_URL || data.DATABASE_URL.includes("localhost")) {
-      // Allow fallback to in-memory/embedded engine with a warning rather than fatal crash
-      console.warn("[WARN] Production DATABASE_URL not set or points to localhost; using resilient embedded data store fallback.");
+    if (!data.DATABASE_URL) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "DATABASE_URL is required in production environment.",
+        path: ["DATABASE_URL"],
+      });
     }
 
     if (!data.JWT_SECRET || data.JWT_SECRET.includes("default-development")) {
