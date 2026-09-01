@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { PrismaClient } from "@prisma/client";
-import { defaultJwtService } from "../core/security/jwt.service.js";
+import { jwtService } from "../core/security/jwt.service.js";
 import { DOMAIN_EVENTS } from "../core/events/domain-event.types.js";
 import { eventBus } from "../core/events/event-bus.js";
 import { ProjectInquiriesService } from "../modules/project-inquiries/project-inquiries.service.js";

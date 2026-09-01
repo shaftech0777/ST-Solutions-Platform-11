@@ -237,6 +237,5 @@ export type ReviewApplicationInput = z.infer<typeof reviewApplicationSchema>;
 export type ApproveApplicationInput = z.infer<typeof approveApplicationSchema>;
 export type RejectApplicationInput = z.infer<typeof rejectApplicationSchema>;
 export type SubmitAnswersInput = z.infer<typeof submitAnswersSchema>;
-export type CreateQuestionInput = z.infer<typeof createQuestionSchema>;
 export type VerificationInput = z.infer<typeof verificationSchema>;
 export type OnboardApplicantInput = z.infer<typeof onboardApplicantSchema>;

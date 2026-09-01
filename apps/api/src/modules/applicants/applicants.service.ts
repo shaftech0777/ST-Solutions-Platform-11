@@ -16,14 +16,16 @@ import {
   AnswerItemInput,
   ApplicationQuestionSummary,
   ApplicationResponse,
+  CreateQuestionInput,
   MemberVerificationSummary,
   OnboardingResultResponse,
+  ReorderQuestionsInput,
+  UpdateQuestionInput,
 } from "./applicants.types.js";
 import {
   ApproveApplicationInput,
   ApplicationQueryInput,
   CreateApplicationInput,
-  CreateQuestionInput,
   OnboardApplicantInput,
   RejectApplicationInput,
   ReviewApplicationInput,
@@ -420,10 +422,10 @@ export class ApplicantsService {
   /**
    * Reorders multiple application questions.
    */
-  public async reorderQuestions(dto: { questionOrders?: { id: string; orderNumber: number }[]; questionIds?: string[] }): Promise<readonly ApplicationQuestionSummary[]> {
+  public async reorderQuestions(dto: ReorderQuestionsInput): Promise<readonly ApplicationQuestionSummary[]> {
     let orders: { id: string; orderNumber: number }[] = [];
     if (dto.questionOrders && dto.questionOrders.length > 0) {
-      orders = dto.questionOrders;
+      orders = [...dto.questionOrders];
     } else if (dto.questionIds && dto.questionIds.length > 0) {
       orders = dto.questionIds.map((id, index) => ({ id, orderNumber: index + 1 }));
     }

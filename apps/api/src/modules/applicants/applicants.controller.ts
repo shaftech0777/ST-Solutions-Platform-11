@@ -4,10 +4,14 @@ import { ResponseBuilder } from "../../core/responses/index.js";
 import { AuthenticatedRequest } from "../../core/security/security.types.js";
 import { applicantsService as defaultApplicantsService, ApplicantsService } from "./applicants.service.js";
 import {
+  CreateQuestionInput,
+  ReorderQuestionsInput,
+  UpdateQuestionInput,
+} from "./applicants.types.js";
+import {
   ApproveApplicationInput,
   ApplicationQueryInput,
   CreateApplicationInput,
-  CreateQuestionInput,
   OnboardApplicantInput,
   RejectApplicationInput,
   ReviewApplicationInput,

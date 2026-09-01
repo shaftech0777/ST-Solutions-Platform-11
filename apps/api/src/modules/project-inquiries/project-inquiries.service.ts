@@ -120,7 +120,7 @@ export class ProjectInquiriesService {
     };
   }> {
     const { data, meta } = await this.repository.findAndCount(filters);
-    const sanitizedItems = data.map((item) => sanitizeProjectInquiryResponse(item));
+    const sanitizedItems = data.map((item: any) => sanitizeProjectInquiryResponse(item));
 
     return {
       items: sanitizedItems,
@@ -134,7 +134,7 @@ export class ProjectInquiriesService {
   public async getInquiryById(id: string): Promise<ProjectInquiryResponse> {
     const inquiry = await this.repository.findById(id);
     if (!inquiry) {
-      throw new NotFoundError("Project inquiry not found", ERROR_CODES.RESOURCE_NOT_FOUND);
+      throw new NotFoundError("Project inquiry not found", ERROR_CODES.DATABASE_RECORD_NOT_FOUND);
     }
     return sanitizeProjectInquiryResponse(inquiry);
   }
@@ -149,7 +149,7 @@ export class ProjectInquiriesService {
   ): Promise<ProjectInquiryResponse> {
     const existing = await this.repository.findById(id);
     if (!existing) {
-      throw new NotFoundError("Project inquiry not found", ERROR_CODES.RESOURCE_NOT_FOUND);
+      throw new NotFoundError("Project inquiry not found", ERROR_CODES.DATABASE_RECORD_NOT_FOUND);
     }
 
     const updated = await this.repository.update(id, input);
@@ -198,7 +198,7 @@ export class ProjectInquiriesService {
   ): Promise<ProjectInquiryResponse> {
     const existing = await this.repository.findById(id);
     if (!existing) {
-      throw new NotFoundError("Project inquiry not found", ERROR_CODES.RESOURCE_NOT_FOUND);
+      throw new NotFoundError("Project inquiry not found", ERROR_CODES.DATABASE_RECORD_NOT_FOUND);
     }
 
     // Record activity
@@ -214,12 +214,10 @@ export class ProjectInquiriesService {
 
     const updatePayload: UpdateProjectInquiryInput = {
       contactedAt: new Date(),
-      contactedById: actorId || input.userId || null,
+      contactedById: actorId || null,
     };
 
-    if (input.newStatus) {
-      updatePayload.status = input.newStatus;
-    } else if ((input.updateStatusToContacted ?? true) && existing.status === "NEW") {
+    if ((input.updateStatusToContacted ?? true) && existing.status === "NEW") {
       updatePayload.status = "CONTACTED";
     }
 
@@ -246,7 +244,7 @@ export class ProjectInquiriesService {
   public async addNote(id: string, input: AddInquiryNoteInput, actorId?: string): Promise<ProjectInquiryResponse> {
     const existing = await this.repository.findById(id);
     if (!existing) {
-      throw new NotFoundError("Project inquiry not found", ERROR_CODES.RESOURCE_NOT_FOUND);
+      throw new NotFoundError("Project inquiry not found", ERROR_CODES.DATABASE_RECORD_NOT_FOUND);
     }
 
     const timestamp = new Date().toISOString().split("T")[0];
@@ -275,7 +273,7 @@ export class ProjectInquiriesService {
   public async deleteInquiry(id: string, actorId?: string): Promise<{ success: boolean; id: string }> {
     const existing = await this.repository.findById(id);
     if (!existing) {
-      throw new NotFoundError("Project inquiry not found", ERROR_CODES.RESOURCE_NOT_FOUND);
+      throw new NotFoundError("Project inquiry not found", ERROR_CODES.DATABASE_RECORD_NOT_FOUND);
     }
 
     await this.repository.delete(id);

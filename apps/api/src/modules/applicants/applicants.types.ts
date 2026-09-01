@@ -52,7 +52,8 @@ export interface UpdateQuestionInput {
 }
 
 export interface ReorderQuestionsInput {
-  readonly questionOrders: readonly { id: string; orderNumber: number }[];
+  readonly questionOrders?: readonly { id: string; orderNumber: number }[];
+  readonly questionIds?: readonly string[];
 }
 
 export interface ApplicationAnswerSummary {
