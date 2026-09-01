@@ -52,30 +52,87 @@ export const Header: React.FC<HeaderProps> = ({
 
   useEffect(() => {
     let isMounted = true;
+    let eventSource: { close: () => void } | null = null;
+
     async function loadNotifications() {
       try {
-        const res = await notificationsService.getAll({ unreadOnly: false, limit: 5 });
-        if (isMounted && res.data) {
-          const items = Array.isArray(res.data) ? res.data : [];
-          setNotifications(items);
-          setUnreadCount(items.filter((n) => !n.read).length);
+        const [listRes, countRes] = await Promise.allSettled([
+          notificationsService.getAll({ unreadOnly: false, limit: 10 }),
+          notificationsService.getUnreadCount(),
+        ]);
+
+        if (isMounted) {
+          if (listRes.status === "fulfilled" && listRes.value?.data) {
+            const items = Array.isArray(listRes.value.data) ? listRes.value.data : [];
+            setNotifications(items);
+          }
+          if (countRes.status === "fulfilled" && countRes.value?.data) {
+            setUnreadCount(countRes.value.data.count ?? 0);
+          }
         }
       } catch (err) {
-        // Quiet fallback if notifications endpoint is pending
+        // Quiet fallback
       }
     }
+
     if (currentUser) {
       loadNotifications();
+
+      // Connect to real-time Server-Sent Events (SSE) stream
+      eventSource = notificationsService.createStream({
+        onNotification: (newNotif) => {
+          if (!isMounted) return;
+          setNotifications((prev) => {
+            const filtered = prev.filter((item) => item.id !== newNotif.id);
+            return [newNotif, ...filtered].slice(0, 15);
+          });
+          setUnreadCount((prev) => prev + 1);
+        },
+        onUnreadCount: (count) => {
+          if (!isMounted) return;
+          setUnreadCount(count);
+        },
+      });
     }
+
     return () => {
       isMounted = false;
+      if (eventSource) {
+        eventSource.close();
+      }
     };
   }, [currentUser]);
+
+  const handleNotificationClick = async (notif: NotificationItem) => {
+    setIsNotifOpen(false);
+
+    // Optimistically mark as read
+    if (!notif.read && !notif.isRead) {
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === notif.id ? { ...n, read: true, isRead: true } : n))
+      );
+      setUnreadCount((prev) => Math.max(0, prev - 1));
+      try {
+        await notificationsService.markAsRead(notif.id);
+      } catch {
+        // Quiet fail
+      }
+    }
+
+    // Direct navigation if target URL exists
+    if (notif.actionUrl) {
+      navigate(notif.actionUrl);
+    } else if (notif.type?.toUpperCase().includes("INQUIRY") || notif.type?.toUpperCase().includes("LEAD")) {
+      navigate("/inquiries");
+    } else {
+      navigate("/notifications");
+    }
+  };
 
   const handleMarkAllRead = async () => {
     try {
       await notificationsService.markAllAsRead();
-      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+      setNotifications((prev) => prev.map((n) => ({ ...n, read: true, isRead: true })));
       setUnreadCount(0);
     } catch {
       // Quiet fail
@@ -163,20 +220,31 @@ export const Header: React.FC<HeaderProps> = ({
                   {notifications.length === 0 ? (
                     <div className="p-6 text-center text-xs text-slate-500 dark:text-slate-400">No new notifications</div>
                   ) : (
-                    notifications.map((n) => (
-                      <div
-                        key={n.id}
-                        className={`p-3.5 text-xs transition-colors ${
-                          !n.read ? "bg-[#D4AF37]/5" : "hover:bg-slate-50 dark:hover:bg-slate-800/40"
-                        }`}
-                      >
-                        <p className="font-semibold text-slate-900 dark:text-slate-200">{n.title}</p>
-                        <p className="text-slate-600 dark:text-slate-400 mt-0.5 leading-snug">{n.message}</p>
-                        <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono mt-1 block">
-                          {new Date(n.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                        </span>
-                      </div>
-                    ))
+                    notifications.map((n) => {
+                      const isUnread = !n.read && !n.isRead;
+                      return (
+                        <div
+                          key={n.id}
+                          onClick={() => handleNotificationClick(n)}
+                          className={`p-3.5 text-xs transition-colors cursor-pointer select-none ${
+                            isUnread ? "bg-[#D4AF37]/10 hover:bg-[#D4AF37]/15" : "hover:bg-slate-50 dark:hover:bg-slate-800/40"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-1">
+                            <p className={`font-semibold ${isUnread ? "text-[#D4AF37] dark:text-[#E5C158]" : "text-slate-900 dark:text-slate-200"}`}>
+                              {n.title}
+                            </p>
+                            {isUnread && (
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] shrink-0" />
+                            )}
+                          </div>
+                          <p className="text-slate-600 dark:text-slate-400 mt-0.5 leading-snug line-clamp-2">{n.message}</p>
+                          <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono mt-1 block">
+                            {new Date(n.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                          </span>
+                        </div>
+                      );
+                    })
                   )}
                 </div>
 

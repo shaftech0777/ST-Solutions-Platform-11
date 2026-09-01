@@ -27,6 +27,8 @@ export interface MemoryStore {
   cmsSections: any[];
   members: any[];
   ranks: any[];
+  projectInquiries: any[];
+  inquiryActivities: any[];
 }
 
 function generateId(prefix: string = "id"): string {
@@ -284,6 +286,8 @@ export function createInitialData(): MemoryStore {
       { id: "rank-1", name: "Specialist", level: 1, colorCode: "#3B82F6" },
       { id: "rank-2", name: "Lead Manager", level: 2, colorCode: "#D4AF37" },
     ],
+    projectInquiries: [],
+    inquiryActivities: [],
   };
 }
 

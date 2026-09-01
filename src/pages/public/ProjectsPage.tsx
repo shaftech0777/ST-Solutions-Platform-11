@@ -16,15 +16,24 @@ import {
   Database,
   Cpu,
   MessageCircle,
+  FileText,
 } from "lucide-react";
 import { projectsData, ProjectShowcaseItem, companyConfig } from "../../data/companyConfig.js";
 import { ProjectCardVisual } from "../../components/public/ProjectCardVisual.js";
+import { ProjectInquiryModal } from "../../components/public/ProjectInquiryModal.js";
 
 const categories = ["All", "Web", "Software", "AI", "Automation", "E-Commerce"] as const;
 
 export const ProjectsPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [selectedProject, setSelectedProject] = useState<ProjectShowcaseItem | null>(null);
+  const [inquiryTarget, setInquiryTarget] = useState<ProjectShowcaseItem | null>(null);
+  const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false);
+
+  const handleOpenInquiry = (project?: ProjectShowcaseItem) => {
+    setInquiryTarget(project || null);
+    setIsInquiryModalOpen(true);
+  };
 
   const filteredProjects =
     selectedCategory === "All"
@@ -146,13 +155,13 @@ export const ProjectsPage: React.FC = () => {
                       View Specs & Flow
                     </button>
 
-                    <Link
-                      to="/start-project"
+                    <button
+                      onClick={() => handleOpenInquiry(project)}
                       className="inline-flex items-center space-x-1 text-xs font-bold text-[#B88E20] hover:underline"
                     >
-                      <span>Build Similar</span>
+                      <span>Inquire / Build</span>
                       <ArrowRight className="w-3 h-3 text-[#B88E20]" />
-                    </Link>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -238,13 +247,17 @@ export const ProjectsPage: React.FC = () => {
 
             {/* Action Footer */}
             <div className="pt-4 border-t border-[#E2E5E0] flex flex-col sm:flex-row items-center justify-between gap-3">
-              <Link
-                to="/start-project"
-                onClick={() => setSelectedProject(null)}
-                className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-[#111827] text-white font-bold text-xs shadow-md text-center hover:bg-[#1F2937] transition-all border border-[#111827]"
+              <button
+                onClick={() => {
+                  const p = selectedProject;
+                  setSelectedProject(null);
+                  handleOpenInquiry(p);
+                }}
+                className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-[#111827] text-white font-bold text-xs shadow-md text-center hover:bg-[#1F2937] transition-all border border-[#111827] flex items-center justify-center space-x-2"
               >
-                Start a Similar Project →
-              </Link>
+                <FileText className="w-3.5 h-3.5 text-[#D4AF37]" />
+                <span>Submit Inquiry For This System →</span>
+              </button>
               <a
                 href={companyConfig.contact.whatsappUrl}
                 target="_blank"
@@ -252,12 +265,19 @@ export const ProjectsPage: React.FC = () => {
                 className="w-full sm:w-auto px-4 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center justify-center space-x-1.5 transition-colors shadow-sm"
               >
                 <MessageCircle className="w-4 h-4" />
-                <span>Discuss with Lead Architect</span>
+                <span>WhatsApp Lead Architect</span>
               </a>
             </div>
           </div>
         </div>
       )}
+
+      {/* Public Project Inquiry Modal */}
+      <ProjectInquiryModal
+        isOpen={isInquiryModalOpen}
+        onClose={() => setIsInquiryModalOpen(false)}
+        initialProject={inquiryTarget}
+      />
 
       {/* CTA Bottom Banner (Intentional Dark Contrast Section) */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">

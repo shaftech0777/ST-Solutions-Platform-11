@@ -357,13 +357,79 @@ export class ApplicantsService {
    * Creates a new application question.
    */
   public async createQuestion(dto: CreateQuestionInput): Promise<ApplicationQuestionSummary> {
+    const qText = (dto.question || (dto as any).questionText || "").trim();
+    const order = dto.orderNumber ?? (dto as any).orderIndex;
     const question = await this.applicantsRepository.createQuestion({
-      question: dto.question.trim(),
-      orderNumber: dto.orderNumber,
-      isActive: dto.isActive,
+      question: qText,
+      fieldType: dto.fieldType || "SHORT_TEXT",
+      isRequired: dto.isRequired ?? false,
+      options: dto.options,
+      placeholder: dto.placeholder,
+      helpText: dto.helpText,
+      category: dto.category || "GENERAL",
+      orderNumber: order,
+      isActive: dto.isActive ?? true,
     });
 
     return sanitizeQuestionResponse(question);
+  }
+
+  /**
+   * Updates an existing application question.
+   */
+  public async updateQuestion(id: string, dto: UpdateQuestionInput): Promise<ApplicationQuestionSummary> {
+    const existing = await this.applicantsRepository.findQuestionById(id);
+    if (!existing) {
+      throw new NotFoundError(`Question with ID '${id}' was not found`, ERROR_CODES.QUESTION_NOT_FOUND);
+    }
+
+    const qText = dto.question !== undefined ? dto.question.trim() : (dto as any).questionText !== undefined ? (dto as any).questionText.trim() : undefined;
+    const order = dto.orderNumber !== undefined ? dto.orderNumber : (dto as any).orderIndex !== undefined ? (dto as any).orderIndex : undefined;
+
+    const updated = await this.applicantsRepository.updateQuestion(id, {
+      question: qText,
+      fieldType: dto.fieldType,
+      isRequired: dto.isRequired,
+      options: dto.options,
+      placeholder: dto.placeholder,
+      helpText: dto.helpText,
+      category: dto.category,
+      orderNumber: order,
+      isActive: dto.isActive,
+    });
+
+    return sanitizeQuestionResponse(updated);
+  }
+
+  /**
+   * Deletes or deactivates an application question.
+   */
+  public async deleteQuestion(id: string): Promise<{ success: boolean; message: string }> {
+    const existing = await this.applicantsRepository.findQuestionById(id);
+    if (!existing) {
+      throw new NotFoundError(`Question with ID '${id}' was not found`, ERROR_CODES.QUESTION_NOT_FOUND);
+    }
+
+    await this.applicantsRepository.deleteQuestion(id);
+    return {
+      success: true,
+      message: `Question '${id}' has been removed/deactivated`,
+    };
+  }
+
+  /**
+   * Reorders multiple application questions.
+   */
+  public async reorderQuestions(dto: { questionOrders?: { id: string; orderNumber: number }[]; questionIds?: string[] }): Promise<readonly ApplicationQuestionSummary[]> {
+    let orders: { id: string; orderNumber: number }[] = [];
+    if (dto.questionOrders && dto.questionOrders.length > 0) {
+      orders = dto.questionOrders;
+    } else if (dto.questionIds && dto.questionIds.length > 0) {
+      orders = dto.questionIds.map((id, index) => ({ id, orderNumber: index + 1 }));
+    }
+
+    const questions = await this.applicantsRepository.reorderQuestions(orders);
+    return questions.map((q) => sanitizeQuestionResponse(q));
   }
 
   /**

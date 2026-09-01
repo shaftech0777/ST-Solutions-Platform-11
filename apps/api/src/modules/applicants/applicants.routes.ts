@@ -8,10 +8,13 @@ import {
   createApplicationSchema,
   createQuestionSchema,
   onboardApplicantSchema,
+  questionIdParamSchema,
   rejectApplicationSchema,
+  reorderQuestionsSchema,
   reviewApplicationSchema,
   submitAnswersSchema,
   updateApplicationSchema,
+  updateQuestionSchema,
   verificationSchema,
 } from "./applicants.validation.js";
 
@@ -60,6 +63,49 @@ applicantsRouter.post(
   requirePermission("applicants.update"),
   validate({ body: createQuestionSchema }),
   applicantsController.createQuestion
+);
+
+/**
+ * @route PATCH /applicants/questions/:questionId
+ * @desc Updates an existing application question
+ * @access Protected (Requires applicants.update permission or ADMIN)
+ */
+applicantsRouter.patch(
+  "/questions/:questionId",
+  requirePermission("applicants.update"),
+  validate({ params: questionIdParamSchema, body: updateQuestionSchema }),
+  applicantsController.updateQuestion
+);
+
+/**
+ * @route DELETE /applicants/questions/:questionId
+ * @desc Deletes or deactivates an application question
+ * @access Protected (Requires applicants.update permission or ADMIN)
+ */
+applicantsRouter.delete(
+  "/questions/:questionId",
+  requirePermission("applicants.update"),
+  validate({ params: questionIdParamSchema }),
+  applicantsController.deleteQuestion
+);
+
+/**
+ * @route POST /applicants/questions/reorder
+ * @desc Reorders application questions
+ * @access Protected (Requires applicants.update permission or ADMIN)
+ */
+applicantsRouter.post(
+  "/questions/reorder",
+  requirePermission("applicants.update"),
+  validate({ body: reorderQuestionsSchema }),
+  applicantsController.reorderQuestions
+);
+
+applicantsRouter.put(
+  "/questions/reorder",
+  requirePermission("applicants.update"),
+  validate({ body: reorderQuestionsSchema }),
+  applicantsController.reorderQuestions
 );
 
 /**

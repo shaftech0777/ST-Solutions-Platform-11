@@ -40,15 +40,70 @@ export const ApplyPage: React.FC = () => {
     resumeText: "",
   });
 
+  const [dynamicQuestions, setDynamicQuestions] = useState<any[]>([]);
+  const [dynamicAnswers, setDynamicAnswers] = useState<Record<string, any>>({});
+  const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        setIsLoadingQuestions(true);
+        const res = await apiClient<any[]>("/applicants/questions");
+        const list = Array.isArray(res) ? res : (res as any)?.data || [];
+        setDynamicQuestions(list.filter((q: any) => q.isActive !== false));
+      } catch (err) {
+        console.warn("Could not load dynamic questions, continuing with base form", err);
+      } finally {
+        setIsLoadingQuestions(false);
+      }
+    };
+    fetchQuestions();
+  }, []);
+
+  const handleDynamicAnswerChange = (questionId: string, value: any) => {
+    setDynamicAnswers((prev) => ({
+      ...prev,
+      [questionId]: value,
+    }));
+  };
+
+  const handleCheckboxToggle = (questionId: string, option: string) => {
+    setDynamicAnswers((prev) => {
+      const currentList: string[] = Array.isArray(prev[questionId]) ? prev[questionId] : [];
+      const exists = currentList.includes(option);
+      const nextList = exists ? currentList.filter((item) => item !== option) : [...currentList, option];
+      return {
+        ...prev,
+        [questionId]: nextList,
+      };
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.fullName.trim() || !formData.email.trim() || !formData.roleApplied) {
       setErrorMessage("Please complete all required application fields.");
       return;
+    }
+
+    // Check required dynamic questions
+    for (const q of dynamicQuestions) {
+      const qTitle = q.question || q.questionText || "Question";
+      const answerVal = dynamicAnswers[q.id];
+      const isAnswerEmpty =
+        answerVal === undefined ||
+        answerVal === null ||
+        (Array.isArray(answerVal) && answerVal.length === 0) ||
+        (typeof answerVal === "string" && answerVal.trim() === "");
+
+      if (q.isRequired && isAnswerEmpty) {
+        setErrorMessage(`Please complete the required question: "${qTitle}"`);
+        return;
+      }
     }
 
     setIsSubmitting(true);
@@ -59,18 +114,26 @@ export const ApplyPage: React.FC = () => {
       .map((s) => s.trim())
       .filter(Boolean);
 
+    const formattedAnswers = Object.entries(dynamicAnswers)
+      .filter(([_, val]) => val !== undefined && val !== null && String(val).trim() !== "")
+      .map(([questionId, val]) => ({
+        questionId,
+        answer: Array.isArray(val) ? JSON.stringify(val) : String(val),
+      }));
+
     try {
       await apiClient("/applicants", {
         method: "POST",
         body: {
           fullName: formData.fullName.trim(),
-          email: formData.email.trim(),
+          email: formData.email.trim().toLowerCase(),
           phoneNumber: formData.phoneNumber.trim() || undefined,
           roleApplied: formData.roleApplied,
           experienceYears: Number(formData.experienceYears) || 0,
           skills: skillsArray,
           portfolioUrl: formData.portfolioUrl.trim() || undefined,
           resumeText: formData.resumeText.trim() || undefined,
+          answers: formattedAnswers.length > 0 ? formattedAnswers : undefined,
         },
       });
 
@@ -308,6 +371,168 @@ export const ApplyPage: React.FC = () => {
                   className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none resize-none"
                 />
               </div>
+
+              {/* Dynamic Application Questions */}
+              {dynamicQuestions.length > 0 && (
+                <div className="space-y-4 pt-4 border-t border-[#E2E5E0]">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-bold text-slate-950">
+                      Additional Position Details
+                    </h3>
+                    <span className="text-[11px] text-[#B88E20] font-medium font-mono">
+                      Dynamic Form Builder
+                    </span>
+                  </div>
+
+                  {dynamicQuestions.map((q) => {
+                    const qTitle = q.question || q.questionText || "Question";
+                    const value = dynamicAnswers[q.id] ?? "";
+                    const type = (q.fieldType || "SHORT_TEXT").toUpperCase();
+                    const optionsList: string[] = Array.isArray(q.options)
+                      ? q.options
+                      : typeof q.options === "string"
+                      ? q.options.split(",").map((s: string) => s.trim()).filter(Boolean)
+                      : [];
+
+                    return (
+                      <div key={q.id} className="space-y-1.5">
+                        <label className="block text-xs font-bold text-slate-800">
+                          {qTitle} {q.isRequired && <span className="text-rose-500">*</span>}
+                        </label>
+                        {q.helpText && (
+                          <p className="text-[11px] text-slate-500">{q.helpText}</p>
+                        )}
+
+                        {type === "LONG_TEXT" ? (
+                          <textarea
+                            rows={3}
+                            required={q.isRequired}
+                            value={value}
+                            onChange={(e) => handleDynamicAnswerChange(q.id, e.target.value)}
+                            placeholder={q.placeholder || "Enter your response..."}
+                            className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none resize-none"
+                          />
+                        ) : type === "DROPDOWN" || type === "SELECT" ? (
+                          <select
+                            required={q.isRequired}
+                            value={value}
+                            onChange={(e) => handleDynamicAnswerChange(q.id, e.target.value)}
+                            className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                          >
+                            <option value="">Select an option...</option>
+                            {optionsList.map((opt: string, idx: number) => (
+                              <option key={idx} value={opt}>
+                                {opt}
+                              </option>
+                            ))}
+                          </select>
+                        ) : type === "RADIO" ? (
+                          <div className="space-y-2 pt-1">
+                            {optionsList.map((opt: string, idx: number) => (
+                              <label key={idx} className="flex items-center gap-2 text-xs text-slate-800 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name={`question_${q.id}`}
+                                  value={opt}
+                                  checked={value === opt}
+                                  required={q.isRequired && !value}
+                                  onChange={(e) => handleDynamicAnswerChange(q.id, e.target.value)}
+                                  className="w-4 h-4 text-[#D4AF37] focus:ring-[#D4AF37] border-gray-300"
+                                />
+                                <span>{opt}</span>
+                              </label>
+                            ))}
+                          </div>
+                        ) : type === "CHECKBOX" || type === "MULTI_SELECT" ? (
+                          <div className="space-y-2 pt-1">
+                            {optionsList.length > 0 ? (
+                              optionsList.map((opt: string, idx: number) => {
+                                const selectedArr = Array.isArray(value) ? value : [];
+                                const isChecked = selectedArr.includes(opt);
+                                return (
+                                  <label key={idx} className="flex items-center gap-2 text-xs text-slate-800 cursor-pointer">
+                                    <input
+                                      type="checkbox"
+                                      value={opt}
+                                      checked={isChecked}
+                                      onChange={() => handleCheckboxToggle(q.id, opt)}
+                                      className="w-4 h-4 rounded text-[#D4AF37] focus:ring-[#D4AF37] border-gray-300"
+                                    />
+                                    <span>{opt}</span>
+                                  </label>
+                                );
+                              })
+                            ) : (
+                              <label className="flex items-center gap-2 text-xs text-slate-800 cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={!!value}
+                                  onChange={(e) => handleDynamicAnswerChange(q.id, e.target.checked ? "Yes" : "No")}
+                                  className="w-4 h-4 rounded text-[#D4AF37] focus:ring-[#D4AF37] border-gray-300"
+                                />
+                                <span>{q.placeholder || "I confirm / agree"}</span>
+                              </label>
+                            )}
+                          </div>
+                        ) : type === "NUMBER" ? (
+                          <input
+                            type="number"
+                            required={q.isRequired}
+                            value={value}
+                            onChange={(e) => handleDynamicAnswerChange(q.id, e.target.value)}
+                            placeholder={q.placeholder || "0"}
+                            className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                          />
+                        ) : type === "DATE" ? (
+                          <input
+                            type="date"
+                            required={q.isRequired}
+                            value={value}
+                            onChange={(e) => handleDynamicAnswerChange(q.id, e.target.value)}
+                            className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                          />
+                        ) : type === "EMAIL" ? (
+                          <input
+                            type="email"
+                            required={q.isRequired}
+                            value={value}
+                            onChange={(e) => handleDynamicAnswerChange(q.id, e.target.value)}
+                            placeholder={q.placeholder || "name@example.com"}
+                            className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                          />
+                        ) : type === "PHONE" ? (
+                          <input
+                            type="tel"
+                            required={q.isRequired}
+                            value={value}
+                            onChange={(e) => handleDynamicAnswerChange(q.id, e.target.value)}
+                            placeholder={q.placeholder || "+1 (555) 000-0000"}
+                            className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                          />
+                        ) : type === "URL" || type === "FILE_UPLOAD" ? (
+                          <input
+                            type="url"
+                            required={q.isRequired}
+                            value={value}
+                            onChange={(e) => handleDynamicAnswerChange(q.id, e.target.value)}
+                            placeholder={q.placeholder || (type === "FILE_UPLOAD" ? "https://drive.google.com/... or resume URL" : "https://...")}
+                            className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                          />
+                        ) : (
+                          <input
+                            type="text"
+                            required={q.isRequired}
+                            value={value}
+                            onChange={(e) => handleDynamicAnswerChange(q.id, e.target.value)}
+                            placeholder={q.placeholder || "Your answer..."}
+                            className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
 
               <div className="pt-2">
                 <button

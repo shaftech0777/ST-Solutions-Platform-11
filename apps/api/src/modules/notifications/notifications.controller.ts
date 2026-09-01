@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { ResponseBuilder } from "../../core/responses/index.js";
 import { NotificationsService } from "./notifications.service.js";
+import { notificationStreamManager } from "./notifications.stream.js";
 
 export class NotificationsController {
   private readonly notificationsService: NotificationsService;
@@ -9,9 +10,26 @@ export class NotificationsController {
     this.notificationsService = notificationsService;
   }
 
+  private getAuthUserId(req: Request): string {
+    return (req as any).user?.userId || (req as any).user?.id;
+  }
+
+  public streamNotifications = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = this.getAuthUserId(req);
+      if (!userId) {
+        res.status(401).json({ success: false, error: "Unauthorized SSE stream access" });
+        return;
+      }
+      notificationStreamManager.addConnection(userId, res);
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public getNotifications = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user?.id;
+      const userId = this.getAuthUserId(req);
       const filters = req.query as any;
       const result = await this.notificationsService.getUserNotifications(userId, filters);
 
@@ -27,7 +45,7 @@ export class NotificationsController {
 
   public getUnreadCount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user?.id;
+      const userId = this.getAuthUserId(req);
       const result = await this.notificationsService.getUnreadCount(userId);
 
       ResponseBuilder.success(res, result, {
@@ -40,7 +58,7 @@ export class NotificationsController {
 
   public markAsRead = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user?.id;
+      const userId = this.getAuthUserId(req);
       const { notificationId } = req.params;
       const result = await this.notificationsService.markAsRead(notificationId, userId);
 
@@ -54,7 +72,7 @@ export class NotificationsController {
 
   public markAsUnread = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user?.id;
+      const userId = this.getAuthUserId(req);
       const { notificationId } = req.params;
       const result = await this.notificationsService.markAsUnread(notificationId, userId);
 
@@ -68,7 +86,7 @@ export class NotificationsController {
 
   public markAllAsRead = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user?.id;
+      const userId = this.getAuthUserId(req);
       const result = await this.notificationsService.markAllAsRead(userId);
 
       ResponseBuilder.success(res, result, {
@@ -81,7 +99,7 @@ export class NotificationsController {
 
   public getPreferences = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user?.id;
+      const userId = this.getAuthUserId(req);
       const result = await this.notificationsService.getUserPreferences(userId);
 
       ResponseBuilder.success(res, result, {
@@ -94,7 +112,7 @@ export class NotificationsController {
 
   public updatePreferences = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user?.id;
+      const userId = this.getAuthUserId(req);
       const input = req.body;
       const result = await this.notificationsService.updateUserPreferences(userId, input);
 

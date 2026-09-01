@@ -171,6 +171,51 @@ export class ClientsController {
       next(error);
     }
   };
+
+  /**
+   * GET /api/v1/clients/:clientId/communications
+   * Retrieves communication logs for a client.
+   */
+  public getClientCommunications = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const authReq = req as AuthenticatedRequest;
+      const { clientId } = req.params;
+      const actor = authReq.user
+        ? { userId: authReq.user.userId, accountType: authReq.user.accountType as AccountType }
+        : undefined;
+
+      const logs = await this.clientsService.getCommunications(clientId, actor);
+
+      ResponseBuilder.success(res, logs, {
+        message: "Client communication logs retrieved successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * POST /api/v1/clients/:clientId/communications
+   * Adds a communication message or note to a client log.
+   */
+  public createClientCommunication = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const authReq = req as AuthenticatedRequest;
+      const { clientId } = req.params;
+      const body = req.body;
+      const actor = authReq.user
+        ? { userId: authReq.user.userId, accountType: authReq.user.accountType as AccountType }
+        : undefined;
+
+      const created = await this.clientsService.createCommunication(clientId, body, actor);
+
+      ResponseBuilder.created(res, created, {
+        message: "Client communication recorded successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export const clientsController = new ClientsController();

@@ -218,17 +218,116 @@ export class ApplicantsRepository extends BaseRepository {
    * Creates a new ApplicationQuestion record.
    */
   public async createQuestion(
-    data: { question: string; orderNumber: number; isActive?: boolean },
+    data: {
+      question: string;
+      fieldType?: string;
+      isRequired?: boolean;
+      options?: any;
+      placeholder?: string | null;
+      helpText?: string | null;
+      category?: string | null;
+      orderNumber?: number;
+      isActive?: boolean;
+    },
     tx?: TransactionClient
   ) {
     return this.execute(async () => {
       const client = this.getClient(tx);
+      let order = data.orderNumber;
+      if (order === undefined || order === null) {
+        const count = await client.applicationQuestion.count();
+        order = count + 1;
+      }
       return client.applicationQuestion.create({
         data: {
           question: data.question,
-          orderNumber: data.orderNumber,
+          fieldType: data.fieldType || "SHORT_TEXT",
+          isRequired: data.isRequired ?? false,
+          options: data.options ?? undefined,
+          placeholder: data.placeholder ?? null,
+          helpText: data.helpText ?? null,
+          category: data.category || "GENERAL",
+          orderNumber: order,
           isActive: data.isActive ?? true,
         },
+      });
+    });
+  }
+
+  /**
+   * Updates an existing ApplicationQuestion record.
+   */
+  public async updateQuestion(
+    id: string,
+    data: {
+      question?: string;
+      fieldType?: string;
+      isRequired?: boolean;
+      options?: any;
+      placeholder?: string | null;
+      helpText?: string | null;
+      category?: string | null;
+      orderNumber?: number;
+      isActive?: boolean;
+    },
+    tx?: TransactionClient
+  ) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      return client.applicationQuestion.update({
+        where: { id },
+        data: {
+          question: data.question,
+          fieldType: data.fieldType,
+          isRequired: data.isRequired,
+          options: data.options !== undefined ? data.options : undefined,
+          placeholder: data.placeholder,
+          helpText: data.helpText,
+          category: data.category,
+          orderNumber: data.orderNumber,
+          isActive: data.isActive,
+        },
+      });
+    });
+  }
+
+  /**
+   * Deletes or deactivates an ApplicationQuestion record.
+   */
+  public async deleteQuestion(id: string, tx?: TransactionClient) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      // Soft-delete / deactivate first to ensure historical answers remain intact
+      const answerCount = await client.applicationAnswer.count({ where: { questionId: id } });
+      if (answerCount > 0) {
+        return client.applicationQuestion.update({
+          where: { id },
+          data: { isActive: false },
+        });
+      }
+      return client.applicationQuestion.delete({
+        where: { id },
+      });
+    });
+  }
+
+  /**
+   * Reorders multiple ApplicationQuestion records in batch.
+   */
+  public async reorderQuestions(
+    questionOrders: readonly { id: string; orderNumber: number }[],
+    tx?: TransactionClient
+  ) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      for (const item of questionOrders) {
+        await client.applicationQuestion.update({
+          where: { id: item.id },
+          data: { orderNumber: item.orderNumber },
+        });
+      }
+      return client.applicationQuestion.findMany({
+        orderBy: { orderNumber: "asc" },
       });
     });
   }

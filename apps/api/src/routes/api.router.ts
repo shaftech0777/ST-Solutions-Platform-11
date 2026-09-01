@@ -15,8 +15,13 @@ import { settingsRouter } from "../modules/settings/index.js";
 import { auditRouter } from "../modules/audit/index.js";
 import { notificationsRouter } from "../modules/notifications/index.js";
 import { aiRouter } from "../modules/ai/index.js";
+import { projectInquiriesRouter, projectInquiriesController } from "../modules/project-inquiries/index.js";
 
 export const apiRouter = Router();
+
+// Public Visitor Endpoints
+apiRouter.post("/public/project-inquiries", projectInquiriesController.createPublicInquiry);
+apiRouter.post("/public/inquiries", projectInquiriesController.createPublicInquiry);
 
 // Mount Domain Module Routers
 apiRouter.use("/auth", authRouter);
@@ -30,11 +35,14 @@ apiRouter.use("/members", membersRouter);
 apiRouter.use("/clients", clientsRouter);
 apiRouter.use("/client-requests", clientRequestsRouter);
 apiRouter.use("/projects", projectsRouter);
+apiRouter.use("/inquiries", projectInquiriesRouter);
+apiRouter.use("/project-inquiries", projectInquiriesRouter);
 apiRouter.use("/payments", paymentsRouter);
 apiRouter.use("/settings", settingsRouter);
 apiRouter.use("/audit-logs", auditRouter);
 apiRouter.use("/notifications", notificationsRouter);
 apiRouter.use("/ai", aiRouter);
+
 
 
 

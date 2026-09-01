@@ -273,6 +273,92 @@ export class ClientsRepository extends BaseRepository {
       const client = this.getClient(tx);
       return client.member.findUnique({
         where: { id: memberId },
+        include: {
+          manager: {
+            include: {
+              user: true,
+            },
+          },
+        },
+      });
+    });
+  }
+
+  /**
+   * Finds member by associated user ID.
+   */
+  public async findMemberByUserId(userId: string, tx?: TransactionClient) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      return client.member.findUnique({
+        where: { userId },
+        include: {
+          manager: {
+            include: {
+              user: true,
+            },
+          },
+        },
+      });
+    });
+  }
+
+  /**
+   * Retrieves communication logs for a specific client.
+   */
+  public async findCommunicationsByClientId(clientId: string, tx?: TransactionClient) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      return client.communicationLog.findMany({
+        where: { clientId },
+        include: {
+          user: {
+            include: {
+              profile: true,
+              role: true,
+            },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+      });
+    });
+  }
+
+  /**
+   * Creates a new communication log entry for a client.
+   */
+  public async createCommunication(
+    data: {
+      clientId: string;
+      userId?: string | null;
+      type: string;
+      destination: string;
+      subject?: string | null;
+      content: string;
+      success?: boolean;
+    },
+    tx?: TransactionClient
+  ) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      return client.communicationLog.create({
+        data: {
+          clientId: data.clientId,
+          userId: data.userId || null,
+          type: data.type,
+          destination: data.destination,
+          subject: data.subject || null,
+          content: data.content,
+          success: data.success ?? true,
+        },
+        include: {
+          user: {
+            include: {
+              profile: true,
+              role: true,
+            },
+          },
+        },
       });
     });
   }

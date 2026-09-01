@@ -568,6 +568,8 @@ export function createMockPrismaClient(): any {
     themeSettings: "themeSettings",
     cMSSection: "cmsSections",
     cmsSection: "cmsSections",
+    projectInquiry: "projectInquiries",
+    inquiryActivity: "inquiryActivities",
   };
 
   const delegatesCache: Record<string, any> = {};

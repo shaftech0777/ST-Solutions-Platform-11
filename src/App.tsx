@@ -51,6 +51,9 @@ const WorkspacesPage = lazy(() =>
 const ClientsPage = lazy(() =>
   import("./pages/ClientsPage.js").then((m) => ({ default: m.ClientsPage }))
 );
+const InquiriesPage = lazy(() =>
+  import("./pages/InquiriesPage.js").then((m) => ({ default: m.InquiriesPage }))
+);
 const PlatformProjectsPage = lazy(() =>
   import("./pages/ProjectsPage.js").then((m) => ({ default: m.ProjectsPage }))
 );
@@ -222,6 +225,16 @@ export function App() {
                     <ApplicationShell>
                       <ProtectedRoute module="clients">
                         <ClientsPage />
+                      </ProtectedRoute>
+                    </ApplicationShell>
+                  }
+                />
+                <Route
+                  path="/inquiries"
+                  element={
+                    <ApplicationShell>
+                      <ProtectedRoute module="inquiries">
+                        <InquiriesPage />
                       </ProtectedRoute>
                     </ApplicationShell>
                   }

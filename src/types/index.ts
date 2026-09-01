@@ -239,8 +239,13 @@ export interface NotificationItem {
   message: string;
   read: boolean;
   isRead?: boolean;
+  priority?: string;
+  actionUrl?: string | null;
   link?: string | null;
+  entityType?: string | null;
+  entityId?: string | null;
   data?: Record<string, any> | null;
+  metadata?: Record<string, any> | null;
   createdAt: string;
   updatedAt?: string;
 }
@@ -286,3 +291,60 @@ export interface LoginResponse {
   organizations?: Organization[];
   workspaces?: Workspace[];
 }
+
+export type InquiryStatus = "NEW" | "CONTACTED" | "IN_PROGRESS" | "CONVERTED" | "CLOSED" | "SPAM";
+export type InquiryPriority = "LOW" | "NORMAL" | "HIGH" | "URGENT";
+export type InquiryContactMethod = "WHATSAPP" | "EMAIL" | "PHONE_CALL";
+
+export interface InquiryActivity {
+  id: string;
+  inquiryId: string;
+  userId?: string | null;
+  userName?: string | null;
+  action: string;
+  contactMethod?: string | null;
+  details?: string | null;
+  createdAt: string;
+}
+
+export interface ProjectInquiry {
+  id: string;
+  visitorName: string;
+  email: string;
+  phone: string;
+  companyName?: string | null;
+  country?: string | null;
+  projectId?: string | null;
+  projectNameSnapshot: string;
+  category?: string | null;
+  message: string;
+  preferredContactMethod: InquiryContactMethod;
+  budget?: string | null;
+  preferredContactTime?: string | null;
+  status: InquiryStatus;
+  priority: InquiryPriority;
+  createdAt: string;
+  updatedAt: string;
+  contactedAt?: string | null;
+  contactedById?: string | null;
+  contactedByName?: string | null;
+  adminNotes?: string | null;
+  activities?: InquiryActivity[];
+}
+
+export interface ProjectInquiryStats {
+  total: number;
+  newCount: number;
+  inProgressCount: number;
+  contactedCount: number;
+  convertedCount: number;
+  closedCount: number;
+  spamCount: number;
+  urgentCount: number;
+  byContactMethod: {
+    whatsapp: number;
+    email: number;
+    phoneCall: number;
+  };
+}
+

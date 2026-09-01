@@ -96,6 +96,9 @@ model User {
   workspaceMemberships    WorkspaceMember[]    @relation("UserWorkspaceMemberships")
   sentInvitations         Invitation[]         @relation("SentInvitations")
 
+  contactedInquiries      ProjectInquiry[]     @relation("InquiryContactedBy")
+  inquiryActivities       InquiryActivity[]    @relation("UserInquiryActivities")
+
   @@index([email])
   @@index([status])
   @@index([accountType])
@@ -183,6 +186,12 @@ model MemberApplication {
 model ApplicationQuestion {
   id          String   @id @default(uuid())
   question    String
+  fieldType   String   @default("SHORT_TEXT")
+  isRequired  Boolean  @default(false)
+  options     Json?
+  placeholder String?
+  helpText    String?
+  category    String?  @default("GENERAL")
   orderNumber Int
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
@@ -845,6 +854,7 @@ enum NotificationType {
   MEMBER
   CLIENT
   PROJECT
+  PROJECT_INQUIRY
   PAYMENT
   APPLICATION
   AI
@@ -1782,5 +1792,82 @@ model CMSSection {
   @@index([sectionKey])
   @@index([isVisible])
 }
+
+// ====================================================
+// MODULE 18: PROJECT INQUIRIES & LEAD MANAGEMENT
+// ====================================================
+
+enum InquiryStatus {
+  NEW
+  CONTACTED
+  IN_PROGRESS
+  CONVERTED
+  CLOSED
+  SPAM
+}
+
+enum InquiryPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum InquiryContactMethod {
+  WHATSAPP
+  EMAIL
+  PHONE_CALL
+}
+
+model ProjectInquiry {
+  id                     String               @id @default(uuid())
+  visitorName            String
+  email                  String
+  phone                  String
+  companyName            String?
+  country                String?
+  projectId              String?
+  projectNameSnapshot    String
+  category               String?
+  message                String
+  preferredContactMethod InquiryContactMethod @default(WHATSAPP)
+  budget                 String?
+  preferredContactTime   String?
+  status                 InquiryStatus        @default(NEW)
+  priority               InquiryPriority      @default(NORMAL)
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  contactedAt            DateTime?
+  contactedById          String?
+  adminNotes             String?
+
+  contactedBy User?             @relation("InquiryContactedBy", fields: [contactedById], references: [id], onDelete: SetNull)
+  activities  InquiryActivity[]
+
+  @@index([status])
+  @@index([priority])
+  @@index([projectId])
+  @@index([createdAt])
+  @@index([email])
+}
+
+model InquiryActivity {
+  id            String   @id @default(uuid())
+  inquiryId     String
+  userId        String?
+  action        String   // "INQUIRY_CREATED", "CONTACT_ATTEMPTED", "STATUS_CHANGED", "PRIORITY_CHANGED", "NOTE_ADDED"
+  contactMethod String?  // "WHATSAPP", "EMAIL", "PHONE_CALL"
+  details       String?
+  createdAt     DateTime @default(now())
+
+  inquiry ProjectInquiry @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+  user    User?          @relation("UserInquiryActivities", fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([inquiryId])
+  @@index([userId])
+  @@index([createdAt])
+  @@index([action])
+}
+
 
 

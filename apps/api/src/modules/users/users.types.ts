@@ -26,6 +26,49 @@ export interface UserProfileData {
   readonly address: string | null;
 }
 
+export interface UserHierarchySummary {
+  readonly supervisor?: {
+    readonly id: string;
+    readonly fullName: string | null;
+    readonly email: string | null;
+    readonly role: string;
+  } | null;
+  readonly managedUsersCount?: number;
+  readonly managedUsers?: readonly {
+    readonly id: string;
+    readonly fullName: string | null;
+    readonly email: string | null;
+    readonly role: string;
+    readonly status: string;
+  }[];
+  readonly memberAccount?: {
+    readonly id: string;
+    readonly rankName?: string | null;
+    readonly status?: string;
+    readonly managerName?: string | null;
+  } | null;
+}
+
+export interface UserWorkSummary {
+  readonly assignedClientsCount: number;
+  readonly activeProjectsCount: number;
+  readonly performanceScore?: number | null;
+  readonly clients?: readonly {
+    readonly id: string;
+    readonly fullName: string;
+    readonly companyName?: string | null;
+    readonly clientStatus: string;
+  }[];
+}
+
+export interface UserSecuritySummary {
+  readonly status: UserStatus;
+  readonly suspensionReason?: string | null;
+  readonly suspendedAt?: Date | null;
+  readonly lastLogin?: Date | null;
+  readonly activeSessionsCount?: number;
+}
+
 export interface UserResponse {
   readonly id: string;
   readonly email: string | null;
@@ -41,6 +84,9 @@ export interface UserResponse {
   readonly suspensionReason?: string | null;
   readonly suspendedAt?: Date | null;
   readonly profile?: UserProfileData | null;
+  readonly hierarchy?: UserHierarchySummary | null;
+  readonly work?: UserWorkSummary | null;
+  readonly security?: UserSecuritySummary | null;
   readonly createdAt: Date;
   readonly updatedAt: Date;
 }

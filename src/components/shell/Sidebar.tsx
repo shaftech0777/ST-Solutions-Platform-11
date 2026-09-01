@@ -16,6 +16,7 @@ import {
   ChevronLeft,
   ChevronRight,
   UserCheck,
+  Inbox,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext.js";
 import { usePermission } from "../../hooks/usePermission.js";
@@ -67,6 +68,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
     {
       title: "Business Operations",
       items: [
+        { label: "Inquiries & Leads", path: "/inquiries", icon: Inbox, module: "inquiries" },
         { label: "Organizations", path: "/organizations", icon: Building2, module: "organizations" },
         { label: "Workspaces", path: "/workspaces", icon: Briefcase, module: "workspaces" },
         { label: "Clients", path: "/clients", icon: Users, module: "clients" },

@@ -27,4 +27,29 @@ export const clientsService = {
   async delete(id: string) {
     return apiClient(`/clients/${id}`, { method: "DELETE" });
   },
+
+  async updateStatus(id: string, clientStatus: string, statusReason?: string) {
+    return apiClient<Client>(`/clients/${id}/status`, {
+      method: "PATCH",
+      body: { clientStatus, statusReason },
+    });
+  },
+
+  async updateOwnership(id: string, data: { memberId?: string; assignedManagerId?: string; notes?: string }) {
+    return apiClient<Client>(`/clients/${id}/owner`, {
+      method: "PATCH",
+      body: data,
+    });
+  },
+
+  async getCommunications(clientId: string) {
+    return apiClient<any[]>(`/clients/${clientId}/communications`);
+  },
+
+  async createCommunication(clientId: string, data: { type?: string; destination?: string; subject?: string; content: string }) {
+    return apiClient<any>(`/clients/${clientId}/communications`, {
+      method: "POST",
+      body: data,
+    });
+  },
 };

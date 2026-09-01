@@ -27,6 +27,8 @@ import {
   List,
   Sparkles,
   Award,
+  Sliders,
+  FileQuestion,
 } from "lucide-react";
 import { PageHeader } from "../components/shell/PageHeader.js";
 import { Table, TableHeader, TableRow, TableHead, TableCell } from "../components/ui/Table.js";
@@ -42,6 +44,7 @@ import { useToast } from "../context/ToastContext.js";
 import { useAuth } from "../context/AuthContext.js";
 import { applicantsService } from "../api/services/applicants.service.js";
 import { Applicant, ApplicantStatus } from "../types/index.js";
+import { ApplicationFormBuilder } from "../components/applicants/ApplicationFormBuilder.js";
 
 const APPLICANT_STATUS_OPTIONS = [
   { value: "ALL", label: "All Application Stages" },
@@ -56,6 +59,7 @@ export const ApplicantsPage: React.FC = () => {
   const { addToast } = useToast();
   const { currentUser, currentOrganization, currentWorkspace, isLoading: isAuthLoading } = useAuth();
 
+  const [activeTab, setActiveTab] = useState<"pipeline" | "form_builder">("pipeline");
   const [applicants, setApplicants] = useState<Applicant[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -68,6 +72,8 @@ export const ApplicantsPage: React.FC = () => {
   // Modals & Action states
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedApplicant, setSelectedApplicant] = useState<Applicant | null>(null);
+  const [selectedApplicantAnswers, setSelectedApplicantAnswers] = useState<any[]>([]);
+  const [isLoadingAnswers, setIsLoadingAnswers] = useState(false);
   const [reviewingApplicant, setReviewingApplicant] = useState<Applicant | null>(null);
   const [onboardingApplicant, setOnboardingApplicant] = useState<Applicant | null>(null);
   const [rejectingApplicant, setRejectingApplicant] = useState<Applicant | null>(null);
@@ -108,6 +114,22 @@ export const ApplicantsPage: React.FC = () => {
     accountType: "MEMBER",
     temporaryPassword: "TempPassword123!",
   });
+
+  const handleOpenDossier = async (applicant: Applicant) => {
+    setSelectedApplicant(applicant);
+    setIsLoadingAnswers(true);
+    try {
+      const answersRes = await applicantsService.getAnswers(applicant.id);
+      const list = Array.isArray(answersRes)
+        ? answersRes
+        : (answersRes as any)?.data || (applicant as any).answers || [];
+      setSelectedApplicantAnswers(list);
+    } catch {
+      setSelectedApplicantAnswers((applicant as any).answers || []);
+    } finally {
+      setIsLoadingAnswers(false);
+    }
+  };
 
   const loadApplicants = async () => {
     if (!currentUser) return;
@@ -365,67 +387,106 @@ export const ApplicantsPage: React.FC = () => {
         }
       />
 
-      {/* Summary KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="applicants-kpi-summary">
-        <Card className="p-5 border-border/60 bg-surface">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">Total Pipeline</span>
-            <div className="w-8 h-8 rounded-lg bg-surface-hover flex items-center justify-center text-text">
-              <UserCheck className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <div className="text-2xl font-bold text-text">{stats.total}</div>
-            <p className="text-xs text-text-muted mt-1">Active talent acquisition pool</p>
-          </div>
-        </Card>
+      {/* Navigation Tabs: Pipeline vs Dynamic Form Builder */}
+      <div className="flex items-center gap-2 border-b border-border/80 pb-3">
+        <button
+          type="button"
+          onClick={() => setActiveTab("pipeline")}
+          className={`flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all ${
+            activeTab === "pipeline"
+              ? "bg-gold text-slate-950 shadow-xs"
+              : "text-text-muted hover:text-text hover:bg-surface-hover"
+          }`}
+        >
+          <UserCheck className="w-4 h-4" />
+          Candidate Pipeline & Review
+          <span className="ml-1 text-[11px] px-2 py-0.5 rounded-full bg-surface-hover/80 border border-border">
+            {applicants.length}
+          </span>
+        </button>
 
-        <Card className="p-5 border-amber-500/20 bg-surface">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-amber-500 uppercase tracking-wider">In Review & Interview</span>
-            <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-500">
-              <Clock className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <div className="text-2xl font-bold text-text">{stats.underReview}</div>
-            <p className="text-xs text-text-muted mt-1">Under active technical screening</p>
-          </div>
-        </Card>
-
-        <Card className="p-5 border-emerald-500/20 bg-surface">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-emerald-500 uppercase tracking-wider">Accepted Candidates</span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">
-              <CheckCircle2 className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <div className="text-2xl font-bold text-text">{stats.accepted}</div>
-            <p className="text-xs text-text-muted mt-1">Approved for team onboarding</p>
-          </div>
-        </Card>
-
-        <Card className="p-5 border-rose-500/20 bg-surface">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-rose-500 uppercase tracking-wider">Rejected</span>
-            <div className="w-8 h-8 rounded-lg bg-rose-500/10 flex items-center justify-center text-rose-500">
-              <XCircle className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <div className="text-2xl font-bold text-text">{stats.rejected}</div>
-            <p className="text-xs text-text-muted mt-1">Declined applications</p>
-          </div>
-        </Card>
+        <button
+          type="button"
+          onClick={() => setActiveTab("form_builder")}
+          className={`flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all ${
+            activeTab === "form_builder"
+              ? "bg-gold text-slate-950 shadow-xs"
+              : "text-text-muted hover:text-text hover:bg-surface-hover"
+          }`}
+        >
+          <Sliders className="w-4 h-4" />
+          Application Form Builder
+          <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 border border-emerald-500/30">
+            Dynamic
+          </span>
+        </button>
       </div>
 
-      {/* Filter and View Bar */}
-      <Card className="p-4 border-border/60 bg-surface">
-        <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
-          <div className="relative flex-1 min-w-[240px]">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
-            <input
+      {activeTab === "form_builder" ? (
+        <ApplicationFormBuilder />
+      ) : (
+        <>
+          {/* Summary KPI Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="applicants-kpi-summary">
+            <Card className="p-5 border-border/60 bg-surface">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">Total Pipeline</span>
+                <div className="w-8 h-8 rounded-lg bg-surface-hover flex items-center justify-center text-text">
+                  <UserCheck className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-2xl font-bold text-text">{stats.total}</div>
+                <p className="text-xs text-text-muted mt-1">Active talent acquisition pool</p>
+              </div>
+            </Card>
+
+            <Card className="p-5 border-amber-500/20 bg-surface">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-amber-500 uppercase tracking-wider">In Review & Interview</span>
+                <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-500">
+                  <Clock className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-2xl font-bold text-text">{stats.underReview}</div>
+                <p className="text-xs text-text-muted mt-1">Under active technical screening</p>
+              </div>
+            </Card>
+
+            <Card className="p-5 border-emerald-500/20 bg-surface">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-emerald-500 uppercase tracking-wider">Accepted Candidates</span>
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+                  <CheckCircle2 className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-2xl font-bold text-text">{stats.accepted}</div>
+                <p className="text-xs text-text-muted mt-1">Approved for team onboarding</p>
+              </div>
+            </Card>
+
+            <Card className="p-5 border-rose-500/20 bg-surface">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-rose-500 uppercase tracking-wider">Rejected</span>
+                <div className="w-8 h-8 rounded-lg bg-rose-500/10 flex items-center justify-center text-rose-500">
+                  <XCircle className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-2xl font-bold text-text">{stats.rejected}</div>
+                <p className="text-xs text-text-muted mt-1">Declined applications</p>
+              </div>
+            </Card>
+          </div>
+
+          {/* Filter and View Bar */}
+          <Card className="p-4 border-border/60 bg-surface">
+            <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+              <div className="relative flex-1 min-w-[240px]">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+                <input
               type="text"
               placeholder="Search by candidate name, email, skills, position, city..."
               value={search}
@@ -587,7 +648,7 @@ export const ApplicantsPage: React.FC = () => {
                               variant="outline"
                               size="xs"
                               leftIcon={<Eye className="w-3.5 h-3.5" />}
-                              onClick={() => setSelectedApplicant(applicant)}
+                              onClick={() => handleOpenDossier(applicant)}
                             >
                               Dossier
                             </Button>
@@ -674,7 +735,7 @@ export const ApplicantsPage: React.FC = () => {
                         variant="outline"
                         size="xs"
                         leftIcon={<Eye className="w-3.5 h-3.5" />}
-                        onClick={() => setSelectedApplicant(applicant)}
+                        onClick={() => handleOpenDossier(applicant)}
                       >
                         Details
                       </Button>
@@ -748,7 +809,7 @@ export const ApplicantsPage: React.FC = () => {
                       <Card
                         key={applicant.id}
                         className="p-3.5 border-border/60 bg-surface hover:border-gold/50 transition-all cursor-pointer space-y-2.5"
-                        onClick={() => setSelectedApplicant(applicant)}
+                        onClick={() => handleOpenDossier(applicant)}
                       >
                         <div className="flex items-center justify-between">
                           <div className="font-semibold text-xs text-text truncate max-w-[140px]">
@@ -796,6 +857,8 @@ export const ApplicantsPage: React.FC = () => {
             );
           })}
         </div>
+      )}
+        </>
       )}
 
       {/* Candidate Registration Modal */}
@@ -1024,6 +1087,35 @@ export const ApplicantsPage: React.FC = () => {
                 <p className="text-xs text-text leading-relaxed">{selectedApplicant.skillsDescription}</p>
               </div>
             )}
+
+            {/* Dynamic Custom Questions & Answers */}
+            {isLoadingAnswers ? (
+              <div className="p-3.5 bg-surface rounded-xl border border-border/60 space-y-2 text-xs text-text-muted">
+                <div className="flex items-center gap-2">
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin text-gold" />
+                  <span>Loading candidate question responses...</span>
+                </div>
+              </div>
+            ) : selectedApplicantAnswers && selectedApplicantAnswers.length > 0 ? (
+              <div className="p-4 bg-surface rounded-xl border border-border/60 space-y-3">
+                <div className="flex items-center gap-2 text-xs font-semibold text-text">
+                  <FileQuestion className="w-4 h-4 text-gold" />
+                  <span>Custom Questionnaire Responses ({selectedApplicantAnswers.length})</span>
+                </div>
+                <div className="divide-y divide-border/40 text-xs">
+                  {selectedApplicantAnswers.map((ans: any, idx: number) => (
+                    <div key={ans.id || idx} className="py-2.5 first:pt-1 last:pb-1 space-y-1">
+                      <div className="text-text-muted font-medium">
+                        {ans.question?.questionText || ans.question?.question || ans.questionText || `Question ${idx + 1}`}
+                      </div>
+                      <div className="text-text font-semibold bg-surface-hover/50 p-2 rounded-lg border border-border/30">
+                        {ans.answerValue || ans.value || ans.answer || "No response provided"}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
 
             {/* Review Notes */}
             {(selectedApplicant.reviewNotes || selectedApplicant.approvalNotes || selectedApplicant.rejectionReason) && (

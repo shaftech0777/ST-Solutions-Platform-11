@@ -65,6 +65,17 @@ export const ProjectsPage: React.FC = () => {
   const { addToast } = useToast();
   const { currentUser, currentOrganization, currentWorkspace, isLoading: isAuthLoading } = useAuth();
 
+  const userAccountType = (currentUser?.accountType || "").toUpperCase();
+  const userRoleName = (currentUser?.role?.name || "").toUpperCase();
+  const canManageProjects =
+    userAccountType === "ADMIN" ||
+    userAccountType === "SUB_ADMIN" ||
+    userAccountType === "MANAGER" ||
+    userRoleName === "ADMIN" ||
+    userRoleName === "SUB_ADMIN" ||
+    userRoleName === "MANAGER";
+  const canManage = canManageProjects;
+
   const [projects, setProjects] = useState<Project[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -390,11 +401,6 @@ export const ProjectsPage: React.FC = () => {
     setClientFilter("ALL");
   };
 
-  const canManage =
-    currentUser?.accountType === "ADMIN" ||
-    currentUser?.accountType === "SUB_ADMIN" ||
-    currentUser?.accountType === "MANAGER";
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -408,14 +414,16 @@ export const ProjectsPage: React.FC = () => {
             : "Deliverables, budget milestones, client contracts, and status tracking"
         }
         actions={
-          <Button
-            variant="gold"
-            size="sm"
-            leftIcon={<Plus className="w-4 h-4" />}
-            onClick={openCreateModal}
-          >
-            Create New Project
-          </Button>
+          canManage ? (
+            <Button
+              variant="gold"
+              size="sm"
+              leftIcon={<Plus className="w-4 h-4" />}
+              onClick={openCreateModal}
+            >
+              Create New Project
+            </Button>
+          ) : undefined
         }
       />
 

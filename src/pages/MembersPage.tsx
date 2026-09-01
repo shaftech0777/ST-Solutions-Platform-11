@@ -1141,6 +1141,70 @@ export const MembersPage: React.FC = () => {
               </div>
             </div>
 
+            {/* Hierarchy & Supervisor Chain */}
+            {(selectedMember.hierarchy || selectedMember.user?.hierarchy) && (
+              <div className="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider font-mono">
+                    Organizational Hierarchy & Line Management
+                  </span>
+                  <span className="text-[11px] text-[#B88E20] font-medium font-mono">
+                    Live Structure
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                  <div className="p-2.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                    <span className="text-[10px] text-slate-400 uppercase font-mono block">Direct Supervisor / Manager</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">
+                      {(selectedMember.hierarchy || selectedMember.user?.hierarchy)?.supervisor?.fullName ||
+                        (selectedMember.hierarchy || selectedMember.user?.hierarchy)?.supervisor?.email ||
+                        "Root / Executive Leadership"}
+                    </span>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                    <span className="text-[10px] text-slate-400 uppercase font-mono block">Direct Subordinates</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">
+                      {(selectedMember.hierarchy || selectedMember.user?.hierarchy)?.managedUsersCount || 0} Direct Report(s)
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Work & Portfolio Metrics */}
+            {(selectedMember.work || selectedMember.user?.work) && (
+              <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider font-mono">
+                    Assigned Portfolio & Performance
+                  </span>
+                  <span className="text-[11px] text-emerald-500 font-medium font-mono">
+                    Score: {(selectedMember.work || selectedMember.user?.work)?.performanceScore ?? 100}%
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-mono">
+                  <div className="p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                    <span className="text-[10px] text-slate-400 block">Managed Clients</span>
+                    <span className="text-sm font-bold text-slate-900 dark:text-white">
+                      {(selectedMember.work || selectedMember.user?.work)?.assignedClientsCount || 0}
+                    </span>
+                  </div>
+                  <div className="p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                    <span className="text-[10px] text-slate-400 block">Active Projects</span>
+                    <span className="text-sm font-bold text-slate-900 dark:text-white">
+                      {(selectedMember.work || selectedMember.user?.work)?.activeProjectsCount || 0}
+                    </span>
+                  </div>
+                  <div className="p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 col-span-2 sm:col-span-1">
+                    <span className="text-[10px] text-slate-400 block">Member Rank</span>
+                    <span className="text-xs font-bold text-[#D4AF37]">
+                      {(selectedMember.hierarchy || selectedMember.user?.hierarchy)?.memberAccount?.rankName || "Standard Tier"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Security Notice */}
             <div className="p-3.5 bg-slate-900/60 border border-slate-800 rounded-xl text-xs text-slate-300 flex items-start gap-2.5">
               <Shield className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />

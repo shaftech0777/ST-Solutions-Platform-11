@@ -97,3 +97,27 @@ clientsRouter.patch(
   validate({ params: clientIdParamSchema, body: updateClientOwnershipSchema }),
   clientsController.updateClientOwnership
 );
+
+/**
+ * @route GET /clients/:clientId/communications
+ * @desc Retrieves communication logs for a client
+ * @access Protected (Requires clients.read permission)
+ */
+clientsRouter.get(
+  "/:clientId/communications",
+  requirePermission("clients.read"),
+  validate({ params: clientIdParamSchema }),
+  clientsController.getClientCommunications
+);
+
+/**
+ * @route POST /clients/:clientId/communications
+ * @desc Records a new communication or note for a client
+ * @access Protected (Requires clients.update permission)
+ */
+clientsRouter.post(
+  "/:clientId/communications",
+  requirePermission("clients.update"),
+  validate({ params: clientIdParamSchema }),
+  clientsController.createClientCommunication
+);

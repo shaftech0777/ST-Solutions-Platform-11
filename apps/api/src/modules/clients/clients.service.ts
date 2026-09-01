@@ -101,15 +101,29 @@ export class ClientsService {
       throw new ConflictError("A client with this email address already exists", ERROR_CODES.CLIENT_ALREADY_EXISTS);
     }
 
-    if (input.memberId) {
-      const member = await this.clientsRepository.findMemberById(input.memberId);
+    // Auto-link Member ownership if created by a MEMBER
+    let targetMemberId = input.memberId;
+    let targetAssignedManagerId = input.assignedManagerId;
+
+    if (actor?.accountType === "MEMBER" && actor?.userId && !targetMemberId) {
+      const member = await this.clientsRepository.findMemberByUserId(actor.userId);
+      if (member) {
+        targetMemberId = member.id;
+        if (!targetAssignedManagerId && member.manager?.user?.id) {
+          targetAssignedManagerId = member.manager.user.id;
+        }
+      }
+    }
+
+    if (targetMemberId) {
+      const member = await this.clientsRepository.findMemberById(targetMemberId);
       if (!member) {
         throw new NotFoundError("Assigned member not found", ERROR_CODES.CLIENT_MEMBER_NOT_FOUND);
       }
     }
 
-    if (input.assignedManagerId) {
-      const manager = await this.clientsRepository.findManagerUserById(input.assignedManagerId);
+    if (targetAssignedManagerId) {
+      const manager = await this.clientsRepository.findManagerUserById(targetAssignedManagerId);
       if (!manager) {
         throw new NotFoundError("Assigned manager user not found", ERROR_CODES.CLIENT_OWNER_NOT_FOUND);
       }
@@ -136,11 +150,11 @@ export class ClientsService {
         tx
       );
 
-      if (input.memberId) {
+      if (targetMemberId) {
         await this.clientsRepository.upsertOwnership(
           clientRecord.id,
-          input.memberId,
-          input.assignedManagerId,
+          targetMemberId,
+          targetAssignedManagerId,
           input.notes,
           tx
         );
@@ -340,6 +354,91 @@ export class ClientsService {
     });
 
     return sanitizeClientDetailResponse(updatedClient!);
+  }
+
+  /**
+   * Retrieves communication logs for a client with authorization check.
+   */
+  public async getCommunications(
+    clientId: string,
+    actor?: { userId: string; accountType?: string; role?: string }
+  ) {
+    const client = await this.clientsRepository.findById(clientId);
+    if (!client) {
+      throw new NotFoundError("Client not found", ERROR_CODES.CLIENT_NOT_FOUND);
+    }
+
+    if (actor) {
+      AuthorizationPolicy.enforceCanAccessClient(
+        { userId: actor.userId, accountType: actor.accountType || "MEMBER" },
+        client
+      );
+    }
+
+    const logs = await this.clientsRepository.findCommunicationsByClientId(clientId);
+    return logs.map((l) => ({
+      id: l.id,
+      clientId: l.clientId,
+      userId: l.userId,
+      senderName: l.user?.profile?.fullName || (l.userId ? "Team Member" : "System / Client"),
+      senderRole: l.user?.role?.name || l.user?.accountType || "MEMBER",
+      type: l.type,
+      destination: l.destination,
+      subject: l.subject,
+      content: l.content,
+      success: l.success,
+      createdAt: l.createdAt,
+    }));
+  }
+
+  /**
+   * Creates a new communication entry between Member/Manager and Client.
+   */
+  public async createCommunication(
+    clientId: string,
+    input: {
+      type?: string;
+      destination?: string;
+      subject?: string | null;
+      content: string;
+    },
+    actor?: { userId: string; accountType?: string; role?: string }
+  ) {
+    const client = await this.clientsRepository.findById(clientId);
+    if (!client) {
+      throw new NotFoundError("Client not found", ERROR_CODES.CLIENT_NOT_FOUND);
+    }
+
+    if (actor) {
+      AuthorizationPolicy.enforceCanAccessClient(
+        { userId: actor.userId, accountType: actor.accountType || "MEMBER" },
+        client
+      );
+    }
+
+    const log = await this.clientsRepository.createCommunication({
+      clientId,
+      userId: actor?.userId || null,
+      type: input.type || "MESSAGE",
+      destination: input.destination || client.email,
+      subject: input.subject || null,
+      content: input.content.trim(),
+      success: true,
+    });
+
+    return {
+      id: log.id,
+      clientId: log.clientId,
+      userId: log.userId,
+      senderName: log.user?.profile?.fullName || "Team Member",
+      senderRole: log.user?.role?.name || log.user?.accountType || "MEMBER",
+      type: log.type,
+      destination: log.destination,
+      subject: log.subject,
+      content: log.content,
+      success: log.success,
+      createdAt: log.createdAt,
+    };
   }
 
   /**

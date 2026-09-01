@@ -1,4 +1,4 @@
-import { describe, it } from "node:test";
+import { describe, it, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { AccountType, UserStatus } from "@prisma/client";
 import { authService } from "../modules/auth/auth.service.js";
@@ -8,6 +8,7 @@ import { usersRepository } from "../modules/users/users.repository.js";
 import { passwordService } from "../core/security/password.service.js";
 import { jwtService } from "../core/security/jwt.service.js";
 import { config } from "../config/index.js";
+import { prisma } from "../database/prisma.client.js";
 
 function normalizeBaseUrl(raw?: string): string {
   if (!raw || typeof raw !== "string") return "/api/v1";
@@ -77,6 +78,39 @@ describe("ST-Solutions Platform 11: Real Deployment-Readiness Audit Suite", { co
   let managerRefreshToken = "";
   let memberAccessToken = "";
   let memberRefreshToken = "";
+
+  const cleanupFixtures = async () => {
+    try {
+      await prisma.session.deleteMany({
+        where: {
+          userId: { in: [managerUserId, memberUserId] },
+        },
+      });
+      await prisma.userProfile.deleteMany({
+        where: {
+          userId: { in: [managerUserId, memberUserId] },
+        },
+      });
+      await prisma.user.deleteMany({
+        where: {
+          OR: [
+            { id: { in: [managerUserId, memberUserId] } },
+            { email: { in: [managerEmail, memberEmail] } },
+          ],
+        },
+      });
+    } catch {
+      // Non-fatal if database cleanup throws
+    }
+  };
+
+  before(async () => {
+    await cleanupFixtures();
+  });
+
+  after(async () => {
+    await cleanupFixtures();
+  });
 
   // =========================================================================
   // AUDIT SECTION 1: PRODUCTION API URL & NORMALIZATION

@@ -26,6 +26,11 @@ export const DOMAIN_EVENTS = {
   CLIENT_REQUEST_STATUS_CHANGED: "client_request.status.changed",
   CLIENT_REQUEST_CONVERTED: "client_request.converted",
 
+  // Project Inquiry Domain Events
+  PROJECT_INQUIRY_CREATED: "project_inquiry.created",
+  PROJECT_INQUIRY_STATUS_CHANGED: "project_inquiry.status.changed",
+  PROJECT_INQUIRY_CONTACTED: "project_inquiry.contacted",
+
   // Settings & Security Domain Events
   SETTINGS_UPDATED: "settings.updated",
   SECURITY_EVENT: "security.event",

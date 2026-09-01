@@ -239,6 +239,57 @@ export function registerNotificationHandlers(
     });
   });
 
+  eventBus.subscribe(DOMAIN_EVENTS.PROJECT_INQUIRY_CREATED, async (event: DomainEvent) => {
+    const {
+      inquiryId,
+      visitorName,
+      email,
+      phone,
+      projectNameSnapshot,
+      preferredContactMethod,
+      message,
+      priority,
+    } = event.payload;
+
+    try {
+      const recipientUsers = await db.user.findMany({
+        where: {
+          OR: [
+            { accountType: { in: ["ADMIN", "SUB_ADMIN"] } },
+            { role: { name: { in: ["ADMIN", "SUB_ADMIN", "SUPER_ADMIN"] } } },
+          ],
+          status: "ACTIVE",
+        },
+        select: { id: true },
+      });
+
+      const recipientIds = recipientUsers.map((u) => u.id);
+
+      const snippet = message && message.length > 80 ? `${message.slice(0, 80)}...` : message || "";
+      const contactLabel = preferredContactMethod || "WhatsApp";
+
+      await notifyUsers(recipientIds, {
+        title: "New Project Inquiry",
+        message: `${visitorName} submitted an inquiry for '${projectNameSnapshot}'. Preferred: ${contactLabel}.${snippet ? ` "${snippet}"` : ""}`,
+        notificationType: "PROJECT" as NotificationType,
+        priority: priority === "URGENT" ? "URGENT" : "HIGH",
+        entityType: "PROJECT_INQUIRY",
+        entityId: inquiryId,
+        actionUrl: `/inquiries?id=${inquiryId}`,
+        metadata: {
+          inquiryId,
+          visitorName,
+          email,
+          phone,
+          projectNameSnapshot,
+          preferredContactMethod,
+        },
+      });
+    } catch {
+      // Non-blocking catch
+    }
+  });
+
   eventBus.subscribe(DOMAIN_EVENTS.SETTINGS_UPDATED, async (event: DomainEvent) => {
     const { section, updatedByUserId } = event.payload;
     if (updatedByUserId) {

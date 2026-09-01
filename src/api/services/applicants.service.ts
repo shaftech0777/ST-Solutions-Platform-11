@@ -23,6 +23,64 @@ export const applicantsService = {
     return apiClient<any[]>("/applicants/questions");
   },
 
+  async createQuestion(data: {
+    question?: string;
+    questionText?: string;
+    fieldType?: string;
+    isRequired?: boolean;
+    options?: string[];
+    placeholder?: string;
+    helpText?: string;
+    category?: string;
+    orderNumber?: number;
+    orderIndex?: number;
+  }) {
+    return apiClient<any>("/applicants/questions", {
+      method: "POST",
+      body: {
+        ...data,
+        question: data.question || data.questionText,
+      },
+    });
+  },
+
+  async updateQuestion(id: string, data: {
+    question?: string;
+    questionText?: string;
+    fieldType?: string;
+    isRequired?: boolean;
+    options?: string[];
+    placeholder?: string;
+    helpText?: string;
+    category?: string;
+    orderNumber?: number;
+    orderIndex?: number;
+    isActive?: boolean;
+  }) {
+    return apiClient<any>(`/applicants/questions/${id}`, {
+      method: "PATCH",
+      body: {
+        ...data,
+        question: data.question || data.questionText,
+      },
+    });
+  },
+
+  async deleteQuestion(id: string) {
+    return apiClient<any>(`/applicants/questions/${id}`, {
+      method: "DELETE",
+    });
+  },
+
+  async reorderQuestions(questionIds: string[] | Array<{ id: string; orderNumber: number }>) {
+    const isArrayOfIds = Array.isArray(questionIds) && (typeof questionIds[0] === "string" || questionIds.length === 0);
+    const body = isArrayOfIds ? { questionIds } : { questionOrders: questionIds };
+    return apiClient<any[]>("/applicants/questions/reorder", {
+      method: "POST",
+      body,
+    });
+  },
+
   async getAnswers(id: string) {
     return apiClient<any[]>(`/applicants/${id}/answers`);
   },

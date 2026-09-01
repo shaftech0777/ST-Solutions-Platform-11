@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Globe,
@@ -12,8 +12,10 @@ import {
   CheckCircle2,
   ShieldCheck,
   Zap,
+  FileText,
 } from "lucide-react";
 import { servicesData, companyConfig } from "../../data/companyConfig.js";
+import { ProjectInquiryModal } from "../../components/public/ProjectInquiryModal.js";
 
 const iconMap: Record<string, React.ReactNode> = {
   Globe: <Globe className="w-6 h-6" />,
@@ -26,6 +28,13 @@ const iconMap: Record<string, React.ReactNode> = {
 };
 
 export const ServicesPage: React.FC = () => {
+  const [selectedServiceTitle, setSelectedServiceTitle] = useState<string | null>(null);
+  const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false);
+
+  const handleOpenInquiry = (serviceTitle: string) => {
+    setSelectedServiceTitle(serviceTitle);
+    setIsInquiryModalOpen(true);
+  };
   return (
     <div className="space-y-16 sm:space-y-24 pb-16 font-sans">
       {/* Header Banner */}
@@ -90,13 +99,20 @@ export const ServicesPage: React.FC = () => {
                   </div>
 
                   {/* Service CTA */}
-                  <div className="pt-4">
-                    <Link
-                      to={`/contact?service=${encodeURIComponent(service.title)}`}
+                  <div className="pt-4 flex flex-wrap gap-2.5 items-center">
+                    <button
+                      onClick={() => handleOpenInquiry(service.title)}
                       className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-[#111827] text-white font-semibold text-xs shadow-md hover:bg-[#1F2937] hover:scale-[1.02] active:scale-[0.98] transition-all border border-[#111827]"
                     >
-                      <span>Discuss Your {service.title}</span>
-                      <ArrowRight className="w-3.5 h-3.5 text-[#D4AF37]" />
+                      <FileText className="w-3.5 h-3.5 text-[#D4AF37]" />
+                      <span>Inquire About {service.title}</span>
+                    </button>
+                    <Link
+                      to={`/contact?service=${encodeURIComponent(service.title)}`}
+                      className="inline-flex items-center space-x-1 px-4 py-2.5 rounded-xl bg-white border border-[#E2E5E0] text-slate-800 font-semibold text-xs hover:bg-[#F1F2EE] transition-all"
+                    >
+                      <span>Custom Consultation</span>
+                      <ArrowRight className="w-3 h-3 text-[#B88E20]" />
                     </Link>
                   </div>
                 </div>
@@ -167,6 +183,13 @@ export const ServicesPage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Public Inquiry Modal */}
+      <ProjectInquiryModal
+        isOpen={isInquiryModalOpen}
+        onClose={() => setIsInquiryModalOpen(false)}
+        initialService={selectedServiceTitle}
+      />
     </div>
   );
 };

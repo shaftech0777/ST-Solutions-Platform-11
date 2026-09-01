@@ -144,15 +144,29 @@ export function sanitizeApplicationResponse(
 export function sanitizeQuestionResponse(q: {
   id: string;
   question: string;
+  fieldType?: string;
+  isRequired?: boolean;
+  options?: any;
+  placeholder?: string | null;
+  helpText?: string | null;
+  category?: string | null;
   orderNumber: number;
   isActive: boolean;
   createdAt: Date;
+  updatedAt?: Date;
 }): ApplicationQuestionSummary {
   return {
     id: q.id,
     question: q.question,
+    fieldType: q.fieldType || "SHORT_TEXT",
+    isRequired: q.isRequired ?? false,
+    options: q.options ?? null,
+    placeholder: q.placeholder ?? null,
+    helpText: q.helpText ?? null,
+    category: q.category || "GENERAL",
     orderNumber: q.orderNumber,
     isActive: q.isActive,
     createdAt: q.createdAt,
+    updatedAt: q.updatedAt,
   };
 }

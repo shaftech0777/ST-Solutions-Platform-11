@@ -80,6 +80,58 @@ export class ApplicantsController {
   };
 
   /**
+   * PATCH /api/v1/applicants/questions/:questionId
+   * Updates an application question.
+   */
+  public updateQuestion = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { questionId } = req.params;
+      const body = req.body as UpdateQuestionInput;
+      const question = await this.applicantsService.updateQuestion(questionId, body);
+
+      ResponseBuilder.success(res, question, {
+        message: "Application question updated successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * DELETE /api/v1/applicants/questions/:questionId
+   * Deletes or deactivates an application question.
+   */
+  public deleteQuestion = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { questionId } = req.params;
+      const result = await this.applicantsService.deleteQuestion(questionId);
+
+      ResponseBuilder.success(res, result, {
+        message: "Application question deleted/deactivated successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * POST /api/v1/applicants/questions/reorder
+   * Reorders application questions.
+   */
+  public reorderQuestions = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const body = req.body as ReorderQuestionsInput;
+      const questions = await this.applicantsService.reorderQuestions(body);
+
+      ResponseBuilder.success(res, questions, {
+        message: "Application questions reordered successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
    * GET /api/v1/applicants/:applicationId
    * Retrieves a single application detail by ID.
    */

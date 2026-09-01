@@ -15,9 +15,44 @@ export interface ApplicationQueryFilters {
 export interface ApplicationQuestionSummary {
   readonly id: string;
   readonly question: string;
+  readonly fieldType: string;
+  readonly isRequired: boolean;
+  readonly options: any;
+  readonly placeholder: string | null;
+  readonly helpText: string | null;
+  readonly category: string | null;
   readonly orderNumber: number;
-  readonly isActive: Boolean;
+  readonly isActive: boolean;
   readonly createdAt?: Date;
+  readonly updatedAt?: Date;
+}
+
+export interface CreateQuestionInput {
+  readonly question: string;
+  readonly fieldType?: string;
+  readonly isRequired?: boolean;
+  readonly options?: any;
+  readonly placeholder?: string | null;
+  readonly helpText?: string | null;
+  readonly category?: string | null;
+  readonly orderNumber?: number;
+  readonly isActive?: boolean;
+}
+
+export interface UpdateQuestionInput {
+  readonly question?: string;
+  readonly fieldType?: string;
+  readonly isRequired?: boolean;
+  readonly options?: any;
+  readonly placeholder?: string | null;
+  readonly helpText?: string | null;
+  readonly category?: string | null;
+  readonly orderNumber?: number;
+  readonly isActive?: boolean;
+}
+
+export interface ReorderQuestionsInput {
+  readonly questionOrders: readonly { id: string; orderNumber: number }[];
 }
 
 export interface ApplicationAnswerSummary {

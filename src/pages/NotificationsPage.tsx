@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Bell,
   CheckCheck,
@@ -35,6 +36,7 @@ import { useToast } from "../context/ToastContext.js";
 export const NotificationsPage: React.FC = () => {
   const { currentUser, isLoading: isAuthLoading } = useAuth();
   const { addToast } = useToast();
+  const navigate = useNavigate();
 
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState<number>(0);
@@ -91,6 +93,25 @@ export const NotificationsPage: React.FC = () => {
   useEffect(() => {
     if (isAuthLoading || !currentUser) return;
     loadNotifications();
+
+    const eventSource = notificationsService.createStream({
+      onNotification: (newNotif) => {
+        setNotifications((prev) => {
+          const filtered = prev.filter((item) => item.id !== newNotif.id);
+          return [newNotif, ...filtered];
+        });
+        setUnreadCount((prev) => prev + 1);
+      },
+      onUnreadCount: (count) => {
+        setUnreadCount(count);
+      },
+    });
+
+    return () => {
+      if (eventSource) {
+        eventSource.close();
+      }
+    };
   }, [activeTab, currentUser?.id, isAuthLoading]);
 
   // Open preferences modal and fetch existing preferences
@@ -429,7 +450,37 @@ export const NotificationsPage: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-1 shrink-0">
+                  <div className="flex items-center gap-2 shrink-0">
+                    {notif.actionUrl ? (
+                      <Button
+                        variant="gold"
+                        size="xs"
+                        leftIcon={<ExternalLink className="w-3.5 h-3.5" />}
+                        onClick={() => {
+                          if (!isRead) {
+                            handleMarkAsRead(notif.id);
+                          }
+                          navigate(notif.actionUrl!);
+                        }}
+                      >
+                        Open Details
+                      </Button>
+                    ) : (notif.type?.toUpperCase().includes("INQUIRY") || notif.type?.toUpperCase().includes("LEAD")) ? (
+                      <Button
+                        variant="gold"
+                        size="xs"
+                        leftIcon={<ExternalLink className="w-3.5 h-3.5" />}
+                        onClick={() => {
+                          if (!isRead) {
+                            handleMarkAsRead(notif.id);
+                          }
+                          navigate("/inquiries");
+                        }}
+                      >
+                        Open Inquiries
+                      </Button>
+                    ) : null}
+
                     {isRead ? (
                       <IconButton
                         variant="ghost"

@@ -66,6 +66,63 @@ export const ClientsPage: React.FC = () => {
 
   // Client Details Inspection Modal
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [communications, setCommunications] = useState<any[]>([]);
+  const [isLoadingCommunications, setIsLoadingCommunications] = useState(false);
+  const [isLoggingCommunication, setIsLoggingCommunication] = useState(false);
+  const [commType, setCommType] = useState("NOTE");
+  const [commDestination, setCommDestination] = useState("");
+  const [commSubject, setCommSubject] = useState("");
+  const [commContent, setCommContent] = useState("");
+
+  const loadCommunications = async (clientId: string) => {
+    setIsLoadingCommunications(true);
+    try {
+      const res = await clientsService.getCommunications(clientId);
+      const items = Array.isArray(res) ? res : (res as any)?.data || [];
+      setCommunications(items);
+    } catch (err) {
+      console.warn("Could not load communications", err);
+      setCommunications([]);
+    } finally {
+      setIsLoadingCommunications(false);
+    }
+  };
+
+  const handleOpenClientDetails = (c: Client) => {
+    setSelectedClient(c);
+    loadCommunications(c.id);
+  };
+
+  const handleCreateCommunication = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedClient || !commContent.trim()) return;
+    setIsLoggingCommunication(true);
+    try {
+      await clientsService.createCommunication(selectedClient.id, {
+        type: commType,
+        destination: commDestination.trim() || undefined,
+        subject: commSubject.trim() || undefined,
+        content: commContent.trim(),
+      });
+      addToast({
+        type: "success",
+        title: "Communication Logged",
+        message: "Interaction recorded in client relationship history.",
+      });
+      setCommContent("");
+      setCommSubject("");
+      setCommDestination("");
+      await loadCommunications(selectedClient.id);
+    } catch (err: any) {
+      addToast({
+        type: "danger",
+        title: "Communication Error",
+        message: err.message || "Failed to record communication",
+      });
+    } finally {
+      setIsLoggingCommunication(false);
+    }
+  };
 
   // Delete State
   const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
@@ -460,7 +517,7 @@ export const ClientsPage: React.FC = () => {
                         <Avatar name={name} size="sm" />
                         <div>
                           <button
-                            onClick={() => setSelectedClient(c)}
+                            onClick={() => handleOpenClientDetails(c)}
                             className="font-bold text-slate-900 dark:text-white hover:text-[#D4AF37] dark:hover:text-[#D4AF37] transition-colors text-left block"
                           >
                             {name}
@@ -512,7 +569,7 @@ export const ClientsPage: React.FC = () => {
                           label="View client details"
                           variant="ghost"
                           size="sm"
-                          onClick={() => setSelectedClient(c)}
+                          onClick={() => handleOpenClientDetails(c)}
                         >
                           <Eye className="w-3.5 h-3.5" />
                         </IconButton>
@@ -563,7 +620,7 @@ export const ClientsPage: React.FC = () => {
                       <Avatar name={name} size="md" />
                       <div>
                         <button
-                          onClick={() => setSelectedClient(c)}
+                          onClick={() => handleOpenClientDetails(c)}
                           className="font-bold text-base text-slate-900 dark:text-white hover:text-[#D4AF37] text-left block"
                         >
                           {name}
@@ -606,7 +663,7 @@ export const ClientsPage: React.FC = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setSelectedClient(c)}
+                      onClick={() => handleOpenClientDetails(c)}
                       className="text-xs py-1 px-2.5"
                     >
                       Details
@@ -765,6 +822,140 @@ export const ClientsPage: React.FC = () => {
                 </p>
               </div>
             )}
+
+            {/* Ownership & Hierarchy Chain */}
+            <div className="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider font-mono">
+                  Client Ownership & Governance Chain
+                </span>
+                <span className="text-[11px] text-[#B88E20] font-medium font-mono">
+                  RBAC Verified
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div className="p-2.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                  <span className="text-[10px] text-slate-400 uppercase font-mono block">Responsible Member</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">
+                    {(selectedClient as any).ownership?.member?.user?.profile?.fullName ||
+                      (selectedClient as any).ownership?.member?.user?.email ||
+                      "Directly Managed"}
+                  </span>
+                </div>
+                <div className="p-2.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                  <span className="text-[10px] text-slate-400 uppercase font-mono block">Assigned Manager</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">
+                    {(selectedClient as any).ownership?.assignedManager?.profile?.fullName ||
+                      (selectedClient as any).ownership?.assignedManager?.email ||
+                      "Executive Management"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Communication Hub & Logs */}
+            <div className="space-y-4 pt-2 border-t border-slate-200 dark:border-slate-800">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <MessageSquare className="w-4 h-4 text-[#D4AF37]" />
+                  <h4 className="text-sm font-bold text-slate-900 dark:text-white">
+                    Client Communication & Relationship Logs
+                  </h4>
+                </div>
+                <span className="text-[11px] font-mono text-slate-400">
+                  {communications.length} Record{communications.length !== 1 ? "s" : ""}
+                </span>
+              </div>
+
+              {/* Log new communication form */}
+              <form onSubmit={handleCreateCommunication} className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-3">
+                <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 block">
+                  Log New Interaction / Communication
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <select
+                    value={commType}
+                    onChange={(e) => setCommType(e.target.value)}
+                    className="text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white outline-none"
+                  >
+                    <option value="NOTE">Internal Note</option>
+                    <option value="EMAIL">Email Sent / Received</option>
+                    <option value="PHONE">Phone Call</option>
+                    <option value="WHATSAPP">WhatsApp Message</option>
+                    <option value="MEETING">Client Meeting</option>
+                  </select>
+                  <input
+                    type="text"
+                    placeholder="Subject / Summary..."
+                    value={commSubject}
+                    onChange={(e) => setCommSubject(e.target.value)}
+                    className="text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white outline-none sm:col-span-2"
+                  />
+                </div>
+                <textarea
+                  rows={2}
+                  required
+                  placeholder="Record details of the discussion, client request, or action item..."
+                  value={commContent}
+                  onChange={(e) => setCommContent(e.target.value)}
+                  className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white outline-none resize-none"
+                />
+                <div className="flex justify-end">
+                  <Button
+                    type="submit"
+                    variant="gold"
+                    size="sm"
+                    disabled={isLoggingCommunication || !commContent.trim()}
+                    isLoading={isLoggingCommunication}
+                  >
+                    Log Interaction
+                  </Button>
+                </div>
+              </form>
+
+              {/* History Timeline */}
+              {isLoadingCommunications ? (
+                <div className="space-y-2">
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-12 w-full" />
+                </div>
+              ) : communications.length === 0 ? (
+                <div className="text-center py-6 text-xs text-slate-500 font-mono">
+                  No communication records logged yet. Log the first client note above.
+                </div>
+              ) : (
+                <div className="space-y-2.5 max-h-60 overflow-y-auto pr-1">
+                  {communications.map((comm) => (
+                    <div
+                      key={comm.id}
+                      className="p-3 rounded-lg bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs space-y-1"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="gold">{comm.type}</Badge>
+                          {comm.subject && (
+                            <span className="font-semibold text-slate-900 dark:text-white">
+                              {comm.subject}
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-[10px] font-mono text-slate-400">
+                          {new Date(comm.createdAt).toLocaleString()}
+                        </span>
+                      </div>
+                      <p className="text-slate-700 dark:text-slate-300 leading-relaxed pt-1">
+                        {comm.content}
+                      </p>
+                      {comm.sender && (
+                        <div className="text-[10px] text-slate-400 font-mono pt-1">
+                          Logged by: {comm.sender.profile?.fullName || comm.sender.email}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Timestamp */}
             <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 pt-2 border-t border-slate-200 dark:border-slate-800">

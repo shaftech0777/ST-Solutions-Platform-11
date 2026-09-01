@@ -74,17 +74,27 @@ export function usePermission() {
         return isAdmin || isSubAdmin || hasPermission("org:read") || hasPermission("org:manage");
       case "workspaces":
         return isAdmin || isSubAdmin || isOrgOwnerOrAdmin() || hasPermission("workspace:read");
+      case "inquiries":
+      case "leads":
+        return isAdmin || isSubAdmin || hasPermission("inquiry:read") || hasPermission("lead:read");
       case "clients":
-        return isAdmin || isSubAdmin || isManager || hasPermission("client:read");
+        return (
+          isAdmin ||
+          isSubAdmin ||
+          isManager ||
+          isMember ||
+          hasPermission("client:read") ||
+          hasPermission("clients.read")
+        );
       case "projects":
-        return true; // All authenticated members can view project board
+        return true; // Read-only viewing for members
       case "payments":
         return isAdmin || isSubAdmin || isManager || hasPermission("payment:read") || hasPermission("finance:read");
       case "applicants":
       case "talent":
         return isAdmin || isSubAdmin || isManager || hasPermission("talent:read") || hasPermission("applicant:read");
       case "members":
-        return isAdmin || isSubAdmin || isOrgOwnerOrAdmin() || hasPermission("member:read") || hasPermission("user:read");
+        return isAdmin || isSubAdmin || isOrgOwnerOrAdmin() || hasPermission("member:read") || hasPermission("user:read") || hasPermission("members.read");
       case "roles":
       case "permissions":
         return isAdmin || (isSubAdmin && hasPermission("role:read"));
@@ -106,9 +116,28 @@ export function usePermission() {
   const can = (action: "create" | "read" | "update" | "delete" | "manage", resource: string): boolean => {
     if (!currentUser) return false;
     if (isAdmin) return true;
-    const permString = `${resource}:${action}`;
-    const manageString = `${resource}:manage`;
-    return permissions.includes(permString) || permissions.includes(manageString) || permissions.includes("*");
+
+    // Member cannot create or manage projects
+    if (resource === "projects" && (action === "create" || action === "manage" || action === "delete")) {
+      return isSubAdmin || isManager;
+    }
+
+    // Member can create and update clients under their ownership
+    if (resource === "clients" && (action === "create" || action === "read" || action === "update")) {
+      return true;
+    }
+
+    const permColon = `${resource}:${action}`;
+    const permDot = `${resource}.${action}`;
+    const manageColon = `${resource}:manage`;
+    const manageDot = `${resource}.manage`;
+
+    return (
+      hasPermission(permColon) ||
+      hasPermission(permDot) ||
+      hasPermission(manageColon) ||
+      hasPermission(manageDot)
+    );
   };
 
   return {

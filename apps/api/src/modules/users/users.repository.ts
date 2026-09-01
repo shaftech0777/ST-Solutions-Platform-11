@@ -22,6 +22,53 @@ export class UsersRepository extends BaseRepository {
       },
     },
     profile: true,
+    createdByUser: {
+      include: {
+        profile: true,
+        role: true,
+      },
+    },
+    managedByUser: {
+      include: {
+        profile: true,
+        role: true,
+      },
+    },
+    managedUsers: {
+      include: {
+        profile: true,
+        role: true,
+      },
+    },
+    memberAccount: {
+      include: {
+        rank: true,
+        manager: {
+          include: {
+            user: {
+              include: {
+                profile: true,
+              },
+            },
+          },
+        },
+        ownedClients: {
+          include: {
+            client: true,
+          },
+        },
+      },
+    },
+    ownedClients: true,
+    supervisedClients: true,
+    assignedProjects: true,
+    performance: true,
+    sessions: {
+      take: 5,
+      orderBy: {
+        createdAt: "desc",
+      },
+    },
   } as const;
 
   /**

@@ -22,6 +22,16 @@ function getController(): NotificationsController {
 }
 
 /**
+ * @route GET /api/v1/notifications/stream
+ * @desc Server-Sent Events (SSE) stream for real-time notifications
+ * @access Protected
+ */
+notificationsRouter.get(
+  "/stream",
+  (req, res, next) => getController().streamNotifications(req, res, next)
+);
+
+/**
  * @route GET /api/v1/notifications
  * @desc List paginated user notifications with filtering
  * @access Protected

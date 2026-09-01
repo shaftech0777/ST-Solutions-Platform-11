@@ -128,13 +128,86 @@ export const submitAnswersSchema = z.object({
  * Create Application Question schema.
  */
 export const createQuestionSchema = z.object({
-  question: z
-    .string({ required_error: "Question text is required" })
-    .trim()
-    .min(3, { message: "Question text must be at least 3 characters long" })
-    .max(500, { message: "Question text cannot exceed 500 characters" }),
-  orderNumber: z.number().int().min(1, { message: "Order number must be at least 1" }),
+  question: z.string().trim().min(2).max(500).optional(),
+  questionText: z.string().trim().min(2).max(500).optional(),
+  fieldType: z
+    .enum([
+      "SHORT_TEXT",
+      "LONG_TEXT",
+      "NUMBER",
+      "EMAIL",
+      "PHONE",
+      "DROPDOWN",
+      "RADIO",
+      "CHECKBOX",
+      "DATE",
+      "FILE_UPLOAD",
+      "SELECT",
+      "MULTI_SELECT",
+      "URL",
+    ])
+    .optional()
+    .default("SHORT_TEXT"),
+  isRequired: z.boolean().optional().default(false),
+  options: z.any().optional().nullable(),
+  placeholder: z.string().trim().max(200).optional().nullable(),
+  helpText: z.string().trim().max(500).optional().nullable(),
+  category: z.string().trim().max(100).optional().default("GENERAL"),
+  orderNumber: z.number().int().optional(),
+  orderIndex: z.number().int().optional(),
   isActive: z.boolean().optional().default(true),
+}).refine((data) => !!(data.question || data.questionText), {
+  message: "Question text is required (provide 'question' or 'questionText')",
+});
+
+/**
+ * Update Application Question schema.
+ */
+export const updateQuestionSchema = z.object({
+  question: z.string().trim().min(2).max(500).optional(),
+  questionText: z.string().trim().min(2).max(500).optional(),
+  fieldType: z
+    .enum([
+      "SHORT_TEXT",
+      "LONG_TEXT",
+      "NUMBER",
+      "EMAIL",
+      "PHONE",
+      "DROPDOWN",
+      "RADIO",
+      "CHECKBOX",
+      "DATE",
+      "FILE_UPLOAD",
+      "SELECT",
+      "MULTI_SELECT",
+      "URL",
+    ])
+    .optional(),
+  isRequired: z.boolean().optional(),
+  options: z.any().optional().nullable(),
+  placeholder: z.string().trim().max(200).optional().nullable(),
+  helpText: z.string().trim().max(500).optional().nullable(),
+  category: z.string().trim().max(100).optional(),
+  orderNumber: z.number().int().optional(),
+  orderIndex: z.number().int().optional(),
+  isActive: z.boolean().optional(),
+});
+
+/**
+ * Reorder Application Questions schema.
+ */
+export const reorderQuestionsSchema = z.object({
+  questionOrders: z
+    .array(
+      z.object({
+        id: z.string({ required_error: "Question ID is required" }),
+        orderNumber: z.number().int().min(1, { message: "Order number must be positive" }),
+      })
+    )
+    .optional(),
+  questionIds: z.array(z.string()).optional(),
+}).refine((data) => (data.questionOrders && data.questionOrders.length > 0) || (data.questionIds && data.questionIds.length > 0), {
+  message: "Either questionOrders or questionIds must be provided",
 });
 
 /**
