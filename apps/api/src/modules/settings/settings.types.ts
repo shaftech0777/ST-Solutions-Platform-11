@@ -108,7 +108,10 @@ export interface UpdateFeatureFlagInput {
   displayName?: string;
   description?: string | null;
   status?: FeatureFlagStatus;
+  enabled?: boolean;
 }
+
+export type FeatureFlagsMapResponse = Record<string, boolean>;
 
 export interface PublicSettingsResponse {
   website: {

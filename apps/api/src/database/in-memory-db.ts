@@ -29,6 +29,7 @@ export interface MemoryStore {
   ranks: any[];
   projectInquiries: any[];
   inquiryActivities: any[];
+  featureFlags: any[];
 }
 
 function generateId(prefix: string = "id"): string {
@@ -288,6 +289,13 @@ export function createInitialData(): MemoryStore {
     ],
     projectInquiries: [],
     inquiryActivities: [],
+    featureFlags: [
+      { id: "flag-1", featureKey: "ai_copilot", displayName: "AI Copilot & Smart Assistant", description: "Enable generative AI summaries and candidate screening aids", status: "ENABLED", createdAt: now, updatedAt: now },
+      { id: "flag-2", featureKey: "applicant_onboarding_pipeline", displayName: "Applicant Onboarding Pipeline", description: "Direct single-click conversion of approved applicants to team members", status: "ENABLED", createdAt: now, updatedAt: now },
+      { id: "flag-3", featureKey: "realtime_audit_streaming", displayName: "Real-Time Audit Telemetry", description: "Capture and index all user mutations in the security audit ledger", status: "ENABLED", createdAt: now, updatedAt: now },
+      { id: "flag-4", featureKey: "automated_invoice_generation", displayName: "Automated Invoice Generation", description: "Auto-generate PDF invoices upon payment milestone completions", status: "ENABLED", createdAt: now, updatedAt: now },
+      { id: "flag-5", featureKey: "two_factor_enforcement", displayName: "Mandatory 2FA for Administrators", description: "Enforce OTP authentication for all users holding ADMIN or OWNER roles", status: "DISABLED", createdAt: now, updatedAt: now },
+    ],
   };
 }
 

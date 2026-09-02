@@ -1,6 +1,39 @@
-import { Prisma } from "@prisma/client";
+import { FeatureFlagStatus, Prisma } from "@prisma/client";
 import { TransactionClient } from "../../database/database.types.js";
 import { BaseRepository } from "../../database/repositories/base.repository.js";
+
+export const DEFAULT_FEATURE_FLAGS = [
+  {
+    featureKey: "ai_copilot",
+    displayName: "AI Copilot & Smart Assistant",
+    description: "Enable generative AI summaries and candidate screening aids",
+    status: FeatureFlagStatus.ENABLED,
+  },
+  {
+    featureKey: "applicant_onboarding_pipeline",
+    displayName: "Applicant Onboarding Pipeline",
+    description: "Direct single-click conversion of approved applicants to team members",
+    status: FeatureFlagStatus.ENABLED,
+  },
+  {
+    featureKey: "realtime_audit_streaming",
+    displayName: "Real-Time Audit Telemetry",
+    description: "Capture and index all user mutations in the security audit ledger",
+    status: FeatureFlagStatus.ENABLED,
+  },
+  {
+    featureKey: "automated_invoice_generation",
+    displayName: "Automated Invoice Generation",
+    description: "Auto-generate PDF invoices upon payment milestone completions",
+    status: FeatureFlagStatus.ENABLED,
+  },
+  {
+    featureKey: "two_factor_enforcement",
+    displayName: "Mandatory 2FA for Administrators",
+    description: "Enforce OTP authentication for all users holding ADMIN or OWNER roles",
+    status: FeatureFlagStatus.DISABLED,
+  },
+];
 
 /**
  * Repository layer for System Settings and Configuration domain.
@@ -214,9 +247,28 @@ export class SettingsRepository extends BaseRepository {
   public async getFeatureFlags(tx?: TransactionClient) {
     return this.execute(async () => {
       const client = this.getClient(tx);
-      return client.featureFlag.findMany({
+      let flags = await client.featureFlag.findMany({
         orderBy: { featureKey: "asc" },
       });
+
+      if (!flags || flags.length === 0) {
+        for (const defaultFlag of DEFAULT_FEATURE_FLAGS) {
+          try {
+            await client.featureFlag.upsert({
+              where: { featureKey: defaultFlag.featureKey },
+              update: {},
+              create: defaultFlag,
+            });
+          } catch {
+            // Ignore duplicate key race conditions
+          }
+        }
+        flags = await client.featureFlag.findMany({
+          orderBy: { featureKey: "asc" },
+        });
+      }
+
+      return flags;
     });
   }
 
@@ -226,9 +278,27 @@ export class SettingsRepository extends BaseRepository {
   public async getFeatureFlagByKey(featureKey: string, tx?: TransactionClient) {
     return this.execute(async () => {
       const client = this.getClient(tx);
-      return client.featureFlag.findUnique({
-        where: { featureKey: featureKey.trim() },
+      const key = featureKey.trim();
+      let flag = await client.featureFlag.findUnique({
+        where: { featureKey: key },
       });
+
+      if (!flag) {
+        const defaultDef = DEFAULT_FEATURE_FLAGS.find((d) => d.featureKey === key);
+        if (defaultDef) {
+          try {
+            flag = await client.featureFlag.create({
+              data: defaultDef,
+            });
+          } catch {
+            flag = await client.featureFlag.findUnique({
+              where: { featureKey: key },
+            });
+          }
+        }
+      }
+
+      return flag;
     });
   }
 
@@ -242,8 +312,25 @@ export class SettingsRepository extends BaseRepository {
   ) {
     return this.execute(async () => {
       const client = this.getClient(tx);
+      const key = featureKey.trim();
+      const existing = await client.featureFlag.findUnique({
+        where: { featureKey: key },
+      });
+
+      if (!existing) {
+        const defaultDef = DEFAULT_FEATURE_FLAGS.find((d) => d.featureKey === key);
+        return client.featureFlag.create({
+          data: {
+            featureKey: key,
+            displayName: (data.displayName as string) || defaultDef?.displayName || key.replace(/_/g, " ").toUpperCase(),
+            description: (data.description as string) || defaultDef?.description || null,
+            status: (data.status as any) ?? defaultDef?.status ?? FeatureFlagStatus.ENABLED,
+          },
+        });
+      }
+
       return client.featureFlag.update({
-        where: { featureKey: featureKey.trim() },
+        where: { featureKey: key },
         data,
       });
     });

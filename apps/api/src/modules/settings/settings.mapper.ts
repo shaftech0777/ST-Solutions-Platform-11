@@ -96,6 +96,24 @@ export function sanitizeFeatureFlagResponse(flag: any): FeatureFlagResponse {
 }
 
 /**
+ * Maps raw FeatureFlag records array to a dictionary of boolean flags Record<string, boolean>.
+ */
+export function sanitizeFeatureFlagsMapResponse(flags: any[]): Record<string, boolean> {
+  const result: Record<string, boolean> = {};
+  if (Array.isArray(flags)) {
+    for (const flag of flags) {
+      if (flag && flag.featureKey) {
+        result[flag.featureKey] =
+          flag.status === "ENABLED" ||
+          flag.status === true ||
+          flag.enabled === true;
+      }
+    }
+  }
+  return result;
+}
+
+/**
  * Maps public safe settings composite DTO.
  */
 export function sanitizePublicSettingsResponse(

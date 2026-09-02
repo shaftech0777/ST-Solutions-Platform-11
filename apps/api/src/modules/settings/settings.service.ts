@@ -1,8 +1,10 @@
+import { FeatureFlagStatus } from "@prisma/client";
 import { BusinessError, NotFoundError, ValidationError } from "../../core/errors/app-error.js";
 import { ERROR_CODES } from "../../core/errors/error.codes.js";
 import {
   sanitizeCompanyProfileResponse,
   sanitizeFeatureFlagResponse,
+  sanitizeFeatureFlagsMapResponse,
   sanitizePublicSettingsResponse,
   sanitizeSEOSettingsResponse,
   sanitizeSystemConfigResponse,
@@ -162,6 +164,14 @@ export class SettingsService {
   }
 
   /**
+   * Retrieves FeatureFlags as a dictionary map (for frontend consumption) Record<string, boolean>.
+   */
+  public async getFeaturesMap(): Promise<Record<string, boolean>> {
+    const flags = await this.settingsRepository.getFeatureFlags();
+    return sanitizeFeatureFlagsMapResponse(flags);
+  }
+
+  /**
    * Retrieves all FeatureFlags.
    */
   public async getFeatureFlags(): Promise<FeatureFlagResponse[]> {
@@ -184,7 +194,17 @@ export class SettingsService {
       );
     }
 
-    const updated = await this.settingsRepository.updateFeatureFlag(key, input);
+    let status = input.status;
+    if (status === undefined && typeof input.enabled === "boolean") {
+      status = input.enabled ? FeatureFlagStatus.ENABLED : FeatureFlagStatus.DISABLED;
+    }
+
+    const updatePayload: any = {};
+    if (input.displayName !== undefined) updatePayload.displayName = input.displayName;
+    if (input.description !== undefined) updatePayload.description = input.description;
+    if (status !== undefined) updatePayload.status = status;
+
+    const updated = await this.settingsRepository.updateFeatureFlag(key, updatePayload);
     return sanitizeFeatureFlagResponse(updated);
   }
 

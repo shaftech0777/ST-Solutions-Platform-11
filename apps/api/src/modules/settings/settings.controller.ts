@@ -181,6 +181,21 @@ export class SettingsController {
   };
 
   /**
+   * GET /api/v1/settings/features
+   * Retrieves feature flags key-value boolean map (e.g. { ai_copilot: true, ... }).
+   */
+  public getFeaturesMap = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const features = await this.settingsService.getFeaturesMap();
+      ResponseBuilder.success(res, features, {
+        message: "Feature toggles retrieved successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
    * GET /api/v1/settings/feature-flags
    * Retrieves all feature flags.
    */

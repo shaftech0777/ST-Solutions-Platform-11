@@ -161,13 +161,48 @@ settingsRouter.get(
 /**
  * @route PUT /settings/system-configs/:key
  * @desc Upserts a system configuration key-value pair
- * @access Protected (Requires settings.manage)
+ * @access Protected (Requires settings.update)
  */
 settingsRouter.put(
   "/system-configs/:key",
-  requirePermission("settings.manage"),
+  requirePermission("settings.update"),
   validate({ params: systemConfigParamSchema, body: upsertSystemConfigSchema }),
   settingsController.upsertSystemConfig
+);
+
+/**
+ * @route GET /settings/features
+ * @desc Retrieves feature toggles dictionary map (e.g. { ai_copilot: true, ... })
+ * @access Protected (Requires settings.read)
+ */
+settingsRouter.get(
+  "/features",
+  requirePermission("settings.read"),
+  settingsController.getFeaturesMap
+);
+
+/**
+ * @route PATCH /settings/features/:key
+ * @desc Updates a feature flag status or configuration
+ * @access Protected (Requires settings.update)
+ */
+settingsRouter.patch(
+  "/features/:key",
+  requirePermission("settings.update"),
+  validate({ params: featureFlagParamSchema, body: updateFeatureFlagSchema }),
+  settingsController.updateFeatureFlag
+);
+
+/**
+ * @route PUT /settings/features/:key
+ * @desc Updates a feature flag status or configuration
+ * @access Protected (Requires settings.update)
+ */
+settingsRouter.put(
+  "/features/:key",
+  requirePermission("settings.update"),
+  validate({ params: featureFlagParamSchema, body: updateFeatureFlagSchema }),
+  settingsController.updateFeatureFlag
 );
 
 /**
@@ -184,11 +219,11 @@ settingsRouter.get(
 /**
  * @route PATCH /settings/feature-flags/:key
  * @desc Updates a feature flag
- * @access Protected (Requires settings.manage)
+ * @access Protected (Requires settings.update)
  */
 settingsRouter.patch(
   "/feature-flags/:key",
-  requirePermission("settings.manage"),
+  requirePermission("settings.update"),
   validate({ params: featureFlagParamSchema, body: updateFeatureFlagSchema }),
   settingsController.updateFeatureFlag
 );
@@ -196,33 +231,33 @@ settingsRouter.patch(
 /**
  * @route PATCH /settings/theme
  * @desc Updates platform theme settings
- * @access Protected (Requires settings.manage or ADMIN)
+ * @access Protected (Requires settings.update or ADMIN)
  */
 settingsRouter.patch(
   "/theme",
-  requirePermission("settings.manage"),
+  requirePermission("settings.update"),
   settingsController.updateThemeSettings
 );
 
 /**
  * @route PUT /settings/cms/:key
  * @desc Upserts a CMS content section
- * @access Protected (Requires settings.manage or ADMIN)
+ * @access Protected (Requires settings.update or ADMIN)
  */
 settingsRouter.put(
   "/cms/:key",
-  requirePermission("settings.manage"),
+  requirePermission("settings.update"),
   settingsController.updateCMSSection
 );
 
 /**
  * @route PATCH /settings/cms/:key
  * @desc Updates a CMS content section
- * @access Protected (Requires settings.manage or ADMIN)
+ * @access Protected (Requires settings.update or ADMIN)
  */
 settingsRouter.patch(
   "/cms/:key",
-  requirePermission("settings.manage"),
+  requirePermission("settings.update"),
   settingsController.updateCMSSection
 );
 

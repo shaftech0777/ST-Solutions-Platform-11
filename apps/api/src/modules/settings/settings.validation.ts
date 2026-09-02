@@ -58,6 +58,7 @@ export const updateFeatureFlagSchema = z.object({
   displayName: z.string().trim().min(1).max(150).optional(),
   description: z.string().trim().max(1000).nullable().optional(),
   status: z.nativeEnum(FeatureFlagStatus).optional(),
+  enabled: z.boolean().optional(),
 });
 
 export type UpdateWebsiteSettingsInputSchema = z.infer<typeof updateWebsiteSettingsSchema>;
