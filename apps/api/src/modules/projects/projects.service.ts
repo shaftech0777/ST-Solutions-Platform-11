@@ -5,19 +5,24 @@ import { DOMAIN_EVENTS } from "../../core/events/domain-event.types.js";
 import { eventBus } from "../../core/events/event-bus.js";
 import {
   sanitizeProjectDetailResponse,
+  sanitizeProjectModule,
   sanitizeProjectResponse,
   sanitizeProjectUpdate,
 } from "./projects.mapper.js";
 import { projectsRepository as defaultProjectsRepository, ProjectsRepository } from "./projects.repository.js";
 import {
   CreateProjectInput,
+  CreateProjectModuleInput,
   CreateProjectUpdateInput,
   ProjectDetailResponse,
+  ProjectModuleResponse,
   ProjectQueryFilters,
   ProjectStatistics,
   ProjectSummaryResponse,
   ProjectUpdateSummary,
+  ReorderProjectModulesInput,
   UpdateProjectInput,
+  UpdateProjectModuleInput,
   UpdateProjectOwnershipInput,
   UpdateProjectStatusInput,
   UpdateProjectUpdateInput,
@@ -98,7 +103,14 @@ export class ProjectsService {
       title: input.title.trim(),
       description: input.description?.trim() || null,
       category: input.category?.trim() || null,
+      currency: input.currency?.trim() || "USD",
       budget: input.budget !== undefined ? input.budget : null,
+      progressPercentage: input.progressPercentage !== undefined ? input.progressPercentage : 0,
+      stagingUrl: input.stagingUrl?.trim() || null,
+      productionUrl: input.productionUrl?.trim() || null,
+      repositoryUrl: input.repositoryUrl?.trim() || null,
+      figmaUrl: input.figmaUrl?.trim() || null,
+      documentationUrl: input.documentationUrl?.trim() || null,
       projectStatus: input.projectStatus || ProjectStatus.PENDING,
       startDate: input.startDate ? new Date(input.startDate) : null,
       expectedCompletionDate: input.expectedCompletionDate ? new Date(input.expectedCompletionDate) : null,
@@ -146,7 +158,14 @@ export class ProjectsService {
     if (input.title !== undefined) updateData.title = input.title.trim();
     if (input.description !== undefined) updateData.description = input.description?.trim() || null;
     if (input.category !== undefined) updateData.category = input.category?.trim() || null;
+    if (input.currency !== undefined) updateData.currency = input.currency?.trim() || "USD";
     if (input.budget !== undefined) updateData.budget = input.budget;
+    if (input.progressPercentage !== undefined) updateData.progressPercentage = input.progressPercentage;
+    if (input.stagingUrl !== undefined) updateData.stagingUrl = input.stagingUrl?.trim() || null;
+    if (input.productionUrl !== undefined) updateData.productionUrl = input.productionUrl?.trim() || null;
+    if (input.repositoryUrl !== undefined) updateData.repositoryUrl = input.repositoryUrl?.trim() || null;
+    if (input.figmaUrl !== undefined) updateData.figmaUrl = input.figmaUrl?.trim() || null;
+    if (input.documentationUrl !== undefined) updateData.documentationUrl = input.documentationUrl?.trim() || null;
     if (input.startDate !== undefined) updateData.startDate = input.startDate ? new Date(input.startDate) : null;
     if (input.expectedCompletionDate !== undefined)
       updateData.expectedCompletionDate = input.expectedCompletionDate ? new Date(input.expectedCompletionDate) : null;
@@ -340,10 +359,20 @@ export class ProjectsService {
     const updateRecord = await this.projectsRepository.createProjectUpdate({
       title: input.title.trim(),
       description: input.description?.trim() || null,
+      updateType: input.updateType?.trim() || "DAILY_UPDATE",
+      blockers: input.blockers?.trim() || null,
+      nextSteps: input.nextSteps?.trim() || null,
       progressPercentage: input.progressPercentage ?? 0,
       project: { connect: { id: projectId } },
       createdBy: { connect: { id: actor.userId } },
     });
+
+    // Also update project's overall progress percentage if update has higher or latest progress
+    if (input.progressPercentage !== undefined) {
+      await this.projectsRepository.update(projectId, {
+        progressPercentage: input.progressPercentage,
+      });
+    }
 
     await eventBus.publish({
       eventName: DOMAIN_EVENTS.PROJECT_UPDATE_CREATED,
@@ -387,6 +416,9 @@ export class ProjectsService {
     const updateData: any = {};
     if (input.title !== undefined) updateData.title = input.title.trim();
     if (input.description !== undefined) updateData.description = input.description?.trim() || null;
+    if (input.updateType !== undefined) updateData.updateType = input.updateType?.trim() || "DAILY_UPDATE";
+    if (input.blockers !== undefined) updateData.blockers = input.blockers?.trim() || null;
+    if (input.nextSteps !== undefined) updateData.nextSteps = input.nextSteps?.trim() || null;
     if (input.progressPercentage !== undefined) updateData.progressPercentage = input.progressPercentage;
 
     const updated = await this.projectsRepository.updateProjectUpdate(updateId, updateData);
@@ -412,6 +444,125 @@ export class ProjectsService {
     }
 
     await this.projectsRepository.deleteProjectUpdate(updateId);
+  }
+
+  /**
+   * Retrieves all modules for a project.
+   */
+  public async getProjectModules(projectId: string): Promise<ProjectModuleResponse[]> {
+    const project = await this.projectsRepository.findById(projectId);
+    if (!project) {
+      throw new NotFoundError("Project not found", ERROR_CODES.PROJECT_NOT_FOUND);
+    }
+
+    const modules = await this.projectsRepository.findProjectModules(projectId);
+    return modules.map(sanitizeProjectModule);
+  }
+
+  /**
+   * Creates a new module within a project.
+   */
+  public async createProjectModule(
+    projectId: string,
+    input: CreateProjectModuleInput,
+    _actor?: { userId: string; accountType?: string }
+  ): Promise<ProjectModuleResponse> {
+    const project = await this.projectsRepository.findById(projectId);
+    if (!project) {
+      throw new NotFoundError("Project not found", ERROR_CODES.PROJECT_NOT_FOUND);
+    }
+
+    const existingModules = await this.projectsRepository.findProjectModules(projectId);
+    const nextOrder = input.orderIndex !== undefined ? input.orderIndex : existingModules.length;
+
+    const moduleRecord = await this.projectsRepository.createProjectModule({
+      projectId,
+      title: input.title.trim(),
+      description: input.description?.trim() || null,
+      orderIndex: nextOrder,
+      status: input.status || "PENDING",
+      progressPercentage: input.progressPercentage ?? 0,
+      startDate: input.startDate ? new Date(input.startDate) : null,
+      targetDate: input.targetDate ? new Date(input.targetDate) : null,
+    });
+
+    return sanitizeProjectModule(moduleRecord);
+  }
+
+  /**
+   * Updates an existing project module.
+   */
+  public async updateProjectModule(
+    projectId: string,
+    moduleId: string,
+    input: UpdateProjectModuleInput,
+    _actor?: { userId: string; accountType?: string }
+  ): Promise<ProjectModuleResponse> {
+    const project = await this.projectsRepository.findById(projectId);
+    if (!project) {
+      throw new NotFoundError("Project not found", ERROR_CODES.PROJECT_NOT_FOUND);
+    }
+
+    const existingModule = await this.projectsRepository.findProjectModuleById(moduleId);
+    if (!existingModule || existingModule.projectId !== projectId) {
+      throw new NotFoundError("Project module not found", ERROR_CODES.PROJECT_MODULE_NOT_FOUND || "PROJECT_MODULE_NOT_FOUND");
+    }
+
+    const updateData: any = {};
+    if (input.title !== undefined) updateData.title = input.title.trim();
+    if (input.description !== undefined) updateData.description = input.description?.trim() || null;
+    if (input.orderIndex !== undefined) updateData.orderIndex = input.orderIndex;
+    if (input.status !== undefined) {
+      updateData.status = input.status;
+      if (input.status === "COMPLETED" && !existingModule.completedAt) {
+        updateData.completedAt = new Date();
+      }
+    }
+    if (input.progressPercentage !== undefined) updateData.progressPercentage = input.progressPercentage;
+    if (input.startDate !== undefined) updateData.startDate = input.startDate ? new Date(input.startDate) : null;
+    if (input.targetDate !== undefined) updateData.targetDate = input.targetDate ? new Date(input.targetDate) : null;
+    if (input.completedAt !== undefined) updateData.completedAt = input.completedAt ? new Date(input.completedAt) : null;
+
+    const updated = await this.projectsRepository.updateProjectModule(moduleId, updateData);
+    return sanitizeProjectModule(updated);
+  }
+
+  /**
+   * Deletes a project module.
+   */
+  public async deleteProjectModule(
+    projectId: string,
+    moduleId: string,
+    _actor?: { userId: string; accountType?: string }
+  ): Promise<void> {
+    const project = await this.projectsRepository.findById(projectId);
+    if (!project) {
+      throw new NotFoundError("Project not found", ERROR_CODES.PROJECT_NOT_FOUND);
+    }
+
+    const existingModule = await this.projectsRepository.findProjectModuleById(moduleId);
+    if (!existingModule || existingModule.projectId !== projectId) {
+      throw new NotFoundError("Project module not found", ERROR_CODES.PROJECT_MODULE_NOT_FOUND || "PROJECT_MODULE_NOT_FOUND");
+    }
+
+    await this.projectsRepository.deleteProjectModule(moduleId);
+  }
+
+  /**
+   * Reorders modules of a project.
+   */
+  public async reorderProjectModules(
+    projectId: string,
+    input: ReorderProjectModulesInput,
+    _actor?: { userId: string; accountType?: string }
+  ): Promise<ProjectModuleResponse[]> {
+    const project = await this.projectsRepository.findById(projectId);
+    if (!project) {
+      throw new NotFoundError("Project not found", ERROR_CODES.PROJECT_NOT_FOUND);
+    }
+
+    const reordered = await this.projectsRepository.reorderProjectModules(projectId, input.modules);
+    return reordered.map(sanitizeProjectModule);
   }
 
   /**

@@ -1,6 +1,7 @@
 import {
   ProjectClientSummary,
   ProjectDetailResponse,
+  ProjectModuleResponse,
   ProjectSummaryResponse,
   ProjectUpdateSummary,
   ProjectUserSummary,
@@ -45,9 +46,32 @@ export function sanitizeProjectUpdate(updateRecord: any): ProjectUpdateSummary {
     projectId: updateRecord.projectId,
     title: updateRecord.title,
     description: updateRecord.description || null,
+    updateType: updateRecord.updateType || "DAILY_UPDATE",
+    blockers: updateRecord.blockers || null,
+    nextSteps: updateRecord.nextSteps || null,
     progressPercentage: updateRecord.progressPercentage ?? 0,
     createdAt: updateRecord.createdAt,
     createdBy: sanitizeProjectUser(updateRecord.createdBy),
+  };
+}
+
+/**
+ * Maps raw project module record into clean project module DTO.
+ */
+export function sanitizeProjectModule(moduleRecord: any): ProjectModuleResponse {
+  return {
+    id: moduleRecord.id,
+    projectId: moduleRecord.projectId,
+    title: moduleRecord.title,
+    description: moduleRecord.description || null,
+    orderIndex: moduleRecord.orderIndex ?? 0,
+    status: moduleRecord.status || "PENDING",
+    progressPercentage: moduleRecord.progressPercentage ?? 0,
+    startDate: moduleRecord.startDate || null,
+    targetDate: moduleRecord.targetDate || null,
+    completedAt: moduleRecord.completedAt || null,
+    createdAt: moduleRecord.createdAt,
+    updatedAt: moduleRecord.updatedAt,
   };
 }
 
@@ -60,7 +84,14 @@ export function sanitizeProjectResponse(project: any): ProjectSummaryResponse {
     title: project.title,
     description: project.description || null,
     category: project.category || null,
+    currency: project.currency || "USD",
     budget: project.budget !== undefined && project.budget !== null ? Number(project.budget) : null,
+    progressPercentage: project.progressPercentage ?? 0,
+    stagingUrl: project.stagingUrl || null,
+    productionUrl: project.productionUrl || null,
+    repositoryUrl: project.repositoryUrl || null,
+    figmaUrl: project.figmaUrl || null,
+    documentationUrl: project.documentationUrl || null,
     projectStatus: project.projectStatus,
     startDate: project.startDate || null,
     expectedCompletionDate: project.expectedCompletionDate || null,
@@ -81,11 +112,14 @@ export function sanitizeProjectDetailResponse(project: any): ProjectDetailRespon
   const summary = sanitizeProjectResponse(project);
   const updates = project.updates || [];
   const payments = project.payments || [];
+  const modules = project.modules || [];
 
   return {
     ...summary,
     updatesCount: project._count?.updates ?? updates.length,
     paymentsCount: project._count?.payments ?? payments.length,
+    modulesCount: project._count?.modules ?? modules.length,
+    modules: modules.map(sanitizeProjectModule),
     recentUpdates: updates.map(sanitizeProjectUpdate),
   };
 }

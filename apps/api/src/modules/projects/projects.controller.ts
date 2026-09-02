@@ -252,6 +252,112 @@ export class ProjectsController {
   };
 
   /**
+   * GET /api/v1/projects/:projectId/modules
+   * Retrieves all modules for a project.
+   */
+  public getProjectModules = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { projectId } = req.params;
+      const modules = await this.projectsService.getProjectModules(projectId);
+
+      ResponseBuilder.success(res, modules, {
+        message: "Project modules retrieved successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * POST /api/v1/projects/:projectId/modules
+   * Creates a new module for a project.
+   */
+  public createProjectModule = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const authReq = req as AuthenticatedRequest;
+      const { projectId } = req.params;
+      const body = req.body;
+      const actor = authReq.user
+        ? { userId: authReq.user.userId, accountType: authReq.user.accountType as AccountType }
+        : undefined;
+
+      const created = await this.projectsService.createProjectModule(projectId, body, actor);
+
+      ResponseBuilder.created(res, created, {
+        message: "Project module created successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * PATCH /api/v1/projects/:projectId/modules/:moduleId
+   * Updates a project module.
+   */
+  public updateProjectModule = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const authReq = req as AuthenticatedRequest;
+      const { projectId, moduleId } = req.params;
+      const body = req.body;
+      const actor = authReq.user
+        ? { userId: authReq.user.userId, accountType: authReq.user.accountType as AccountType }
+        : undefined;
+
+      const updated = await this.projectsService.updateProjectModule(projectId, moduleId, body, actor);
+
+      ResponseBuilder.success(res, updated, {
+        message: "Project module updated successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * DELETE /api/v1/projects/:projectId/modules/:moduleId
+   * Deletes a project module.
+   */
+  public deleteProjectModule = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const authReq = req as AuthenticatedRequest;
+      const { projectId, moduleId } = req.params;
+      const actor = authReq.user
+        ? { userId: authReq.user.userId, accountType: authReq.user.accountType as AccountType }
+        : undefined;
+
+      await this.projectsService.deleteProjectModule(projectId, moduleId, actor);
+
+      ResponseBuilder.noContent(res);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * POST /api/v1/projects/:projectId/modules/reorder
+   * Reorders project modules.
+   */
+  public reorderProjectModules = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const authReq = req as AuthenticatedRequest;
+      const { projectId } = req.params;
+      const body = req.body;
+      const actor = authReq.user
+        ? { userId: authReq.user.userId, accountType: authReq.user.accountType as AccountType }
+        : undefined;
+
+      const modules = await this.projectsService.reorderProjectModules(projectId, body, actor);
+
+      ResponseBuilder.success(res, modules, {
+        message: "Project modules reordered successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
    * DELETE /api/v1/projects/:projectId
    * Deletes a project record.
    */

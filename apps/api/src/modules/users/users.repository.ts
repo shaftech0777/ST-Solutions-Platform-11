@@ -335,7 +335,11 @@ export class UsersRepository extends BaseRepository {
   public async updateStatus(
     id: string,
     status: UserStatus,
-    options?: { suspensionReason?: string | null; suspendedAt?: Date | null },
+    options?: {
+      suspensionReason?: string | null;
+      suspendedAt?: Date | null;
+      suspensionExpiresAt?: Date | null;
+    },
     tx?: TransactionClient
   ) {
     return this.execute(async () => {
@@ -344,9 +348,15 @@ export class UsersRepository extends BaseRepository {
       if (status === UserStatus.SUSPENDED) {
         updateData.suspensionReason = options?.suspensionReason ?? "Administrative suspension";
         updateData.suspendedAt = options?.suspendedAt ?? new Date();
+        // Default suspension expiry to 30 days / 1 month if not explicitly provided
+        updateData.suspensionExpiresAt =
+          options?.suspensionExpiresAt !== undefined
+            ? options.suspensionExpiresAt
+            : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
       } else if (status === UserStatus.ACTIVE) {
         updateData.suspensionReason = null;
         updateData.suspendedAt = null;
+        updateData.suspensionExpiresAt = null;
       } else if (status === UserStatus.DELETED) {
         updateData.deletedAt = new Date();
       }
@@ -355,6 +365,23 @@ export class UsersRepository extends BaseRepository {
         where: { id },
         data: updateData,
         include: this.userIncludes,
+      });
+    });
+  }
+
+  /**
+   * Finds all users whose suspension has expired.
+   */
+  public async findExpiredSuspensions(tx?: TransactionClient) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      return client.user.findMany({
+        where: {
+          status: UserStatus.SUSPENDED,
+          suspensionExpiresAt: {
+            lte: new Date(),
+          },
+        },
       });
     });
   }

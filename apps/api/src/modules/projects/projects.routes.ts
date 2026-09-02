@@ -2,11 +2,15 @@ import { Router } from "express";
 import { authenticate, requirePermission, validate } from "../../middlewares/index.js";
 import { projectsController } from "./projects.controller.js";
 import {
+  createProjectModuleSchema,
   createProjectSchema,
   createProjectUpdateSchema,
   projectIdParamSchema,
+  projectModuleParamsSchema,
   projectQuerySchema,
   projectUpdateParamsSchema,
+  reorderProjectModulesSchema,
+  updateProjectModuleSchema,
   updateProjectOwnershipSchema,
   updateProjectSchema,
   updateProjectStatusSchema,
@@ -147,6 +151,66 @@ projectsRouter.delete(
   requirePermission("projects.manage_updates"),
   validate({ params: projectUpdateParamsSchema }),
   projectsController.deleteProjectUpdate
+);
+
+/**
+ * @route GET /projects/:projectId/modules
+ * @desc Retrieves list of modules for a project
+ * @access Protected (Requires projects.read permission)
+ */
+projectsRouter.get(
+  "/:projectId/modules",
+  requirePermission("projects.read"),
+  validate({ params: projectIdParamSchema }),
+  projectsController.getProjectModules
+);
+
+/**
+ * @route POST /projects/:projectId/modules
+ * @desc Creates a new module in a project
+ * @access Protected (Requires projects.update permission)
+ */
+projectsRouter.post(
+  "/:projectId/modules",
+  requirePermission("projects.update"),
+  validate({ params: projectIdParamSchema, body: createProjectModuleSchema }),
+  projectsController.createProjectModule
+);
+
+/**
+ * @route PATCH /projects/:projectId/modules/:moduleId
+ * @desc Updates a project module
+ * @access Protected (Requires projects.update permission)
+ */
+projectsRouter.patch(
+  "/:projectId/modules/:moduleId",
+  requirePermission("projects.update"),
+  validate({ params: projectModuleParamsSchema, body: updateProjectModuleSchema }),
+  projectsController.updateProjectModule
+);
+
+/**
+ * @route DELETE /projects/:projectId/modules/:moduleId
+ * @desc Deletes a project module
+ * @access Protected (Requires projects.update permission)
+ */
+projectsRouter.delete(
+  "/:projectId/modules/:moduleId",
+  requirePermission("projects.update"),
+  validate({ params: projectModuleParamsSchema }),
+  projectsController.deleteProjectModule
+);
+
+/**
+ * @route POST /projects/:projectId/modules/reorder
+ * @desc Reorders project modules
+ * @access Protected (Requires projects.update permission)
+ */
+projectsRouter.post(
+  "/:projectId/modules/reorder",
+  requirePermission("projects.update"),
+  validate({ params: projectIdParamSchema, body: reorderProjectModulesSchema }),
+  projectsController.reorderProjectModules
 );
 
 /**

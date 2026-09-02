@@ -91,7 +91,7 @@ export const updateUserRoleSchema = z
  * Admin reset password schema.
  */
 export const adminResetPasswordSchema = z.object({
-  newPassword: passwordSchema,
+  newPassword: passwordSchema.optional(),
 });
 
 export type UserQueryInput = z.infer<typeof userQuerySchema>;

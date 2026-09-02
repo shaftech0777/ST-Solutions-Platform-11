@@ -38,6 +38,7 @@ model User {
   workspaceId       String?
   suspensionReason  String?
   suspendedAt       DateTime?
+  suspensionExpiresAt DateTime?
   deletedAt         DateTime?
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @updatedAt
@@ -162,9 +163,11 @@ model MemberApplication {
   verificationStatus VerificationStatus @default(NOT_VERIFIED)
 
   // Review Information
-  reviewedById    String?
-  reviewNotes     String?
-  rejectionReason String?
+  reviewedById       String?
+  reviewNotes        String?
+  rejectionReason    String?
+  rejectedAt         DateTime?
+  retentionExpiresAt DateTime?
 
   // Timestamps
   createdAt DateTime @default(now())
@@ -415,7 +418,14 @@ model Project {
   title                  String
   description            String?
   category               String?
+  currency               String        @default("USD")
   budget                 Float?
+  progressPercentage     Int           @default(0)
+  stagingUrl             String?
+  productionUrl          String?
+  repositoryUrl          String?
+  figmaUrl               String?
+  documentationUrl       String?
   projectStatus          ProjectStatus @default(PENDING)
   startDate              DateTime?
   expectedCompletionDate DateTime?
@@ -429,6 +439,7 @@ model Project {
   createdBy    User            @relation("CreatedProjects", fields: [createdById], references: [id], onDelete: Restrict)
   manager      User?           @relation("ManagedProjects", fields: [assignedManagerId], references: [id], onDelete: SetNull)
   member       User?           @relation("AssignedProjects", fields: [assignedMemberId], references: [id], onDelete: SetNull)
+  modules      ProjectModule[]
   updates      ProjectUpdate[]
   payments     Payment[]
 
@@ -439,12 +450,35 @@ model Project {
   @@index([createdAt])
 }
 
+model ProjectModule {
+  id                 String    @id @default(uuid())
+  projectId          String
+  title              String
+  description        String?
+  orderIndex         Int       @default(0)
+  status             String    @default("PENDING")
+  progressPercentage Int       @default(0)
+  startDate          DateTime?
+  targetDate         DateTime?
+  completedAt        DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([orderIndex])
+}
+
 model ProjectUpdate {
   id                 String   @id @default(uuid())
   projectId          String
   createdById        String
   title              String
   description        String?
+  updateType         String   @default("DAILY_UPDATE")
+  blockers           String?
+  nextSteps          String?
   progressPercentage Int      @default(0)
   createdAt          DateTime @default(now())
 

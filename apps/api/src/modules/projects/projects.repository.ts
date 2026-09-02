@@ -30,12 +30,16 @@ export class ProjectsRepository extends BaseRepository {
       select: {
         updates: true,
         payments: true,
+        modules: true,
       },
     },
   } as const;
 
   private readonly projectDetailIncludes = {
     ...this.projectIncludes,
+    modules: {
+      orderBy: { orderIndex: "asc" as const },
+    },
     updates: {
       take: 10,
       orderBy: { createdAt: "desc" as const },
@@ -307,6 +311,101 @@ export class ProjectsRepository extends BaseRepository {
       return client.projectUpdate.delete({
         where: { id: updateId },
       });
+    });
+  }
+
+  /**
+   * Retrieves all modules for a project ordered by orderIndex.
+   */
+  public async findProjectModules(projectId: string, tx?: TransactionClient) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      return client.projectModule.findMany({
+        where: { projectId },
+        orderBy: { orderIndex: "asc" },
+      });
+    });
+  }
+
+  /**
+   * Finds a single project module by ID.
+   */
+  public async findProjectModuleById(moduleId: string, tx?: TransactionClient) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      return client.projectModule.findUnique({
+        where: { id: moduleId },
+      });
+    });
+  }
+
+  /**
+   * Creates a new project module.
+   */
+  public async createProjectModule(
+    data: Prisma.ProjectModuleUncheckedCreateInput,
+    tx?: TransactionClient
+  ) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      return client.projectModule.create({
+        data,
+      });
+    });
+  }
+
+  /**
+   * Updates an existing project module.
+   */
+  public async updateProjectModule(
+    moduleId: string,
+    data: Prisma.ProjectModuleUpdateInput,
+    tx?: TransactionClient
+  ) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      return client.projectModule.update({
+        where: { id: moduleId },
+        data,
+      });
+    });
+  }
+
+  /**
+   * Deletes a project module.
+   */
+  public async deleteProjectModule(moduleId: string, tx?: TransactionClient) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      return client.projectModule.delete({
+        where: { id: moduleId },
+      });
+    });
+  }
+
+  /**
+   * Reorders multiple project modules in a batch.
+   */
+  public async reorderProjectModules(
+    projectId: string,
+    items: Array<{ id: string; orderIndex: number }>,
+    tx?: TransactionClient
+  ) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      const updates = items.map((item) =>
+        client.projectModule.updateMany({
+          where: {
+            id: item.id,
+            projectId,
+          },
+          data: {
+            orderIndex: item.orderIndex,
+          },
+        })
+      );
+      await Promise.all(updates);
+      return this.findProjectModules(projectId, tx);
     });
   }
 

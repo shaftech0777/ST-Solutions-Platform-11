@@ -176,6 +176,7 @@ export class ApplicantsRepository extends BaseRepository {
   ) {
     return this.execute(async () => {
       const client = this.getClient(tx);
+      const isRejected = data.status === ApplicationStatus.REJECTED;
       return client.memberApplication.update({
         where: { id },
         data: {
@@ -183,9 +184,48 @@ export class ApplicantsRepository extends BaseRepository {
           ...(data.reviewedById !== undefined && { reviewedById: data.reviewedById }),
           ...(data.reviewNotes !== undefined && { reviewNotes: data.reviewNotes }),
           ...(data.rejectionReason !== undefined && { rejectionReason: data.rejectionReason }),
+          ...(isRejected && {
+            rejectedAt: new Date(),
+            // Auto retention expiry after 7 days
+            retentionExpiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+          }),
         },
         include: this.applicationIncludes,
       });
+    });
+  }
+
+  /**
+   * Purges rejected applications that have exceeded their 7-day retention period.
+   */
+  public async purgeExpiredRejectedApplications(tx?: TransactionClient): Promise<number> {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      const expired = await client.memberApplication.findMany({
+        where: {
+          applicationStatus: ApplicationStatus.REJECTED,
+          retentionExpiresAt: {
+            lte: new Date(),
+          },
+        },
+        select: { id: true },
+      });
+
+      if (expired.length === 0) return 0;
+
+      const ids = expired.map((e) => e.id);
+      // Delete child relations if needed or cascade
+      await client.applicationAnswer.deleteMany({
+        where: { applicationId: { in: ids } },
+      });
+      await client.memberVerification.deleteMany({
+        where: { applicationId: { in: ids } },
+      });
+      const result = await client.memberApplication.deleteMany({
+        where: { id: { in: ids } },
+      });
+
+      return result.count;
     });
   }
 

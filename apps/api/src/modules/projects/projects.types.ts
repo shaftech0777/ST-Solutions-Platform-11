@@ -31,11 +31,57 @@ export interface ProjectUserSummary {
   profileImage: string | null;
 }
 
+export interface ProjectModuleResponse {
+  id: string;
+  projectId: string;
+  title: string;
+  description: string | null;
+  orderIndex: number;
+  status: string;
+  progressPercentage: number;
+  startDate: Date | null;
+  targetDate: Date | null;
+  completedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CreateProjectModuleInput {
+  title: string;
+  description?: string;
+  orderIndex?: number;
+  status?: string;
+  progressPercentage?: number;
+  startDate?: string | Date;
+  targetDate?: string | Date;
+}
+
+export interface UpdateProjectModuleInput {
+  title?: string;
+  description?: string;
+  orderIndex?: number;
+  status?: string;
+  progressPercentage?: number;
+  startDate?: string | Date | null;
+  targetDate?: string | Date | null;
+  completedAt?: string | Date | null;
+}
+
+export interface ReorderProjectModulesInput {
+  modules: Array<{
+    id: string;
+    orderIndex: number;
+  }>;
+}
+
 export interface ProjectUpdateSummary {
   id: string;
   projectId: string;
   title: string;
   description: string | null;
+  updateType?: string;
+  blockers?: string | null;
+  nextSteps?: string | null;
   progressPercentage: number;
   createdAt: Date;
   createdBy: ProjectUserSummary | null;
@@ -46,7 +92,14 @@ export interface ProjectSummaryResponse {
   title: string;
   description: string | null;
   category: string | null;
+  currency: string;
   budget: number | null;
+  progressPercentage: number;
+  stagingUrl: string | null;
+  productionUrl: string | null;
+  repositoryUrl: string | null;
+  figmaUrl: string | null;
+  documentationUrl: string | null;
   projectStatus: ProjectStatus;
   startDate: Date | null;
   expectedCompletionDate: Date | null;
@@ -62,6 +115,8 @@ export interface ProjectSummaryResponse {
 export interface ProjectDetailResponse extends ProjectSummaryResponse {
   updatesCount: number;
   paymentsCount: number;
+  modulesCount?: number;
+  modules?: ProjectModuleResponse[];
   recentUpdates: ProjectUpdateSummary[];
 }
 
@@ -72,7 +127,14 @@ export interface CreateProjectInput {
   title: string;
   description?: string;
   category?: string;
+  currency?: string;
   budget?: number;
+  progressPercentage?: number;
+  stagingUrl?: string;
+  productionUrl?: string;
+  repositoryUrl?: string;
+  figmaUrl?: string;
+  documentationUrl?: string;
   projectStatus?: ProjectStatus;
   assignedManagerId?: string;
   assignedMemberId?: string;
@@ -84,7 +146,14 @@ export interface UpdateProjectInput {
   title?: string;
   description?: string;
   category?: string;
+  currency?: string;
   budget?: number;
+  progressPercentage?: number;
+  stagingUrl?: string | null;
+  productionUrl?: string | null;
+  repositoryUrl?: string | null;
+  figmaUrl?: string | null;
+  documentationUrl?: string | null;
   clientId?: string;
   assignedManagerId?: string | null;
   assignedMemberId?: string | null;
@@ -105,12 +174,18 @@ export interface UpdateProjectOwnershipInput {
 export interface CreateProjectUpdateInput {
   title: string;
   description?: string;
+  updateType?: string;
+  blockers?: string;
+  nextSteps?: string;
   progressPercentage?: number;
 }
 
 export interface UpdateProjectUpdateInput {
   title?: string;
   description?: string;
+  updateType?: string;
+  blockers?: string;
+  nextSteps?: string;
   progressPercentage?: number;
 }
 

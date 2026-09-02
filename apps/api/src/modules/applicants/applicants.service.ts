@@ -72,7 +72,7 @@ export class ApplicantsService {
   }
 
   /**
-   * Retrieves paginated applications list.
+   * Retrieves paginated applications list with lazy purge of expired rejected applications.
    */
   public async getApplications(filters: ApplicationQueryInput): Promise<{
     items: readonly ApplicationResponse[];
@@ -80,6 +80,12 @@ export class ApplicantsService {
     page: number;
     limit: number;
   }> {
+    try {
+      await this.applicantsRepository.purgeExpiredRejectedApplications();
+    } catch {
+      // Non-blocking cleanup
+    }
+
     const { items, totalRecords, page, limit } = await this.applicantsRepository.findAndCount(filters);
 
     const sanitizedItems = items.map((app) => sanitizeApplicationResponse(app));

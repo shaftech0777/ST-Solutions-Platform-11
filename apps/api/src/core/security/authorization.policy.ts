@@ -46,6 +46,34 @@ export interface TargetClientContext {
   } | null;
 }
 
+export interface TargetProjectContext {
+  id: string;
+  clientId: string;
+  createdById?: string | null;
+  assignedManagerId?: string | null;
+  assignedMemberId?: string | null;
+  organizationId?: string | null;
+  workspaceId?: string | null;
+  client?: {
+    id: string;
+    userId?: string | null;
+    ownerId?: string | null;
+    createdById?: string | null;
+  } | null;
+}
+
+export interface TargetPaymentContext {
+  id: string;
+  clientId: string;
+  projectId?: string | null;
+  client?: {
+    id: string;
+    userId?: string | null;
+    ownerId?: string | null;
+    createdById?: string | null;
+  } | null;
+}
+
 /**
  * Authoritative Central Policy Engine for ST-Solutions Organizational Hierarchy,
  * Ownership Supervision, Tenant Isolation, and Resource Access Control.
@@ -419,6 +447,113 @@ export class AuthorizationPolicy {
     if (!this.canAccessClient(actor, client, options)) {
       throw new AuthorizationError(
         `Access denied. Your role (${actor.accountType}) does not have permission to view or manage client '${client.id}'`,
+        ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
+      );
+    }
+  }
+
+  /**
+   * Checks project isolation and access rules.
+   * - ADMIN / SUB_ADMIN: full access within scope.
+   * - MANAGER: assigned manager, project creator, or client manager.
+   * - MEMBER: assigned member, project creator, or client owner.
+   * - CLIENT: strictly own projects only (where client.userId === actor.userId or clientId === actor.userId or client.ownerId === actor.userId).
+   */
+  public static canAccessProject(
+    actor: ActorContext,
+    project: TargetProjectContext
+  ): boolean {
+    if (!actor || !project) return false;
+
+    if (this.isAdmin(actor)) return true;
+    if (this.isSubAdmin(actor)) return true;
+
+    const actorKey = normalizeRoleKey(actor.accountType);
+
+    if (actorKey === "CLIENT") {
+      const isDirectClient = project.clientId === actor.userId;
+      const isClientUser = Boolean(project.client?.userId && project.client.userId === actor.userId);
+      const isClientOwner = Boolean(project.client?.ownerId && project.client.ownerId === actor.userId);
+      return isDirectClient || isClientUser || isClientOwner;
+    }
+
+    if (actorKey === "MEMBER") {
+      const isAssigned = project.assignedMemberId === actor.userId;
+      const isCreator = project.createdById === actor.userId;
+      const isClientCreator = Boolean(project.client?.createdById && project.client.createdById === actor.userId);
+      const isClientOwner = Boolean(project.client?.ownerId && project.client.ownerId === actor.userId);
+      return isAssigned || isCreator || isClientCreator || isClientOwner;
+    }
+
+    if (actorKey === "MANAGER") {
+      const isAssigned = project.assignedManagerId === actor.userId;
+      const isCreator = project.createdById === actor.userId;
+      const isAssignedMember = project.assignedMemberId === actor.userId;
+      return isAssigned || isCreator || isAssignedMember;
+    }
+
+    return false;
+  }
+
+  /**
+   * Enforces project access permission.
+   */
+  public static enforceCanAccessProject(
+    actor: ActorContext,
+    project: TargetProjectContext
+  ): void {
+    if (!this.canAccessProject(actor, project)) {
+      throw new AuthorizationError(
+        `Access denied. Your account type (${actor.accountType}) is not authorized to access project '${project.id}'`,
+        ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
+      );
+    }
+  }
+
+  /**
+   * Checks payment isolation and access rules.
+   */
+  public static canAccessPayment(
+    actor: ActorContext,
+    payment: TargetPaymentContext
+  ): boolean {
+    if (!actor || !payment) return false;
+
+    if (this.isAdmin(actor)) return true;
+    if (this.isSubAdmin(actor)) return true;
+
+    const actorKey = normalizeRoleKey(actor.accountType);
+
+    if (actorKey === "CLIENT") {
+      const isDirectClient = payment.clientId === actor.userId;
+      const isClientUser = Boolean(payment.client?.userId && payment.client.userId === actor.userId);
+      const isClientOwner = Boolean(payment.client?.ownerId && payment.client.ownerId === actor.userId);
+      return isDirectClient || isClientUser || isClientOwner;
+    }
+
+    if (actorKey === "MEMBER") {
+      const isClientCreator = Boolean(payment.client?.createdById && payment.client.createdById === actor.userId);
+      const isClientOwner = Boolean(payment.client?.ownerId && payment.client.ownerId === actor.userId);
+      return isClientCreator || isClientOwner;
+    }
+
+    if (actorKey === "MANAGER") {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Enforces payment access permission.
+   */
+  public static enforceCanAccessPayment(
+    actor: ActorContext,
+    payment: TargetPaymentContext
+  ): void {
+    if (!this.canAccessPayment(actor, payment)) {
+      throw new AuthorizationError(
+        `Access denied. Your account type (${actor.accountType}) is not authorized to access payment record '${payment.id}'`,
         ERROR_CODES.FORBIDDEN_RESOURCE_ACCESS
       );
     }

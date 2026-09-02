@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { AccountType, UserStatus } from "@prisma/client";
 import { AuthorizationError, ConflictError, NotFoundError, ValidationError } from "../../core/errors/app-error.js";
 import { ERROR_CODES } from "../../core/errors/error.codes.js";
@@ -31,6 +32,25 @@ export class UsersService {
   }
 
   /**
+   * Automatically clears expired user suspensions (after 1 month duration).
+   */
+  public async processExpiredSuspensions(): Promise<number> {
+    try {
+      const expiredUsers = await this.usersRepository.findExpiredSuspensions();
+      for (const u of expiredUsers) {
+        await this.usersRepository.updateStatus(u.id, UserStatus.ACTIVE, {
+          suspensionReason: null,
+          suspendedAt: null,
+          suspensionExpiresAt: null,
+        });
+      }
+      return expiredUsers.length;
+    } catch {
+      return 0;
+    }
+  }
+
+  /**
    * Retrieves paginated list of users filtered by actor scope.
    */
   public async getUsers(
@@ -42,6 +62,9 @@ export class UsersService {
     page: number;
     limit: number;
   }> {
+    // Lazy expire any past due suspensions
+    await this.processExpiredSuspensions();
+
     const queryFilters = { ...filters };
 
     // Apply role-based filtering scope
@@ -336,12 +359,13 @@ export class UsersService {
 
   /**
    * Securely resets a user's password and revokes all active sessions.
+   * Generates a strong temporary password if not explicitly provided and returns it once to the administrator.
    */
   public async resetUserPassword(
     id: string,
-    newPassword: string,
+    newPassword?: string,
     actor?: { userId?: string; accountType?: AccountType }
-  ): Promise<{ message: string }> {
+  ): Promise<{ message: string; temporaryPassword: string; userId: string; email: string | null }> {
     const existingUser = await this.usersRepository.findById(id);
     if (!existingUser) {
       throw new NotFoundError(`User with ID '${id}' was not found`, ERROR_CODES.USER_NOT_FOUND);
@@ -356,11 +380,22 @@ export class UsersService {
       }
     }
 
-    const passwordHash = await this.passwordService.hashPassword(newPassword);
+    // Generate cryptographically strong random password if none passed
+    const generatedPassword =
+      newPassword && newPassword.trim().length >= 8
+        ? newPassword.trim()
+        : `ST#${crypto.randomBytes(4).toString("hex").toUpperCase()}-${Math.random().toString(36).substring(2, 7)}!`;
+
+    const passwordHash = await this.passwordService.hashPassword(generatedPassword);
     await this.usersRepository.updatePassword(id, passwordHash);
     await this.usersRepository.deleteUserSessions(id);
 
-    return { message: "Password has been successfully updated and previous sessions invalidated." };
+    return {
+      message: "Password has been successfully updated and previous sessions invalidated. Securely share this temporary password with the user.",
+      temporaryPassword: generatedPassword,
+      userId: existingUser.id,
+      email: existingUser.email,
+    };
   }
 
   /**
