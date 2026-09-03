@@ -505,7 +505,7 @@ export class ProjectsService {
 
     const existingModule = await this.projectsRepository.findProjectModuleById(moduleId);
     if (!existingModule || existingModule.projectId !== projectId) {
-      throw new NotFoundError("Project module not found", ERROR_CODES.PROJECT_MODULE_NOT_FOUND || "PROJECT_MODULE_NOT_FOUND");
+      throw new NotFoundError("Project module not found", ERROR_CODES.PROJECT_MODULE_NOT_FOUND);
     }
 
     const updateData: any = {};
@@ -542,7 +542,7 @@ export class ProjectsService {
 
     const existingModule = await this.projectsRepository.findProjectModuleById(moduleId);
     if (!existingModule || existingModule.projectId !== projectId) {
-      throw new NotFoundError("Project module not found", ERROR_CODES.PROJECT_MODULE_NOT_FOUND || "PROJECT_MODULE_NOT_FOUND");
+      throw new NotFoundError("Project module not found", ERROR_CODES.PROJECT_MODULE_NOT_FOUND);
     }
 
     await this.projectsRepository.deleteProjectModule(moduleId);
