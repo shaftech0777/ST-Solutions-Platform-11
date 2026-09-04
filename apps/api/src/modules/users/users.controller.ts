@@ -320,6 +320,27 @@ export class UsersController {
       next(error);
     }
   };
+
+  /**
+   * Retrieves organizational hierarchy tree.
+   * GET /api/v1/users/team-tree
+   */
+  public getTeamTree = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const authReq = req as AuthenticatedRequest;
+      const actor = authReq.user
+        ? { userId: authReq.user.userId, accountType: authReq.user.accountType as AccountType }
+        : undefined;
+      const organizationId = (req.query.organizationId as string) || (authReq.user as any)?.organizationId;
+
+      const tree = await this.usersService.getTeamTree(actor, organizationId);
+      ResponseBuilder.success(res, tree, {
+        message: "Organization team hierarchy retrieved successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export const usersController = new UsersController();

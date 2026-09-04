@@ -96,4 +96,10 @@ export const usersService = {
   async getPerformance(id: string) {
     return apiClient<any>(`/users/${id}/performance`);
   },
+
+  async getTeamTree(organizationId?: string) {
+    return apiClient<any[]>("/users/team-tree", {
+      params: organizationId ? { organizationId } : undefined,
+    });
+  },
 };

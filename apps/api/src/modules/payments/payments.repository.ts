@@ -258,49 +258,49 @@ export class PaymentsRepository extends BaseRepository {
         }),
       ]);
 
-      let paidAmount = 0;
-      let pendingAmount = 0;
-      let rejectedAmount = 0;
+      let paidDecimal = new Prisma.Decimal(0);
+      let pendingDecimal = new Prisma.Decimal(0);
+      let rejectedDecimal = new Prisma.Decimal(0);
 
       const statusBreakdown = statusGroups.map((sg) => {
-        const amt = sg._sum.amount ?? 0;
+        const amtDecimal = sg._sum.amount ? new Prisma.Decimal(sg._sum.amount) : new Prisma.Decimal(0);
         if (sg.paymentStatus === PaymentStatus.APPROVED) {
-          paidAmount += amt;
+          paidDecimal = paidDecimal.plus(amtDecimal);
         } else if (sg.paymentStatus === PaymentStatus.PENDING || sg.paymentStatus === PaymentStatus.SUBMITTED) {
-          pendingAmount += amt;
+          pendingDecimal = pendingDecimal.plus(amtDecimal);
         } else if (sg.paymentStatus === PaymentStatus.REJECTED) {
-          rejectedAmount += amt;
+          rejectedDecimal = rejectedDecimal.plus(amtDecimal);
         }
 
         return {
           status: sg.paymentStatus,
           count: sg._count.paymentStatus,
-          totalAmount: amt,
+          totalAmount: Number(amtDecimal.toFixed(2)),
         };
       });
 
       const paymentMethodBreakdown = methodGroups.map((mg) => ({
         method: mg.paymentMethod || "UNSPECIFIED",
         count: mg._count.paymentMethod,
-        totalAmount: mg._sum.amount ?? 0,
+        totalAmount: mg._sum.amount ? Number(new Prisma.Decimal(mg._sum.amount).toFixed(2)) : 0,
       }));
 
       const currencyBreakdown = currencyGroups.map((cg) => ({
         currency: cg.currency,
         count: cg._count.currency,
-        totalAmount: cg._sum.amount ?? 0,
+        totalAmount: cg._sum.amount ? Number(new Prisma.Decimal(cg._sum.amount).toFixed(2)) : 0,
       }));
 
       return {
         totalPayments,
-        totalAmount: totalAggregate._sum.amount ?? 0,
-        paidAmount,
-        pendingAmount,
-        rejectedAmount,
+        totalAmount: totalAggregate._sum.amount ? Number(new Prisma.Decimal(totalAggregate._sum.amount).toFixed(2)) : 0,
+        paidAmount: Number(paidDecimal.toFixed(2)),
+        pendingAmount: Number(pendingDecimal.toFixed(2)),
+        rejectedAmount: Number(rejectedDecimal.toFixed(2)),
         statusBreakdown,
         paymentMethodBreakdown,
         currencyBreakdown,
-        recentPaymentsTotal: recentAggregate._sum.amount ?? 0,
+        recentPaymentsTotal: recentAggregate._sum.amount ? Number(new Prisma.Decimal(recentAggregate._sum.amount).toFixed(2)) : 0,
       };
     });
   }

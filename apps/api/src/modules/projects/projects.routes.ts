@@ -224,3 +224,49 @@ projectsRouter.delete(
   validate({ params: projectIdParamSchema }),
   projectsController.deleteProject
 );
+
+/**
+ * @route GET /projects/:projectId/requirements
+ * @desc Retrieves all requirements for a project
+ * @access Protected (Requires projects.read permission)
+ */
+projectsRouter.get(
+  "/:projectId/requirements",
+  requirePermission("projects.read"),
+  validate({ params: projectIdParamSchema }),
+  projectsController.getProjectRequirements
+);
+
+/**
+ * @route POST /projects/:projectId/requirements
+ * @desc Creates a new requirement for a project
+ * @access Protected (Requires projects.update permission)
+ */
+projectsRouter.post(
+  "/:projectId/requirements",
+  requirePermission("projects.update"),
+  validate({ params: projectIdParamSchema }),
+  projectsController.createProjectRequirement
+);
+
+/**
+ * @route PATCH /projects/:projectId/requirements/:requirementId
+ * @desc Updates a requirement for a project
+ * @access Protected (Requires projects.update permission)
+ */
+projectsRouter.patch(
+  "/:projectId/requirements/:requirementId",
+  requirePermission("projects.update"),
+  projectsController.updateProjectRequirement
+);
+
+/**
+ * @route DELETE /projects/:projectId/requirements/:requirementId
+ * @desc Deletes a requirement from a project
+ * @access Protected (Requires projects.update permission)
+ */
+projectsRouter.delete(
+  "/:projectId/requirements/:requirementId",
+  requirePermission("projects.update"),
+  projectsController.deleteProjectRequirement
+);

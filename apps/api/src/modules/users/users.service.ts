@@ -7,7 +7,7 @@ import { canActorAssignRole, canActorManageTargetRole } from "../../core/securit
 import { passwordService as defaultPasswordService, PasswordService } from "../../core/security/password.service.js";
 import { sanitizeUserResponse } from "./users.mapper.js";
 import { usersRepository as defaultUsersRepository, UsersRepository } from "./users.repository.js";
-import { UserResponse } from "./users.types.js";
+import { TeamTreeNode, UserResponse } from "./users.types.js";
 import {
   CreateUserInput,
   UpdateUserInput,
@@ -525,6 +525,313 @@ export class UsersService {
    */
   public async getLeaderboard(limit = 10) {
     return this.usersRepository.getLeaderboard(limit);
+  }
+
+  /**
+   * Generates dynamic organizational tree structure strictly from real database relationships:
+   * ADMIN -> SUB_ADMIN -> MANAGER -> MEMBER -> CLIENT
+   */
+  public async getTeamTree(
+    actor?: { userId?: string; accountType?: AccountType },
+    organizationId?: string
+  ): Promise<TeamTreeNode[]> {
+    const { users, clients } = await this.usersRepository.getTeamTreeRawData(organizationId);
+
+    // 1. Construct CLIENT nodes
+    const clientNodes: TeamTreeNode[] = clients.map((c: any) => {
+      const projects = c.projects || [];
+      return {
+        id: c.id,
+        type: "CLIENT" as const,
+        name: c.fullName || c.companyName || "Unnamed Client",
+        email: c.email || null,
+        loginId: c.userId || c.id,
+        avatar: c.profileImage || c.user?.profile?.profileImage || null,
+        status: c.clientStatus || "LEAD",
+        phoneNumber: c.phoneNumber || null,
+        roleName: "CLIENT",
+        directReportsCount: 0,
+        clientsCount: 0,
+        projectsCount: projects.length,
+        children: [],
+        metadata: {
+          companyName: c.companyName || null,
+          memberId: c.ownerId || c.ownership?.member?.userId || null,
+          memberName: c.ownership?.member?.user?.profile?.fullName || null,
+          managerId: c.supervisorId || c.ownership?.manager?.id || null,
+          managerName: c.ownership?.manager?.profile?.fullName || null,
+          createdAt: c.createdAt,
+          projects: projects.map((p: any) => ({
+            id: p.id,
+            title: p.title,
+            status: p.projectStatus,
+            progress: p.progressPercentage,
+            budget: p.budget,
+            currency: p.currency,
+          })),
+        },
+      };
+    });
+
+    // Index clients by owner/member User ID
+    const clientsByMemberId = new Map<string, TeamTreeNode[]>();
+    const clientsBySupervisorId = new Map<string, TeamTreeNode[]>();
+    const unassignedClients: TeamTreeNode[] = [];
+
+    clientNodes.forEach((node) => {
+      const memberId = node.metadata?.memberId;
+      const supervisorId = node.metadata?.managerId;
+      if (memberId) {
+        if (!clientsByMemberId.has(memberId)) clientsByMemberId.set(memberId, []);
+        clientsByMemberId.get(memberId)!.push(node);
+      } else if (supervisorId) {
+        if (!clientsBySupervisorId.has(supervisorId)) clientsBySupervisorId.set(supervisorId, []);
+        clientsBySupervisorId.get(supervisorId)!.push(node);
+      } else {
+        unassignedClients.push(node);
+      }
+    });
+
+    // 2. Separate Users by Role
+    const memberUsers = users.filter((u: any) => u.accountType === AccountType.MEMBER);
+    const managerUsers = users.filter((u: any) => u.accountType === AccountType.MANAGER);
+    const subAdminUsers = users.filter((u: any) => u.accountType === AccountType.SUB_ADMIN);
+    const adminUsers = users.filter((u: any) => u.accountType === AccountType.ADMIN);
+
+    // 3. Construct MEMBER nodes
+    const memberNodes: TeamTreeNode[] = memberUsers.map((u: any) => {
+      const assignedClients = clientsByMemberId.get(u.id) || [];
+      const assignedProjects = u.assignedProjects || [];
+      const managerId = u.managedByUserId || u.memberAccount?.manager?.user?.id || null;
+      const managerName =
+        u.managedByUser?.profile?.fullName ||
+        u.memberAccount?.manager?.user?.profile?.fullName ||
+        null;
+
+      return {
+        id: u.id,
+        type: AccountType.MEMBER,
+        name: u.profile?.fullName || u.email || "Unnamed Member",
+        email: u.email || null,
+        loginId: u.id,
+        avatar: u.profile?.profileImage || null,
+        status: u.status,
+        phoneNumber: u.profile?.phoneNumber || null,
+        roleName: u.role?.name || "MEMBER",
+        directReportsCount: 0,
+        clientsCount: assignedClients.length,
+        projectsCount: assignedProjects.length,
+        children: assignedClients,
+        metadata: {
+          managerId,
+          managerName,
+          createdAt: u.createdAt,
+          projects: assignedProjects.map((p: any) => ({
+            id: p.id,
+            title: p.title,
+            status: p.projectStatus,
+            progress: p.progressPercentage,
+            budget: p.budget,
+            currency: p.currency,
+          })),
+        },
+      };
+    });
+
+    // Index members by Manager ID
+    const membersByManagerId = new Map<string, TeamTreeNode[]>();
+    const unassignedMembers: TeamTreeNode[] = [];
+
+    memberNodes.forEach((node) => {
+      const mgrId = node.metadata?.managerId;
+      if (mgrId) {
+        if (!membersByManagerId.has(mgrId)) membersByManagerId.set(mgrId, []);
+        membersByManagerId.get(mgrId)!.push(node);
+      } else {
+        unassignedMembers.push(node);
+      }
+    });
+
+    // 4. Construct MANAGER nodes
+    const managerNodes: TeamTreeNode[] = managerUsers.map((u: any) => {
+      const directMembers = membersByManagerId.get(u.id) || [];
+      const directClients = clientsBySupervisorId.get(u.id) || [];
+      const managedProjects = u.managedProjects || [];
+
+      // Calculate total clients across direct members plus supervisor clients
+      const totalClientsCount =
+        directClients.length +
+        directMembers.reduce((sum, m) => sum + m.clientsCount, 0);
+
+      const supervisorId = u.managedByUserId || null;
+      const supervisorName = u.managedByUser?.profile?.fullName || null;
+
+      return {
+        id: u.id,
+        type: AccountType.MANAGER,
+        name: u.profile?.fullName || u.email || "Unnamed Manager",
+        email: u.email || null,
+        loginId: u.id,
+        avatar: u.profile?.profileImage || null,
+        status: u.status,
+        phoneNumber: u.profile?.phoneNumber || null,
+        roleName: u.role?.name || "MANAGER",
+        directReportsCount: directMembers.length,
+        clientsCount: totalClientsCount,
+        projectsCount: managedProjects.length,
+        children: [...directMembers, ...directClients],
+        metadata: {
+          supervisorId,
+          supervisorName,
+          createdAt: u.createdAt,
+          projects: managedProjects.map((p: any) => ({
+            id: p.id,
+            title: p.title,
+            status: p.projectStatus,
+            progress: p.progressPercentage,
+            budget: p.budget,
+            currency: p.currency,
+          })),
+        },
+      };
+    });
+
+    // Index managers by Supervisor (Sub-Admin or Admin)
+    const managersBySupervisorId = new Map<string, TeamTreeNode[]>();
+    const directAdminManagers: TeamTreeNode[] = [];
+
+    managerNodes.forEach((node) => {
+      const supId = node.metadata?.supervisorId;
+      if (supId) {
+        if (!managersBySupervisorId.has(supId)) managersBySupervisorId.set(supId, []);
+        managersBySupervisorId.get(supId)!.push(node);
+      } else {
+        directAdminManagers.push(node);
+      }
+    });
+
+    // 5. Construct SUB_ADMIN nodes
+    const subAdminNodes: TeamTreeNode[] = subAdminUsers.map((u: any) => {
+      const directManagers = managersBySupervisorId.get(u.id) || [];
+      const totalReports =
+        directManagers.length +
+        directManagers.reduce((sum, m) => sum + m.directReportsCount, 0);
+      const totalClients = directManagers.reduce((sum, m) => sum + m.clientsCount, 0);
+
+      return {
+        id: u.id,
+        type: AccountType.SUB_ADMIN,
+        name: u.profile?.fullName || u.email || "Unnamed Sub-Admin",
+        email: u.email || null,
+        loginId: u.id,
+        avatar: u.profile?.profileImage || null,
+        status: u.status,
+        phoneNumber: u.profile?.phoneNumber || null,
+        roleName: u.role?.name || "SUB_ADMIN",
+        directReportsCount: totalReports,
+        clientsCount: totalClients,
+        projectsCount: 0,
+        children: directManagers,
+        metadata: {
+          supervisorId: u.managedByUserId || null,
+          supervisorName: u.managedByUser?.profile?.fullName || null,
+          createdAt: u.createdAt,
+        },
+      };
+    });
+
+    // Index subadmins by admin
+    const subAdminsByAdminId = new Map<string, TeamTreeNode[]>();
+    const unassignedSubAdmins: TeamTreeNode[] = [];
+
+    subAdminNodes.forEach((node) => {
+      const adminId = node.metadata?.supervisorId;
+      if (adminId) {
+        if (!subAdminsByAdminId.has(adminId)) subAdminsByAdminId.set(adminId, []);
+        subAdminsByAdminId.get(adminId)!.push(node);
+      } else {
+        unassignedSubAdmins.push(node);
+      }
+    });
+
+    // 6. Construct ADMIN nodes
+    let adminNodes: TeamTreeNode[] = adminUsers.map((u: any) => {
+      const mySubAdmins = subAdminsByAdminId.get(u.id) || [];
+      const myManagers = managersBySupervisorId.get(u.id) || [];
+
+      return {
+        id: u.id,
+        type: AccountType.ADMIN,
+        name: u.profile?.fullName || u.email || "Executive Admin",
+        email: u.email || null,
+        loginId: u.id,
+        avatar: u.profile?.profileImage || null,
+        status: u.status,
+        phoneNumber: u.profile?.phoneNumber || null,
+        roleName: u.role?.name || "ADMIN",
+        directReportsCount: mySubAdmins.length + myManagers.length,
+        clientsCount: 0,
+        projectsCount: 0,
+        children: [...mySubAdmins, ...myManagers],
+        metadata: {
+          createdAt: u.createdAt,
+        },
+      };
+    });
+
+    // Distribute unassigned subadmins, direct managers, or orphaned members under admin nodes
+    if (adminNodes.length > 0) {
+      const primaryAdmin = adminNodes[0];
+      const remainingSubAdmins = unassignedSubAdmins.filter(
+        (sa) => !primaryAdmin.children.some((c) => c.id === sa.id)
+      );
+      const remainingManagers = directAdminManagers.filter(
+        (m) => !adminNodes.some((a) => a.children.some((c) => c.id === m.id))
+      );
+
+      primaryAdmin.children.push(...remainingSubAdmins, ...remainingManagers);
+      if (unassignedMembers.length > 0) {
+        primaryAdmin.children.push(...unassignedMembers);
+      }
+      if (unassignedClients.length > 0) {
+        primaryAdmin.children.push(...unassignedClients);
+      }
+
+      // Recompute administrative rolls
+      adminNodes.forEach((admin) => {
+        admin.directReportsCount = admin.children.length;
+      });
+    } else {
+      // If no admin exists in organization, return highest available tier as top-level roots
+      adminNodes = [
+        ...subAdminNodes,
+        ...directAdminManagers,
+        ...unassignedMembers,
+        ...unassignedClients,
+      ];
+    }
+
+    // Role-based visibility scoping
+    if (actor && actor.accountType) {
+      if (actor.accountType === AccountType.SUB_ADMIN) {
+        const found = subAdminNodes.find((sa) => sa.id === actor.userId);
+        return found ? [found] : [];
+      }
+      if (actor.accountType === AccountType.MANAGER) {
+        const found = managerNodes.find((m) => m.id === actor.userId);
+        return found ? [found] : [];
+      }
+      if (actor.accountType === AccountType.MEMBER) {
+        const found = memberNodes.find((m) => m.id === actor.userId);
+        return found ? [found] : [];
+      }
+      if (actor.accountType === AccountType.CLIENT) {
+        const found = clientNodes.find((c) => c.id === actor.userId || c.loginId === actor.userId);
+        return found ? [found] : [];
+      }
+    }
+
+    return adminNodes;
   }
 }
 

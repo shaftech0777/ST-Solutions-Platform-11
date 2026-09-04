@@ -26,8 +26,15 @@ export class PaymentsController {
    */
   public getPayments = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      const authReq = req as AuthenticatedRequest;
       const query = req.query as any;
-      const result = await this.paymentsService.getPayments(query);
+      const actor = authReq.user
+        ? {
+            userId: authReq.user.userId,
+            accountType: authReq.user.accountType as AccountType,
+          }
+        : undefined;
+      const result = await this.paymentsService.getPayments(query, actor);
 
       ResponseBuilder.paginated(res, result.items, {
         page: result.pagination.page,
@@ -61,8 +68,15 @@ export class PaymentsController {
    */
   public getPaymentById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      const authReq = req as AuthenticatedRequest;
       const { paymentId } = req.params;
-      const payment = await this.paymentsService.getPaymentById(paymentId);
+      const actor = authReq.user
+        ? {
+            userId: authReq.user.userId,
+            accountType: authReq.user.accountType as AccountType,
+          }
+        : undefined;
+      const payment = await this.paymentsService.getPaymentById(paymentId, actor);
 
       ResponseBuilder.success(res, payment, {
         message: "Payment details retrieved successfully",

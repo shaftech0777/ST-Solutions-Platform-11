@@ -2,6 +2,7 @@ import {
   ProjectClientSummary,
   ProjectDetailResponse,
   ProjectModuleResponse,
+  ProjectRequirementResponse,
   ProjectSummaryResponse,
   ProjectUpdateSummary,
   ProjectUserSummary,
@@ -106,6 +107,25 @@ export function sanitizeProjectResponse(project: any): ProjectSummaryResponse {
 }
 
 /**
+ * Maps raw project requirement record into clean project requirement DTO.
+ */
+export function sanitizeProjectRequirement(reqRecord: any): ProjectRequirementResponse {
+  return {
+    id: reqRecord.id,
+    projectId: reqRecord.projectId,
+    title: reqRecord.title,
+    description: reqRecord.description || null,
+    priority: reqRecord.priority || "MEDIUM",
+    status: reqRecord.status || "PENDING",
+    isCompleted: Boolean(reqRecord.isCompleted),
+    dueDate: reqRecord.dueDate || null,
+    completedAt: reqRecord.completedAt || null,
+    createdAt: reqRecord.createdAt,
+    updatedAt: reqRecord.updatedAt,
+  };
+}
+
+/**
  * Maps raw project record with detailed relations into clean detail DTO.
  */
 export function sanitizeProjectDetailResponse(project: any): ProjectDetailResponse {
@@ -113,13 +133,16 @@ export function sanitizeProjectDetailResponse(project: any): ProjectDetailRespon
   const updates = project.updates || [];
   const payments = project.payments || [];
   const modules = project.modules || [];
+  const requirements = project.requirements || [];
 
   return {
     ...summary,
     updatesCount: project._count?.updates ?? updates.length,
     paymentsCount: project._count?.payments ?? payments.length,
     modulesCount: project._count?.modules ?? modules.length,
+    requirementsCount: project._count?.requirements ?? requirements.length,
     modules: modules.map(sanitizeProjectModule),
+    requirements: requirements.map(sanitizeProjectRequirement),
     recentUpdates: updates.map(sanitizeProjectUpdate),
   };
 }

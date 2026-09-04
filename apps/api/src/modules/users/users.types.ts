@@ -90,3 +90,37 @@ export interface UserResponse {
   readonly createdAt: Date;
   readonly updatedAt: Date;
 }
+
+export interface TeamTreeNode {
+  id: string;
+  type: AccountType | "CLIENT";
+  name: string;
+  email: string | null;
+  loginId: string;
+  avatar: string | null;
+  status: string;
+  phoneNumber?: string | null;
+  roleName?: string | null;
+  directReportsCount: number;
+  clientsCount: number;
+  projectsCount: number;
+  children: TeamTreeNode[];
+  metadata?: {
+    supervisorId?: string | null;
+    supervisorName?: string | null;
+    managerId?: string | null;
+    managerName?: string | null;
+    memberId?: string | null;
+    memberName?: string | null;
+    companyName?: string | null;
+    createdAt?: Date | string;
+    projects?: Array<{
+      id: string;
+      title: string;
+      status: string;
+      progress: number;
+      budget: number | null;
+      currency: string;
+    }>;
+  };
+}

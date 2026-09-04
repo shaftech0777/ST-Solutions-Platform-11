@@ -1,11 +1,13 @@
-import { ProjectStatus } from "@prisma/client";
+import { AccountType, ProjectStatus } from "@prisma/client";
 import { BusinessError, NotFoundError } from "../../core/errors/app-error.js";
 import { ERROR_CODES } from "../../core/errors/error.codes.js";
 import { DOMAIN_EVENTS } from "../../core/events/domain-event.types.js";
 import { eventBus } from "../../core/events/event-bus.js";
+import { clientsRepository } from "../clients/clients.repository.js";
 import {
   sanitizeProjectDetailResponse,
   sanitizeProjectModule,
+  sanitizeProjectRequirement,
   sanitizeProjectResponse,
   sanitizeProjectUpdate,
 } from "./projects.mapper.js";
@@ -13,10 +15,12 @@ import { projectsRepository as defaultProjectsRepository, ProjectsRepository } f
 import {
   CreateProjectInput,
   CreateProjectModuleInput,
+  CreateProjectRequirementInput,
   CreateProjectUpdateInput,
   ProjectDetailResponse,
   ProjectModuleResponse,
   ProjectQueryFilters,
+  ProjectRequirementResponse,
   ProjectStatistics,
   ProjectSummaryResponse,
   ProjectUpdateSummary,
@@ -24,6 +28,7 @@ import {
   UpdateProjectInput,
   UpdateProjectModuleInput,
   UpdateProjectOwnershipInput,
+  UpdateProjectRequirementInput,
   UpdateProjectStatusInput,
   UpdateProjectUpdateInput,
 } from "./projects.types.js";
@@ -40,8 +45,12 @@ export class ProjectsService {
 
   /**
    * Retrieves paginated list of projects with filtering.
+   * Enforces strict client portal boundary: CLIENTs can only view their own projects.
    */
-  public async getProjects(filters: ProjectQueryFilters): Promise<{
+  public async getProjects(
+    filters: ProjectQueryFilters,
+    actor?: { userId: string; accountType?: string }
+  ): Promise<{
     items: ProjectSummaryResponse[];
     pagination: {
       total: number;
@@ -52,7 +61,21 @@ export class ProjectsService {
       hasPrevPage: boolean;
     };
   }> {
-    const { data, meta } = await this.projectsRepository.findAndCount(filters);
+    const effectiveFilters = { ...filters };
+
+    // Enforce strict client portal boundary: CLIENTs can only view their own projects
+    if (actor && actor.accountType === AccountType.CLIENT) {
+      const clientRecord = await clientsRepository.findByUserId(actor.userId);
+      if (!clientRecord) {
+        throw new NotFoundError(
+          "Client record not found for the authenticated account",
+          ERROR_CODES.CLIENT_NOT_FOUND
+        );
+      }
+      effectiveFilters.clientId = clientRecord.id;
+    }
+
+    const { data, meta } = await this.projectsRepository.findAndCount(effectiveFilters);
     const sanitizedItems = data.map((project) => sanitizeProjectResponse(project));
 
     return {
@@ -63,11 +86,22 @@ export class ProjectsService {
 
   /**
    * Retrieves detailed project record by ID.
+   * Enforces strict client portal boundary: CLIENTs can only view their own projects.
    */
-  public async getProjectById(projectId: string): Promise<ProjectDetailResponse> {
+  public async getProjectById(
+    projectId: string,
+    actor?: { userId: string; accountType?: string }
+  ): Promise<ProjectDetailResponse> {
     const project = await this.projectsRepository.findById(projectId);
     if (!project) {
       throw new NotFoundError("Project not found", ERROR_CODES.PROJECT_NOT_FOUND);
+    }
+
+    if (actor && actor.accountType === AccountType.CLIENT) {
+      const clientRecord = await clientsRepository.findByUserId(actor.userId);
+      if (!clientRecord || project.clientId !== clientRecord.id) {
+        throw new NotFoundError("Project not found", ERROR_CODES.PROJECT_NOT_FOUND);
+      }
     }
 
     return sanitizeProjectDetailResponse(project);
@@ -141,6 +175,77 @@ export class ProjectsService {
   }
 
   /**
+   * Deterministically calculates project progress percentage from modules and requirements:
+   * - If project has modules AND requirements:
+   *     overall progress = Math.round((averageModuleProgress + requirementProgress) / 2)
+   *     (Balanced 50% modules / 50% requirements weighting without double-counting)
+   * - If project has modules only:
+   *     overall progress = Math.round(averageModuleProgress)
+   * - If project has requirements only:
+   *     overall progress = Math.round(completedRequirements / totalRequirements * 100)
+   * - If 0 modules and 0 requirements:
+   *     overall progress = 0%
+   *
+   * Completion rules:
+   * - Module progress: clamped 0-100%. If module.status === "COMPLETED", counts as 100%.
+   * - Requirement progress: requirement counts as completed ONLY if isCompleted === true OR status === "COMPLETED".
+   *   Blocked ("BLOCKED"), pending ("PENDING"), or in-progress ("IN_PROGRESS") items do NOT count as completed.
+   */
+  public calculateProgress(
+    modules: Array<{ progressPercentage?: number | null; status?: string | null }>,
+    requirements: Array<{ isCompleted?: boolean | null; status?: string | null }>
+  ): number {
+    const hasModules = modules.length > 0;
+    const hasRequirements = requirements.length > 0;
+
+    if (!hasModules && !hasRequirements) {
+      return 0;
+    }
+
+    let moduleProgress = 0;
+    if (hasModules) {
+      const totalScore = modules.reduce((sum, mod) => {
+        if (mod.status === "COMPLETED") return sum + 100;
+        const clamped = Math.min(100, Math.max(0, mod.progressPercentage ?? 0));
+        return sum + clamped;
+      }, 0);
+      moduleProgress = totalScore / modules.length;
+    }
+
+    let requirementProgress = 0;
+    if (hasRequirements) {
+      const completedCount = requirements.filter(
+        (req) => req.isCompleted === true || req.status === "COMPLETED"
+      ).length;
+      requirementProgress = (completedCount / requirements.length) * 100;
+    }
+
+    if (hasModules && hasRequirements) {
+      return Math.min(100, Math.max(0, Math.round((moduleProgress + requirementProgress) / 2)));
+    }
+
+    if (hasModules) {
+      return Math.min(100, Math.max(0, Math.round(moduleProgress)));
+    }
+
+    return Math.min(100, Math.max(0, Math.round(requirementProgress)));
+  }
+
+  /**
+   * Recomputes and persists dynamic project progress derived from modules and requirements.
+   */
+  public async syncProjectProgress(projectId: string): Promise<number> {
+    const [modules, requirements] = await Promise.all([
+      this.projectsRepository.findProjectModules(projectId),
+      this.projectsRepository.findProjectRequirements(projectId),
+    ]);
+
+    const calculatedProgress = this.calculateProgress(modules, requirements);
+    await this.projectsRepository.updateProgress(projectId, calculatedProgress);
+    return calculatedProgress;
+  }
+
+  /**
    * Updates an existing project profile.
    */
   public async updateProject(
@@ -160,7 +265,17 @@ export class ProjectsService {
     if (input.category !== undefined) updateData.category = input.category?.trim() || null;
     if (input.currency !== undefined) updateData.currency = input.currency?.trim() || "USD";
     if (input.budget !== undefined) updateData.budget = input.budget;
-    if (input.progressPercentage !== undefined) updateData.progressPercentage = input.progressPercentage;
+
+    // Enforce dynamic progress consistency: if modules or requirements exist, derive progress from source records
+    const [modules, requirements] = await Promise.all([
+      this.projectsRepository.findProjectModules(projectId),
+      this.projectsRepository.findProjectRequirements(projectId),
+    ]);
+    if (modules.length > 0 || requirements.length > 0) {
+      updateData.progressPercentage = this.calculateProgress(modules, requirements);
+    } else if (input.progressPercentage !== undefined) {
+      updateData.progressPercentage = 0;
+    }
     if (input.stagingUrl !== undefined) updateData.stagingUrl = input.stagingUrl?.trim() || null;
     if (input.productionUrl !== undefined) updateData.productionUrl = input.productionUrl?.trim() || null;
     if (input.repositoryUrl !== undefined) updateData.repositoryUrl = input.repositoryUrl?.trim() || null;
@@ -467,8 +582,8 @@ export class ProjectsService {
     input: CreateProjectModuleInput,
     _actor?: { userId: string; accountType?: string }
   ): Promise<ProjectModuleResponse> {
-    const project = await this.projectsRepository.findById(projectId);
-    if (!project) {
+    const projectExists = await this.projectsRepository.exists(projectId);
+    if (!projectExists) {
       throw new NotFoundError("Project not found", ERROR_CODES.PROJECT_NOT_FOUND);
     }
 
@@ -486,6 +601,7 @@ export class ProjectsService {
       targetDate: input.targetDate ? new Date(input.targetDate) : null,
     });
 
+    await this.syncProjectProgress(projectId);
     return sanitizeProjectModule(moduleRecord);
   }
 
@@ -498,8 +614,8 @@ export class ProjectsService {
     input: UpdateProjectModuleInput,
     _actor?: { userId: string; accountType?: string }
   ): Promise<ProjectModuleResponse> {
-    const project = await this.projectsRepository.findById(projectId);
-    if (!project) {
+    const projectExists = await this.projectsRepository.exists(projectId);
+    if (!projectExists) {
       throw new NotFoundError("Project not found", ERROR_CODES.PROJECT_NOT_FOUND);
     }
 
@@ -524,6 +640,7 @@ export class ProjectsService {
     if (input.completedAt !== undefined) updateData.completedAt = input.completedAt ? new Date(input.completedAt) : null;
 
     const updated = await this.projectsRepository.updateProjectModule(moduleId, updateData);
+    await this.syncProjectProgress(projectId);
     return sanitizeProjectModule(updated);
   }
 
@@ -535,8 +652,8 @@ export class ProjectsService {
     moduleId: string,
     _actor?: { userId: string; accountType?: string }
   ): Promise<void> {
-    const project = await this.projectsRepository.findById(projectId);
-    if (!project) {
+    const projectExists = await this.projectsRepository.exists(projectId);
+    if (!projectExists) {
       throw new NotFoundError("Project not found", ERROR_CODES.PROJECT_NOT_FOUND);
     }
 
@@ -546,6 +663,7 @@ export class ProjectsService {
     }
 
     await this.projectsRepository.deleteProjectModule(moduleId);
+    await this.syncProjectProgress(projectId);
   }
 
   /**
@@ -556,13 +674,127 @@ export class ProjectsService {
     input: ReorderProjectModulesInput,
     _actor?: { userId: string; accountType?: string }
   ): Promise<ProjectModuleResponse[]> {
-    const project = await this.projectsRepository.findById(projectId);
-    if (!project) {
+    const projectExists = await this.projectsRepository.exists(projectId);
+    if (!projectExists) {
       throw new NotFoundError("Project not found", ERROR_CODES.PROJECT_NOT_FOUND);
     }
 
     const reordered = await this.projectsRepository.reorderProjectModules(projectId, input.modules);
+    await this.syncProjectProgress(projectId);
     return reordered.map(sanitizeProjectModule);
+  }
+
+  /**
+   * Retrieves all requirements for a project.
+   */
+  public async getProjectRequirements(projectId: string): Promise<ProjectRequirementResponse[]> {
+    const projectExists = await this.projectsRepository.exists(projectId);
+    if (!projectExists) {
+      throw new NotFoundError("Project not found", ERROR_CODES.PROJECT_NOT_FOUND);
+    }
+
+    const requirements = await this.projectsRepository.findProjectRequirements(projectId);
+    return requirements.map(sanitizeProjectRequirement);
+  }
+
+  /**
+   * Creates a new requirement for a project.
+   */
+  public async createProjectRequirement(
+    projectId: string,
+    input: CreateProjectRequirementInput,
+    _actor?: { userId: string; accountType?: string }
+  ): Promise<ProjectRequirementResponse> {
+    const projectExists = await this.projectsRepository.exists(projectId);
+    if (!projectExists) {
+      throw new NotFoundError("Project not found", ERROR_CODES.PROJECT_NOT_FOUND);
+    }
+
+    const created = await this.projectsRepository.createProjectRequirement({
+      projectId,
+      title: input.title.trim(),
+      description: input.description?.trim() || null,
+      priority: input.priority || "MEDIUM",
+      status: input.status || "PENDING",
+      isCompleted: input.isCompleted ?? false,
+      dueDate: input.dueDate ? new Date(input.dueDate) : null,
+      completedAt: input.isCompleted ? new Date() : null,
+    });
+
+    await this.syncProjectProgress(projectId);
+    return sanitizeProjectRequirement(created);
+  }
+
+  /**
+   * Updates an existing project requirement.
+   */
+  public async updateProjectRequirement(
+    projectId: string,
+    requirementId: string,
+    input: UpdateProjectRequirementInput,
+    _actor?: { userId: string; accountType?: string }
+  ): Promise<ProjectRequirementResponse> {
+    const projectExists = await this.projectsRepository.exists(projectId);
+    if (!projectExists) {
+      throw new NotFoundError("Project not found", ERROR_CODES.PROJECT_NOT_FOUND);
+    }
+
+    const existingRequirement = await this.projectsRepository.findProjectRequirementById(requirementId);
+    if (!existingRequirement || existingRequirement.projectId !== projectId) {
+      throw new NotFoundError("Project requirement not found", ERROR_CODES.PROJECT_REQUIREMENT_NOT_FOUND);
+    }
+
+    const updateData: any = {};
+    if (input.title !== undefined) updateData.title = input.title.trim();
+    if (input.description !== undefined) updateData.description = input.description?.trim() || null;
+    if (input.priority !== undefined) updateData.priority = input.priority;
+    if (input.status !== undefined) {
+      updateData.status = input.status;
+      if (input.status === "COMPLETED") {
+        updateData.isCompleted = true;
+        if (!existingRequirement.completedAt) updateData.completedAt = new Date();
+      }
+    }
+    if (input.isCompleted !== undefined) {
+      updateData.isCompleted = input.isCompleted;
+      if (input.isCompleted) {
+        updateData.status = "COMPLETED";
+        if (!existingRequirement.completedAt) updateData.completedAt = new Date();
+      } else {
+        updateData.completedAt = null;
+        if (existingRequirement.status === "COMPLETED") {
+          updateData.status = "IN_PROGRESS";
+        }
+      }
+    }
+    if (input.dueDate !== undefined) updateData.dueDate = input.dueDate ? new Date(input.dueDate) : null;
+    if (input.completedAt !== undefined) updateData.completedAt = input.completedAt ? new Date(input.completedAt) : null;
+
+    const updated = await this.projectsRepository.updateProjectRequirement(requirementId, updateData);
+    await this.syncProjectProgress(projectId);
+    return sanitizeProjectRequirement(updated);
+  }
+
+  /**
+   * Deletes a project requirement.
+   */
+  public async deleteProjectRequirement(
+    projectId: string,
+    requirementId: string,
+    _actor?: { userId: string; accountType?: string }
+  ): Promise<void> {
+    const projectExists = await this.projectsRepository.exists(projectId);
+    if (!projectExists) {
+      throw new NotFoundError("Project not found", ERROR_CODES.PROJECT_NOT_FOUND);
+    }
+
+    const existingRequirement = await this.projectsRepository.findProjectRequirementById(requirementId);
+    if (!existingRequirement || existingRequirement.projectId !== projectId) {
+      throw new NotFoundError("Project requirement not found", ERROR_CODES.PROJECT_REQUIREMENT_NOT_FOUND);
+    }
+
+    await this.projectsRepository.deleteProjectRequirement(requirementId);
+    await this.syncProjectProgress(projectId);
   }
 
   /**

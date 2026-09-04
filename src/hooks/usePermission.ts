@@ -9,7 +9,8 @@ export function usePermission() {
   const isAdmin = accountType === "ADMIN" || roleName === "ADMIN" || roleName === "SUPER_ADMIN" || roleName === "OWNER";
   const isSubAdmin = accountType === "SUB_ADMIN" || roleName === "SUB_ADMIN" || roleName === "CO_ADMIN";
   const isManager = accountType === "MANAGER" || roleName === "MANAGER" || roleName === "LEAD";
-  const isMember = !isAdmin && !isSubAdmin && !isManager;
+  const isClient = accountType === "CLIENT" || roleName === "CLIENT";
+  const isMember = !isAdmin && !isSubAdmin && !isManager && !isClient;
 
   const hasPermission = (requiredPermission: string): boolean => {
     if (!currentUser) return false;
@@ -64,6 +65,21 @@ export function usePermission() {
   const canAccess = (moduleName: string): boolean => {
     if (!currentUser) return false;
     if (isAdmin) return true;
+
+    // Strict boundary for CLIENT accounts - portal access only
+    if (isClient) {
+      switch (moduleName.toLowerCase()) {
+        case "dashboard":
+        case "overview":
+        case "projects":
+        case "payments":
+        case "notifications":
+        case "settings":
+          return true;
+        default:
+          return false;
+      }
+    }
 
     switch (moduleName.toLowerCase()) {
       case "dashboard":
@@ -147,6 +163,7 @@ export function usePermission() {
     isSubAdmin,
     isManager,
     isMember,
+    isClient,
     hasPermission,
     hasAnyPermission,
     hasAllPermissions,

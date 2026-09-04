@@ -46,6 +46,39 @@ export interface ProjectModuleResponse {
   updatedAt: Date;
 }
 
+export interface ProjectRequirementResponse {
+  id: string;
+  projectId: string;
+  title: string;
+  description: string | null;
+  priority: string;
+  status: string;
+  isCompleted: boolean;
+  dueDate: Date | null;
+  completedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CreateProjectRequirementInput {
+  title: string;
+  description?: string;
+  priority?: string;
+  status?: string;
+  isCompleted?: boolean;
+  dueDate?: string | Date;
+}
+
+export interface UpdateProjectRequirementInput {
+  title?: string;
+  description?: string;
+  priority?: string;
+  status?: string;
+  isCompleted?: boolean;
+  dueDate?: string | Date | null;
+  completedAt?: string | Date | null;
+}
+
 export interface CreateProjectModuleInput {
   title: string;
   description?: string;
@@ -117,6 +150,8 @@ export interface ProjectDetailResponse extends ProjectSummaryResponse {
   paymentsCount: number;
   modulesCount?: number;
   modules?: ProjectModuleResponse[];
+  requirementsCount?: number;
+  requirements?: ProjectRequirementResponse[];
   recentUpdates: ProjectUpdateSummary[];
 }
 

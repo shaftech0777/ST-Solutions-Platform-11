@@ -37,6 +37,16 @@ usersRouter.get(
 );
 
 /**
+ * @route GET /users/team-tree
+ * @desc Retrieves dynamic organizational team tree
+ * @access Protected
+ */
+usersRouter.get(
+  "/team-tree",
+  usersController.getTeamTree
+);
+
+/**
  * @route GET /users
  * @desc Retrieves paginated list of users with search and filter capabilities
  * @access Protected (Requires users.read permission or ADMIN)

@@ -31,6 +31,7 @@ export class ProjectsRepository extends BaseRepository {
         updates: true,
         payments: true,
         modules: true,
+        requirements: true,
       },
     },
   } as const;
@@ -39,6 +40,9 @@ export class ProjectsRepository extends BaseRepository {
     ...this.projectIncludes,
     modules: {
       orderBy: { orderIndex: "asc" as const },
+    },
+    requirements: {
+      orderBy: { createdAt: "asc" as const },
     },
     updates: {
       take: 10,
@@ -169,6 +173,19 @@ export class ProjectsRepository extends BaseRepository {
   }
 
   /**
+   * Checks if a project exists by ID (lightweight).
+   */
+  public async exists(projectId: string, tx?: TransactionClient): Promise<boolean> {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      const count = await client.project.count({
+        where: { id: projectId },
+      });
+      return count > 0;
+    });
+  }
+
+  /**
    * Finds project by ID with deep relations.
    */
   public async findById(projectId: string, tx?: TransactionClient) {
@@ -204,6 +221,20 @@ export class ProjectsRepository extends BaseRepository {
         where: { id: projectId },
         data,
         include: this.projectDetailIncludes,
+      });
+    });
+  }
+
+  /**
+   * Directly updates project progress percentage without fetching relations.
+   */
+  public async updateProgress(projectId: string, progressPercentage: number, tx?: TransactionClient) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      return client.project.update({
+        where: { id: projectId },
+        data: { progressPercentage },
+        select: { id: true, progressPercentage: true },
       });
     });
   }
@@ -406,6 +437,75 @@ export class ProjectsRepository extends BaseRepository {
       );
       await Promise.all(updates);
       return this.findProjectModules(projectId, tx);
+    });
+  }
+
+  /**
+   * Finds all requirements for a project.
+   */
+  public async findProjectRequirements(projectId: string, tx?: TransactionClient) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      return client.projectRequirement.findMany({
+        where: { projectId },
+        orderBy: [{ createdAt: "asc" }],
+      });
+    });
+  }
+
+  /**
+   * Finds a single project requirement by ID.
+   */
+  public async findProjectRequirementById(requirementId: string, tx?: TransactionClient) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      return client.projectRequirement.findUnique({
+        where: { id: requirementId },
+      });
+    });
+  }
+
+  /**
+   * Creates a new requirement for a project.
+   */
+  public async createProjectRequirement(
+    data: Prisma.ProjectRequirementCreateInput | Prisma.ProjectRequirementUncheckedCreateInput,
+    tx?: TransactionClient
+  ) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      return client.projectRequirement.create({
+        data,
+      });
+    });
+  }
+
+  /**
+   * Updates an existing project requirement.
+   */
+  public async updateProjectRequirement(
+    requirementId: string,
+    data: Prisma.ProjectRequirementUpdateInput,
+    tx?: TransactionClient
+  ) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      return client.projectRequirement.update({
+        where: { id: requirementId },
+        data,
+      });
+    });
+  }
+
+  /**
+   * Deletes a project requirement.
+   */
+  public async deleteProjectRequirement(requirementId: string, tx?: TransactionClient) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      return client.projectRequirement.delete({
+        where: { id: requirementId },
+      });
     });
   }
 

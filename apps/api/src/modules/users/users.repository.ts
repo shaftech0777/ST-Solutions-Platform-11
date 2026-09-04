@@ -536,6 +536,99 @@ export class UsersRepository extends BaseRepository {
       });
     });
   }
+
+  /**
+   * Retrieves all users and clients with populated hierarchy relationships to build the organization tree.
+   */
+  public async getTeamTreeRawData(organizationId?: string, tx?: TransactionClient) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+
+      const [users, clients] = await Promise.all([
+        client.user.findMany({
+          where: organizationId ? { organizationId } : {},
+          include: {
+            profile: true,
+            role: true,
+            managedByUser: {
+              include: { profile: true, role: true },
+            },
+            memberAccount: {
+              include: {
+                rank: true,
+                manager: {
+                  include: {
+                    user: {
+                      include: { profile: true },
+                    },
+                  },
+                },
+              },
+            },
+            assignedProjects: {
+              select: {
+                id: true,
+                title: true,
+                projectStatus: true,
+                progressPercentage: true,
+                budget: true,
+                currency: true,
+              },
+            },
+            managedProjects: {
+              select: {
+                id: true,
+                title: true,
+                projectStatus: true,
+                progressPercentage: true,
+                budget: true,
+                currency: true,
+              },
+            },
+          },
+          orderBy: [
+            { accountType: "asc" },
+            { createdAt: "asc" },
+          ],
+        }),
+        client.client.findMany({
+          where: organizationId ? { organizationId } : {},
+          include: {
+            user: {
+              include: { profile: true },
+            },
+            ownership: {
+              include: {
+                member: {
+                  include: {
+                    user: {
+                      include: { profile: true },
+                    },
+                  },
+                },
+                manager: {
+                  include: { profile: true },
+                },
+              },
+            },
+            projects: {
+              select: {
+                id: true,
+                title: true,
+                projectStatus: true,
+                progressPercentage: true,
+                budget: true,
+                currency: true,
+              },
+            },
+          },
+          orderBy: { createdAt: "asc" },
+        }),
+      ]);
+
+      return { users, clients };
+    });
+  }
 }
 
 export const usersRepository = new UsersRepository();

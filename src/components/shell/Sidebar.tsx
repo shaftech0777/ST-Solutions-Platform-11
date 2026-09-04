@@ -17,6 +17,7 @@ import {
   ChevronRight,
   UserCheck,
   Inbox,
+  Network,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext.js";
 import { usePermission } from "../../hooks/usePermission.js";
@@ -80,6 +81,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
       title: "People & Talent",
       items: [
         { label: "Members", path: "/members", icon: Users, module: "members" },
+        { label: "Team Hierarchy", path: "/members?tab=hierarchy", icon: Network, module: "members" },
         { label: "Applicants", path: "/applicants", icon: UserCheck, module: "applicants" },
       ],
     },

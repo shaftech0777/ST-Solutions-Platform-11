@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   Users,
   UserPlus,
@@ -15,7 +16,9 @@ import {
   Award,
   Plus,
   KeyRound,
+  Layers,
 } from "lucide-react";
+import { TeamHierarchyTree } from "../components/hierarchy/TeamHierarchyTree.js";
 import { PageHeader } from "../components/shell/PageHeader.js";
 import { Table, TableHeader, TableRow, TableHead, TableCell } from "../components/ui/Table.js";
 import { Button, IconButton } from "../components/ui/Button.js";
@@ -58,6 +61,20 @@ export const MembersPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   // Search & Filters
+  const [searchParams, setSearchParams] = useSearchParams();
+  const urlTab = searchParams.get("tab");
+  const [activeView, setActiveView] = useState<"directory" | "hierarchy">(
+    urlTab === "hierarchy" ? "hierarchy" : "directory"
+  );
+
+  useEffect(() => {
+    if (urlTab === "hierarchy") {
+      setActiveView("hierarchy");
+    } else if (urlTab === "directory") {
+      setActiveView("directory");
+    }
+  }, [urlTab]);
+
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("ALL");
   const [statusFilter, setStatusFilter] = useState("ALL");
@@ -571,7 +588,65 @@ export const MembersPage: React.FC = () => {
         </Card>
       </div>
 
-      {/* Filter and Search Bar */}
+      {/* View Switcher: Directory vs Team Hierarchy */}
+      <div className="flex items-center gap-2 border-b border-border/60 pb-3">
+        <button
+          type="button"
+          onClick={() => {
+            setActiveView("directory");
+            setSearchParams({});
+          }}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+            activeView === "directory"
+              ? "bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/40 shadow-sm"
+              : "text-text-muted hover:text-text hover:bg-surface-hover/70"
+          }`}
+        >
+          <Users className="w-4 h-4" />
+          <span>User Accounts Directory</span>
+          <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-slate-800 text-slate-300 font-mono">
+            {filteredMembers.length}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setActiveView("hierarchy");
+            setSearchParams({ tab: "hierarchy" });
+          }}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+            activeView === "hierarchy"
+              ? "bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/40 shadow-sm"
+              : "text-text-muted hover:text-text hover:bg-surface-hover/70"
+          }`}
+        >
+          <Layers className="w-4 h-4 text-[#D4AF37]" />
+          <span>Team Hierarchy Tree</span>
+          <span className="ml-1 px-1.5 py-0.2 rounded text-[10px] bg-[#D4AF37]/20 text-[#D4AF37] font-mono font-bold">
+            Live DB
+          </span>
+        </button>
+      </div>
+
+      {activeView === "hierarchy" ? (
+        <TeamHierarchyTree
+          onSelectUser={(node) => {
+            const found = members.find((m) => {
+              const uId = m.user?.id || m.userId || m.id;
+              return uId === node.id || m.id === node.id;
+            });
+            if (found) {
+              setSelectedMember(found);
+            } else {
+              setSearch(node.loginId || node.name);
+              setActiveView("directory");
+            }
+          }}
+        />
+      ) : (
+        <>
+          {/* Filter and Search Bar */}
       <Card className="p-4 border-border/60 bg-surface">
         <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
           <div className="relative flex-1 min-w-[240px]">
@@ -867,6 +942,8 @@ export const MembersPage: React.FC = () => {
               );
             })}
           </div>
+        </>
+      )}
         </>
       )}
 

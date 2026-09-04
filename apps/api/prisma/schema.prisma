@@ -442,12 +442,33 @@ model Project {
   modules      ProjectModule[]
   updates      ProjectUpdate[]
   payments     Payment[]
+  requirements ProjectRequirement[]
 
   @@index([organizationId])
   @@index([workspaceId])
   @@index([clientId])
   @@index([projectStatus])
   @@index([createdAt])
+}
+
+model ProjectRequirement {
+  id          String    @id @default(uuid())
+  projectId   String
+  title       String
+  description String?
+  priority    String    @default("MEDIUM")
+  status      String    @default("PENDING")
+  isCompleted Boolean   @default(false)
+  dueDate     DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([status])
+  @@index([priority])
 }
 
 model ProjectModule {
@@ -493,7 +514,7 @@ model Payment {
   id                   String        @id @default(uuid())
   clientId             String
   projectId            String?
-  amount               Float
+  amount               Decimal       @db.Decimal(12, 2)
   currency             String        @default("USD")
   paymentMethod        String?
   transactionReference String?

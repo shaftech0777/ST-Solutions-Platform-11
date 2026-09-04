@@ -176,6 +176,51 @@ export class ClientsRepository extends BaseRepository {
   }
 
   /**
+   * Finds client record by associated user ID or user email.
+   * If matched by user email and userId is not yet linked, links it.
+   */
+  public async findByUserId(userId: string, tx?: TransactionClient) {
+    return this.execute(async () => {
+      const client = this.getClient(tx);
+      let record = await client.client.findUnique({
+        where: { userId },
+        include: this.clientDetailIncludes,
+      });
+
+      if (!record) {
+        record = await client.client.findUnique({
+          where: { id: userId },
+          include: this.clientDetailIncludes,
+        });
+      }
+
+      if (!record) {
+        const user = await client.user.findUnique({
+          where: { id: userId },
+          select: { id: true, email: true },
+        });
+
+        if (user?.email) {
+          record = await client.client.findFirst({
+            where: { email: { equals: user.email, mode: "insensitive" } },
+            include: this.clientDetailIncludes,
+          });
+
+          if (record && !record.userId) {
+            await client.client.update({
+              where: { id: record.id },
+              data: { userId },
+            });
+            record.userId = userId;
+          }
+        }
+      }
+
+      return record;
+    });
+  }
+
+  /**
    * Finds a client record by email address.
    */
   public async findByEmail(email: string, tx?: TransactionClient) {

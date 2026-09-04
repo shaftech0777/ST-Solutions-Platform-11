@@ -29,8 +29,15 @@ export class ProjectsController {
    */
   public getProjects = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      const authReq = req as AuthenticatedRequest;
       const query = req.query as any;
-      const result = await this.projectsService.getProjects(query);
+      const actor = authReq.user
+        ? {
+            userId: authReq.user.userId,
+            accountType: authReq.user.accountType as AccountType,
+          }
+        : undefined;
+      const result = await this.projectsService.getProjects(query, actor);
 
       ResponseBuilder.paginated(res, result.items, {
         page: result.pagination.page,
@@ -64,8 +71,15 @@ export class ProjectsController {
    */
   public getProjectById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      const authReq = req as AuthenticatedRequest;
       const { projectId } = req.params;
-      const project = await this.projectsService.getProjectById(projectId);
+      const actor = authReq.user
+        ? {
+            userId: authReq.user.userId,
+            accountType: authReq.user.accountType as AccountType,
+          }
+        : undefined;
+      const project = await this.projectsService.getProjectById(projectId, actor);
 
       ResponseBuilder.success(res, project, {
         message: "Project details retrieved successfully",
@@ -365,6 +379,89 @@ export class ProjectsController {
     try {
       const { projectId } = req.params;
       await this.projectsService.deleteProject(projectId);
+
+      ResponseBuilder.noContent(res);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * GET /api/v1/projects/:projectId/requirements
+   * Retrieves all requirements for a project.
+   */
+  public getProjectRequirements = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { projectId } = req.params;
+      const requirements = await this.projectsService.getProjectRequirements(projectId);
+
+      ResponseBuilder.success(res, requirements, {
+        message: "Project requirements retrieved successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * POST /api/v1/projects/:projectId/requirements
+   * Creates a new project requirement.
+   */
+  public createProjectRequirement = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const authReq = req as AuthenticatedRequest;
+      const { projectId } = req.params;
+      const body = req.body;
+      const actor = authReq.user
+        ? { userId: authReq.user.userId, accountType: authReq.user.accountType as AccountType }
+        : undefined;
+
+      const created = await this.projectsService.createProjectRequirement(projectId, body, actor);
+
+      ResponseBuilder.created(res, created, {
+        message: "Project requirement created successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * PATCH /api/v1/projects/:projectId/requirements/:requirementId
+   * Updates an existing project requirement.
+   */
+  public updateProjectRequirement = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const authReq = req as AuthenticatedRequest;
+      const { projectId, requirementId } = req.params;
+      const body = req.body;
+      const actor = authReq.user
+        ? { userId: authReq.user.userId, accountType: authReq.user.accountType as AccountType }
+        : undefined;
+
+      const updated = await this.projectsService.updateProjectRequirement(projectId, requirementId, body, actor);
+
+      ResponseBuilder.success(res, updated, {
+        message: "Project requirement updated successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * DELETE /api/v1/projects/:projectId/requirements/:requirementId
+   * Deletes a project requirement.
+   */
+  public deleteProjectRequirement = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const authReq = req as AuthenticatedRequest;
+      const { projectId, requirementId } = req.params;
+      const actor = authReq.user
+        ? { userId: authReq.user.userId, accountType: authReq.user.accountType as AccountType }
+        : undefined;
+
+      await this.projectsService.deleteProjectRequirement(projectId, requirementId, actor);
 
       ResponseBuilder.noContent(res);
     } catch (error) {

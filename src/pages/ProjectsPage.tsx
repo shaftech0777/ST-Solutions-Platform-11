@@ -20,6 +20,8 @@ import {
   TrendingUp,
   Tag,
   ChevronRight,
+  CheckSquare,
+  Square,
 } from "lucide-react";
 import { PageHeader } from "../components/shell/PageHeader.js";
 import { Table, TableHeader, TableRow, TableHead, TableCell } from "../components/ui/Table.js";
@@ -95,6 +97,11 @@ export const ProjectsPage: React.FC = () => {
 
   // Details Inspection Modal State
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [requirements, setRequirements] = useState<any[]>([]);
+  const [isLoadingRequirements, setIsLoadingRequirements] = useState(false);
+  const [isAddingReq, setIsAddingReq] = useState(false);
+  const [newReqTitle, setNewReqTitle] = useState("");
+  const [newReqPriority, setNewReqPriority] = useState("MEDIUM");
 
   // Delete State
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
@@ -328,6 +335,78 @@ export const ProjectsPage: React.FC = () => {
       });
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  // Requirements Integration
+  useEffect(() => {
+    if (!selectedProject) {
+      setRequirements([]);
+      return;
+    }
+    const loadReqs = async () => {
+      try {
+        setIsLoadingRequirements(true);
+        const res = await projectsService.getRequirements(selectedProject.id);
+        const list = Array.isArray(res) ? res : (res as any)?.data || [];
+        setRequirements(list);
+      } catch (e) {
+        setRequirements([]);
+      } finally {
+        setIsLoadingRequirements(false);
+      }
+    };
+    loadReqs();
+  }, [selectedProject?.id]);
+
+  const handleToggleRequirement = async (reqId: string, currentCompleted: boolean) => {
+    if (!selectedProject || !canManage) return;
+    try {
+      await projectsService.updateRequirement(selectedProject.id, reqId, {
+        isCompleted: !currentCompleted,
+        status: !currentCompleted ? "COMPLETED" : "IN_PROGRESS",
+      });
+      setRequirements((prev) =>
+        prev.map((r) =>
+          r.id === reqId
+            ? { ...r, isCompleted: !currentCompleted, status: !currentCompleted ? "COMPLETED" : "IN_PROGRESS" }
+            : r
+        )
+      );
+    } catch (e: any) {
+      addToast({ type: "danger", title: "Update Failed", message: e.message || "Failed to update requirement" });
+    }
+  };
+
+  const handleAddRequirement = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedProject || !newReqTitle.trim() || !canManage) return;
+    try {
+      setIsAddingReq(true);
+      const created = await projectsService.createRequirement(selectedProject.id, {
+        title: newReqTitle.trim(),
+        priority: newReqPriority,
+        status: "PENDING",
+      });
+      const newObj = (created as any)?.data || created;
+      setRequirements((prev) => [...prev, newObj]);
+      setNewReqTitle("");
+      addToast({ type: "success", title: "Requirement Added", message: "Deliverable registered for project" });
+    } catch (e: any) {
+      addToast({ type: "danger", title: "Action Failed", message: e.message || "Failed to add requirement" });
+    } finally {
+      setIsAddingReq(false);
+    }
+  };
+
+  const handleDeleteRequirement = async (reqId: string) => {
+    if (!selectedProject || !canManage) return;
+    try {
+      await projectsService.deleteRequirement(selectedProject.id, reqId);
+      setRequirements((prev) => prev.filter((r) => r.id !== reqId));
+      addToast({ type: "success", title: "Requirement Removed", message: "Deliverable removed" });
+    } catch (e: any) {
+      addToast({ type: "danger", title: "Deletion Failed", message: e.message || "Failed to delete requirement" });
     }
   };
 
@@ -898,6 +977,144 @@ export const ProjectsPage: React.FC = () => {
                 </p>
               </div>
             )}
+
+            {/* Scope & Requirements Checklist */}
+            <div className="p-4 rounded-xl bg-slate-900/70 border border-slate-800 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-xs font-mono font-bold text-[#D4AF37] uppercase tracking-wider block">
+                    Scope & Requirements Checklist ({requirements.filter((r) => r.isCompleted).length} / {requirements.length} Completed)
+                  </span>
+                  <span className="text-[11px] text-slate-400">
+                    Client deliverables and acceptance criteria.
+                  </span>
+                </div>
+                {requirements.length > 0 && (
+                  <span className="font-mono text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">
+                    {Math.round((requirements.filter((r) => r.isCompleted).length / requirements.length) * 100)}% Complete
+                  </span>
+                )}
+              </div>
+
+              {requirements.length > 0 && (
+                <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                  <div
+                    className="bg-gradient-to-r from-amber-500 to-emerald-400 h-1.5 rounded-full transition-all duration-300"
+                    style={{
+                      width: `${Math.round(
+                        (requirements.filter((r) => r.isCompleted).length / requirements.length) * 100
+                      )}%`,
+                    }}
+                  />
+                </div>
+              )}
+
+              {isLoadingRequirements ? (
+                <div className="py-4 text-center text-xs text-slate-500">Loading deliverables...</div>
+              ) : requirements.length === 0 ? (
+                <div className="py-4 text-center text-xs text-slate-500 border border-dashed border-slate-800 rounded-lg">
+                  No explicit deliverables documented yet.
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                  {requirements.map((req) => (
+                    <div
+                      key={req.id}
+                      className={`p-2.5 rounded-lg border transition-colors flex items-start justify-between gap-3 text-xs ${
+                        req.isCompleted
+                          ? "bg-emerald-950/20 border-emerald-500/30 text-slate-300"
+                          : "bg-slate-900 border-slate-800 text-slate-200"
+                      }`}
+                    >
+                      <div className="flex items-start gap-2.5 flex-1 min-w-0">
+                        {canManage ? (
+                          <button
+                            type="button"
+                            onClick={() => handleToggleRequirement(req.id, req.isCompleted)}
+                            className="mt-0.5 text-slate-400 hover:text-emerald-400 transition-colors"
+                          >
+                            {req.isCompleted ? (
+                              <CheckSquare className="w-4 h-4 text-emerald-400" />
+                            ) : (
+                              <Square className="w-4 h-4" />
+                            )}
+                          </button>
+                        ) : (
+                          <span className="mt-0.5">
+                            {req.isCompleted ? (
+                              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                            ) : (
+                              <Clock className="w-4 h-4 text-amber-400" />
+                            )}
+                          </span>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <span className={`font-semibold block ${req.isCompleted ? "line-through text-slate-400" : "text-white"}`}>
+                            {req.title}
+                          </span>
+                          {req.description && (
+                            <p className="text-[11px] text-slate-400 mt-0.5">{req.description}</p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span
+                          className={`text-[10px] font-mono px-1.5 py-0.2 rounded border ${
+                            req.priority === "HIGH"
+                              ? "bg-rose-500/10 text-rose-400 border-rose-500/30"
+                              : req.priority === "LOW"
+                              ? "bg-slate-800 text-slate-400 border-slate-700"
+                              : "bg-amber-500/10 text-amber-400 border-amber-500/30"
+                          }`}
+                        >
+                          {req.priority || "MEDIUM"}
+                        </span>
+                        {canManage && (
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteRequirement(req.id)}
+                            className="text-slate-500 hover:text-rose-400 transition-colors"
+                            title="Delete Requirement"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {canManage && (
+                <form onSubmit={handleAddRequirement} className="flex items-center gap-2 pt-2 border-t border-slate-800">
+                  <input
+                    type="text"
+                    placeholder="+ Add deliverable requirement..."
+                    value={newReqTitle}
+                    onChange={(e) => setNewReqTitle(e.target.value)}
+                    className="flex-1 px-3 py-1.5 text-xs bg-slate-950 border border-slate-800 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-[#D4AF37]"
+                  />
+                  <select
+                    value={newReqPriority}
+                    onChange={(e) => setNewReqPriority(e.target.value)}
+                    className="px-2 py-1.5 text-xs bg-slate-950 border border-slate-800 rounded-lg text-slate-300 focus:outline-none focus:border-[#D4AF37]"
+                  >
+                    <option value="LOW">Low</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="HIGH">High</option>
+                  </select>
+                  <Button
+                    type="submit"
+                    variant="outline"
+                    size="sm"
+                    disabled={isAddingReq || !newReqTitle.trim()}
+                  >
+                    Add
+                  </Button>
+                </form>
+              )}
+            </div>
 
             {/* Allowed Transitions Preview */}
             <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 space-y-3">

@@ -1,8 +1,9 @@
-import { PaymentStatus } from "@prisma/client";
+import { AccountType, PaymentStatus, Prisma } from "@prisma/client";
 import { BusinessError, NotFoundError } from "../../core/errors/app-error.js";
 import { ERROR_CODES } from "../../core/errors/error.codes.js";
 import { DOMAIN_EVENTS } from "../../core/events/domain-event.types.js";
 import { eventBus } from "../../core/events/event-bus.js";
+import { clientsRepository } from "../clients/clients.repository.js";
 import { sanitizePaymentResponse } from "./payments.mapper.js";
 import { paymentsRepository as defaultPaymentsRepository, PaymentsRepository } from "./payments.repository.js";
 import {
@@ -27,7 +28,10 @@ export class PaymentsService {
   /**
    * Retrieves paginated list of payments with filtering.
    */
-  public async getPayments(filters: PaymentQueryFilters): Promise<{
+  public async getPayments(
+    filters: PaymentQueryFilters,
+    actor?: { userId: string; accountType?: string }
+  ): Promise<{
     items: PaymentResponse[];
     pagination: {
       total: number;
@@ -38,7 +42,21 @@ export class PaymentsService {
       hasPrevPage: boolean;
     };
   }> {
-    const { data, meta } = await this.paymentsRepository.findAndCount(filters);
+    const effectiveFilters: PaymentQueryFilters = { ...filters };
+
+    // Force client queries to the authenticated client's database identity (Prevent IDOR)
+    if (actor && actor.accountType === AccountType.CLIENT) {
+      const clientRecord = await clientsRepository.findByUserId(actor.userId);
+      if (!clientRecord) {
+        throw new NotFoundError(
+          "Client record not found for authenticated account",
+          ERROR_CODES.PAYMENT_CLIENT_NOT_FOUND
+        );
+      }
+      effectiveFilters.clientId = clientRecord.id;
+    }
+
+    const { data, meta } = await this.paymentsRepository.findAndCount(effectiveFilters);
     const sanitizedItems = data.map((payment) => sanitizePaymentResponse(payment));
 
     return {
@@ -50,10 +68,21 @@ export class PaymentsService {
   /**
    * Retrieves detailed payment record by ID.
    */
-  public async getPaymentById(paymentId: string): Promise<PaymentResponse> {
+  public async getPaymentById(
+    paymentId: string,
+    actor?: { userId: string; accountType?: string }
+  ): Promise<PaymentResponse> {
     const payment = await this.paymentsRepository.findById(paymentId);
     if (!payment) {
       throw new NotFoundError("Payment record not found", ERROR_CODES.PAYMENT_NOT_FOUND);
+    }
+
+    // IDOR protection: Clients can only access their own payment records
+    if (actor && actor.accountType === AccountType.CLIENT) {
+      const clientRecord = await clientsRepository.findByUserId(actor.userId);
+      if (!clientRecord || payment.clientId !== clientRecord.id) {
+        throw new NotFoundError("Payment record not found", ERROR_CODES.PAYMENT_NOT_FOUND);
+      }
     }
 
     return sanitizePaymentResponse(payment);
@@ -84,6 +113,11 @@ export class PaymentsService {
       }
     }
 
+    const decimalAmount = new Prisma.Decimal(new Prisma.Decimal(input.amount).toFixed(2));
+    if (decimalAmount.isNegative() || decimalAmount.isZero()) {
+      throw new BusinessError("Payment amount must be greater than zero", ERROR_CODES.VALIDATION_INVALID_INPUT);
+    }
+
     const initialStatus = input.paymentStatus || PaymentStatus.PENDING;
     const submittedAt =
       input.submittedAt ? new Date(input.submittedAt) : initialStatus === PaymentStatus.SUBMITTED ? new Date() : null;
@@ -93,7 +127,7 @@ export class PaymentsService {
       input.approvedById ? input.approvedById : initialStatus === PaymentStatus.APPROVED ? actor.userId : null;
 
     const createdPayment = await this.paymentsRepository.create({
-      amount: input.amount,
+      amount: decimalAmount,
       currency: input.currency?.toUpperCase() || "USD",
       paymentMethod: input.paymentMethod?.trim() || null,
       transactionReference: input.transactionReference?.trim() || null,
@@ -124,7 +158,13 @@ export class PaymentsService {
 
     const updateData: any = {};
 
-    if (input.amount !== undefined) updateData.amount = input.amount;
+    if (input.amount !== undefined) {
+      const decimalAmount = new Prisma.Decimal(new Prisma.Decimal(input.amount).toFixed(2));
+      if (decimalAmount.isNegative() || decimalAmount.isZero()) {
+        throw new BusinessError("Payment amount must be greater than zero", ERROR_CODES.VALIDATION_INVALID_INPUT);
+      }
+      updateData.amount = decimalAmount;
+    }
     if (input.currency !== undefined) updateData.currency = input.currency.toUpperCase();
     if (input.paymentMethod !== undefined) updateData.paymentMethod = input.paymentMethod?.trim() || null;
     if (input.transactionReference !== undefined)
