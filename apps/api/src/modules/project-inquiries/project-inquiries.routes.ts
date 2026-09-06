@@ -6,9 +6,11 @@ export const projectInquiriesRouter = Router();
 
 /**
  * Public visitor submission endpoints:
+ * POST /api/v1/inquiries
  * POST /api/v1/inquiries/public
  * POST /api/v1/public/project-inquiries (also mounted on public router)
  */
+projectInquiriesRouter.post("/", projectInquiriesController.createPublicInquiry);
 projectInquiriesRouter.post("/public", projectInquiriesController.createPublicInquiry);
 
 /**

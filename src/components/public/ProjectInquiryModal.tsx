@@ -15,7 +15,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { inquiriesService } from "../../api/services/inquiries.service.js";
-import { companyConfig, projectsData } from "../../data/companyConfig.js";
+import { companyConfig } from "../../data/companyConfig.js";
 import { InquiryContactMethod } from "../../types/index.js";
 
 interface ProjectInquiryModalProps {
@@ -27,6 +27,7 @@ interface ProjectInquiryModalProps {
     category?: string;
   } | null;
   initialService?: string | null;
+  defaultProjectName?: string;
 }
 
 export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
@@ -34,6 +35,7 @@ export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
   onClose,
   initialProject,
   initialService,
+  defaultProjectName,
 }) => {
   const [formData, setFormData] = useState({
     visitorName: "",
@@ -65,6 +67,13 @@ export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
           projectNameSnapshot: initialProject.title,
           category: initialProject.category || "Custom Solution",
         }));
+      } else if (defaultProjectName) {
+        setFormData((prev) => ({
+          ...prev,
+          projectId: "",
+          projectNameSnapshot: defaultProjectName,
+          category: "Showcase Solution Inquiry",
+        }));
       } else if (initialService) {
         setFormData((prev) => ({
           ...prev,
@@ -80,7 +89,7 @@ export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
         }));
       }
     }
-  }, [isOpen, initialProject, initialService]);
+  }, [isOpen, initialProject, initialService, defaultProjectName]);
 
   if (!isOpen) return null;
 

@@ -99,7 +99,10 @@ export class AuthRepository extends BaseRepository {
         return executeTransaction(tx);
       }
 
-      return prisma.$transaction(executeTransaction);
+      return prisma.$transaction(executeTransaction, {
+        maxWait: 10000,
+        timeout: 30000,
+      });
     });
   }
 

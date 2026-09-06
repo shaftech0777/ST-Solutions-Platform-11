@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { authenticate, requirePermission, validate } from "../../middlewares/index.js";
 import { projectsController } from "./projects.controller.js";
+import { showcaseProjectsController } from "../showcase-projects/index.js";
 import {
   createProjectModuleSchema,
   createProjectSchema,
@@ -19,7 +20,13 @@ import {
 
 export const projectsRouter = Router();
 
-// Protect all project management routes with Authentication
+// ==========================================
+// PUBLIC SHOWCASE ALIASES (Unauthenticated)
+// ==========================================
+projectsRouter.get("/public", showcaseProjectsController.getPublicProjects);
+projectsRouter.get("/public/:idOrSlug", showcaseProjectsController.getPublicProjectByIdOrSlug);
+
+// Protect all internal project management routes with Authentication
 projectsRouter.use(authenticate());
 
 /**

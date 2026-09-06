@@ -26,10 +26,9 @@ import { Select } from "../ui/Select.js";
 import { EmptyState } from "../ui/EmptyState.js";
 import { Skeleton } from "../ui/LoadingSpinner.js";
 import { useToast } from "../../context/ToastContext.js";
-import { showcaseService, ShowcaseProject } from "../../api/services/showcase.service.js";
-import { projectsData } from "../../data/companyConfig.js";
+import { showcaseService, ShowcaseProject, ShowcaseCategory } from "../../api/services/showcase.service.js";
 
-const CATEGORY_OPTIONS = [
+const DEFAULT_CATEGORY_OPTIONS = [
   { value: "E-Commerce", label: "E-Commerce & Retail" },
   { value: "Software", label: "Software & Operational Systems" },
   { value: "Web", label: "Web Applications & Portals" },
@@ -40,7 +39,9 @@ const CATEGORY_OPTIONS = [
 export const ShowcaseManager: React.FC = () => {
   const { addToast } = useToast();
   const [projects, setProjects] = useState<ShowcaseProject[]>([]);
+  const [categories, setCategories] = useState<ShowcaseCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("ALL");
 
@@ -85,55 +86,27 @@ export const ShowcaseManager: React.FC = () => {
 
   const loadProjects = async () => {
     setIsLoading(true);
+    setLoadError(null);
     try {
-      const res = await showcaseService.getAdminProjects();
-      if (res && Array.isArray(res) && res.length > 0) {
+      const [res, cats] = await Promise.all([
+        showcaseService.getAdminProjects(),
+        showcaseService.getCategories().catch(() => []),
+      ]);
+
+      if (Array.isArray(res)) {
         setProjects(res);
       } else {
-        // Fallback to initialized static items mapped to ShowcaseProject format
-        const fallback: ShowcaseProject[] = projectsData.map((p) => ({
-          id: p.id,
-          title: p.title,
-          slug: p.slug,
-          tagline: p.tagline,
-          description: p.description,
-          fullDescription: p.fullDescription,
-          projectType: p.category.toUpperCase(),
-          targetAudience: p.targetAudience || p.clientType,
-          technologies: p.technologies,
-          features: p.features,
-          benefits: p.benefits,
-          status: "PUBLISHED",
-          featured: true,
-          displayOrder: 1,
-          liveUrl: p.liveUrl,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        }));
-        setProjects(fallback);
+        setProjects([]);
       }
-    } catch {
-      // Fallback to sample data
-      const fallback: ShowcaseProject[] = projectsData.map((p) => ({
-        id: p.id,
-        title: p.title,
-        slug: p.slug,
-        tagline: p.tagline,
-        description: p.description,
-        fullDescription: p.fullDescription,
-        projectType: p.category.toUpperCase(),
-        targetAudience: p.targetAudience || p.clientType,
-        technologies: p.technologies,
-        features: p.features,
-        benefits: p.benefits,
-        status: "PUBLISHED",
-        featured: true,
-        displayOrder: 1,
-        liveUrl: p.liveUrl,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      }));
-      setProjects(fallback);
+
+      if (Array.isArray(cats) && cats.length > 0) {
+        setCategories(cats);
+      }
+    } catch (err: any) {
+      const msg = err?.message || "Failed to load showcase projects from database.";
+      setLoadError(msg);
+      setProjects([]);
+      addToast({ type: "error", message: msg });
     } finally {
       setIsLoading(false);
     }
@@ -217,6 +190,15 @@ export const ShowcaseManager: React.FC = () => {
         featured: formData.featured,
         projectType: formData.projectType,
       };
+
+      if (formData.category) {
+        const matchedCat = categories.find(
+          (c) => c.name.toLowerCase() === formData.category.toLowerCase()
+        );
+        if (matchedCat) {
+          payload.categoryId = matchedCat.id;
+        }
+      }
 
       if (editingProject) {
         await showcaseService.updateProject(editingProject.id, payload);
@@ -307,14 +289,29 @@ export const ShowcaseManager: React.FC = () => {
             className="text-xs px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300"
           >
             <option value="ALL">All Categories</option>
-            {CATEGORY_OPTIONS.map((c) => (
-              <option key={c.value} value={c.value}>
-                {c.label}
-              </option>
-            ))}
+            {categories.length > 0
+              ? categories.map((c) => (
+                  <option key={c.id} value={c.name}>
+                    {c.name}
+                  </option>
+                ))
+              : DEFAULT_CATEGORY_OPTIONS.map((c) => (
+                  <option key={c.value} value={c.value}>
+                    {c.label}
+                  </option>
+                ))}
           </select>
         </div>
       </div>
+
+      {loadError && (
+        <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-xs text-rose-700 dark:text-rose-300 flex items-center justify-between">
+          <span>{loadError}</span>
+          <Button variant="outline" size="sm" onClick={loadProjects}>
+            Retry
+          </Button>
+        </div>
+      )}
 
       {/* Projects List */}
       {isLoading ? (
@@ -414,7 +411,11 @@ export const ShowcaseManager: React.FC = () => {
                 label="Primary Category"
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                options={CATEGORY_OPTIONS}
+                options={
+                  categories.length > 0
+                    ? categories.map((c) => ({ value: c.name, label: c.name }))
+                    : DEFAULT_CATEGORY_OPTIONS
+                }
               />
               <Select
                 label="Publish Status"

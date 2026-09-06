@@ -15,7 +15,7 @@ import {
   Users,
   Target,
 } from "lucide-react";
-import { projectsData, ProjectShowcaseItem, companyConfig } from "../../data/companyConfig.js";
+import { ProjectShowcaseItem, companyConfig } from "../../data/companyConfig.js";
 import { ProjectCardVisual } from "../../components/public/ProjectCardVisual.js";
 import { ProjectInquiryModal } from "../../components/public/ProjectInquiryModal.js";
 import { showcaseService, ShowcaseProject } from "../../api/services/showcase.service.js";
@@ -28,75 +28,61 @@ export const ProjectsPage: React.FC = () => {
   const [selectedProject, setSelectedProject] = useState<ProjectShowcaseItem | null>(null);
   const [inquiryTarget, setInquiryTarget] = useState<ProjectShowcaseItem | null>(null);
   const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false);
-  const [projectsList, setProjectsList] = useState<ProjectShowcaseItem[]>(projectsData);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [projectsList, setProjectsList] = useState<ProjectShowcaseItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  // Load from showcase API if available, fallback smoothly to local projectsData
+  // Authoritative Database Loading via Showcase API
   useEffect(() => {
     let isMounted = true;
     const loadProjects = async () => {
       try {
         setLoading(true);
+        setError(null);
         const res = await showcaseService.getPublicProjects({
           category: selectedCategory === "All" ? undefined : selectedCategory,
           search: searchQuery.trim() || undefined,
         });
-        if (isMounted && res && Array.isArray(res) && res.length > 0) {
-          // Adapt ShowcaseProject to ProjectShowcaseItem format
-          const adapted: ProjectShowcaseItem[] = res.map((p: ShowcaseProject) => ({
-            id: p.id,
-            title: p.title,
-            slug: p.slug || p.id,
-            category: (p.category?.name as any) || (p.projectType as any) || "Software",
-            tagline: p.tagline || p.title,
-            description: p.description,
-            fullDescription: p.fullDescription || p.description,
-            clientType: p.targetAudience || "Business & Commercial",
-            targetAudience: p.targetAudience || "Businesses & Enterprises",
-            problemSolved: p.benefits?.[0] || "Solves operational bottlenecks and enhances efficiency.",
-            status: p.featured ? "Live in Production" : "Demonstration Ready",
-            technologies: p.technologies || ["TypeScript", "React", "PostgreSQL"],
-            features: p.features || [],
-            benefits: p.benefits || [],
-            metrics: [
-              { label: "Execution", value: "Demonstration Ready" },
-              { label: "Ownership", value: "100% Client" },
-              { label: "Deployment", value: "Fast Track" },
-            ],
-            liveUrl: p.liveUrl || undefined,
-          }));
-          setProjectsList(adapted);
-        } else if (isMounted) {
-          // Fallback to locally defined customer-centric projects
-          filterLocalProjects();
-        }
-      } catch {
+
         if (isMounted) {
-          filterLocalProjects();
+          if (Array.isArray(res)) {
+            // Adapt authoritative database records to ProjectShowcaseItem format
+            const adapted: ProjectShowcaseItem[] = res.map((p: ShowcaseProject) => ({
+              id: p.id,
+              title: p.title,
+              slug: p.slug || p.id,
+              category: (p.category?.name as any) || (p.projectType as any) || "Software",
+              tagline: p.tagline || p.title,
+              description: p.description,
+              fullDescription: p.fullDescription || p.description,
+              clientType: p.targetAudience || "Business & Commercial Organizations",
+              targetAudience: p.targetAudience || "Businesses & Commercial Organizations",
+              problemSolved: p.benefits?.[0] || "Engineered to eliminate operational friction and scale productivity.",
+              status: p.featured ? "Featured Showcase" : "Capability Showcase",
+              technologies: p.technologies || ["TypeScript", "React", "PostgreSQL"],
+              features: p.features || [],
+              benefits: p.benefits || [],
+              metrics: [
+                { label: "Execution", value: "Demonstration Ready" },
+                { label: "Ownership", value: "100% Client" },
+                { label: "Deployment", value: "Fast Track" },
+              ],
+              liveUrl: p.liveUrl || undefined,
+            }));
+            setProjectsList(adapted);
+          } else {
+            setProjectsList([]);
+          }
+        }
+      } catch (err: any) {
+        if (isMounted) {
+          setError(err?.message || "Failed to load showcase systems from database.");
+          setProjectsList([]);
         }
       } finally {
         if (isMounted) setLoading(false);
       }
-    };
-
-    const filterLocalProjects = () => {
-      let filtered = projectsData;
-      if (selectedCategory !== "All") {
-        filtered = filtered.filter(
-          (p) => p.category.toLowerCase() === selectedCategory.toLowerCase()
-        );
-      }
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase().trim();
-        filtered = filtered.filter(
-          (p) =>
-            p.title.toLowerCase().includes(q) ||
-            p.description.toLowerCase().includes(q) ||
-            p.tagline.toLowerCase().includes(q) ||
-            (p.targetAudience && p.targetAudience.toLowerCase().includes(q))
-        );
-      }
-      setProjectsList(filtered);
     };
 
     loadProjects();
@@ -104,7 +90,7 @@ export const ProjectsPage: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, [selectedCategory, searchQuery]);
+  }, [selectedCategory, searchQuery, refreshTrigger]);
 
   const handleOpenInquiry = (project?: ProjectShowcaseItem) => {
     setInquiryTarget(project || null);
@@ -185,6 +171,20 @@ export const ProjectsPage: React.FC = () => {
             {[1, 2, 3].map((n) => (
               <div key={n} className="h-96 rounded-3xl bg-slate-100 animate-pulse border border-[#E2E5E0]" />
             ))}
+          </div>
+        ) : error ? (
+          <div className="p-12 text-center rounded-3xl bg-white border border-rose-200 space-y-4">
+            <Layers className="w-10 h-10 mx-auto text-rose-400" />
+            <h3 className="text-base font-bold text-slate-900">Showcase Systems Temporarily Unavailable</h3>
+            <p className="text-xs text-slate-500 max-w-md mx-auto">
+              {error}
+            </p>
+            <button
+              onClick={() => setRefreshTrigger((prev) => prev + 1)}
+              className="px-5 py-2.5 text-xs font-bold text-white bg-slate-900 rounded-xl hover:bg-slate-800 transition-all shadow-sm"
+            >
+              Retry Loading Showcase
+            </button>
           </div>
         ) : projectsList.length === 0 ? (
           <div className="p-12 text-center rounded-3xl bg-white border border-[#E2E5E0] space-y-4">
@@ -282,12 +282,13 @@ export const ProjectsPage: React.FC = () => {
                 {/* Card Action Footer */}
                 <div className="p-4 sm:p-6 bg-[#FAFAF8] border-t border-[#E2E5E0] space-y-3">
                   <div className="flex items-center justify-between gap-2">
-                    <button
-                      onClick={() => setSelectedProject(project)}
-                      className="text-xs font-bold text-slate-700 hover:text-slate-950 transition-colors underline-offset-2 hover:underline"
+                    <Link
+                      to={`/projects/${project.slug || project.id}`}
+                      className="text-xs font-bold text-slate-700 hover:text-slate-950 transition-colors underline-offset-2 hover:underline inline-flex items-center space-x-1"
                     >
-                      View Full Details
-                    </button>
+                      <span>View Full Details</span>
+                      <ArrowRight className="w-3 h-3 text-amber-600" />
+                    </Link>
 
                     {project.liveUrl && (
                       <a

@@ -5,15 +5,8 @@ import { showcaseProjectsController } from "./showcase-projects.controller.js";
 export const showcaseProjectsRouter = Router();
 
 // ==========================================
-// PUBLIC ENDPOINTS (No Authentication Required)
+// 1. PUBLIC FIXED ENDPOINTS
 // ==========================================
-
-/**
- * @route GET /showcase-projects
- * @desc Retrieve published showcase projects
- * @access Public
- */
-showcaseProjectsRouter.get("/", showcaseProjectsController.getPublicProjects);
 
 /**
  * @route GET /showcase-projects/categories
@@ -23,16 +16,16 @@ showcaseProjectsRouter.get("/", showcaseProjectsController.getPublicProjects);
 showcaseProjectsRouter.get("/categories", showcaseProjectsController.getCategories);
 
 /**
- * @route GET /showcase-projects/:idOrSlug
- * @desc Retrieve a single published showcase project by ID or slug
+ * @route GET /showcase-projects
+ * @desc Retrieve published showcase projects
  * @access Public
  */
-showcaseProjectsRouter.get("/:idOrSlug", showcaseProjectsController.getPublicProjectByIdOrSlug);
+showcaseProjectsRouter.get("/", showcaseProjectsController.getPublicProjects);
 
 // ==========================================
-// PROTECTED ADMINISTRATIVE ENDPOINTS
+// 2. PROTECTED ADMINISTRATIVE & ACTION ENDPOINTS
+// (Declared BEFORE dynamic :idOrSlug to avoid any interception)
 // ==========================================
-showcaseProjectsRouter.use(authenticate());
 
 /**
  * @route GET /showcase-projects/admin/all
@@ -41,8 +34,21 @@ showcaseProjectsRouter.use(authenticate());
  */
 showcaseProjectsRouter.get(
   "/admin/all",
+  authenticate(),
   requirePermission("settings.read"),
   showcaseProjectsController.getAllProjectsAdmin
+);
+
+/**
+ * @route POST /showcase-projects/reorder
+ * @desc Reorder showcase projects
+ * @access Protected (Requires settings.update or Admin)
+ */
+showcaseProjectsRouter.post(
+  "/reorder",
+  authenticate(),
+  requirePermission("settings.update"),
+  showcaseProjectsController.reorderProjects
 );
 
 /**
@@ -52,6 +58,7 @@ showcaseProjectsRouter.get(
  */
 showcaseProjectsRouter.post(
   "/",
+  authenticate(),
   requirePermission("settings.update"),
   showcaseProjectsController.createProject
 );
@@ -63,6 +70,7 @@ showcaseProjectsRouter.post(
  */
 showcaseProjectsRouter.patch(
   "/:id",
+  authenticate(),
   requirePermission("settings.update"),
   showcaseProjectsController.updateProject
 );
@@ -74,17 +82,18 @@ showcaseProjectsRouter.patch(
  */
 showcaseProjectsRouter.delete(
   "/:id",
+  authenticate(),
   requirePermission("settings.update"),
   showcaseProjectsController.deleteProject
 );
 
+// ==========================================
+// 3. PUBLIC DYNAMIC ENDPOINTS (Declared LAST)
+// ==========================================
+
 /**
- * @route POST /showcase-projects/reorder
- * @desc Reorder showcase projects
- * @access Protected (Requires settings.update or Admin)
+ * @route GET /showcase-projects/:idOrSlug
+ * @desc Retrieve a single published showcase project by ID or slug
+ * @access Public
  */
-showcaseProjectsRouter.post(
-  "/reorder",
-  requirePermission("settings.update"),
-  showcaseProjectsController.reorderProjects
-);
+showcaseProjectsRouter.get("/:idOrSlug", showcaseProjectsController.getPublicProjectByIdOrSlug);

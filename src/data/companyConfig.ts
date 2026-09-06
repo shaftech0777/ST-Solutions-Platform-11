@@ -312,7 +312,7 @@ export interface ProjectShowcaseItem {
   clientType: string;
   targetAudience?: string;
   problemSolved?: string;
-  status: "Live in Production" | "Demonstration Ready" | "Enterprise Active";
+  status: "Featured Showcase" | "Demonstration Ready" | "Solution Architecture" | "Capability Showcase";
   technologies: string[];
   features: string[];
   benefits?: string[];
@@ -436,7 +436,7 @@ export const projectsData: ProjectShowcaseItem[] = [
     clientType: "Service Companies & SMBs",
     targetAudience: "Service Agencies, Consultancies, SMBs, Project Teams",
     problemSolved: "Ends spreadsheet chaos, lost client follow-ups, and delayed payment collections.",
-    status: "Live in Production",
+    status: "Solution Architecture",
     technologies: ["TypeScript", "Prisma ORM", "PostgreSQL", "React", "Tailwind CSS", "PDF Generation"],
     features: [
       "Visual sales pipeline with lead status, deal size, and follow-up alerts",
@@ -640,7 +640,7 @@ export const projectsData: ProjectShowcaseItem[] = [
     clientType: "Corporate & Enterprise",
     targetAudience: "Corporations, Investment Firms, Industrial Groups, Enterprise Services",
     problemSolved: "Replaces outdated, slow company websites with a modern, high-trust digital flagship.",
-    status: "Live in Production",
+    status: "Solution Architecture",
     technologies: ["React", "TypeScript", "Tailwind CSS", "Vite", "Fast Cloud CDN", "Technical SEO"],
     features: [
       "Executive aesthetic with clean typography, generous whitespace, and branded layouts",

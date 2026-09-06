@@ -16,13 +16,17 @@ import { auditRouter } from "../modules/audit/index.js";
 import { notificationsRouter } from "../modules/notifications/index.js";
 import { aiRouter } from "../modules/ai/index.js";
 import { projectInquiriesRouter, projectInquiriesController } from "../modules/project-inquiries/index.js";
-import { showcaseProjectsRouter } from "../modules/showcase-projects/index.js";
+import { showcaseProjectsRouter, showcaseProjectsController } from "../modules/showcase-projects/index.js";
 
 export const apiRouter = Router();
 
 // Public Visitor Endpoints
 apiRouter.post("/public/project-inquiries", projectInquiriesController.createPublicInquiry);
 apiRouter.post("/public/inquiries", projectInquiriesController.createPublicInquiry);
+apiRouter.get("/public/projects", showcaseProjectsController.getPublicProjects);
+apiRouter.get("/public/projects/:idOrSlug", showcaseProjectsController.getPublicProjectByIdOrSlug);
+apiRouter.get("/public/showcase-projects", showcaseProjectsController.getPublicProjects);
+apiRouter.get("/public/showcase-projects/categories", showcaseProjectsController.getCategories);
 
 // Mount Domain Module Routers
 apiRouter.use("/auth", authRouter);

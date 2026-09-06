@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
@@ -22,13 +22,48 @@ import {
   Clock,
   Terminal,
 } from "lucide-react";
-import { companyConfig, servicesData, projectsData, processSteps } from "../../data/companyConfig.js";
+import { companyConfig, servicesData, processSteps } from "../../data/companyConfig.js";
 import { HeroArchitectureVisual } from "../../components/public/HeroArchitectureVisual.js";
 import { ProjectCardVisual } from "../../components/public/ProjectCardVisual.js";
 import { WeChatModal } from "../../components/public/WeChatModal.js";
+import { showcaseService, ShowcaseProject } from "../../api/services/showcase.service.js";
 
 export const HomePage: React.FC = () => {
   const [isWeChatModalOpen, setIsWeChatModalOpen] = useState(false);
+  const [featuredProjects, setFeaturedProjects] = useState<ShowcaseProject[]>([]);
+  const [isLoadingProjects, setIsLoadingProjects] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchFeatured = async () => {
+      try {
+        setIsLoadingProjects(true);
+        const res = await showcaseService.getPublicProjects();
+        if (isMounted) {
+          if (Array.isArray(res)) {
+            // Pick featured first, or first 3 projects
+            const featured = res.filter((p) => p.featured);
+            const displayList = featured.length >= 3 ? featured.slice(0, 3) : res.slice(0, 3);
+            setFeaturedProjects(displayList);
+          } else {
+            setFeaturedProjects([]);
+          }
+        }
+      } catch {
+        if (isMounted) {
+          setFeaturedProjects([]);
+        }
+      } finally {
+        if (isMounted) setIsLoadingProjects(false);
+      }
+    };
+
+    fetchFeatured();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <div className="space-y-16 sm:space-y-24 pb-16 font-sans">
@@ -237,66 +272,99 @@ export const HomePage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {projectsData.slice(0, 3).map((project) => (
-            <div
-              key={project.id}
-              className="p-6 rounded-3xl bg-white border border-[#E2E5E0] shadow-sm hover:shadow-xl transition-all space-y-5 flex flex-col justify-between group"
-            >
-              <div className="space-y-4">
-                {/* Visual Architectural Card */}
-                <ProjectCardVisual projectId={project.id} category={project.category} />
-
-                <div className="flex items-center justify-between pt-1">
-                  <span className="px-2.5 py-0.5 rounded-full bg-[#F1F2EE] text-[10px] font-semibold text-slate-800 font-mono">
-                    {project.category}
-                  </span>
-                  <span className="flex items-center space-x-1.5 text-[10px] font-semibold text-emerald-700">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span>{project.status}</span>
-                  </span>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-bold text-slate-950 group-hover:text-slate-950 transition-colors">
-                    {project.title}
-                  </h3>
-                  <p className="text-xs text-slate-600 mt-1.5 line-clamp-3 leading-relaxed">
-                    {project.description}
-                  </p>
-                </div>
-
-                {/* Key Metrics */}
-                <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100">
-                  {project.metrics.map((m, idx) => (
-                    <div key={idx} className="bg-[#F1F2EE] p-2 rounded-xl text-center border border-[#E2E5E0]">
-                      <div className="text-xs font-bold text-slate-950 font-mono">{m.value}</div>
-                      <div className="text-[9px] text-slate-600 truncate font-medium">{m.label}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-                <div className="flex flex-wrap gap-1">
-                  {project.technologies.slice(0, 2).map((tech, idx) => (
-                    <span
-                      key={idx}
-                      className="text-[9px] font-mono bg-[#F1F2EE] text-slate-700 px-2 py-0.5 rounded-md border border-[#E2E5E0]"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-                <Link
-                  to="/projects"
-                  className="text-xs font-semibold text-amber-700 hover:underline inline-flex items-center space-x-1"
-                >
-                  <span>View Details</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
+          {isLoadingProjects ? (
+            [1, 2, 3].map((n) => (
+              <div
+                key={n}
+                className="h-96 rounded-3xl bg-slate-100 animate-pulse border border-[#E2E5E0]"
+              />
+            ))
+          ) : featuredProjects.length === 0 ? (
+            <div className="col-span-full p-8 rounded-3xl bg-white border border-[#E2E5E0] text-center space-y-3">
+              <Layers className="w-8 h-8 mx-auto text-slate-400" />
+              <p className="text-sm font-semibold text-slate-800">
+                Explore our engineering capabilities and tailor-made systems
+              </p>
+              <Link
+                to="/projects"
+                className="inline-flex items-center space-x-1 text-xs font-bold text-amber-700 hover:underline"
+              >
+                <span>View Full Systems Portfolio</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </Link>
             </div>
-          ))}
+          ) : (
+            featuredProjects.map((project) => {
+              const categoryName = project.category?.name || project.projectType || "Software";
+              return (
+                <div
+                  key={project.id}
+                  className="p-6 rounded-3xl bg-white border border-[#E2E5E0] shadow-sm hover:shadow-xl transition-all space-y-5 flex flex-col justify-between group"
+                >
+                  <div className="space-y-4">
+                    {/* Visual Architectural Card */}
+                    <ProjectCardVisual projectId={project.id} category={categoryName} />
+
+                    <div className="flex items-center justify-between pt-1">
+                      <span className="px-2.5 py-0.5 rounded-full bg-[#F1F2EE] text-[10px] font-semibold text-slate-800 font-mono">
+                        {categoryName}
+                      </span>
+                      <span className="flex items-center space-x-1.5 text-[10px] font-semibold text-emerald-700">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                        <span>{project.featured ? "Featured Showcase" : "Capability Showcase"}</span>
+                      </span>
+                    </div>
+
+                    <div>
+                      <h3 className="text-lg font-bold text-slate-950 group-hover:text-slate-950 transition-colors">
+                        {project.title}
+                      </h3>
+                      {project.tagline && (
+                        <p className="text-xs text-amber-700 font-medium mt-1 line-clamp-1">
+                          {project.tagline}
+                        </p>
+                      )}
+                      <p className="text-xs text-slate-600 mt-1.5 line-clamp-3 leading-relaxed">
+                        {project.description}
+                      </p>
+                    </div>
+
+                    {/* Features / Benefits preview */}
+                    {project.features && project.features.length > 0 && (
+                      <div className="space-y-1.5 pt-2 border-t border-slate-100">
+                        {project.features.slice(0, 2).map((feat, idx) => (
+                          <div key={idx} className="flex items-center space-x-1.5 text-[11px] text-slate-700">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                            <span className="truncate">{feat}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+                    <div className="flex flex-wrap gap-1">
+                      {(project.technologies || ["TypeScript", "PostgreSQL"]).slice(0, 2).map((tech, idx) => (
+                        <span
+                          key={idx}
+                          className="text-[9px] font-mono bg-[#F1F2EE] text-slate-700 px-2 py-0.5 rounded-md border border-[#E2E5E0]"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                    <Link
+                      to={`/projects/${project.slug || project.id}`}
+                      className="text-xs font-semibold text-amber-700 hover:underline inline-flex items-center space-x-1"
+                    >
+                      <span>View Details</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
       </section>
 

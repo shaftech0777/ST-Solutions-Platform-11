@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import { prisma } from "../../database/index.js";
 import { ResponseBuilder } from "../../core/responses/index.js";
 
+const VALID_STATUSES = ["DRAFT", "PUBLISHED", "ARCHIVED"] as const;
+
 function generateSlug(text: string): string {
   return text
     .toLowerCase()
@@ -78,11 +80,16 @@ export class ShowcaseProjectsController {
     try {
       const { idOrSlug } = req.params;
 
-      let project = await prisma.portfolioProject.findFirst({
+      if (!idOrSlug || typeof idOrSlug !== "string" || !idOrSlug.trim()) {
+        ResponseBuilder.badRequest(res, "Invalid project identifier");
+        return;
+      }
+
+      const project = await prisma.portfolioProject.findFirst({
         where: {
           OR: [
-            { id: idOrSlug },
-            { slug: idOrSlug },
+            { id: idOrSlug.trim() },
+            { slug: idOrSlug.trim() },
           ],
           status: "PUBLISHED",
         },
@@ -134,37 +141,59 @@ export class ShowcaseProjectsController {
     try {
       const body = req.body;
 
-      if (!body.title || !body.description) {
-        ResponseBuilder.badRequest(res, "Title and description are required");
+      if (!body.title || typeof body.title !== "string" || !body.title.trim()) {
+        ResponseBuilder.badRequest(res, "Project title is required");
         return;
       }
 
-      const slug = body.slug ? generateSlug(body.slug) : generateSlug(body.title) + "-" + Date.now().toString(36);
+      if (!body.description || typeof body.description !== "string" || !body.description.trim()) {
+        ResponseBuilder.badRequest(res, "Project description is required");
+        return;
+      }
+
+      if (body.status && !VALID_STATUSES.includes(body.status)) {
+        ResponseBuilder.badRequest(res, `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}`);
+        return;
+      }
+
+      let baseSlug = body.slug ? generateSlug(body.slug) : generateSlug(body.title);
+      if (!baseSlug) baseSlug = "project-" + Date.now().toString(36);
+
+      // Check if slug already exists; if so, append unique token
+      const existingSlug = await prisma.portfolioProject.findUnique({
+        where: { slug: baseSlug },
+      });
+      const slug = existingSlug ? `${baseSlug}-${Date.now().toString(36).slice(-4)}` : baseSlug;
+
+      const sanitizeArray = (val: any): string[] => {
+        if (!Array.isArray(val)) return [];
+        return val.filter((item): item is string => typeof item === "string" && item.trim().length > 0).map(s => s.trim());
+      };
 
       const created = await prisma.portfolioProject.create({
         data: {
           title: body.title.trim(),
           slug,
           categoryId: body.categoryId || null,
-          tagline: body.tagline ? body.tagline.trim() : null,
+          tagline: body.tagline && typeof body.tagline === "string" ? body.tagline.trim() : null,
           description: body.description.trim(),
-          fullDescription: body.fullDescription ? body.fullDescription.trim() : null,
-          projectType: body.projectType || "Web Application",
-          liveUrl: body.liveUrl ? body.liveUrl.trim() : null,
-          githubUrl: body.githubUrl ? body.githubUrl.trim() : null,
+          fullDescription: body.fullDescription && typeof body.fullDescription === "string" ? body.fullDescription.trim() : null,
+          projectType: body.projectType && typeof body.projectType === "string" ? body.projectType.trim() : "Web Application",
+          liveUrl: body.liveUrl && typeof body.liveUrl === "string" ? body.liveUrl.trim() : null,
+          githubUrl: body.githubUrl && typeof body.githubUrl === "string" ? body.githubUrl.trim() : null,
           thumbnailUrl: body.thumbnailUrl || body.coverImage || null,
           coverImage: body.coverImage || body.thumbnailUrl || null,
-          galleryImages: body.galleryImages || null,
-          videoUrl: body.videoUrl || null,
-          features: body.features || [],
-          benefits: body.benefits || [],
-          targetAudience: body.targetAudience || null,
-          technologies: body.technologies || [],
+          galleryImages: sanitizeArray(body.galleryImages),
+          videoUrl: body.videoUrl && typeof body.videoUrl === "string" ? body.videoUrl.trim() : null,
+          features: sanitizeArray(body.features),
+          benefits: sanitizeArray(body.benefits),
+          targetAudience: body.targetAudience && typeof body.targetAudience === "string" ? body.targetAudience.trim() : null,
+          technologies: sanitizeArray(body.technologies),
           status: body.status || "PUBLISHED",
           featured: Boolean(body.featured),
-          displayOrder: Number(body.displayOrder) || 0,
-          seoTitle: body.seoTitle || null,
-          seoDescription: body.seoDescription || null,
+          displayOrder: typeof body.displayOrder === "number" ? Math.floor(body.displayOrder) : 0,
+          seoTitle: body.seoTitle && typeof body.seoTitle === "string" ? body.seoTitle.trim() : null,
+          seoDescription: body.seoDescription && typeof body.seoDescription === "string" ? body.seoDescription.trim() : null,
         },
         include: {
           category: true,
@@ -187,6 +216,11 @@ export class ShowcaseProjectsController {
       const { id } = req.params;
       const body = req.body;
 
+      if (!id || typeof id !== "string") {
+        ResponseBuilder.badRequest(res, "Project ID is required");
+        return;
+      }
+
       const existing = await prisma.portfolioProject.findUnique({
         where: { id },
       });
@@ -196,29 +230,45 @@ export class ShowcaseProjectsController {
         return;
       }
 
+      if (body.status !== undefined && !VALID_STATUSES.includes(body.status)) {
+        ResponseBuilder.badRequest(res, `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}`);
+        return;
+      }
+
+      const sanitizeArray = (val: any): string[] => {
+        if (!Array.isArray(val)) return [];
+        return val.filter((item): item is string => typeof item === "string" && item.trim().length > 0).map(s => s.trim());
+      };
+
       const updateData: any = {};
-      if (body.title !== undefined) updateData.title = body.title.trim();
-      if (body.slug !== undefined) updateData.slug = generateSlug(body.slug);
+      if (body.title !== undefined) updateData.title = typeof body.title === "string" ? body.title.trim() : existing.title;
+      if (body.slug !== undefined && typeof body.slug === "string") {
+        const newSlug = generateSlug(body.slug);
+        if (newSlug && newSlug !== existing.slug) {
+          const conflicting = await prisma.portfolioProject.findUnique({ where: { slug: newSlug } });
+          updateData.slug = conflicting ? `${newSlug}-${Date.now().toString(36).slice(-4)}` : newSlug;
+        }
+      }
       if (body.categoryId !== undefined) updateData.categoryId = body.categoryId || null;
-      if (body.tagline !== undefined) updateData.tagline = body.tagline?.trim() || null;
-      if (body.description !== undefined) updateData.description = body.description.trim();
-      if (body.fullDescription !== undefined) updateData.fullDescription = body.fullDescription?.trim() || null;
-      if (body.projectType !== undefined) updateData.projectType = body.projectType;
-      if (body.liveUrl !== undefined) updateData.liveUrl = body.liveUrl?.trim() || null;
-      if (body.githubUrl !== undefined) updateData.githubUrl = body.githubUrl?.trim() || null;
+      if (body.tagline !== undefined) updateData.tagline = typeof body.tagline === "string" ? body.tagline.trim() : null;
+      if (body.description !== undefined) updateData.description = typeof body.description === "string" ? body.description.trim() : existing.description;
+      if (body.fullDescription !== undefined) updateData.fullDescription = typeof body.fullDescription === "string" ? body.fullDescription.trim() : null;
+      if (body.projectType !== undefined) updateData.projectType = typeof body.projectType === "string" ? body.projectType.trim() : existing.projectType;
+      if (body.liveUrl !== undefined) updateData.liveUrl = typeof body.liveUrl === "string" ? body.liveUrl.trim() : null;
+      if (body.githubUrl !== undefined) updateData.githubUrl = typeof body.githubUrl === "string" ? body.githubUrl.trim() : null;
       if (body.thumbnailUrl !== undefined) updateData.thumbnailUrl = body.thumbnailUrl || null;
       if (body.coverImage !== undefined) updateData.coverImage = body.coverImage || null;
-      if (body.galleryImages !== undefined) updateData.galleryImages = body.galleryImages;
-      if (body.videoUrl !== undefined) updateData.videoUrl = body.videoUrl || null;
-      if (body.features !== undefined) updateData.features = body.features;
-      if (body.benefits !== undefined) updateData.benefits = body.benefits;
-      if (body.targetAudience !== undefined) updateData.targetAudience = body.targetAudience || null;
-      if (body.technologies !== undefined) updateData.technologies = body.technologies;
+      if (body.galleryImages !== undefined) updateData.galleryImages = sanitizeArray(body.galleryImages);
+      if (body.videoUrl !== undefined) updateData.videoUrl = typeof body.videoUrl === "string" ? body.videoUrl.trim() : null;
+      if (body.features !== undefined) updateData.features = sanitizeArray(body.features);
+      if (body.benefits !== undefined) updateData.benefits = sanitizeArray(body.benefits);
+      if (body.targetAudience !== undefined) updateData.targetAudience = typeof body.targetAudience === "string" ? body.targetAudience.trim() : null;
+      if (body.technologies !== undefined) updateData.technologies = sanitizeArray(body.technologies);
       if (body.status !== undefined) updateData.status = body.status;
       if (body.featured !== undefined) updateData.featured = Boolean(body.featured);
-      if (body.displayOrder !== undefined) updateData.displayOrder = Number(body.displayOrder) || 0;
-      if (body.seoTitle !== undefined) updateData.seoTitle = body.seoTitle || null;
-      if (body.seoDescription !== undefined) updateData.seoDescription = body.seoDescription || null;
+      if (body.displayOrder !== undefined) updateData.displayOrder = typeof body.displayOrder === "number" ? Math.floor(body.displayOrder) : 0;
+      if (body.seoTitle !== undefined) updateData.seoTitle = typeof body.seoTitle === "string" ? body.seoTitle.trim() : null;
+      if (body.seoDescription !== undefined) updateData.seoDescription = typeof body.seoDescription === "string" ? body.seoDescription.trim() : null;
 
       const updated = await prisma.portfolioProject.update({
         where: { id },
@@ -243,6 +293,11 @@ export class ShowcaseProjectsController {
     try {
       const { id } = req.params;
 
+      if (!id || typeof id !== "string") {
+        ResponseBuilder.badRequest(res, "Project ID is required");
+        return;
+      }
+
       await prisma.portfolioProject.delete({
         where: { id },
       });
@@ -262,15 +317,23 @@ export class ShowcaseProjectsController {
     try {
       const { items } = req.body;
 
-      if (!Array.isArray(items)) {
-        ResponseBuilder.badRequest(res, "Items must be an array of { id, displayOrder }");
+      if (!Array.isArray(items) || items.length === 0) {
+        ResponseBuilder.badRequest(res, "Items must be a non-empty array of { id, displayOrder }");
         return;
       }
 
-      await Promise.all(
+      for (const item of items) {
+        if (!item || typeof item.id !== "string" || !item.id.trim() || typeof item.displayOrder !== "number" || !Number.isInteger(item.displayOrder)) {
+          ResponseBuilder.badRequest(res, "Each item must have a valid string id and integer displayOrder");
+          return;
+        }
+      }
+
+      // Execute transaction for atomic updates
+      await prisma.$transaction(
         items.map((item: { id: string; displayOrder: number }) =>
           prisma.portfolioProject.update({
-            where: { id: item.id },
+            where: { id: item.id.trim() },
             data: { displayOrder: item.displayOrder },
           })
         )

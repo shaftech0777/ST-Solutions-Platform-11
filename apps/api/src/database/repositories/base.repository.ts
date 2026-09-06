@@ -41,7 +41,10 @@ export abstract class BaseRepository {
    */
   public async transaction<R>(fn: (tx: TransactionClient) => Promise<R>): Promise<R> {
     return this.execute(async () => {
-      return prisma.$transaction(fn);
+      return prisma.$transaction(fn, {
+        maxWait: 10000,
+        timeout: 30000,
+      });
     });
   }
 }

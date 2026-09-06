@@ -29,8 +29,8 @@ export async function withTransaction<T>(
         return await fn(tx as TransactionClient);
       },
       {
-        maxWait: options?.maxWait ?? 5000,
-        timeout: options?.timeout ?? 10000,
+        maxWait: options?.maxWait ?? 10000,
+        timeout: options?.timeout ?? 30000,
       }
     );
   } catch (error) {

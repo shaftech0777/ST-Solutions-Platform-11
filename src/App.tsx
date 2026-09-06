@@ -25,6 +25,9 @@ const SolutionsPage = lazy(() =>
 const PublicProjectsPage = lazy(() =>
   import("./pages/public/ProjectsPage.js").then((m) => ({ default: m.ProjectsPage }))
 );
+const ProjectDetailPage = lazy(() =>
+  import("./pages/public/ProjectDetailPage.js").then((m) => ({ default: m.ProjectDetailPage }))
+);
 const ContactPage = lazy(() =>
   import("./pages/public/ContactPage.js").then((m) => ({ default: m.ContactPage }))
 );
@@ -146,6 +149,14 @@ export function App() {
                   element={
                     <PublicShell>
                       <PublicProjectsPage />
+                    </PublicShell>
+                  }
+                />
+                <Route
+                  path="/projects/:idOrSlug"
+                  element={
+                    <PublicShell>
+                      <ProjectDetailPage />
                     </PublicShell>
                   }
                 />
