@@ -215,24 +215,24 @@ export const HomePage: React.FC = () => {
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12 gap-4">
           <div className="space-y-2">
-            <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#B88E20] uppercase tracking-wider font-mono">
-              <Database className="w-3.5 h-3.5" />
-              <span>Production Systems</span>
+            <div className="inline-flex items-center space-x-2 text-xs font-bold text-amber-700 uppercase tracking-wider font-mono">
+              <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+              <span>CAPABILITIES &amp; SHOWCASES</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight">
-              Genuine Systems in Production
+              What We Build for Growing Businesses
             </h2>
-            <p className="text-xs sm:text-sm text-slate-600 max-w-lg">
-              Explore authentic platforms, multi-agent pipelines, and low-latency infrastructure engineered and maintained by ST-Solutions.
+            <p className="text-xs sm:text-sm text-slate-600 max-w-xl">
+              From custom e-commerce and retail POS platforms to operational CRM dashboards and 24/7 AI customer assistants, explore real systems we can build and deploy for your organization.
             </p>
           </div>
 
           <Link
             to="/projects"
-            className="inline-flex items-center space-x-1.5 text-xs font-bold text-slate-900 hover:text-slate-950 transition-colors"
+            className="inline-flex items-center space-x-1.5 text-xs font-bold text-slate-900 hover:text-amber-700 transition-colors"
           >
-            <span>View all engineering projects</span>
-            <ArrowRight className="w-3.5 h-3.5 text-[#B88E20]" />
+            <span>Explore all showcase systems</span>
+            <ArrowRight className="w-3.5 h-3.5 text-amber-600" />
           </Link>
         </div>
 
@@ -289,9 +289,9 @@ export const HomePage: React.FC = () => {
                 </div>
                 <Link
                   to="/projects"
-                  className="text-xs font-semibold text-[#B88E20] hover:underline inline-flex items-center space-x-1"
+                  className="text-xs font-semibold text-amber-700 hover:underline inline-flex items-center space-x-1"
                 >
-                  <span>Architecture</span>
+                  <span>View Details</span>
                   <ChevronRight className="w-3.5 h-3.5" />
                 </Link>
               </div>

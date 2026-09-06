@@ -1,4 +1,22 @@
 import React from "react";
+import {
+  ShoppingBag,
+  Pill,
+  Utensils,
+  LayoutDashboard,
+  Bot,
+  GraduationCap,
+  Boxes,
+  Calendar,
+  Users,
+  Globe,
+  CheckCircle2,
+  TrendingUp,
+  Clock,
+  Shield,
+  Smartphone,
+  CreditCard,
+} from "lucide-react";
 
 interface ProjectCardVisualProps {
   projectId: string;
@@ -6,155 +24,325 @@ interface ProjectCardVisualProps {
 }
 
 export const ProjectCardVisual: React.FC<ProjectCardVisualProps> = ({ projectId, category }) => {
-  if (projectId === "nexora") {
-    // NEXORA Enterprise Core: Multi-tenant RBAC, Cryptographic Tokens, DB Nodes
+  // Apex E-Commerce
+  if (projectId.includes("ecommerce") || projectId.includes("retail") || category === "E-Commerce") {
     return (
-      <div className="w-full h-48 sm:h-52 bg-slate-950 rounded-2xl relative overflow-hidden flex items-center justify-center p-4 border border-slate-800 group-hover:border-[#D4AF37]/50 transition-colors">
-        {/* Subtle background tech grid */}
-        <div
-          className="absolute inset-0 opacity-20 pointer-events-none"
-          style={{
-            backgroundImage: `radial-gradient(#38bdf8 1px, transparent 1px), radial-gradient(#d4af37 1px, transparent 1px)`,
-            backgroundSize: "20px 20px",
-            backgroundPosition: "0 0, 10px 10px",
-          }}
-        />
-
-        {/* Floating Architecture Nodes */}
-        <div className="relative z-10 w-full max-w-xs flex flex-col space-y-2.5">
-          {/* Top Tenant Header */}
-          <div className="flex items-center justify-between bg-slate-900/90 border border-slate-800 px-3 py-1.5 rounded-lg text-[10px] font-mono text-slate-300">
-            <span className="flex items-center space-x-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="font-bold text-white">NEXORA RBAC CORE</span>
-            </span>
-            <span className="text-[#D4AF37] font-semibold">ISOLATED TENANTS</span>
-          </div>
-
-          {/* Core Central Process */}
-          <div className="grid grid-cols-3 gap-2">
-            <div className="bg-slate-900/80 border border-slate-800 p-2 rounded-lg text-center">
-              <div className="text-[9px] font-mono text-slate-400">AUTH</div>
-              <div className="text-[11px] font-bold text-amber-400">SHA-256</div>
+      <div className="w-full h-44 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl relative overflow-hidden flex flex-col justify-between p-4 border border-slate-700/60 shadow-inner group-hover:border-amber-500/50 transition-all">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <div className="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
+              <ShoppingBag className="w-4 h-4" />
             </div>
-            <div className="bg-slate-900/80 border border-blue-500/30 p-2 rounded-lg text-center">
-              <div className="text-[9px] font-mono text-blue-400">DB SCHEMA</div>
-              <div className="text-[11px] font-bold text-blue-300">Postgres</div>
-            </div>
-            <div className="bg-slate-900/80 border border-slate-800 p-2 rounded-lg text-center">
-              <div className="text-[9px] font-mono text-slate-400">AUDIT</div>
-              <div className="text-[11px] font-bold text-emerald-400">Real-time</div>
-            </div>
+            <span className="text-xs font-bold text-white tracking-wide">Apex Storefront</span>
           </div>
-
-          {/* Lower Stream */}
-          <div className="flex items-center justify-between text-[9px] font-mono text-slate-500 bg-black/40 px-2.5 py-1 rounded border border-slate-800/60">
-            <span>&gt; session.verify(token)</span>
-            <span className="text-emerald-400 font-bold">200 OK</span>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (projectId === "quantum-trading") {
-    // Quantum Trading: Low-latency telemetry, order routing graph
-    return (
-      <div className="w-full h-48 sm:h-52 bg-slate-950 rounded-2xl relative overflow-hidden flex items-center justify-center p-4 border border-slate-800 group-hover:border-[#D4AF37]/50 transition-colors">
-        {/* Subtle grid */}
-        <div
-          className="absolute inset-0 opacity-20 pointer-events-none"
-          style={{
-            backgroundImage: `linear-gradient(to right, #1e293b 1px, transparent 1px), linear-gradient(to bottom, #1e293b 1px, transparent 1px)`,
-            backgroundSize: "16px 16px",
-          }}
-        />
-
-        <div className="relative z-10 w-full max-w-xs space-y-2.5">
-          {/* Signal Stream Bar */}
-          <div className="flex items-center justify-between bg-slate-900/90 border border-slate-800 px-3 py-1.5 rounded-lg text-[10px] font-mono">
-            <span className="text-blue-400 font-bold">QUANTUM ORDER ENGINE</span>
-            <span className="text-emerald-400 font-mono text-[9px]">&lt; 1ms latency</span>
-          </div>
-
-          {/* Live Waveform SVG */}
-          <div className="bg-slate-900/80 border border-slate-800 rounded-lg p-2.5 h-16 flex items-center justify-center relative">
-            <svg viewBox="0 0 200 40" className="w-full h-full text-blue-500 overflow-visible">
-              <path
-                d="M 0 25 L 30 20 L 60 30 L 90 10 L 120 18 L 150 8 L 180 22 L 200 12"
-                fill="none"
-                stroke="#38BDF8"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              <path
-                d="M 0 30 L 30 28 L 60 35 L 90 20 L 120 26 L 150 15 L 180 30 L 200 22"
-                fill="none"
-                stroke="#D4AF37"
-                strokeWidth="1.5"
-                strokeDasharray="3 3"
-              />
-              <circle cx="150" cy="8" r="3.5" fill="#38BDF8" />
-              <circle cx="90" cy="10" r="3" fill="#D4AF37" />
-            </svg>
-          </div>
-
-          {/* Telemetry Metrics */}
-          <div className="grid grid-cols-2 gap-2 text-[9px] font-mono">
-            <div className="bg-black/50 border border-slate-800/80 px-2 py-1 rounded text-slate-400 flex justify-between">
-              <span>PIPELINE</span>
-              <span className="text-white font-bold">ACTIVE</span>
-            </div>
-            <div className="bg-black/50 border border-slate-800/80 px-2 py-1 rounded text-slate-400 flex justify-between">
-              <span>SETTLEMENT</span>
-              <span className="text-emerald-400 font-bold">IMMUTABLE</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Multi-Agent LLM Orchestration
-  return (
-    <div className="w-full h-48 sm:h-52 bg-slate-950 rounded-2xl relative overflow-hidden flex items-center justify-center p-4 border border-slate-800 group-hover:border-[#D4AF37]/50 transition-colors">
-      <div
-        className="absolute inset-0 opacity-20 pointer-events-none"
-        style={{
-          backgroundImage: `radial-gradient(#818cf8 1px, transparent 1px)`,
-          backgroundSize: "18px 18px",
-        }}
-      />
-
-      <div className="relative z-10 w-full max-w-xs space-y-2">
-        <div className="flex items-center justify-between bg-slate-900/90 border border-slate-800 px-3 py-1.5 rounded-lg text-[10px] font-mono text-slate-300">
-          <span className="text-purple-400 font-bold">MULTI-AGENT LLM</span>
-          <span className="text-[#D4AF37] text-[9px]">VECTOR RAG</span>
-        </div>
-
-        {/* Visual Multi-Agent Nodes */}
-        <div className="flex items-center justify-between px-2 py-1">
-          <div className="bg-purple-950/60 border border-purple-500/40 px-2 py-1 rounded text-[9px] font-mono text-purple-300 text-center">
-            Analyst Agent
-          </div>
-          <span className="text-slate-600 text-xs">→</span>
-          <div className="bg-[#D4AF37]/10 border border-[#D4AF37]/40 px-2.5 py-1 rounded text-[9px] font-mono text-[#D4AF37] font-bold text-center">
-            Coordinator
-          </div>
-          <span className="text-slate-600 text-xs">→</span>
-          <div className="bg-blue-950/60 border border-blue-500/40 px-2 py-1 rounded text-[9px] font-mono text-blue-300 text-center">
-            Executor
-          </div>
-        </div>
-
-        {/* Vector Grounding Index */}
-        <div className="bg-slate-900/90 border border-slate-800 rounded-lg p-2 text-[9px] font-mono flex items-center justify-between text-slate-400">
-          <span className="flex items-center space-x-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-            <span>Semantic Vector Index</span>
+          <span className="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 text-[10px] font-semibold border border-emerald-500/30">
+            Instant Checkout
           </span>
-          <span className="text-emerald-400 font-semibold">Schema Verified</span>
         </div>
+
+        <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-3 space-y-2">
+          <div className="flex items-center justify-between text-[11px] text-slate-300">
+            <span className="font-medium">Active Cart (3 items)</span>
+            <span className="font-mono text-amber-400 font-bold">$149.00</span>
+          </div>
+          <div className="flex items-center space-x-2 text-[10px] text-slate-400">
+            <span className="flex items-center space-x-1 text-emerald-400">
+              <CreditCard className="w-3 h-3" />
+              <span>Stripe / Cards</span>
+            </span>
+            <span>•</span>
+            <span className="flex items-center space-x-1 text-emerald-400">
+              <Smartphone className="w-3 h-3" />
+              <span>WhatsApp Alerts</span>
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between text-[10px] text-slate-400">
+          <span>Real-time SKU Stock Sync</span>
+          <span className="text-amber-400 font-semibold">99.9% Uptime</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Medix Pharmacy
+  if (projectId.includes("pharmacy") || projectId.includes("medix")) {
+    return (
+      <div className="w-full h-44 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl relative overflow-hidden flex flex-col justify-between p-4 border border-slate-700/60 shadow-inner group-hover:border-amber-500/50 transition-all">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <div className="w-7 h-7 rounded-lg bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400">
+              <Pill className="w-4 h-4" />
+            </div>
+            <span className="text-xs font-bold text-white tracking-wide">Medix Pharmacy POS</span>
+          </div>
+          <span className="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 text-[10px] font-semibold border border-amber-500/30">
+            Expiry Alert Engine
+          </span>
+        </div>
+
+        <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-3 space-y-1.5">
+          <div className="flex items-center justify-between text-[10px] text-slate-300">
+            <span>Amoxicillin 500mg (Batch #B92)</span>
+            <span className="text-emerald-400 font-mono font-bold">120 In Stock</span>
+          </div>
+          <div className="flex items-center justify-between text-[10px] text-slate-400">
+            <span>Barcode Scanned &amp; Verified</span>
+            <span className="text-slate-300 font-medium">Exp: Nov 2027</span>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between text-[10px] text-slate-400">
+          <span className="text-emerald-400 font-medium">Counter POS: &lt; 15s Billing</span>
+          <span>Prescription Vault Active</span>
+        </div>
+      </div>
+    );
+  }
+
+  // BistroOrder Restaurant
+  if (projectId.includes("bistro") || projectId.includes("restaurant") || projectId.includes("food")) {
+    return (
+      <div className="w-full h-44 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl relative overflow-hidden flex flex-col justify-between p-4 border border-slate-700/60 shadow-inner group-hover:border-amber-500/50 transition-all">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <div className="w-7 h-7 rounded-lg bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400">
+              <Utensils className="w-4 h-4" />
+            </div>
+            <span className="text-xs font-bold text-white tracking-wide">BistroOrder POS &amp; QR</span>
+          </div>
+          <span className="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 text-[10px] font-semibold border border-emerald-500/30">
+            0% Commission
+          </span>
+        </div>
+
+        <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-3 space-y-1.5">
+          <div className="flex items-center justify-between text-[11px] text-slate-300">
+            <span className="font-semibold text-white">Table 04 • Live KDS Ticket</span>
+            <span className="text-amber-400 font-mono text-[10px]">12 min active</span>
+          </div>
+          <div className="text-[10px] text-slate-400 flex items-center justify-between">
+            <span>2x Artisan Burger + Truffle Fries</span>
+            <span className="text-emerald-400 font-medium">Kitchen Notified</span>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between text-[10px] text-slate-400">
+          <span>QR Digital Table Menu</span>
+          <span className="text-white font-medium">Thermal Print Ready</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Pulse Operations & CRM
+  if (projectId.includes("pulse") || projectId.includes("operations") || projectId.includes("crm")) {
+    return (
+      <div className="w-full h-44 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl relative overflow-hidden flex flex-col justify-between p-4 border border-slate-700/60 shadow-inner group-hover:border-amber-500/50 transition-all">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <div className="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
+              <LayoutDashboard className="w-4 h-4" />
+            </div>
+            <span className="text-xs font-bold text-white tracking-wide">Pulse Operations Hub</span>
+          </div>
+          <span className="px-2 py-0.5 rounded-md bg-blue-500/20 text-blue-300 text-[10px] font-semibold border border-blue-500/30">
+            CRM &amp; Invoices
+          </span>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2">
+          <div className="bg-slate-800/80 border border-slate-700 rounded-lg p-2 text-center">
+            <div className="text-[9px] text-slate-400">PIPELINE</div>
+            <div className="text-xs font-bold text-white">$48.5k</div>
+          </div>
+          <div className="bg-slate-800/80 border border-slate-700 rounded-lg p-2 text-center">
+            <div className="text-[9px] text-slate-400">ACTIVE</div>
+            <div className="text-xs font-bold text-amber-400">14 Deals</div>
+          </div>
+          <div className="bg-slate-800/80 border border-slate-700 rounded-lg p-2 text-center">
+            <div className="text-[9px] text-slate-400">PAID</div>
+            <div className="text-xs font-bold text-emerald-400">99.2%</div>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between text-[10px] text-slate-400">
+          <span>Spreadsheet Replacement</span>
+          <span className="text-amber-400 font-medium">Auto PDF Invoicing</span>
+        </div>
+      </div>
+    );
+  }
+
+  // OmniBot AI Assistant
+  if (projectId.includes("ai") || projectId.includes("bot") || category === "AI") {
+    return (
+      <div className="w-full h-44 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl relative overflow-hidden flex flex-col justify-between p-4 border border-slate-700/60 shadow-inner group-hover:border-amber-500/50 transition-all">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <div className="w-7 h-7 rounded-lg bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-400">
+              <Bot className="w-4 h-4" />
+            </div>
+            <span className="text-xs font-bold text-white tracking-wide">OmniBot AI Assistant</span>
+          </div>
+          <span className="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 text-[10px] font-semibold border border-emerald-500/30">
+            24/7 Live
+          </span>
+        </div>
+
+        <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-3 space-y-1.5 text-[10px]">
+          <div className="text-slate-400 flex items-center space-x-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+            <span className="text-slate-300">Customer: &quot;What are your pricing packages?&quot;</span>
+          </div>
+          <div className="text-amber-300 bg-purple-950/40 border border-purple-800/40 p-1.5 rounded-lg">
+            OmniBot: &quot;We offer 3 packages starting from $499. Would you like a brochure on WhatsApp?&quot;
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between text-[10px] text-slate-400">
+          <span>Website &amp; WhatsApp Sync</span>
+          <span className="text-purple-300 font-semibold">&lt; 2s First Response</span>
+        </div>
+      </div>
+    );
+  }
+
+  // EduSphere School Portal
+  if (projectId.includes("edusphere") || projectId.includes("school") || projectId.includes("academic")) {
+    return (
+      <div className="w-full h-44 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl relative overflow-hidden flex flex-col justify-between p-4 border border-slate-700/60 shadow-inner group-hover:border-amber-500/50 transition-all">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <div className="w-7 h-7 rounded-lg bg-teal-500/20 border border-teal-500/30 flex items-center justify-center text-teal-400">
+              <GraduationCap className="w-4 h-4" />
+            </div>
+            <span className="text-xs font-bold text-white tracking-wide">EduSphere Portal</span>
+          </div>
+          <span className="px-2 py-0.5 rounded-md bg-teal-500/20 text-teal-300 text-[10px] font-semibold border border-teal-500/30">
+            Fee &amp; Grades Hub
+          </span>
+        </div>
+
+        <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-3 space-y-1.5">
+          <div className="flex items-center justify-between text-[10px] text-slate-300">
+            <span className="font-semibold text-white">Monthly Fee Reconciliation</span>
+            <span className="text-emerald-400 font-mono font-bold">94% Collected</span>
+          </div>
+          <div className="text-[10px] text-slate-400 flex items-center justify-between">
+            <span>Automated SMS Voucher Sent</span>
+            <span className="text-slate-300">420 Students</span>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between text-[10px] text-slate-400">
+          <span>Parent Mobile Portal</span>
+          <span className="text-teal-400 font-medium">Digital Attendance</span>
+        </div>
+      </div>
+    );
+  }
+
+  // StockFlow Inventory
+  if (projectId.includes("inventory") || projectId.includes("stock") || projectId.includes("warehouse")) {
+    return (
+      <div className="w-full h-44 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl relative overflow-hidden flex flex-col justify-between p-4 border border-slate-700/60 shadow-inner group-hover:border-amber-500/50 transition-all">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <div className="w-7 h-7 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+              <Boxes className="w-4 h-4" />
+            </div>
+            <span className="text-xs font-bold text-white tracking-wide">StockFlow Inventory</span>
+          </div>
+          <span className="px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-300 text-[10px] font-semibold border border-indigo-500/30">
+            Multi-Branch
+          </span>
+        </div>
+
+        <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-3 space-y-1.5">
+          <div className="flex items-center justify-between text-[10px] text-slate-300">
+            <span>Central Warehouse #01</span>
+            <span className="text-indigo-300 font-mono">14,280 SKUs</span>
+          </div>
+          <div className="flex items-center justify-between text-[10px] text-slate-400">
+            <span>Low Stock Auto-PO Generator</span>
+            <span className="text-emerald-400">Optimized</span>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between text-[10px] text-slate-400">
+          <span>Barcode / QR Scanner</span>
+          <span className="text-white font-medium">99.4% Accuracy</span>
+        </div>
+      </div>
+    );
+  }
+
+  // AppointEase Booking
+  if (projectId.includes("booking") || projectId.includes("appointment") || category === "Automation") {
+    return (
+      <div className="w-full h-44 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl relative overflow-hidden flex flex-col justify-between p-4 border border-slate-700/60 shadow-inner group-hover:border-amber-500/50 transition-all">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <div className="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <Calendar className="w-4 h-4" />
+            </div>
+            <span className="text-xs font-bold text-white tracking-wide">AppointEase Booking</span>
+          </div>
+          <span className="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 text-[10px] font-semibold border border-emerald-500/30">
+            -75% No-Shows
+          </span>
+        </div>
+
+        <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-3 space-y-1.5">
+          <div className="flex items-center justify-between text-[10px] text-slate-300">
+            <span className="font-semibold text-white">Tomorrow • 10:30 AM</span>
+            <span className="text-emerald-400 font-medium">Confirmed</span>
+          </div>
+          <div className="flex items-center justify-between text-[10px] text-slate-400">
+            <span>WhatsApp Reminder Sequence</span>
+            <span className="text-slate-300">Google Calendar Synced</span>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between text-[10px] text-slate-400">
+          <span>24/7 Self-Service Booking</span>
+          <span className="text-amber-400 font-medium">Deposit Collected</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Default / Corporate Website
+  return (
+    <div className="w-full h-44 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl relative overflow-hidden flex flex-col justify-between p-4 border border-slate-700/60 shadow-inner group-hover:border-amber-500/50 transition-all">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <div className="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
+            <Globe className="w-4 h-4" />
+          </div>
+          <span className="text-xs font-bold text-white tracking-wide">Corporate Digital Platform</span>
+        </div>
+        <span className="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 text-[10px] font-semibold border border-emerald-500/30">
+          100/100 PageSpeed
+        </span>
+      </div>
+
+      <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-3 space-y-1.5">
+        <div className="flex items-center justify-between text-[10px] text-slate-300">
+          <span className="font-semibold text-white">High-Authority Architecture</span>
+          <span className="text-amber-400 font-mono font-bold">&lt; 0.8s Load</span>
+        </div>
+        <div className="flex items-center justify-between text-[10px] text-slate-400">
+          <span>Technical SEO Optimization</span>
+          <span className="text-emerald-400">Mobile-First UI</span>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between text-[10px] text-slate-400">
+        <span>Executive Authority Design</span>
+        <span className="text-amber-400 font-medium">Lead Conversion Ready</span>
       </div>
     </div>
   );

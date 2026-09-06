@@ -308,83 +308,358 @@ export interface ProjectShowcaseItem {
   category: "Web" | "Software" | "AI" | "Automation" | "E-Commerce";
   tagline: string;
   description: string;
+  fullDescription?: string;
   clientType: string;
-  status: "Live in Production" | "Delivered" | "Enterprise Active";
+  targetAudience?: string;
+  problemSolved?: string;
+  status: "Live in Production" | "Demonstration Ready" | "Enterprise Active";
   technologies: string[];
   features: string[];
+  benefits?: string[];
   metrics: { label: string; value: string }[];
+  liveUrl?: string;
 }
 
 export const projectsData: ProjectShowcaseItem[] = [
   {
-    id: "nexora",
-    title: "NEXORA Enterprise Core",
-    slug: "nexora-enterprise-core",
-    category: "Software",
-    tagline: "Multi-tenant cloud operations, telemetry, and RBAC governance engine.",
+    id: "apex-ecommerce",
+    title: "Apex E-Commerce & Retail Platform",
+    slug: "apex-ecommerce-platform",
+    category: "E-Commerce",
+    tagline: "High-converting online store with seamless mobile checkout & inventory control.",
     description:
-      "A comprehensive multi-tenant SaaS foundation architected with strict workspace isolation, cryptographic session management, granular permission matrices, and real-time audit event logging.",
-    clientType: "Enterprise Platform",
+      "A comprehensive digital storefront engineered for fast product discovery, frictionless checkout, automated order confirmation, and real-time inventory synchronization.",
+    fullDescription:
+      "Built for modern retail businesses and brands needing an independent online sales channel without high marketplace fees. Includes barcode SKU search, automated WhatsApp order alerts, customer account dashboards, and multi-currency payment gateway integrations.",
+    clientType: "Retailers & Online Brands",
+    targetAudience: "Retailers, Brand Owners, Wholesale Distributors",
+    problemSolved: "Eliminates high third-party marketplace commissions and keeps inventory synchronized between physical store and website.",
+    status: "Demonstration Ready",
+    technologies: ["React", "Tailwind CSS", "Node.js", "PostgreSQL", "Stripe Checkout", "WhatsApp Webhook"],
+    features: [
+      "Instant product search, category filtering & variant selection",
+      "Frictionless 3-step checkout optimized for mobile shoppers",
+      "Automated WhatsApp and email order receipts with live tracking",
+      "Multi-currency support with secure credit card and local payment gateways",
+      "Merchant dashboard for stock management, orders, and sales analytics",
+    ],
+    benefits: [
+      "Increases online checkout conversion rates by up to 28%",
+      "Eliminates out-of-stock complaints through real-time stock sync",
+      "Gives full direct ownership of your customer list and repeat buyers",
+    ],
+    metrics: [
+      { label: "Checkout Flow", value: "3 Steps" },
+      { label: "Speed Score", value: "98/100" },
+      { label: "Order Alerts", value: "Instant WhatsApp" },
+    ],
+    liveUrl: "https://demo.st-solutions.cloud/ecommerce",
+  },
+  {
+    id: "medix-pharmacy",
+    title: "Medix Pharmacy Management Platform",
+    slug: "medix-pharmacy-platform",
+    category: "Software",
+    tagline: "Prescription intake, batch inventory tracking, and POS invoicing.",
+    description:
+      "An intuitive operational system designed for retail pharmacies and medical suppliers to track batch expiration dates, manage daily counter sales, and maintain secure customer medication histories.",
+    fullDescription:
+      "Streamlines the daily operations of pharmacies from wholesale supplier purchase orders to retail counter checkout. Automatic alerts warn dispensers of near-expiry medicine batches and maintain compliant inventory records.",
+    clientType: "Healthcare & Pharmacy Chains",
+    targetAudience: "Retail Pharmacies, Medical Distributors, Health Clinics",
+    problemSolved: "Prevents losses from expired medications and accelerates counter sales during peak customer rush hours.",
+    status: "Demonstration Ready",
+    technologies: ["TypeScript", "React", "Node.js", "PostgreSQL", "Barcode Scanner API", "Offline Cache"],
+    features: [
+      "Automated batch number tracking with 30/60/90-day expiry alerts",
+      "High-speed Point-of-Sale (POS) barcode scanner billing in under 15 seconds",
+      "Customer prescription records with refill reminders",
+      "Wholesale supplier purchase orders and automated stock reordering levels",
+      "Daily profit, sales volume, and tax compliance accounting reports",
+    ],
+    benefits: [
+      "Reduces medicine expiration losses by up to 85%",
+      "Cuts customer counter wait times in half",
+      "Maintains flawless audit records for pharmaceutical compliance",
+    ],
+    metrics: [
+      { label: "Checkout Time", value: "< 15 Sec" },
+      { label: "Expiry Alerts", value: "Automated" },
+      { label: "Offline Mode", value: "Supported" },
+    ],
+    liveUrl: "https://demo.st-solutions.cloud/pharmacy",
+  },
+  {
+    id: "bistro-ordering",
+    title: "BistroOrder Restaurant & Delivery Hub",
+    slug: "bistro-ordering-system",
+    category: "Web",
+    tagline: "Contactless QR table ordering, live kitchen display, and online delivery.",
+    description:
+      "An all-in-one digital ordering suite for cafes and restaurants featuring QR digital menus, kitchen order ticketing, and direct customer delivery tracking without third-party commission fees.",
+    fullDescription:
+      "Empowers food establishments to accept orders directly at dining tables via QR codes or online for delivery. Features real-time kitchen status displays, item modifier options (spiciness, sides, drinks), and automated WhatsApp delivery updates.",
+    clientType: "Food & Hospitality",
+    targetAudience: "Restaurants, Cafes, Cloud Kitchens, Food Chains",
+    problemSolved: "Avoids 15–30% delivery app marketplace fees and ends order confusion between dining floor and kitchen.",
+    status: "Demonstration Ready",
+    technologies: ["React", "Express", "PostgreSQL", "WebSockets", "WhatsApp API", "Thermal Printer Support"],
+    features: [
+      "Table QR code menus with high-resolution photos and dish modifiers",
+      "Real-time Kitchen Display System (KDS) showing ticket timers and status",
+      "Direct online delivery and pickup ordering with zero commission per order",
+      "WhatsApp customer notifications for order confirmation and rider dispatch",
+      "Integrated loyalty points, discount codes, and happy hour specials",
+    ],
+    benefits: [
+      "Saves thousands of dollars annually in marketplace commissions",
+      "Increases average spend through visual food recommendations and upsells",
+      "Keeps kitchen and waitstaff coordinated during peak dinner rush",
+    ],
+    metrics: [
+      { label: "Commission Fee", value: "0%" },
+      { label: "Order Sync", value: "Real-Time KDS" },
+      { label: "Table Ordering", value: "Instant QR" },
+    ],
+    liveUrl: "https://demo.st-solutions.cloud/restaurant",
+  },
+  {
+    id: "pulse-operations",
+    title: "Pulse Business Operations & CRM Hub",
+    slug: "pulse-operations-crm",
+    category: "Software",
+    tagline: "Unified client tracking, team milestones, and financial reporting.",
+    description:
+      "A centralized command dashboard replacing fragmented spreadsheets with real-time lead pipelines, task assignments, automated client invoicing, and management analytics.",
+    fullDescription:
+      "Consolidates all business workflows under one unified, secure platform. Allows business owners and managers to track active projects, monitor team workload, generate client invoices, and see cash flow trends in real time.",
+    clientType: "Service Companies & SMBs",
+    targetAudience: "Service Agencies, Consultancies, SMBs, Project Teams",
+    problemSolved: "Ends spreadsheet chaos, lost client follow-ups, and delayed payment collections.",
     status: "Live in Production",
-    technologies: ["TypeScript", "Express 5", "Neon PostgreSQL", "Prisma ORM", "React", "Tailwind CSS"],
+    technologies: ["TypeScript", "Prisma ORM", "PostgreSQL", "React", "Tailwind CSS", "PDF Generation"],
     features: [
-      "Strict multi-tenant organization and workspace data segregation",
-      "Cryptographically hashed session tokens with automated rotation",
-      "Multi-level RBAC hierarchy (Admin, Sub-Admin, Manager, Member, Client)",
-      "Audit trail capturing all sensitive authentication and system events",
-      "Automated transactional notification triggers via Brevo REST integration",
+      "Visual sales pipeline with lead status, deal size, and follow-up alerts",
+      "Client profile vaults containing contracts, project deliverables, and payment receipts",
+      "Milestone-based project management with task delegation and time tracking",
+      "Automated professional PDF invoice generation with payment tracking",
+      "Executive analytics dashboard displaying monthly revenue and team capacity",
+    ],
+    benefits: [
+      "Saves 12+ hours per week previously wasted on manual spreadsheet updates",
+      "Speeds up invoice payment cycles with automated polite payment reminders",
+      "Gives business owners instant visibility into company performance from anywhere",
     ],
     metrics: [
-      { label: "Tenant Isolation", value: "Strict" },
-      { label: "Architecture", value: "Multi-Tenant" },
-      { label: "Database", value: "PostgreSQL" },
+      { label: "Pipeline Visibility", value: "100%" },
+      { label: "Time Saved", value: "12+ Hrs/Wk" },
+      { label: "Invoicing", value: "Automated PDF" },
     ],
+    liveUrl: "https://demo.st-solutions.cloud/operations",
   },
   {
-    id: "quantum-trading",
-    title: "Quantum Trading Core Infrastructure",
-    slug: "quantum-trading-core",
-    category: "Software",
-    tagline: "High-frequency algorithmic execution platform and telemetry pipeline.",
-    description:
-      "High-throughput transactional pipeline and execution engine with real-time risk assessment, automated order routing, and low-latency data ingestion.",
-    clientType: "Financial Technology",
-    status: "Enterprise Active",
-    technologies: ["TypeScript", "Node.js", "PostgreSQL", "Prisma ORM", "WebSocket", "Docker"],
-    features: [
-      "Low-latency algorithmic trade execution pipelines",
-      "Real-time market data ingestion and position monitoring",
-      "Multi-account risk parameter validation and execution guardrails",
-      "Immutable audit logs and transactional settlement ledgers",
-    ],
-    metrics: [
-      { label: "Latency Profile", value: "Sub-millisecond" },
-      { label: "Execution", value: "Automated" },
-      { label: "Reliability", value: "Fault-tolerant" },
-    ],
-  },
-  {
-    id: "multi-agent-llm",
-    title: "Enterprise Multi-Agent LLM Orchestration",
-    slug: "multi-agent-llm-orchestration",
+    id: "omnibot-ai",
+    title: "OmniBot Business AI Assistant",
+    slug: "omnibot-ai-assistant",
     category: "AI",
-    tagline: "Real-time decision intelligence engine with vector search integration.",
+    tagline: "Smart 24/7 customer inquiry assistant trained on your business data.",
     description:
-      "A multi-agent LLM reasoning pipeline engineered to coordinate specialized autonomous agents across document analysis, knowledge synthesis, and operational decision support.",
-    clientType: "Enterprise AI Infrastructure",
-    status: "Live in Production",
-    technologies: ["TypeScript", "Node.js", "Gemini API", "Vector Embeddings", "REST APIs"],
+      "A custom-trained conversational assistant that answers customer questions, qualifies inbound leads, schedules appointments, and escalates complex issues to human staff.",
+    fullDescription:
+      "Integrates directly into client websites and WhatsApp channels. Unlike generic bots that give random answers, OmniBot is grounded specifically in your service catalogue, pricing policies, and FAQs to deliver accurate, helpful answers around the clock.",
+    clientType: "Customer Support & Lead Gen",
+    targetAudience: "E-Commerce Stores, Real Estate, Professional Services, Clinics",
+    problemSolved: "Stops lost sales opportunities when prospective customers reach out after business hours.",
+    status: "Demonstration Ready",
+    technologies: ["Gemini 2.5 API", "Node.js", "Vector Knowledge Search", "WhatsApp Business API", "React Widget"],
     features: [
-      "Autonomous multi-agent orchestration for complex business workflows",
-      "Semantic vector retrieval grounded in private enterprise documentation",
-      "Structured output validation with schema conformance enforcement",
-      "Role-gated operational tool execution and audit logging",
+      "Trained strictly on your website content, product specs, and business policies",
+      "Instant response on website live chat and official WhatsApp 24 hours a day",
+      "Intelligent lead qualification collecting customer name, phone, and requirements",
+      "Seamless escalation to human agents with full conversation context summary",
+      "Analytics dashboard highlighting top customer questions and content gaps",
+    ],
+    benefits: [
+      "Captures high-intent leads while your competitors are asleep",
+      "Resolves over 65% of repetitive customer questions instantly without human effort",
+      "Ensures consistent, polite, and accurate brand communication every time",
     ],
     metrics: [
-      { label: "Intelligence", value: "Multi-Agent" },
-      { label: "Grounding", value: "Vector RAG" },
-      { label: "Security", value: "Role-Gated" },
+      { label: "Response Time", value: "< 2 Seconds" },
+      { label: "Resolution Rate", value: "65%+" },
+      { label: "Availability", value: "24/7/365" },
     ],
+    liveUrl: "https://demo.st-solutions.cloud/ai-assistant",
+  },
+  {
+    id: "edusphere-academic",
+    title: "EduSphere School & Academy Portal",
+    slug: "edusphere-academic-portal",
+    category: "Web",
+    tagline: "Student enrollment, fee management, and parent communication.",
+    description:
+      "A modern educational portal coordinating student admissions, attendance logging, grade reporting, and automated fee voucher delivery to parents via SMS and WhatsApp.",
+    fullDescription:
+      "Brings modern digital prestige and operational sanity to schools and academies. Provides parents with a mobile portal to view test scores and attendance, while automating fee billing and reconciliation for administrators.",
+    clientType: "Schools & Educational Institutes",
+    targetAudience: "Schools, Colleges, Training Academies, Tutoring Centers",
+    problemSolved: "Eliminates overdue fee collection headaches and paper report card printing costs.",
+    status: "Demonstration Ready",
+    technologies: ["React", "Node.js", "PostgreSQL", "SMS Gateway", "WhatsApp Webhook", "PDF Report Engine"],
+    features: [
+      "Student digital profile vault with academic history, attendance, and health notes",
+      "Automated monthly fee voucher generation with online payment link delivery",
+      "Parent mobile portal for homework notifications, exam schedules, and grades",
+      "Teacher gradebook and digital attendance marking in under 2 minutes per class",
+      "Automated SMS/WhatsApp alerts for absences, announcements, and emergency notices",
+    ],
+    benefits: [
+      "Reduces overdue fee delays by 40% with automated reminder messages",
+      "Eliminates hours of manual paper ledger bookkeeping for school staff",
+      "Significantly enhances the institution's reputation among modern parents",
+    ],
+    metrics: [
+      { label: "Fee Recovery", value: "+40% Faster" },
+      { label: "Paper Saved", value: "10,000+ Pages" },
+      { label: "Parent Portal", value: "Mobile Ready" },
+    ],
+    liveUrl: "https://demo.st-solutions.cloud/edusphere",
+  },
+  {
+    id: "stockflow-inventory",
+    title: "StockFlow Warehouse & SKU Inventory System",
+    slug: "stockflow-warehouse-inventory",
+    category: "Software",
+    tagline: "Real-time stock tracking, multi-location transfers, and purchase orders.",
+    description:
+      "An industrial-grade inventory management system designed for distributors, warehouses, and wholesalers to track stock across multiple branches with barcode scanning.",
+    fullDescription:
+      "Provides granular visibility into warehouse stock levels, supplier lead times, and dispatch logistics. Features low-stock reorder triggers, inter-branch transfer logging, and serial number tracking.",
+    clientType: "Wholesale & Logistics",
+    targetAudience: "Wholesalers, Importers, Warehouses, Multi-Branch Retailers",
+    problemSolved: "Eliminates phantom inventory, lost items, and duplicate manual stock counting.",
+    status: "Demonstration Ready",
+    technologies: ["TypeScript", "React", "PostgreSQL", "Barcode & QR Scanner", "Export to Excel/PDF"],
+    features: [
+      "Multi-branch and multi-warehouse stock visibility from a single screen",
+      "Mobile barcode scanning for goods receipt, picking, and dispatch verification",
+      "Automated low-stock alerts with supplier purchase order generation",
+      "Stock valuation reports using FIFO/Average Costing methods",
+      "Role-based worker permissions preventing unauthorized stock adjustments",
+    ],
+    benefits: [
+      "Prevents costly stockouts during peak seasonal demand",
+      "Slashes stock audit and inventory counting time by up to 70%",
+      "Provides exact gross margin and inventory asset value calculations",
+    ],
+    metrics: [
+      { label: "Stock Accuracy", value: "99.4%" },
+      { label: "Audit Speed", value: "3x Faster" },
+      { label: "Multi-Location", value: "Unlimited" },
+    ],
+    liveUrl: "https://demo.st-solutions.cloud/inventory",
+  },
+  {
+    id: "appointease-booking",
+    title: "AppointEase Scheduling & Booking System",
+    slug: "appointease-scheduling-system",
+    category: "Automation",
+    tagline: "Automated client appointment booking, calendar sync, and SMS reminders.",
+    description:
+      "A frictionless booking system for clinics, consultancies, salons, and professional services that automates scheduling and virtually eliminates no-shows.",
+    fullDescription:
+      "Allows clients to view real-time availability, select a service or practitioner, and book online in seconds. Automatically syncs with Google Calendar, takes optional deposits, and sends WhatsApp/SMS reminders before the appointment.",
+    clientType: "Clinics & Service Providers",
+    targetAudience: "Medical Clinics, Law Firms, Consultancies, Salons, Instructors",
+    problemSolved: "Ends phone tag scheduling and reduces costly client appointment no-shows.",
+    status: "Demonstration Ready",
+    technologies: ["React", "Node.js", "Google Calendar API", "Twilio / WhatsApp API", "Stripe"],
+    features: [
+      "Self-service 24/7 client booking page branded with your company identity",
+      "Two-way calendar synchronization preventing double-booking across staff",
+      "Automated WhatsApp and SMS confirmation and reminder sequence (24h and 2h prior)",
+      "Optional upfront deposit or full service fee collection upon booking",
+      "Staff scheduling dashboard with buffer time and custom working hours control",
+    ],
+    benefits: [
+      "Reduces costly client no-shows by up to 75%",
+      "Eliminates hours spent daily answering phone calls just to check calendar availability",
+      "Enables smooth advance cash flow through automated booking deposits",
+    ],
+    metrics: [
+      { label: "No-Show Drop", value: "-75%" },
+      { label: "Client Self-Book", value: "85%" },
+      { label: "Calendar Sync", value: "2-Way Realtime" },
+    ],
+    liveUrl: "https://demo.st-solutions.cloud/booking",
+  },
+  {
+    id: "clienttrack-crm",
+    title: "ClientTrack Enterprise CRM & Pipeline",
+    slug: "clienttrack-enterprise-crm",
+    category: "Software",
+    tagline: "Lead qualification, deal stages, and automated client communication history.",
+    description:
+      "A tailored customer relationship management system designed for B2B firms to track inbound leads, deal stages, client communications, and sales representative quotas.",
+    fullDescription:
+      "Built without the bloat and confusing menus of generic enterprise CRMs. Gives your sales team a clear, fast interface to log call notes, set follow-up tasks, track proposal statuses, and forecast monthly revenue.",
+    clientType: "B2B Companies & Sales Teams",
+    targetAudience: "B2B Sales Teams, Real Estate Agencies, Tech Providers, Consultancies",
+    problemSolved: "Prevents high-value leads from falling through the cracks due to disorganized sales tracking.",
+    status: "Demonstration Ready",
+    technologies: ["React", "TypeScript", "Node.js", "PostgreSQL", "Email Sync", "Activity Timeline"],
+    features: [
+      "Kanban deal pipeline with customizable stages and probability weighting",
+      "Automated lead capture from website forms, WhatsApp, and email inquiries",
+      "Contact timeline storing all past emails, meeting notes, proposals, and invoices",
+      "Team task assignments with daily priority agendas and follow-up reminders",
+      "Sales performance reports tracking conversion rates by channel and representative",
+    ],
+    benefits: [
+      "Increases proposal win rate by ensuring disciplined, timely follow-up",
+      "Provides a permanent record of client interactions when staff change roles",
+      "Gives leadership accurate sales forecasting for hiring and inventory planning",
+    ],
+    metrics: [
+      { label: "Follow-Up Rate", value: "100%" },
+      { label: "Deal Velocity", value: "+32%" },
+      { label: "Data Ownership", value: "100% Private" },
+    ],
+    liveUrl: "https://demo.st-solutions.cloud/crm",
+  },
+  {
+    id: "vanguard-corporate",
+    title: "Vanguard Corporate & Investor Digital Presence",
+    slug: "vanguard-corporate-presence",
+    category: "Web",
+    tagline: "High-trust corporate website engineered for credibility, speed, and lead conversion.",
+    description:
+      "A prestigious, high-speed corporate web platform built to establish executive authority, showcase company milestones, and attract high-tier commercial clients.",
+    fullDescription:
+      "Crafted with immaculate typography, high-performance responsive layouts, and interactive case study visualizers. Designed to communicate stability, professionalism, and industry leadership to institutional clients and partners.",
+    clientType: "Corporate & Enterprise",
+    targetAudience: "Corporations, Investment Firms, Industrial Groups, Enterprise Services",
+    problemSolved: "Replaces outdated, slow company websites with a modern, high-trust digital flagship.",
+    status: "Live in Production",
+    technologies: ["React", "TypeScript", "Tailwind CSS", "Vite", "Fast Cloud CDN", "Technical SEO"],
+    features: [
+      "Executive aesthetic with clean typography, generous whitespace, and branded layouts",
+      "Interactive case study cards with measurable client outcome statistics",
+      "Technical SEO architecture ensuring top rankings for core business keywords",
+      "Direct leadership contact intake with secure document upload capability",
+      "100/100 Google PageSpeed optimization across mobile and desktop devices",
+    ],
+    benefits: [
+      "Builds immediate trust with high-value prospects and enterprise decision-makers",
+      "Loads in under 1 second on mobile devices globally",
+      "Provides an effortless content management flow for press releases and updates",
+    ],
+    metrics: [
+      { label: "Mobile Speed", value: "99/100" },
+      { label: "Load Time", value: "< 0.8 Sec" },
+      { label: "SEO Score", value: "100/100" },
+    ],
+    liveUrl: "https://demo.st-solutions.cloud/corporate",
   },
 ];
 

@@ -35,13 +35,17 @@ import { authService } from "../api/services/auth.service.js";
 import { useAuth } from "../context/AuthContext.js";
 import { useTheme } from "../context/ThemeContext.js";
 import { useToast } from "../context/ToastContext.js";
+import { WebsiteCMS } from "../components/admin/WebsiteCMS.js";
+import { ShowcaseManager } from "../components/admin/ShowcaseManager.js";
 
 export const SettingsPage: React.FC = () => {
   const { currentOrganization, currentWorkspace, currentUser, isLoading: isAuthLoading } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { addToast } = useToast();
 
-  const [activeTab, setActiveTab] = useState<"general" | "security" | "company" | "features">("general");
+  const [activeTab, setActiveTab] = useState<
+    "general" | "website_cms" | "showcase_manager" | "security" | "company" | "features"
+  >("general");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -252,6 +256,30 @@ export const SettingsPage: React.FC = () => {
         >
           <Globe className="w-4 h-4" />
           <span>General Platform</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("website_cms")}
+          className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold border-b-2 transition-colors ${
+            activeTab === "website_cms"
+              ? "border-gold text-gold"
+              : "border-transparent text-text-muted hover:text-text"
+          }`}
+        >
+          <Globe className="w-4 h-4 text-amber-500" />
+          <span>Website Content CMS</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("showcase_manager")}
+          className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold border-b-2 transition-colors ${
+            activeTab === "showcase_manager"
+              ? "border-gold text-gold"
+              : "border-transparent text-text-muted hover:text-text"
+          }`}
+        >
+          <Layers className="w-4 h-4 text-amber-500" />
+          <span>Showcase Projects</span>
         </button>
 
         <button
@@ -615,6 +643,20 @@ export const SettingsPage: React.FC = () => {
               );
             })}
           </div>
+        </Card>
+      )}
+
+      {/* WEBSITE CONTENT CMS TAB */}
+      {!isLoading && !error && activeTab === "website_cms" && (
+        <Card className="p-6 border-border/60">
+          <WebsiteCMS />
+        </Card>
+      )}
+
+      {/* SHOWCASE PROJECTS CMS TAB */}
+      {!isLoading && !error && activeTab === "showcase_manager" && (
+        <Card className="p-6 border-border/60">
+          <ShowcaseManager />
         </Card>
       )}
     </div>

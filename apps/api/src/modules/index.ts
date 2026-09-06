@@ -14,3 +14,4 @@ export * from "./notifications/index.js";
 export * from "./settings/index.js";
 export * from "./audit/index.js";
 export * from "./ai/index.js";
+export * from "./showcase-projects/index.js";

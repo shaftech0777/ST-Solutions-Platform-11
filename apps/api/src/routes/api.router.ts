@@ -16,6 +16,7 @@ import { auditRouter } from "../modules/audit/index.js";
 import { notificationsRouter } from "../modules/notifications/index.js";
 import { aiRouter } from "../modules/ai/index.js";
 import { projectInquiriesRouter, projectInquiriesController } from "../modules/project-inquiries/index.js";
+import { showcaseProjectsRouter } from "../modules/showcase-projects/index.js";
 
 export const apiRouter = Router();
 
@@ -35,6 +36,7 @@ apiRouter.use("/members", membersRouter);
 apiRouter.use("/clients", clientsRouter);
 apiRouter.use("/client-requests", clientRequestsRouter);
 apiRouter.use("/projects", projectsRouter);
+apiRouter.use("/showcase-projects", showcaseProjectsRouter);
 apiRouter.use("/inquiries", projectInquiriesRouter);
 apiRouter.use("/project-inquiries", projectInquiriesRouter);
 apiRouter.use("/payments", paymentsRouter);

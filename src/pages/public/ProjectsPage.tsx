@@ -1,168 +1,314 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Layers,
-  Code2,
-  Brain,
-  Workflow,
-  ShoppingBag,
-  Globe,
+  Search,
+  ExternalLink,
   ArrowRight,
   CheckCircle2,
   X,
+  MessageCircle,
+  Sparkles,
+  Phone,
   ShieldCheck,
   Zap,
-  Sparkles,
-  Database,
-  Cpu,
-  MessageCircle,
-  FileText,
+  Users,
+  Target,
 } from "lucide-react";
 import { projectsData, ProjectShowcaseItem, companyConfig } from "../../data/companyConfig.js";
 import { ProjectCardVisual } from "../../components/public/ProjectCardVisual.js";
 import { ProjectInquiryModal } from "../../components/public/ProjectInquiryModal.js";
+import { showcaseService, ShowcaseProject } from "../../api/services/showcase.service.js";
 
-const categories = ["All", "Web", "Software", "AI", "Automation", "E-Commerce"] as const;
+const categories = ["All", "E-Commerce", "Software", "Web", "AI", "Automation"] as const;
 
 export const ProjectsPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedProject, setSelectedProject] = useState<ProjectShowcaseItem | null>(null);
   const [inquiryTarget, setInquiryTarget] = useState<ProjectShowcaseItem | null>(null);
   const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false);
+  const [projectsList, setProjectsList] = useState<ProjectShowcaseItem[]>(projectsData);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  // Load from showcase API if available, fallback smoothly to local projectsData
+  useEffect(() => {
+    let isMounted = true;
+    const loadProjects = async () => {
+      try {
+        setLoading(true);
+        const res = await showcaseService.getPublicProjects({
+          category: selectedCategory === "All" ? undefined : selectedCategory,
+          search: searchQuery.trim() || undefined,
+        });
+        if (isMounted && res && Array.isArray(res) && res.length > 0) {
+          // Adapt ShowcaseProject to ProjectShowcaseItem format
+          const adapted: ProjectShowcaseItem[] = res.map((p: ShowcaseProject) => ({
+            id: p.id,
+            title: p.title,
+            slug: p.slug || p.id,
+            category: (p.category?.name as any) || (p.projectType as any) || "Software",
+            tagline: p.tagline || p.title,
+            description: p.description,
+            fullDescription: p.fullDescription || p.description,
+            clientType: p.targetAudience || "Business & Commercial",
+            targetAudience: p.targetAudience || "Businesses & Enterprises",
+            problemSolved: p.benefits?.[0] || "Solves operational bottlenecks and enhances efficiency.",
+            status: p.featured ? "Live in Production" : "Demonstration Ready",
+            technologies: p.technologies || ["TypeScript", "React", "PostgreSQL"],
+            features: p.features || [],
+            benefits: p.benefits || [],
+            metrics: [
+              { label: "Execution", value: "Demonstration Ready" },
+              { label: "Ownership", value: "100% Client" },
+              { label: "Deployment", value: "Fast Track" },
+            ],
+            liveUrl: p.liveUrl || undefined,
+          }));
+          setProjectsList(adapted);
+        } else if (isMounted) {
+          // Fallback to locally defined customer-centric projects
+          filterLocalProjects();
+        }
+      } catch {
+        if (isMounted) {
+          filterLocalProjects();
+        }
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    const filterLocalProjects = () => {
+      let filtered = projectsData;
+      if (selectedCategory !== "All") {
+        filtered = filtered.filter(
+          (p) => p.category.toLowerCase() === selectedCategory.toLowerCase()
+        );
+      }
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase().trim();
+        filtered = filtered.filter(
+          (p) =>
+            p.title.toLowerCase().includes(q) ||
+            p.description.toLowerCase().includes(q) ||
+            p.tagline.toLowerCase().includes(q) ||
+            (p.targetAudience && p.targetAudience.toLowerCase().includes(q))
+        );
+      }
+      setProjectsList(filtered);
+    };
+
+    loadProjects();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedCategory, searchQuery]);
 
   const handleOpenInquiry = (project?: ProjectShowcaseItem) => {
     setInquiryTarget(project || null);
     setIsInquiryModalOpen(true);
   };
 
-  const filteredProjects =
-    selectedCategory === "All"
-      ? projectsData
-      : projectsData.filter((p) => p.category.toLowerCase() === selectedCategory.toLowerCase());
-
   return (
-    <div className="space-y-16 sm:space-y-24 pb-16 font-sans">
-      {/* Header Banner */}
+    <div className="space-y-12 sm:space-y-20 pb-20 font-sans text-slate-900">
+      {/* Header Section */}
       <section className="pt-8 sm:pt-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center space-y-4">
-        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-900 text-xs font-semibold uppercase tracking-wider font-mono">
-          <Database className="w-3.5 h-3.5" />
-          <span>Production Systems Architecture</span>
+        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-900 text-xs font-semibold tracking-wide">
+          <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+          <span>PROJECT SHOWCASE: WHAT WE CAN BUILD</span>
         </div>
-        <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-950 tracking-tight max-w-3xl mx-auto">
-          Proven Systems.{" "}
-          <span className="text-[#B88E20]">Engineered for High Reliability.</span>
+        <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-950 tracking-tight max-w-4xl mx-auto leading-tight">
+          Selected Systems &amp; Showcases.{" "}
+          <span className="text-[#B88E20]">Demonstrating Real Capabilities.</span>
         </h1>
-        <p className="text-base sm:text-lg text-slate-700 max-w-2xl mx-auto leading-relaxed">
-          Explore genuine platforms, algorithmic pipelines, and multi-agent reasoning engines architected and deployed by ST-Solutions.
+        <p className="text-base sm:text-lg text-slate-600 max-w-3xl mx-auto leading-relaxed">
+          These showcase projects illustrate the type of digital systems, online storefronts, operations dashboards, and AI tools ST-Solutions designs and builds for businesses of all sizes.
         </p>
+
+        {/* Quick Capabilities Highlights */}
+        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 pt-4 text-xs font-medium text-slate-600">
+          <span className="flex items-center space-x-1.5">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <span>100% Source Code Ownership</span>
+          </span>
+          <span className="flex items-center space-x-1.5">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <span>Tailored to Your Exact Workflow</span>
+          </span>
+          <span className="flex items-center space-x-1.5">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <span>Zero Recurring Tool Licensing</span>
+          </span>
+        </div>
       </section>
 
-      {/* Category Filter Navigation */}
-      <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="flex items-center justify-center flex-wrap gap-2">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
-                selectedCategory === cat
-                  ? "bg-[#111827] text-white shadow-md border border-[#111827]"
-                  : "bg-white text-slate-800 border border-[#E2E5E0] hover:bg-[#F1F2EE]"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+      {/* Search & Filter Controls */}
+      <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-4">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-3 sm:p-4 rounded-2xl border border-[#E2E5E0] shadow-sm">
+          {/* Category Tabs */}
+          <div className="flex items-center flex-wrap gap-1.5 w-full md:w-auto">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                  selectedCategory === cat
+                    ? "bg-slate-900 text-white shadow-sm"
+                    : "bg-[#F1F2EE] text-slate-700 hover:bg-slate-200"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          {/* Search Input */}
+          <div className="relative w-full md:w-72">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search by system or industry..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl bg-[#F8F9F5] border border-[#E2E5E0] focus:outline-none focus:ring-2 focus:ring-amber-500/30 text-slate-900 placeholder:text-slate-400"
+            />
+          </div>
         </div>
       </section>
 
       {/* Projects Grid */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        {filteredProjects.length === 0 ? (
-          <div className="p-12 text-center rounded-3xl bg-white border border-[#E2E5E0] space-y-3">
-            <Layers className="w-8 h-8 mx-auto text-slate-400" />
-            <p className="text-sm font-semibold text-slate-800">
-              No showcased projects in this category currently.
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((n) => (
+              <div key={n} className="h-96 rounded-3xl bg-slate-100 animate-pulse border border-[#E2E5E0]" />
+            ))}
+          </div>
+        ) : projectsList.length === 0 ? (
+          <div className="p-12 text-center rounded-3xl bg-white border border-[#E2E5E0] space-y-4">
+            <Layers className="w-10 h-10 mx-auto text-slate-400" />
+            <h3 className="text-base font-bold text-slate-900">No showcase projects match your filter</h3>
+            <p className="text-xs text-slate-500 max-w-md mx-auto">
+              Try adjusting your search keywords or switch back to All Categories to browse our entire portfolio.
             </p>
             <button
-              onClick={() => setSelectedCategory("All")}
-              className="text-xs font-bold text-[#B88E20] hover:underline"
+              onClick={() => {
+                setSelectedCategory("All");
+                setSearchQuery("");
+              }}
+              className="px-4 py-2 text-xs font-bold text-white bg-slate-900 rounded-xl hover:bg-slate-800"
             >
-              View All Featured Systems
+              Reset Filters
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProjects.map((project) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {projectsList.map((project) => (
               <div
                 key={project.id}
-                className="p-6 sm:p-7 rounded-3xl bg-white border border-[#E2E5E0] shadow-sm hover:shadow-xl hover:border-[#D4AF37] transition-all duration-200 flex flex-col justify-between space-y-5 group"
+                className="rounded-3xl bg-white border border-[#E2E5E0] shadow-sm hover:shadow-xl hover:border-amber-500/50 transition-all duration-200 flex flex-col justify-between overflow-hidden group"
               >
-                <div className="space-y-4">
-                  {/* Visual SVG/CSS Architecture Graphic */}
+                <div className="p-6 space-y-5">
+                  {/* Visual Card Header */}
                   <ProjectCardVisual projectId={project.id} category={project.category} />
 
+                  {/* Category & Status */}
                   <div className="flex items-center justify-between">
                     <span className="px-2.5 py-0.5 rounded-full bg-[#F1F2EE] text-[10px] font-mono font-bold text-slate-800 border border-[#E2E5E0]">
                       {project.category}
                     </span>
                     <span className="flex items-center space-x-1.5 text-[10px] font-semibold text-emerald-700">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                       <span>{project.status}</span>
                     </span>
                   </div>
 
+                  {/* Title & Tagline */}
                   <div>
-                    <h3 className="text-xl font-bold text-slate-950 group-hover:text-[#B88E20] transition-colors">
+                    <h3 className="text-xl font-bold text-slate-950 group-hover:text-amber-700 transition-colors">
                       {project.title}
                     </h3>
-                    <p className="text-xs text-[#B88E20] font-semibold mt-0.5">
+                    <p className="text-xs text-amber-700 font-medium mt-1">
                       {project.tagline}
                     </p>
-                    <p className="text-xs text-slate-600 mt-2 leading-relaxed line-clamp-3">
+                    <p className="text-xs text-slate-600 mt-2.5 leading-relaxed line-clamp-3">
                       {project.description}
                     </p>
                   </div>
 
-                  {/* Key Metrics */}
-                  <div className="grid grid-cols-3 gap-2 pt-2 border-t border-[#E2E5E0]">
+                  {/* Target Audience / Solves */}
+                  <div className="p-3 rounded-2xl bg-[#F8F9F5] border border-[#E2E5E0] space-y-1.5 text-[11px]">
+                    <div className="flex items-start space-x-1.5 text-slate-700">
+                      <Target className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-semibold text-slate-900">For: </span>
+                        <span>{project.targetAudience || project.clientType}</span>
+                      </div>
+                    </div>
+                    {project.problemSolved && (
+                      <div className="flex items-start space-x-1.5 text-slate-600">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                        <span className="line-clamp-2">{project.problemSolved}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Metrics */}
+                  <div className="grid grid-cols-3 gap-2 pt-1">
                     {project.metrics.map((m, idx) => (
                       <div key={idx} className="bg-[#F1F2EE] p-2 rounded-xl text-center border border-[#E2E5E0]">
-                        <div className="text-xs font-bold text-[#B88E20] font-mono">{m.value}</div>
-                        <div className="text-[9px] text-slate-600 truncate font-medium">{m.label}</div>
+                        <div className="text-xs font-bold text-slate-900 font-mono">{m.value}</div>
+                        <div className="text-[9px] text-slate-500 truncate font-medium mt-0.5">{m.label}</div>
                       </div>
                     ))}
                   </div>
+
+                  {/* Feature Highlights */}
+                  <div className="space-y-1 pt-1">
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Key Capabilities</div>
+                    <div className="space-y-1">
+                      {project.features.slice(0, 3).map((feat, idx) => (
+                        <div key={idx} className="flex items-center space-x-1.5 text-[11px] text-slate-700">
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+                          <span className="truncate">{feat}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
-                <div className="space-y-3 pt-2 border-t border-[#E2E5E0]">
-                  <div className="flex flex-wrap gap-1">
-                    {project.technologies.slice(0, 3).map((tech, idx) => (
-                      <span
-                        key={idx}
-                        className="text-[10px] font-mono bg-[#F1F2EE] text-slate-700 px-2 py-0.5 rounded-md border border-[#E2E5E0]"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="flex items-center justify-between pt-2 border-t border-[#E2E5E0]">
+                {/* Card Action Footer */}
+                <div className="p-4 sm:p-6 bg-[#FAFAF8] border-t border-[#E2E5E0] space-y-3">
+                  <div className="flex items-center justify-between gap-2">
                     <button
                       onClick={() => setSelectedProject(project)}
-                      className="text-xs font-bold text-slate-950 hover:text-[#B88E20] transition-colors"
+                      className="text-xs font-bold text-slate-700 hover:text-slate-950 transition-colors underline-offset-2 hover:underline"
                     >
-                      View Specs & Flow
+                      View Full Details
                     </button>
 
-                    <button
-                      onClick={() => handleOpenInquiry(project)}
-                      className="inline-flex items-center space-x-1 text-xs font-bold text-[#B88E20] hover:underline"
-                    >
-                      <span>Inquire / Build</span>
-                      <ArrowRight className="w-3 h-3 text-[#B88E20]" />
-                    </button>
+                    {project.liveUrl && (
+                      <a
+                        href={project.liveUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center space-x-1 text-xs font-semibold text-slate-600 hover:text-slate-900"
+                      >
+                        <span>Demo Link</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    )}
                   </div>
+
+                  <button
+                    onClick={() => handleOpenInquiry(project)}
+                    className="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition-all flex items-center justify-center space-x-2 shadow-sm"
+                  >
+                    <span>Request Similar Project</span>
+                    <ArrowRight className="w-3.5 h-3.5 text-amber-400" />
+                  </button>
                 </div>
               </div>
             ))}
@@ -180,6 +326,7 @@ export const ProjectsPage: React.FC = () => {
             className="w-full max-w-2xl bg-white rounded-3xl border border-[#E2E5E0] shadow-2xl p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Modal Header */}
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <span className="px-3 py-1 rounded-full bg-amber-500/10 text-amber-900 text-xs font-mono font-bold border border-amber-500/30">
@@ -198,105 +345,108 @@ export const ProjectsPage: React.FC = () => {
               </button>
             </div>
 
+            {/* Title & Tagline */}
             <div>
-              <h2 className="text-2xl font-extrabold text-slate-950">
-                {selectedProject.title}
-              </h2>
-              <div className="text-xs font-bold text-[#B88E20] mt-1">
-                {selectedProject.tagline}
-              </div>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mt-3">
-                {selectedProject.description}
+              <h2 className="text-2xl font-bold text-slate-950">{selectedProject.title}</h2>
+              <p className="text-sm font-semibold text-amber-700 mt-1">{selectedProject.tagline}</p>
+              <p className="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed">
+                {selectedProject.fullDescription || selectedProject.description}
               </p>
             </div>
 
-            {/* Architectural Highlights & Features */}
-            <div className="space-y-2">
-              <div className="text-xs font-bold uppercase text-slate-950 tracking-wider font-mono">
-                Engineering Highlights & Capabilities
+            {/* Target Audience & Problem Solved */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 rounded-2xl bg-[#F8F9F5] border border-[#E2E5E0] text-xs">
+              <div className="space-y-1">
+                <span className="font-bold text-slate-900 flex items-center space-x-1.5">
+                  <Users className="w-3.5 h-3.5 text-amber-600" />
+                  <span>Who It Is For</span>
+                </span>
+                <p className="text-slate-600">{selectedProject.targetAudience || selectedProject.clientType}</p>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1">
+                <span className="font-bold text-slate-900 flex items-center space-x-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Problem It Solves</span>
+                </span>
+                <p className="text-slate-600">{selectedProject.problemSolved || "Eliminates operational inefficiency."}</p>
+              </div>
+            </div>
+
+            {/* Key Features */}
+            <div className="space-y-2">
+              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Features &amp; Functional Modules</h4>
+              <div className="grid grid-cols-1 gap-2">
                 {selectedProject.features.map((feat, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-start space-x-2.5 p-3 rounded-xl bg-[#F1F2EE] border border-[#E2E5E0] text-xs text-slate-800 font-medium"
-                  >
-                    <CheckCircle2 className="w-4 h-4 text-[#B88E20] flex-shrink-0 mt-0.5" />
+                  <div key={idx} className="flex items-start space-x-2 text-xs text-slate-700 bg-[#F1F2EE] p-2.5 rounded-xl">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                     <span>{feat}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Tech Stack Chips */}
-            <div className="space-y-2">
-              <div className="text-xs font-bold uppercase text-slate-950 tracking-wider font-mono">
-                Technology Stack
+            {/* Business Benefits */}
+            {selectedProject.benefits && selectedProject.benefits.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Business Benefits</h4>
+                <div className="grid grid-cols-1 gap-1.5">
+                  {selectedProject.benefits.map((b, idx) => (
+                    <div key={idx} className="flex items-center space-x-2 text-xs text-slate-700">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+                      <span>{b}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
+            )}
+
+            {/* Technology Stack */}
+            <div className="space-y-2">
+              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Technologies Used</h4>
               <div className="flex flex-wrap gap-1.5">
                 {selectedProject.technologies.map((t, idx) => (
-                  <span
-                    key={idx}
-                    className="px-3 py-1 rounded-lg bg-[#F1F2EE] text-xs font-mono text-slate-800 border border-[#E2E5E0]"
-                  >
+                  <span key={idx} className="text-[11px] font-mono bg-[#F1F2EE] text-slate-800 px-2.5 py-1 rounded-lg border border-[#E2E5E0]">
                     {t}
                   </span>
                 ))}
               </div>
             </div>
 
-            {/* Action Footer */}
+            {/* Modal CTAs */}
             <div className="pt-4 border-t border-[#E2E5E0] flex flex-col sm:flex-row items-center justify-between gap-3">
-              <button
-                onClick={() => {
-                  const p = selectedProject;
-                  setSelectedProject(null);
-                  handleOpenInquiry(p);
-                }}
-                className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-[#111827] text-white font-bold text-xs shadow-md text-center hover:bg-[#1F2937] transition-all border border-[#111827] flex items-center justify-center space-x-2"
-              >
-                <FileText className="w-3.5 h-3.5 text-[#D4AF37]" />
-                <span>Submit Inquiry For This System →</span>
-              </button>
               <a
                 href={companyConfig.contact.whatsappUrl}
                 target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto px-4 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center justify-center space-x-1.5 transition-colors shadow-sm"
+                rel="noreferrer"
+                className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl border border-emerald-600/30 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 text-xs font-bold transition-all"
               >
-                <MessageCircle className="w-4 h-4" />
-                <span>WhatsApp Lead Architect</span>
+                <MessageCircle className="w-4 h-4 text-emerald-600" />
+                <span>Discuss on WhatsApp</span>
               </a>
+
+              <button
+                onClick={() => {
+                  setSelectedProject(null);
+                  handleOpenInquiry(selectedProject);
+                }}
+                className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-md"
+              >
+                <span>Request a Quote for this Project</span>
+                <ArrowRight className="w-4 h-4 text-amber-400" />
+              </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Public Project Inquiry Modal */}
-      <ProjectInquiryModal
-        isOpen={isInquiryModalOpen}
-        onClose={() => setIsInquiryModalOpen(false)}
-        initialProject={inquiryTarget}
-      />
-
-      {/* CTA Bottom Banner (Intentional Dark Contrast Section) */}
-      <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="p-8 sm:p-12 rounded-3xl bg-[#111827] text-white border border-[#1F2937] shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="space-y-2 text-center md:text-left">
-            <h2 className="text-2xl font-bold text-white">Have a custom software or AI vision?</h2>
-            <p className="text-xs sm:text-sm text-slate-300 max-w-md">
-              We design and engineer systems around your proprietary business requirements.
-            </p>
-          </div>
-          <Link
-            to="/start-project"
-            className="px-6 py-3.5 rounded-2xl bg-[#D4AF37] hover:bg-[#E5C158] text-slate-950 font-bold text-xs sm:text-sm shadow-md flex items-center space-x-2 transition-transform hover:scale-[1.02]"
-          >
-            <span>Start a Project</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-      </section>
+      {/* Inquiry Intake Modal */}
+      {isInquiryModalOpen && (
+        <ProjectInquiryModal
+          isOpen={isInquiryModalOpen}
+          onClose={() => setIsInquiryModalOpen(false)}
+          defaultProjectName={inquiryTarget?.title}
+        />
+      )}
     </div>
   );
 };
