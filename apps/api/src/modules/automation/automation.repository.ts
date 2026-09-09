@@ -1,9 +1,10 @@
 import { prisma } from "../../database/prisma.client.js";
 import { AutomationLogQueryFilters, AutomationStatus } from "./automation.types.js";
+import { AutomationDeliveryStatus } from "@prisma/client";
 
 export class AutomationRepository {
   /**
-   * Creates an initial automation delivery log in PostgreSQL.
+   * Creates an initial automation delivery log in PostgreSQL (Outbox entry).
    */
   public async createLog(data: {
     event?: string;
@@ -11,16 +12,13 @@ export class AutomationRepository {
     deliveryId: string;
     recipient?: string | null;
     payload: any;
-    status: AutomationStatus;
+    status?: AutomationStatus;
     attempts?: number;
-    retryCount?: number;
-    maxRetries?: number;
+    maxAttempts?: number;
+    nextRetryAt?: Date | null;
   }) {
     const eventName = data.event || data.eventName || "unknown.event";
-    let mappedStatus: "PENDING" | "DELIVERED" | "FAILED" | "RETRYING" = "PENDING";
-    if (data.status === "DELIVERED" || data.status === "FAILED" || data.status === "RETRYING") {
-      mappedStatus = data.status;
-    }
+    const initialStatus = (data.status as AutomationDeliveryStatus) || AutomationDeliveryStatus.PENDING;
 
     try {
       const created = await prisma.automationLog.create({
@@ -29,8 +27,10 @@ export class AutomationRepository {
           deliveryId: data.deliveryId,
           recipient: data.recipient || null,
           payload: data.payload,
-          status: mappedStatus,
-          attempts: data.attempts ?? data.retryCount ?? 0,
+          status: initialStatus,
+          attempts: data.attempts ?? 0,
+          maxAttempts: data.maxAttempts ?? 4,
+          nextRetryAt: data.nextRetryAt ?? null,
         },
       });
 
@@ -42,7 +42,7 @@ export class AutomationRepository {
             destination: data.recipient || "ADMIN_WEBHOOK",
             subject: `Automated Workflow: ${eventName}`,
             content: typeof data.payload === "string" ? data.payload : JSON.stringify(data.payload),
-            success: data.status === "DELIVERED",
+            success: initialStatus === AutomationDeliveryStatus.DELIVERED,
           },
         });
       } catch {
@@ -57,29 +57,114 @@ export class AutomationRepository {
   }
 
   /**
-   * Alias for updating status.
+   * Finds pending or retrying outbox items that are due for delivery attempt.
    */
-  public async updateStatus(
-    deliveryId: string,
-    data: {
-      status: AutomationStatus;
-      responseCode?: number | null;
-      deliveredAt?: Date | null;
-      failureReason?: string | null;
+  public async findPendingRetries(limit = 10) {
+    const now = new Date();
+    try {
+      return await prisma.automationLog.findMany({
+        where: {
+          status: {
+            in: [AutomationDeliveryStatus.PENDING, AutomationDeliveryStatus.RETRYING],
+          },
+          OR: [
+            { nextRetryAt: null },
+            { nextRetryAt: { lte: now } },
+          ],
+          attempts: { lt: 4 },
+        },
+        orderBy: { createdAt: "asc" },
+        take: limit,
+      });
+    } catch (err) {
+      console.warn("[AutomationRepository] Error querying pending retries:", err);
+      return [];
     }
-  ) {
-    return this.updateLog(deliveryId, {
-      status: data.status,
-      responseCode: data.responseCode,
-      failureReason: data.failureReason,
-    });
   }
 
   /**
-   * Alias for listing logs.
+   * Atomically transitions a log to PROCESSING state before network dispatch.
    */
-  public async listLogs(page = 1, limit = 50) {
-    return this.findLogs({}, page, limit);
+  public async markProcessing(deliveryId: string) {
+    try {
+      return await prisma.automationLog.update({
+        where: { deliveryId },
+        data: {
+          status: AutomationDeliveryStatus.PROCESSING,
+          attempts: { increment: 1 },
+          lastAttemptAt: new Date(),
+        },
+      });
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Marks a log as ACCEPTED_BY_N8N upon receiving HTTP 2xx from n8n webhook.
+   * Note: This does NOT mean final delivery to recipient, only workflow ingestion.
+   */
+  public async markAccepted(
+    deliveryId: string,
+    responseCode: number,
+    responseBody: string | null,
+    providerMsgId?: string | null
+  ) {
+    try {
+      return await prisma.automationLog.update({
+        where: { deliveryId },
+        data: {
+          status: AutomationDeliveryStatus.ACCEPTED_BY_N8N,
+          responseCode,
+          responseBody,
+          providerMsgId: providerMsgId || null,
+          processedAt: new Date(),
+          nextRetryAt: null,
+          failureReason: null,
+        },
+      });
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Records a failed delivery attempt and computes exponential backoff retry schedule.
+   */
+  public async markFailedOrRetry(
+    deliveryId: string,
+    failureReason: string,
+    responseCode?: number | null,
+    responseBody?: string | null,
+    nextRetryDelaySeconds?: number
+  ) {
+    try {
+      const current = await prisma.automationLog.findUnique({ where: { deliveryId } });
+      const attempts = current ? current.attempts : 1;
+      const maxAttempts = current ? current.maxAttempts : 4;
+
+      const isExhausted = attempts >= maxAttempts || !nextRetryDelaySeconds;
+      const nextStatus = isExhausted
+        ? AutomationDeliveryStatus.FAILED
+        : AutomationDeliveryStatus.RETRYING;
+
+      const nextRetryAt = isExhausted
+        ? null
+        : new Date(Date.now() + nextRetryDelaySeconds * 1000);
+
+      return await prisma.automationLog.update({
+        where: { deliveryId },
+        data: {
+          status: nextStatus,
+          responseCode: responseCode ?? null,
+          responseBody: responseBody ?? null,
+          failureReason,
+          nextRetryAt,
+        },
+      });
+    } catch {
+      return null;
+    }
   }
 
   /**
@@ -88,8 +173,12 @@ export class AutomationRepository {
   public async updateLog(
     deliveryId: string,
     data: {
-      status: AutomationStatus;
+      status?: AutomationStatus;
       attempts?: number;
+      maxAttempts?: number;
+      nextRetryAt?: Date | null;
+      lastAttemptAt?: Date | null;
+      processedAt?: Date | null;
       responseCode?: number | null;
       responseBody?: string | null;
       providerMsgId?: string | null;
@@ -97,23 +186,23 @@ export class AutomationRepository {
       deliveredAt?: Date | null;
     }
   ) {
-    let mappedStatus: "PENDING" | "DELIVERED" | "FAILED" | "RETRYING" = "PENDING";
-    if (data.status === "DELIVERED" || data.status === "FAILED" || data.status === "RETRYING") {
-      mappedStatus = data.status;
-    }
-
     try {
+      const updateData: any = {};
+      if (data.status) updateData.status = data.status as AutomationDeliveryStatus;
+      if (data.attempts !== undefined) updateData.attempts = data.attempts;
+      if (data.maxAttempts !== undefined) updateData.maxAttempts = data.maxAttempts;
+      if (data.nextRetryAt !== undefined) updateData.nextRetryAt = data.nextRetryAt;
+      if (data.lastAttemptAt !== undefined) updateData.lastAttemptAt = data.lastAttemptAt;
+      if (data.processedAt !== undefined) updateData.processedAt = data.processedAt;
+      if (data.responseCode !== undefined) updateData.responseCode = data.responseCode;
+      if (data.responseBody !== undefined) updateData.responseBody = data.responseBody;
+      if (data.providerMsgId !== undefined) updateData.providerMsgId = data.providerMsgId;
+      if (data.failureReason !== undefined) updateData.failureReason = data.failureReason;
+      if (data.deliveredAt !== undefined) updateData.deliveredAt = data.deliveredAt;
+
       return await prisma.automationLog.update({
         where: { deliveryId },
-        data: {
-          status: mappedStatus,
-          ...(data.attempts !== undefined ? { attempts: data.attempts } : {}),
-          ...(data.responseCode !== undefined ? { responseCode: data.responseCode } : {}),
-          ...(data.responseBody !== undefined ? { responseBody: data.responseBody } : {}),
-          ...(data.providerMsgId !== undefined ? { providerMsgId: data.providerMsgId } : {}),
-          ...(data.failureReason !== undefined ? { failureReason: data.failureReason } : {}),
-          ...(data.deliveredAt !== undefined ? { deliveredAt: data.deliveredAt } : {}),
-        },
+        data: updateData,
       });
     } catch {
       return null;
@@ -150,7 +239,7 @@ export class AutomationRepository {
       where.event = filters.event;
     }
     if (filters.status) {
-      where.status = filters.status;
+      where.status = filters.status as AutomationDeliveryStatus;
     }
     if (filters.recipient) {
       where.recipient = { contains: filters.recipient, mode: "insensitive" };
@@ -189,13 +278,15 @@ export class AutomationRepository {
    */
   public async getDeliveryStats() {
     try {
-      const [total, delivered, failed, pending, lastDelivered] = await Promise.all([
+      const [total, delivered, accepted, failed, pending, retrying, lastDelivered] = await Promise.all([
         prisma.automationLog.count(),
-        prisma.automationLog.count({ where: { status: "DELIVERED" } }),
-        prisma.automationLog.count({ where: { status: "FAILED" } }),
-        prisma.automationLog.count({ where: { status: { in: ["PENDING", "RETRYING"] } } }),
+        prisma.automationLog.count({ where: { status: AutomationDeliveryStatus.DELIVERED } }),
+        prisma.automationLog.count({ where: { status: AutomationDeliveryStatus.ACCEPTED_BY_N8N } }),
+        prisma.automationLog.count({ where: { status: AutomationDeliveryStatus.FAILED } }),
+        prisma.automationLog.count({ where: { status: AutomationDeliveryStatus.PENDING } }),
+        prisma.automationLog.count({ where: { status: AutomationDeliveryStatus.RETRYING } }),
         prisma.automationLog.findFirst({
-          where: { status: "DELIVERED" },
+          where: { status: AutomationDeliveryStatus.DELIVERED },
           orderBy: { deliveredAt: "desc" },
           select: { deliveredAt: true },
         }),
@@ -204,16 +295,20 @@ export class AutomationRepository {
       return {
         total,
         delivered,
+        accepted,
         failed,
         pending,
+        retrying,
         lastDeliveredAt: lastDelivered?.deliveredAt || null,
       };
     } catch {
       return {
         total: 0,
         delivered: 0,
+        accepted: 0,
         failed: 0,
         pending: 0,
+        retrying: 0,
         lastDeliveredAt: null,
       };
     }

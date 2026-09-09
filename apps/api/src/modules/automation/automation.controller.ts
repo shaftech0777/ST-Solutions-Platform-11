@@ -10,10 +10,16 @@ export class AutomationController {
     const result = await automationService.processCallback(req.body, req.headers, rawBody);
 
     if (!result.success) {
-      res.status(401).json({
+      const statusCode = result.code === "MISSING_DELIVERY_ID"
+        ? 400
+        : result.code === "NOT_FOUND"
+        ? 404
+        : 401;
+
+      res.status(statusCode).json({
         success: false,
         error: {
-          code: "CALLBACK_VERIFICATION_FAILED",
+          code: result.code || "CALLBACK_VERIFICATION_FAILED",
           message: result.message,
         },
       });

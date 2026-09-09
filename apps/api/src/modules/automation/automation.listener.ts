@@ -151,7 +151,7 @@ export function registerAutomationEventListeners(
         applicationId: payload.applicationId || event.entityId,
         fullName: payload.fullName,
         email: payload.email,
-        rejectionReason: payload.reviewNotes || "Does not match current criteria",
+        rejectionReason: payload.rejectionReason || payload.reviewNotes || "Does not match current criteria",
         reviewNotes: payload.reviewNotes || null,
         rejectedBy: payload.reviewerId || null,
         timestamp: event.timestamp || new Date().toISOString(),
@@ -164,7 +164,28 @@ export function registerAutomationEventListeners(
     );
   });
 
-  // 6. Member Application Status Changed (e.g. Under Review / More Info)
+  // 6. Member Application More Information Required
+  eventBus.subscribe(DOMAIN_EVENTS.MEMBER_APPLICATION_MORE_INFORMATION_REQUIRED, async (event: DomainEvent) => {
+    const payload = event.payload;
+    await automationService.dispatch(
+      AUTOMATION_EVENTS.MEMBER_APPLICATION_MORE_INFORMATION_REQUIRED,
+      {
+        applicationId: payload.applicationId || event.entityId,
+        fullName: payload.fullName,
+        email: payload.email,
+        informationRequested: payload.reviewNotes || payload.informationRequested || "Additional details required to process your application.",
+        reviewNotes: payload.reviewNotes || null,
+        timestamp: event.timestamp || new Date().toISOString(),
+      },
+      {
+        recipient: payload.email,
+        entityType: "MEMBER_APPLICATION",
+        entityId: event.entityId,
+      }
+    );
+  });
+
+  // 7. Member Application Status Changed (e.g. Under Review)
   eventBus.subscribe(DOMAIN_EVENTS.MEMBER_APPLICATION_STATUS_CHANGED, async (event: DomainEvent) => {
     const payload = event.payload;
     await automationService.dispatch(
@@ -186,7 +207,7 @@ export function registerAutomationEventListeners(
     );
   });
 
-  // 7. Marketing Subscriber Added
+  // 8. Marketing Subscriber Added
   eventBus.subscribe(DOMAIN_EVENTS.MARKETING_SUBSCRIBER_ADDED, async (event: DomainEvent) => {
     const payload = event.payload;
     await automationService.dispatch(
@@ -200,6 +221,27 @@ export function registerAutomationEventListeners(
       {
         recipient: payload.email,
         entityType: "NEWSLETTER_SUBSCRIBER",
+        entityId: event.entityId,
+      }
+    );
+  });
+
+  // 9. Marketing Campaign Requested
+  eventBus.subscribe(DOMAIN_EVENTS.MARKETING_CAMPAIGN_REQUESTED, async (event: DomainEvent) => {
+    const payload = event.payload;
+    await automationService.dispatch(
+      AUTOMATION_EVENTS.MARKETING_CAMPAIGN_REQUESTED,
+      {
+        title: payload.title,
+        subject: payload.subject,
+        content: payload.content,
+        subscriberCount: payload.subscriberCount,
+        recipients: payload.recipients,
+        timestamp: event.timestamp || new Date().toISOString(),
+      },
+      {
+        recipient: null,
+        entityType: "MARKETING_CAMPAIGN",
         entityId: event.entityId,
       }
     );

@@ -1,10 +1,12 @@
 {
-  "name": "ST-Solutions - Inbound Contact Message Workflow",
+  "name": "ST-Solutions - Contact Message Ingestion & Delivery",
   "nodes": [
     {
       "parameters": {
         "httpMethod": "POST",
         "path": "contact-message-received",
+        "responseMode": "onReceived",
+        "responseData": "allEntries",
         "options": {}
       },
       "name": "Webhook Ingest",
@@ -14,69 +16,117 @@
     },
     {
       "parameters": {
-        "functionCode": "// Verify HMAC SHA-256 signature\nconst crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET || 'your-32-character-secure-hmac-secret-here';\nconst signature = $node['Webhook Ingest'].json.headers['x-st-signature'];\nconst rawBody = JSON.stringify($input.item.json.body);\n\nconst calculated = crypto.createHmac('sha256', secret).update(rawBody).digest('hex');\n\nif (signature && signature !== calculated) {\n  throw new Error('HMAC signature mismatch: Unauthorized request');\n}\n\nreturn $input.item;"
+        "functionCode": "// Canonical HMAC SHA-256 Signature Verification\nconst crypto = require('crypto');\n\nfunction canonicalStringify(obj) {\n  if (obj === null || typeof obj !== 'object') {\n    return JSON.stringify(obj);\n  }\n  if (Array.isArray(obj)) {\n    return '[' + obj.map(canonicalStringify).join(',') + ']';\n  }\n  const keys = Object.keys(obj).sort();\n  return '{' + keys.map(k => JSON.stringify(k) + ':' + canonicalStringify(obj[k])).join(',') + '}';\n}\n\nconst secret = $env.N8N_WEBHOOK_SECRET || 'your-32-character-secure-hmac-secret-here';\nconst headers = $node['Webhook Ingest'].json.headers;\nconst signature = headers['x-st-signature'];\nconst timestamp = headers['x-st-timestamp'];\nconst deliveryId = headers['x-st-delivery-id'] || $input.item.json.deliveryId;\n\nif (!signature || !timestamp || !deliveryId) {\n  throw new Error('Missing required security headers');\n}\n\n// Canonical message: timestamp.deliveryId.canonicalPayload\nconst canonicalPayload = canonicalStringify($input.item.json);\nconst stringToSign = `${timestamp}.${deliveryId}.${canonicalPayload}`;\nconst calculated = crypto.createHmac('sha256', secret).update(stringToSign).digest('hex');\n\nif (signature !== calculated) {\n  throw new Error('HMAC signature verification failed: Invalid payload signature');\n}\n\nreturn $input.item;"
       },
-      "name": "Verify Signature",
+      "name": "Verify Canonical Signature",
       "type": "n8n-nodes-base.function",
       "typeVersion": 1,
-      "position": [300, 300]
+      "position": [320, 300]
     },
     {
       "parameters": {
         "fromEmail": "notifications@st-solutions.com",
-        "toEmail": "={{ $json.body.adminNotificationEmail || 'admin@st-solutions.com' }}",
-        "subject": "=New Contact Inquiry: {{ $json.body.data.fullName }} - {{ $json.body.data.subject }}",
-        "html": "<h2>New Website Contact Message</h2><p><strong>From:</strong> {{ $json.body.data.fullName }} ({{ $json.body.data.email }})</p><p><strong>Phone:</strong> {{ $json.body.data.phoneNumber || 'N/A' }} | <strong>WhatsApp:</strong> {{ $json.body.data.whatsappNumber || 'N/A' }}</p><p><strong>Country:</strong> {{ $json.body.data.country || 'N/A' }}</p><p><strong>Subject:</strong> {{ $json.body.data.subject }}</p><p><strong>Message:</strong></p><blockquote>{{ $json.body.data.message }}</blockquote><p><strong>Submitted At:</strong> {{ $json.body.data.submissionTime }}</p>"
+        "toEmail": "={{ $json.adminNotificationEmail || 'admin@st-solutions.com' }}",
+        "subject": "=New Contact Inquiry: {{ $json.data.fullName }} - {{ $json.data.subject }}",
+        "html": "<h2>New Website Contact Message</h2><p><strong>From:</strong> {{ $json.data.fullName }} ({{ $json.data.email }})</p><p><strong>Phone:</strong> {{ $json.data.phoneNumber || 'N/A' }} | <strong>WhatsApp:</strong> {{ $json.data.whatsappNumber || 'N/A' }}</p><p><strong>Country:</strong> {{ $json.data.country || 'N/A' }}</p><p><strong>Subject:</strong> {{ $json.data.subject }}</p><p><strong>Message:</strong></p><blockquote>{{ $json.data.message }}</blockquote><p><strong>Delivery ID:</strong> {{ $json.deliveryId }}</p>"
       },
       "name": "Send Admin Alert",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2,
-      "position": [520, 200]
+      "position": [560, 200]
     },
     {
       "parameters": {
         "fromEmail": "support@st-solutions.com",
-        "toEmail": "={{ $json.body.data.email }}",
+        "toEmail": "={{ $json.data.email }}",
         "subject": "Thank you for contacting ST-Solutions - We have received your message",
-        "html": "<h3>Hello {{ $json.body.data.fullName }},</h3><p>Thank you for reaching out to <strong>ST-Solutions</strong>. We have successfully received your inquiry regarding <em>\"{{ $json.body.data.subject }}\"</em>.</p><p>Our solutions engineering team will review your message and reach out within 24 business hours.</p><br/><p>Warm regards,<br/><strong>ST-Solutions Operations Team</strong></p>"
+        "html": "<h3>Hello {{ $json.data.fullName }},</h3><p>Thank you for contacting <strong>ST-Solutions</strong>. We have received your inquiry regarding <em>\"{{ $json.data.subject }}\"</em>.</p><p>Our solutions engineering team will review your message and reach out within 24 business hours.</p><br/><p>Warm regards,<br/><strong>ST-Solutions Support Team</strong></p>"
       },
       "name": "Send Customer Confirmation",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2,
-      "position": [520, 400]
+      "position": [560, 400]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Build authenticated callback payload to report DELIVERED status\nconst crypto = require('crypto');\n\nfunction canonicalStringify(obj) {\n  if (obj === null || typeof obj !== 'object') {\n    return JSON.stringify(obj);\n  }\n  if (Array.isArray(obj)) {\n    return '[' + obj.map(canonicalStringify).join(',') + ']';\n  }\n  const keys = Object.keys(obj).sort();\n  return '{' + keys.map(k => JSON.stringify(k) + ':' + canonicalStringify(obj[k])).join(',') + '}';\n}\n\nconst secret = $env.N8N_WEBHOOK_SECRET || 'your-32-character-secure-hmac-secret-here';\nconst deliveryId = $node['Verify Canonical Signature'].json.deliveryId;\nconst callbackUrl = $node['Verify Canonical Signature'].json.callbackUrl || 'http://localhost:3000/api/v1/automation/callback';\nconst timestamp = new Date().toISOString();\n\nconst callbackBody = {\n  deliveryId: deliveryId,\n  status: 'DELIVERED',\n  responseCode: 200,\n  providerMessageId: 'n8n-smtp-' + Date.now(),\n  deliveredAt: timestamp\n};\n\nconst canonical = canonicalStringify(callbackBody);\nconst signature = crypto.createHmac('sha256', secret).update(`${timestamp}.${deliveryId}.${canonical}`).digest('hex');\n\nreturn [{\n  json: {\n    callbackUrl,\n    callbackBody,\n    headers: {\n      'Content-Type': 'application/json',\n      'X-ST-Signature': signature,\n      'X-ST-Timestamp': timestamp,\n      'X-ST-Delivery-Id': deliveryId\n    }\n  }\n}];"
+      },
+      "name": "Prepare Signed Callback",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [800, 300]
     },
     {
       "parameters": {
         "requestMethod": "POST",
-        "url": "http://localhost:3000/api/v1/automation/callback",
+        "url": "={{ $json.callbackUrl }}",
         "options": {},
-        "bodyParametersUi": {
+        "headerParametersUi": {
           "parameter": [
-            { "name": "deliveryId", "value": "={{ $node['Webhook Ingest'].json.body.deliveryId }}" },
-            { "name": "status", "value": "DELIVERED" },
-            { "name": "responseCode", "value": "200" },
-            { "name": "deliveredAt", "value": "={{ new Date().toISOString() }}" }
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "X-ST-Signature", "value": "={{ $json.headers['X-ST-Signature'] }}" },
+            { "name": "X-ST-Timestamp", "value": "={{ $json.headers['X-ST-Timestamp'] }}" },
+            { "name": "X-ST-Delivery-Id", "value": "={{ $json.headers['X-ST-Delivery-Id'] }}" }
           ]
-        }
+        },
+        "jsonParameters": true,
+        "body": "={{ JSON.stringify($json.callbackBody) }}"
       },
-      "name": "Report Success Callback",
+      "name": "Report Delivery Callback",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
-      "position": [750, 300]
+      "position": [1020, 300]
     }
   ],
   "connections": {
     "Webhook Ingest": {
-      "main": [[{ "node": "Verify Signature", "type": "main", "index": 0 }]]
-    },
-    "Verify Signature": {
       "main": [
-        [{ "node": "Send Admin Alert", "type": "main", "index": 0 },
-         { "node": "Send Customer Confirmation", "type": "main", "index": 0 }]
+        [
+          {
+            "node": "Verify Canonical Signature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Canonical Signature": {
+      "main": [
+        [
+          {
+            "node": "Send Admin Alert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Customer Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Send Admin Alert": {
-      "main": [[{ "node": "Report Success Callback", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "Prepare Signed Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Signed Callback": {
+      "main": [
+        [
+          {
+            "node": "Report Delivery Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   }
 }

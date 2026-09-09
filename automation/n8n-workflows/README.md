@@ -1,86 +1,124 @@
-# ST-Solutions Production n8n Automation & Email Notification Architecture
+# ST-Solutions Enterprise n8n Automation Engine
 
-This directory contains production-ready n8n workflow blueprints, webhook signature verification nodes, and operational documentation for the **ST-Solutions Enterprise Platform**.
+This directory contains production-ready, exportable n8n workflow definitions for the **ST-Solutions Platform**.
+
+## Architectural Overview
+
+The integration uses a **Transactional Outbox Pattern** with **Canonical HMAC-SHA256 Signatures**:
+
+```
+[Public Website / Admin Console]
+              ↓
+  [ST-Solutions Backend API]
+              ↓
+   [PostgreSQL (Outbox Log)]  ← (PENDING / PROCESSING)
+              ↓
+    [Secure n8n Webhook]      ← (Signed: X-ST-Signature, X-ST-Timestamp, X-ST-Delivery-Id)
+              ↓
+        [n8n Workflow]
+              ↓
+ [Email Provider / SMTP / SES]
+              ↓
+    [Signed Inbound Callback] → [POST /api/v1/automation/callback]
+              ↓
+   [PostgreSQL (Outbox Log)]  ← (DELIVERED / ACCEPTED_BY_N8N / FAILED)
+```
 
 ---
 
-## 1. Architectural Overview
+## 1. Required Configuration
 
-```
-[ Visitor / Client / Applicant ]
-               │
-               ▼
-[ ST-Solutions Express/TypeScript API ] ──(Persist)──► [ PostgreSQL ]
-               │                                      (Single Source of Truth)
-               │ (HMAC-SHA256 Signed Outbox Dispatch)
-               ▼
-[ n8n Webhook Ingestion Engine ]
-   ├── Signature & Timestamp Validation (HMAC-SHA256)
-   ├── Routing Switch (Event Name)
-   ├── Email Notification Dispatchers:
-   │     ├── Admin Alerts (Internal Team)
-   │     └── Client/Applicant Confirmations (External)
-   └── Status Callback -> POST /api/v1/automation/callback
-```
+### A. ST-Solutions Platform (`.env`)
 
-### Core Security Guarantees
-1. **Frontend Isolation**: The frontend **never** connects directly to n8n.
-2. **Authoritative Persistence**: PostgreSQL is the single source of truth. All submissions are saved in the database before external triggers occur.
-3. **Resilience & Non-Blocking Execution**: n8n latency, network dropouts, or worker downtime **never** block visitor responses.
-4. **Cryptographic Integrity**: Every outbound payload includes an `X-ST-Signature` HMAC-SHA256 header.
-5. **Replay Protection**: The platform checks `X-ST-Timestamp` with an expiration window.
+Configure the following variables in your platform environment:
 
----
+| Variable | Description | Example / Default |
+| :--- | :--- | :--- |
+| `N8N_ENABLED` | Master feature flag for external dispatch | `true` |
+| `N8N_BASE_URL` | Base URL of your n8n instance | `http://localhost:5678` or `https://n8n.yourdomain.com` |
+| `N8N_CALLBACK_URL` | Backend URL where n8n posts delivery callbacks | `http://localhost:3000/api/v1/automation/callback` |
+| `N8N_WEBHOOK_SECRET` | 32+ character shared secret for HMAC signing | Strong random string |
+| `N8N_WEBHOOK_TIMEOUT_MS` | Network timeout for webhook requests | `5000` (5 seconds) |
+| `ADMIN_NOTIFICATION_EMAIL` | Destination for high-priority operational alerts | `admin@st-solutions.com` |
 
-## 2. Environment Variables Configuration
+> ⚠️ **Security Notice**: Never pass `N8N_WEBHOOK_SECRET` in HTTP headers or URLs. The system exclusively uses HMAC SHA-256 signatures for authentication.
 
-In `apps/api/.env` (or production environment variables):
+### B. n8n Instance Environment Variables
 
-```env
-# n8n Automation & Webhook Integration
-N8N_BASE_URL="http://localhost:5678"
+In your n8n environment (Docker `.env` or system environment):
+
+```bash
 N8N_WEBHOOK_SECRET="your-32-character-secure-hmac-secret-here"
-N8N_WEBHOOK_TIMEOUT_MS=5000
-N8N_ENABLED=true
-ADMIN_NOTIFICATION_EMAIL="admin@st-solutions.com"
 ```
 
 ---
 
-## 3. Supported Domain Automation Events
+## 2. Workflows Directory & Webhook Endpoints
 
-| Event Name | Source Trigger | n8n Actions |
-|---|---|---|
-| `contact.message.received` | `POST /api/v1/contact`<br>`POST /api/v1/client-requests` | 1. Admin Alert Email<br>2. Customer Confirmation Email |
-| `project_inquiry.created` | `POST /api/v1/public/project-inquiries` | 1. Urgent Lead Alert to Admin<br>2. Client Project Receipt & Next Steps |
-| `member_application.submitted` | `POST /api/v1/applicants` | 1. Hiring Team Alert<br>2. Candidate Receipt Confirmation |
-| `member_application.approved` | `POST /api/v1/applicants/:id/approve` | Candidate Onboarding & Welcome Email |
-| `member_application.rejected` | `POST /api/v1/applicants/:id/reject` | Polite, Respectful Status Update |
-| `marketing.subscriber.added` | `POST /api/v1/newsletter/subscribe` | Welcome & Newsletter Subscription Confirmation |
-| `system.test.dispatched` | `POST /api/v1/automation/test` | End-to-End Connectivity Verification Ping |
+| Workflow File | Event Name | n8n Webhook Path |
+| :--- | :--- | :--- |
+| `contact-message-workflow.json` | `contact.message.received` | `POST /webhook/contact-message-received` |
+| `project-inquiry-workflow.json` | `project_inquiry.created` | `POST /webhook/project-inquiry-created` |
+| `member-application-workflow.json` | `member_application.*` | `POST /webhook/member-application-lifecycle` |
+| `marketing-subscriber-workflow.json` | `marketing.subscriber.added` | `POST /webhook/marketing-subscriber-added` |
+| `system-test-workflow.json` | `system.test.dispatched` | `POST /webhook/system-test-dispatched` |
 
 ---
 
-## 4. Inbound Callback Endpoint
+## 3. How to Import Workflows into n8n
 
-Once n8n completes delivery or catches a bounce, it reports back to:
-- `POST /api/v1/automation/callback` (or `/api/v1/webhooks/n8n`)
+1. Open your n8n web console (`http://localhost:5678`).
+2. Navigate to **Workflows** → Click **Add Workflow** (or `+`).
+3. Click the **...** menu in the top right → Select **Import from File**.
+4. Choose one of the JSON files in this directory (e.g., `contact-message-workflow.json`).
+5. Open the **Send Email** node(s) and attach your preferred email credential (SMTP, SendGrid, Amazon SES, or Mailgun).
+6. Activate the workflow by switching the toggle from **Inactive** to **Active**.
 
-### Callback Payload Format
-```json
+---
+
+## 4. Canonical Security Contract
+
+### Request Headers (Platform -> n8n)
+
+Every outbound webhook contains:
+- `X-ST-Signature`: Deterministic hex digest: `HMAC_SHA256(secret, "${timestamp}.${deliveryId}.${canonicalPayload}")`
+- `X-ST-Timestamp`: ISO 8601 UTC timestamp
+- `X-ST-Delivery-Id`: Unique UUID generated for this delivery
+- `X-ST-Event`: Domain event identifier
+
+### Canonical Stringification Algorithm
+
+All JSON object keys are recursively sorted lexicographically before hashing. This guarantees that whitespace differences or key order variations never cause signature verification mismatches.
+
+### Callback Request (n8n -> Platform)
+
+When the email provider accepts or delivers the message, n8n sends an authenticated callback:
+
+```http
+POST /api/v1/automation/callback
+Content-Type: application/json
+X-ST-Signature: <hmac_hex>
+X-ST-Timestamp: <iso_utc_timestamp>
+X-ST-Delivery-Id: <uuid>
+
 {
-  "deliveryId": "uuid-from-x-st-delivery-id",
+  "deliveryId": "c8b417e0-...",
   "status": "DELIVERED",
-  "providerMessageId": "smtp_msg_12345",
   "responseCode": 200,
+  "providerMessageId": "smtp-message-id-992",
   "deliveredAt": "2026-09-08T12:00:00.000Z"
 }
 ```
 
 ---
 
-## 5. Admin API Endpoints
+## 5. Failure Handling & Exponential Backoff
 
-- `GET /api/v1/automation/status` — Retrieves configuration health and delivery stats.
-- `GET /api/v1/automation/logs` — Paginated delivery audit logs.
-- `POST /api/v1/automation/test` — Dispatches a live test event to n8n.
+If n8n is unreachable or returns a non-2xx status, the platform records a failure and schedules automatic exponential retries:
+1. **1st Retry**: ~30 seconds delay
+2. **2nd Retry**: ~2 minutes delay
+3. **3rd Retry**: ~10 minutes delay
+4. **4th Retry**: ~30 minutes delay
+5. **Deadletter**: Status transitions to `FAILED` if all 4 attempts are exhausted.
+
+Administrators can monitor pending retries, inspect failure diagnostics, and manually re-trigger events from the **Admin Panel → Settings → Email & Automation** tab.

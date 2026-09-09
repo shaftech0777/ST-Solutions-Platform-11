@@ -1940,9 +1940,13 @@ model InquiryActivity {
 
 enum AutomationDeliveryStatus {
   PENDING
+  PROCESSING
+  ACCEPTED_BY_N8N
+  SENT
   DELIVERED
   FAILED
   RETRYING
+  BOUNCED
 }
 
 model AutomationLog {
@@ -1953,6 +1957,10 @@ model AutomationLog {
   payload       Json
   status        AutomationDeliveryStatus @default(PENDING)
   attempts      Int                      @default(0)
+  maxAttempts   Int                      @default(4)
+  nextRetryAt   DateTime?
+  lastAttemptAt DateTime?
+  processedAt   DateTime?
   responseCode  Int?
   responseBody  String?
   providerMsgId String?
@@ -1965,6 +1973,8 @@ model AutomationLog {
   @@index([status])
   @@index([createdAt])
   @@index([recipient])
+  @@index([nextRetryAt])
+  @@index([status, nextRetryAt])
 }
 
 model NewsletterSubscriber {

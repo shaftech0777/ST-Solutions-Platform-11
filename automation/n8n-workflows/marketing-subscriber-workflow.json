@@ -1,10 +1,10 @@
 {
-  "name": "ST-Solutions - Project Inquiry Lead Ingestion & Notifications",
+  "name": "ST-Solutions - Marketing Subscriber Welcome & Broadcast Automation",
   "nodes": [
     {
       "parameters": {
         "httpMethod": "POST",
-        "path": "project-inquiry-created",
+        "path": "marketing-subscriber-added",
         "responseMode": "onReceived",
         "responseData": "allEntries",
         "options": {}
@@ -25,31 +25,19 @@
     },
     {
       "parameters": {
-        "fromEmail": "leads@st-solutions.com",
-        "toEmail": "={{ $json.adminNotificationEmail || 'admin@st-solutions.com' }}",
-        "subject": "=🔥 New Project Inquiry: {{ $json.data.projectName }} ({{ $json.data.visitorName }})",
-        "html": "<h2>New Enterprise Project Inquiry</h2><p><strong>Project Target:</strong> {{ $json.data.projectName }} ({{ $json.data.category || 'General' }})</p><p><strong>Prospect:</strong> {{ $json.data.visitorName }} ({{ $json.data.email }})</p><p><strong>Phone / WhatsApp:</strong> {{ $json.data.phone }} (Preferred: {{ $json.data.preferredContactMethod }})</p><p><strong>Company / Country:</strong> {{ $json.data.companyName || 'N/A' }} / {{ $json.data.country || 'N/A' }}</p><p><strong>Estimated Budget:</strong> {{ $json.data.budget || 'Not specified' }}</p><p><strong>Project Requirements:</strong></p><blockquote>{{ $json.data.message }}</blockquote>"
-      },
-      "name": "Send Sales Alert",
-      "type": "n8n-nodes-base.emailSend",
-      "typeVersion": 2,
-      "position": [560, 200]
-    },
-    {
-      "parameters": {
-        "fromEmail": "solutions@st-solutions.com",
+        "fromEmail": "newsletter@st-solutions.com",
         "toEmail": "={{ $json.data.email }}",
-        "subject": "=We have received your project inquiry for {{ $json.data.projectName }}",
-        "html": "<h3>Hello {{ $json.data.visitorName }},</h3><p>Thank you for submitting your project consultation request for <strong>{{ $json.data.projectName }}</strong>.</p><p>A dedicated Solutions Architect has been assigned to review your technical requirements. We will connect with you via {{ $json.data.preferredContactMethod }} shortly.</p><br/><p>Best regards,<br/><strong>ST-Solutions Advisory Team</strong></p>"
+        "subject": "Welcome to the ST-Solutions Community & Tech Insights",
+        "html": "<h2>Welcome to ST-Solutions!</h2><p>Thank you for subscribing to our platform newsletter. You will receive regular updates on enterprise technology architecture, product showcases, and engineering breakthroughs.</p><br/><p>Warm regards,<br/><strong>ST-Solutions Editorial Team</strong></p>"
       },
-      "name": "Send Prospect Confirmation",
+      "name": "Send Welcome Email",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2,
-      "position": [560, 400]
+      "position": [560, 300]
     },
     {
       "parameters": {
-        "functionCode": "// Build authenticated callback payload to report DELIVERED status\nconst crypto = require('crypto');\n\nfunction canonicalStringify(obj) {\n  if (obj === null || typeof obj !== 'object') {\n    return JSON.stringify(obj);\n  }\n  if (Array.isArray(obj)) {\n    return '[' + obj.map(canonicalStringify).join(',') + ']';\n  }\n  const keys = Object.keys(obj).sort();\n  return '{' + keys.map(k => JSON.stringify(k) + ':' + canonicalStringify(obj[k])).join(',') + '}';\n}\n\nconst secret = $env.N8N_WEBHOOK_SECRET || 'your-32-character-secure-hmac-secret-here';\nconst deliveryId = $node['Verify Canonical Signature'].json.deliveryId;\nconst callbackUrl = $node['Verify Canonical Signature'].json.callbackUrl || 'http://localhost:3000/api/v1/automation/callback';\nconst timestamp = new Date().toISOString();\n\nconst callbackBody = {\n  deliveryId: deliveryId,\n  status: 'DELIVERED',\n  responseCode: 200,\n  providerMessageId: 'n8n-inquiry-' + Date.now(),\n  deliveredAt: timestamp\n};\n\nconst canonical = canonicalStringify(callbackBody);\nconst signature = crypto.createHmac('sha256', secret).update(`${timestamp}.${deliveryId}.${canonical}`).digest('hex');\n\nreturn [{\n  json: {\n    callbackUrl,\n    callbackBody,\n    headers: {\n      'Content-Type': 'application/json',\n      'X-ST-Signature': signature,\n      'X-ST-Timestamp': timestamp,\n      'X-ST-Delivery-Id': deliveryId\n    }\n  }\n}];"
+        "functionCode": "// Build authenticated callback payload to report DELIVERED status\nconst crypto = require('crypto');\n\nfunction canonicalStringify(obj) {\n  if (obj === null || typeof obj !== 'object') {\n    return JSON.stringify(obj);\n  }\n  if (Array.isArray(obj)) {\n    return '[' + obj.map(canonicalStringify).join(',') + ']';\n  }\n  const keys = Object.keys(obj).sort();\n  return '{' + keys.map(k => JSON.stringify(k) + ':' + canonicalStringify(obj[k])).join(',') + '}';\n}\n\nconst secret = $env.N8N_WEBHOOK_SECRET || 'your-32-character-secure-hmac-secret-here';\nconst deliveryId = $node['Verify Canonical Signature'].json.deliveryId;\nconst callbackUrl = $node['Verify Canonical Signature'].json.callbackUrl || 'http://localhost:3000/api/v1/automation/callback';\nconst timestamp = new Date().toISOString();\n\nconst callbackBody = {\n  deliveryId: deliveryId,\n  status: 'DELIVERED',\n  responseCode: 200,\n  providerMessageId: 'n8n-subscriber-' + Date.now(),\n  deliveredAt: timestamp\n};\n\nconst canonical = canonicalStringify(callbackBody);\nconst signature = crypto.createHmac('sha256', secret).update(`${timestamp}.${deliveryId}.${canonical}`).digest('hex');\n\nreturn [{\n  json: {\n    callbackUrl,\n    callbackBody,\n    headers: {\n      'Content-Type': 'application/json',\n      'X-ST-Signature': signature,\n      'X-ST-Timestamp': timestamp,\n      'X-ST-Delivery-Id': deliveryId\n    }\n  }\n}];"
       },
       "name": "Prepare Signed Callback",
       "type": "n8n-nodes-base.function",
@@ -94,19 +82,14 @@
       "main": [
         [
           {
-            "node": "Send Sales Alert",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Send Prospect Confirmation",
+            "node": "Send Welcome Email",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Send Sales Alert": {
+    "Send Welcome Email": {
       "main": [
         [
           {

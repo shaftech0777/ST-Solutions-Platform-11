@@ -38,10 +38,15 @@ export const DOMAIN_EVENTS = {
   MEMBER_APPLICATION_SUBMITTED: "member_application.submitted",
   MEMBER_APPLICATION_APPROVED: "member_application.approved",
   MEMBER_APPLICATION_REJECTED: "member_application.rejected",
+  MEMBER_APPLICATION_MORE_INFORMATION_REQUIRED: "member_application.more_information_required",
   MEMBER_APPLICATION_STATUS_CHANGED: "member_application.status_changed",
 
   // Marketing & Subscriber Events
   MARKETING_SUBSCRIBER_ADDED: "marketing.subscriber.added",
+  MARKETING_CAMPAIGN_REQUESTED: "marketing.campaign.requested",
+
+  // System Automation Events
+  SYSTEM_TEST_DISPATCHED: "system.test.dispatched",
 
   // Settings & Security Domain Events
   SETTINGS_UPDATED: "settings.updated",

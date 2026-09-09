@@ -46,6 +46,11 @@ export const config: ApiConfig & { port: number; env: string } = {
   },
   n8n: {
     baseUrl: env.N8N_BASE_URL,
+    callbackUrl:
+      env.N8N_CALLBACK_URL ||
+      (process.env.API_URL
+        ? `${process.env.API_URL.replace(/\/$/, "")}/api/v1/automation/callback`
+        : "http://localhost:3000/api/v1/automation/callback"),
     webhookSecret: env.N8N_WEBHOOK_SECRET,
     timeoutMs: env.N8N_WEBHOOK_TIMEOUT_MS,
     enabled: env.N8N_ENABLED,

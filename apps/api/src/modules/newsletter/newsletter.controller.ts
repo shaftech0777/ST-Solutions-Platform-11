@@ -25,6 +25,28 @@ export class NewsletterController {
       pagination: result.pagination,
     });
   }
+
+  public async unsubscribe(req: Request, res: Response): Promise<void> {
+    const { email } = req.body;
+    const result = await newsletterService.unsubscribe(email);
+
+    res.status(200).json({
+      success: true,
+      message: "Unsubscribed successfully from updates.",
+      data: result,
+    });
+  }
+
+  public async broadcast(req: Request, res: Response): Promise<void> {
+    const { title, subject, content } = req.body;
+    const result = await newsletterService.broadcastCampaign(title, subject, content);
+
+    res.status(200).json({
+      success: true,
+      message: "Campaign queued for broadcast delivery.",
+      data: result,
+    });
+  }
 }
 
 export const newsletterController = new NewsletterController();

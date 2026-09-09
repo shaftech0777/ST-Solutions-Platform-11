@@ -22,6 +22,7 @@ import {
   Phone,
   Server,
   Layers,
+  Workflow,
 } from "lucide-react";
 import { PageHeader } from "../components/shell/PageHeader.js";
 import { Card } from "../components/ui/Card.js";
@@ -37,6 +38,7 @@ import { useTheme } from "../context/ThemeContext.js";
 import { useToast } from "../context/ToastContext.js";
 import { WebsiteCMS } from "../components/admin/WebsiteCMS.js";
 import { ShowcaseManager } from "../components/admin/ShowcaseManager.js";
+import { AutomationManager } from "../components/admin/AutomationManager.js";
 
 export const SettingsPage: React.FC = () => {
   const { currentOrganization, currentWorkspace, currentUser, isLoading: isAuthLoading } = useAuth();
@@ -44,7 +46,7 @@ export const SettingsPage: React.FC = () => {
   const { addToast } = useToast();
 
   const [activeTab, setActiveTab] = useState<
-    "general" | "website_cms" | "showcase_manager" | "security" | "company" | "features"
+    "general" | "website_cms" | "showcase_manager" | "automation" | "security" | "company" | "features"
   >("general");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -280,6 +282,18 @@ export const SettingsPage: React.FC = () => {
         >
           <Layers className="w-4 h-4 text-amber-500" />
           <span>Showcase Projects</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("automation")}
+          className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold border-b-2 transition-colors ${
+            activeTab === "automation"
+              ? "border-gold text-gold"
+              : "border-transparent text-text-muted hover:text-text"
+          }`}
+        >
+          <Workflow className="w-4 h-4 text-indigo-500" />
+          <span>Email & Automation</span>
         </button>
 
         <button
@@ -657,6 +671,13 @@ export const SettingsPage: React.FC = () => {
       {!isLoading && !error && activeTab === "showcase_manager" && (
         <Card className="p-6 border-border/60">
           <ShowcaseManager />
+        </Card>
+      )}
+
+      {/* EMAIL & AUTOMATION ENGINE TAB */}
+      {!isLoading && !error && activeTab === "automation" && (
+        <Card className="p-6 border-border/60">
+          <AutomationManager />
         </Card>
       )}
     </div>

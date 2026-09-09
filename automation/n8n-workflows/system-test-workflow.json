@@ -1,0 +1,92 @@
+{
+  "name": "ST-Solutions - System Health & Verification Test Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "system-test-dispatched",
+        "responseMode": "onReceived",
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "name": "Webhook Ingest",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Canonical HMAC SHA-256 Signature Verification\nconst crypto = require('crypto');\n\nfunction canonicalStringify(obj) {\n  if (obj === null || typeof obj !== 'object') {\n    return JSON.stringify(obj);\n  }\n  if (Array.isArray(obj)) {\n    return '[' + obj.map(canonicalStringify).join(',') + ']';\n  }\n  const keys = Object.keys(obj).sort();\n  return '{' + keys.map(k => JSON.stringify(k) + ':' + canonicalStringify(obj[k])).join(',') + '}';\n}\n\nconst secret = $env.N8N_WEBHOOK_SECRET || 'your-32-character-secure-hmac-secret-here';\nconst headers = $node['Webhook Ingest'].json.headers;\nconst signature = headers['x-st-signature'];\nconst timestamp = headers['x-st-timestamp'];\nconst deliveryId = headers['x-st-delivery-id'] || $input.item.json.deliveryId;\n\nif (!signature || !timestamp || !deliveryId) {\n  throw new Error('Missing required security headers');\n}\n\nconst canonicalPayload = canonicalStringify($input.item.json);\nconst stringToSign = `${timestamp}.${deliveryId}.${canonicalPayload}`;\nconst calculated = crypto.createHmac('sha256', secret).update(stringToSign).digest('hex');\n\nif (signature !== calculated) {\n  throw new Error('HMAC signature verification failed: Invalid payload signature');\n}\n\nreturn $input.item;"
+      },
+      "name": "Verify Canonical Signature",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [320, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Build authenticated test callback to report DELIVERED status\nconst crypto = require('crypto');\n\nfunction canonicalStringify(obj) {\n  if (obj === null || typeof obj !== 'object') {\n    return JSON.stringify(obj);\n  }\n  if (Array.isArray(obj)) {\n    return '[' + obj.map(canonicalStringify).join(',') + ']';\n  }\n  const keys = Object.keys(obj).sort();\n  return '{' + keys.map(k => JSON.stringify(k) + ':' + canonicalStringify(obj[k])).join(',') + '}';\n}\n\nconst secret = $env.N8N_WEBHOOK_SECRET || 'your-32-character-secure-hmac-secret-here';\nconst deliveryId = $node['Verify Canonical Signature'].json.deliveryId;\nconst callbackUrl = $node['Verify Canonical Signature'].json.callbackUrl || 'http://localhost:3000/api/v1/automation/callback';\nconst timestamp = new Date().toISOString();\n\nconst callbackBody = {\n  deliveryId: deliveryId,\n  status: 'DELIVERED',\n  responseCode: 200,\n  providerMessageId: 'n8n-test-ping-' + Date.now(),\n  deliveredAt: timestamp\n};\n\nconst canonical = canonicalStringify(callbackBody);\nconst signature = crypto.createHmac('sha256', secret).update(`${timestamp}.${deliveryId}.${canonical}`).digest('hex');\n\nreturn [{\n  json: {\n    callbackUrl,\n    callbackBody,\n    headers: {\n      'Content-Type': 'application/json',\n      'X-ST-Signature': signature,\n      'X-ST-Timestamp': timestamp,\n      'X-ST-Delivery-Id': deliveryId\n    }\n  }\n}];"
+      },
+      "name": "Prepare Signed Test Callback",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [560, 300]
+    },
+    {
+      "parameters": {
+        "requestMethod": "POST",
+        "url": "={{ $json.callbackUrl }}",
+        "options": {},
+        "headerParametersUi": {
+          "parameter": [
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "X-ST-Signature", "value": "={{ $json.headers['X-ST-Signature'] }}" },
+            { "name": "X-ST-Timestamp", "value": "={{ $json.headers['X-ST-Timestamp'] }}" },
+            { "name": "X-ST-Delivery-Id", "value": "={{ $json.headers['X-ST-Delivery-Id'] }}" }
+          ]
+        },
+        "jsonParameters": true,
+        "body": "={{ JSON.stringify($json.callbackBody) }}"
+      },
+      "name": "Report Test Delivery Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [780, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Ingest": {
+      "main": [
+        [
+          {
+            "node": "Verify Canonical Signature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Canonical Signature": {
+      "main": [
+        [
+          {
+            "node": "Prepare Signed Test Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Signed Test Callback": {
+      "main": [
+        [
+          {
+            "node": "Report Test Delivery Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

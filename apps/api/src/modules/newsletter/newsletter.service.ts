@@ -45,6 +45,48 @@ export class NewsletterService {
     };
   }
 
+  public async unsubscribe(email: string) {
+    if (!email || !email.includes("@")) {
+      throw new ValidationError("A valid email address is required.", ERROR_CODES.VALIDATION_ERROR);
+    }
+    const cleanEmail = email.trim().toLowerCase();
+    const updated = await prisma.newsletterSubscriber.updateMany({
+      where: { email: cleanEmail },
+      data: {
+        isActive: false,
+        unsubscribedAt: new Date(),
+      },
+    });
+    return { unsubscribed: updated.count > 0 };
+  }
+
+  public async broadcastCampaign(title: string, subject: string, content: string) {
+    if (!subject || !content) {
+      throw new ValidationError("Subject and content are required for marketing campaigns.", ERROR_CODES.VALIDATION_ERROR);
+    }
+    const activeSubscribers = await prisma.newsletterSubscriber.findMany({
+      where: { isActive: true },
+      select: { email: true, id: true },
+    });
+
+    await eventBus.publish({
+      name: DOMAIN_EVENTS.MARKETING_CAMPAIGN_REQUESTED,
+      timestamp: new Date().toISOString(),
+      payload: {
+        title: title || "Newsletter Campaign",
+        subject,
+        content,
+        subscriberCount: activeSubscribers.length,
+        recipients: activeSubscribers.map((s) => s.email),
+      },
+    });
+
+    return {
+      recipientCount: activeSubscribers.length,
+      status: "QUEUED_FOR_DISPATCH",
+    };
+  }
+
   public async getSubscribers(page: number = 1, limit: number = 50) {
     const skip = (page - 1) * limit;
     const [items, total] = await Promise.all([

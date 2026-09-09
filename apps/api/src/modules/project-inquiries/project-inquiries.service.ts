@@ -2,6 +2,7 @@ import { NotFoundError, ValidationError } from "../../core/errors/app-error.js";
 import { ERROR_CODES } from "../../core/errors/error.codes.js";
 import { DOMAIN_EVENTS } from "../../core/events/domain-event.types.js";
 import { eventBus } from "../../core/events/event-bus.js";
+import { prisma } from "../../database/prisma.client.js";
 import {
   sanitizeProjectInquiryResponse,
   sanitizePublicInquirySubmissionResponse,
@@ -40,13 +41,40 @@ export class ProjectInquiriesService {
   public async createPublicInquiry(input: PublicCreateProjectInquiryInput) {
     const preferredContactMethod: InquiryContactMethodType = input.preferredContactMethod || "WHATSAPP";
     const email = input.email.trim().toLowerCase();
-    const projectNameSnapshot = input.projectNameSnapshot.trim();
     const message = input.message.trim();
+
+    // Server-side project resolution: Never trust client-supplied title blindly.
+    // Ensure only published showcase projects are referenced.
+    let validatedProjectId: string | null = null;
+    let validatedProjectName: string = input.projectNameSnapshot?.trim() || "General Project Inquiry";
+    let validatedCategory: string | null = input.category?.trim() || null;
+
+    if (input.projectId && input.projectId.trim().length > 0) {
+      const pid = input.projectId.trim();
+      const showcaseProject = await prisma.portfolioProject.findFirst({
+        where: {
+          OR: [{ id: pid }, { slug: pid }],
+          status: "PUBLISHED",
+        },
+        include: { category: true },
+      });
+
+      if (!showcaseProject) {
+        throw new NotFoundError(
+          `Showcase project '${pid}' was not found or is not publicly published.`,
+          ERROR_CODES.RESOURCE_NOT_FOUND
+        );
+      }
+
+      validatedProjectId = showcaseProject.id;
+      validatedProjectName = showcaseProject.title;
+      validatedCategory = showcaseProject.category?.name || validatedCategory;
+    }
 
     // Check for rapid duplicate submissions (within 60s)
     const existingDuplicate = await this.repository.findRecentDuplicate({
       email,
-      projectNameSnapshot,
+      projectNameSnapshot: validatedProjectName,
       message,
       thresholdSeconds: 60,
     });
@@ -61,9 +89,9 @@ export class ProjectInquiriesService {
       phone: input.phone.trim(),
       companyName: input.companyName?.trim() || null,
       country: input.country?.trim() || null,
-      projectId: input.projectId?.trim() || null,
-      projectNameSnapshot,
-      category: input.category?.trim() || null,
+      projectId: validatedProjectId,
+      projectNameSnapshot: validatedProjectName,
+      category: validatedCategory,
       message,
       preferredContactMethod,
       budget: input.budget?.trim() || null,

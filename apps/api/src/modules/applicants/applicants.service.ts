@@ -318,9 +318,14 @@ export class ApplicantsService {
     );
 
     // Publish status event for automated emails
-    const eventName = targetStatus === ApplicationStatus.APPROVED
-      ? DOMAIN_EVENTS.MEMBER_APPLICATION_APPROVED
-      : DOMAIN_EVENTS.MEMBER_APPLICATION_STATUS_CHANGED;
+    let eventName: string = DOMAIN_EVENTS.MEMBER_APPLICATION_STATUS_CHANGED;
+    if (targetStatus === ApplicationStatus.APPROVED) {
+      eventName = DOMAIN_EVENTS.MEMBER_APPLICATION_APPROVED;
+    } else if (targetStatus === ApplicationStatus.REJECTED) {
+      eventName = DOMAIN_EVENTS.MEMBER_APPLICATION_REJECTED;
+    } else if (targetStatus === ApplicationStatus.MORE_INFORMATION_REQUIRED) {
+      eventName = DOMAIN_EVENTS.MEMBER_APPLICATION_MORE_INFORMATION_REQUIRED;
+    }
 
     await eventBus.publish({
       name: eventName,
