@@ -71,7 +71,7 @@ export class AutomationService {
    * Step 1: Persists event in Outbox as PENDING (idempotent write).
    * Step 2: Asynchronously executes delivery to n8n.
    */
-  public async dispatch<T = Record<string, any>>(
+  public async dispatch<T extends Record<string, any> = Record<string, any>>(
     eventName: string,
     data: T,
     options?: AutomationDispatchOptions
