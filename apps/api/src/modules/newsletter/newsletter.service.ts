@@ -7,7 +7,7 @@ import { ERROR_CODES } from "../../core/errors/error.codes.js";
 export class NewsletterService {
   public async subscribe(email: string, source: string = "WEBSITE_FOOTER") {
     if (!email || !email.includes("@")) {
-      throw new ValidationError("A valid email address is required.", ERROR_CODES.VALIDATION_INVALID_INPUT);
+      throw new ValidationError("A valid email address is required.");
     }
 
     const cleanEmail = email.trim().toLowerCase();
@@ -48,7 +48,7 @@ export class NewsletterService {
 
   public async unsubscribe(email: string) {
     if (!email || !email.includes("@")) {
-      throw new ValidationError("A valid email address is required.", ERROR_CODES.VALIDATION_INVALID_INPUT);
+      throw new ValidationError("A valid email address is required.");
     }
     const cleanEmail = email.trim().toLowerCase();
     const updated = await prisma.newsletterSubscriber.updateMany({
@@ -63,7 +63,7 @@ export class NewsletterService {
 
   public async broadcastCampaign(title: string, subject: string, content: string) {
     if (!subject || !content) {
-      throw new ValidationError("Subject and content are required for marketing campaigns.", ERROR_CODES.VALIDATION_INVALID_INPUT);
+      throw new ValidationError("Subject and content are required for marketing campaigns.");
     }
     const activeSubscribers = await prisma.newsletterSubscriber.findMany({
       where: { isActive: true },

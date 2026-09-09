@@ -11,13 +11,13 @@ export class ContactService {
    */
   public async submitContactMessage(input: CreateContactInput) {
     if (!input.fullName || !input.fullName.trim()) {
-      throw new ValidationError("Full name is required.", ERROR_CODES.VALIDATION_INVALID_INPUT);
+      throw new ValidationError("Full name is required");
     }
     if (!input.email || !input.email.includes("@")) {
-      throw new ValidationError("A valid email address is required.", ERROR_CODES.VALIDATION_INVALID_INPUT);
+      throw new ValidationError("A valid email address is required.");
     }
     if (!input.message || !input.message.trim()) {
-      throw new ValidationError("Message content is required.", ERROR_CODES.VALIDATION_INVALID_INPUT);
+      throw new ValidationError("Message content is required.");
     }
 
     const cleanSubject = input.subject?.trim() || "Website Contact Form Submission";
