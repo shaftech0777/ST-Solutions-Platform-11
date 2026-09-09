@@ -37,6 +37,11 @@ export interface MemoryStore {
   services: any[];
   serviceCategories: any[];
   applicationQuestions: any[];
+  contactMessages: any[];
+  communicationLogs: any[];
+  automationLogs: any[];
+  newsletterSubscribers: any[];
+  clientRequests: any[];
 }
 
 function generateId(prefix: string = "id"): string {
@@ -547,6 +552,11 @@ export function createInitialData(): MemoryStore {
         isActive: true,
       },
     ],
+    contactMessages: [],
+    communicationLogs: [],
+    automationLogs: [],
+    newsletterSubscribers: [],
+    clientRequests: [],
   };
 }
 

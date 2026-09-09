@@ -13,7 +13,7 @@ import {
   UnreadCountResponse,
   UpdateNotificationPreferenceInput,
 } from "./notifications.types.js";
-import { InAppNotificationProvider, INotificationProvider } from "./providers/index.js";
+import { InAppNotificationProvider, EmailNotificationProvider, INotificationProvider } from "./providers/index.js";
 
 export class NotificationsService {
   private readonly repository: NotificationsRepository;
@@ -21,7 +21,10 @@ export class NotificationsService {
 
   constructor(repository: NotificationsRepository) {
     this.repository = repository;
-    this.providers = [new InAppNotificationProvider(repository)];
+    this.providers = [
+      new InAppNotificationProvider(repository),
+      new EmailNotificationProvider(),
+    ];
   }
 
   /**

@@ -1934,7 +1934,47 @@ model InquiryActivity {
   @@index([userId])
   @@index([createdAt])
   @@index([action])
+}// ====================================================
+// MODULE 19: AUTOMATION, WEBHOOKS & COMMUNICATIONS
+// ====================================================
+
+enum AutomationDeliveryStatus {
+  PENDING
+  DELIVERED
+  FAILED
+  RETRYING
 }
 
+model AutomationLog {
+  id            String                   @id @default(uuid())
+  event         String
+  deliveryId    String                   @unique
+  recipient     String?
+  payload       Json
+  status        AutomationDeliveryStatus @default(PENDING)
+  attempts      Int                      @default(0)
+  responseCode  Int?
+  responseBody  String?
+  providerMsgId String?
+  failureReason String?
+  deliveredAt   DateTime?
+  createdAt     DateTime                 @default(now())
+  updatedAt     DateTime                 @updatedAt
 
+  @@index([event])
+  @@index([status])
+  @@index([createdAt])
+  @@index([recipient])
+}
 
+model NewsletterSubscriber {
+  id             String    @id @default(uuid())
+  email          String    @unique
+  source         String?   @default("WEBSITE")
+  isActive       Boolean   @default(true)
+  subscribedAt   DateTime  @default(now())
+  unsubscribedAt DateTime?
+
+  @@index([email])
+  @@index([isActive])
+}

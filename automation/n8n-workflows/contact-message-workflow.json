@@ -1,0 +1,82 @@
+{
+  "name": "ST-Solutions - Inbound Contact Message Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "contact-message-received",
+        "options": {}
+      },
+      "name": "Webhook Ingest",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Verify HMAC SHA-256 signature\nconst crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET || 'your-32-character-secure-hmac-secret-here';\nconst signature = $node['Webhook Ingest'].json.headers['x-st-signature'];\nconst rawBody = JSON.stringify($input.item.json.body);\n\nconst calculated = crypto.createHmac('sha256', secret).update(rawBody).digest('hex');\n\nif (signature && signature !== calculated) {\n  throw new Error('HMAC signature mismatch: Unauthorized request');\n}\n\nreturn $input.item;"
+      },
+      "name": "Verify Signature",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [300, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "notifications@st-solutions.com",
+        "toEmail": "={{ $json.body.adminNotificationEmail || 'admin@st-solutions.com' }}",
+        "subject": "=New Contact Inquiry: {{ $json.body.data.fullName }} - {{ $json.body.data.subject }}",
+        "html": "<h2>New Website Contact Message</h2><p><strong>From:</strong> {{ $json.body.data.fullName }} ({{ $json.body.data.email }})</p><p><strong>Phone:</strong> {{ $json.body.data.phoneNumber || 'N/A' }} | <strong>WhatsApp:</strong> {{ $json.body.data.whatsappNumber || 'N/A' }}</p><p><strong>Country:</strong> {{ $json.body.data.country || 'N/A' }}</p><p><strong>Subject:</strong> {{ $json.body.data.subject }}</p><p><strong>Message:</strong></p><blockquote>{{ $json.body.data.message }}</blockquote><p><strong>Submitted At:</strong> {{ $json.body.data.submissionTime }}</p>"
+      },
+      "name": "Send Admin Alert",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [520, 200]
+    },
+    {
+      "parameters": {
+        "fromEmail": "support@st-solutions.com",
+        "toEmail": "={{ $json.body.data.email }}",
+        "subject": "Thank you for contacting ST-Solutions - We have received your message",
+        "html": "<h3>Hello {{ $json.body.data.fullName }},</h3><p>Thank you for reaching out to <strong>ST-Solutions</strong>. We have successfully received your inquiry regarding <em>\"{{ $json.body.data.subject }}\"</em>.</p><p>Our solutions engineering team will review your message and reach out within 24 business hours.</p><br/><p>Warm regards,<br/><strong>ST-Solutions Operations Team</strong></p>"
+      },
+      "name": "Send Customer Confirmation",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [520, 400]
+    },
+    {
+      "parameters": {
+        "requestMethod": "POST",
+        "url": "http://localhost:3000/api/v1/automation/callback",
+        "options": {},
+        "bodyParametersUi": {
+          "parameter": [
+            { "name": "deliveryId", "value": "={{ $node['Webhook Ingest'].json.body.deliveryId }}" },
+            { "name": "status", "value": "DELIVERED" },
+            { "name": "responseCode", "value": "200" },
+            { "name": "deliveredAt", "value": "={{ new Date().toISOString() }}" }
+          ]
+        }
+      },
+      "name": "Report Success Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [750, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Ingest": {
+      "main": [[{ "node": "Verify Signature", "type": "main", "index": 0 }]]
+    },
+    "Verify Signature": {
+      "main": [
+        [{ "node": "Send Admin Alert", "type": "main", "index": 0 },
+         { "node": "Send Customer Confirmation", "type": "main", "index": 0 }]
+      ]
+    },
+    "Send Admin Alert": {
+      "main": [[{ "node": "Report Success Callback", "type": "main", "index": 0 }]]
+    }
+  }
+}

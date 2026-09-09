@@ -48,6 +48,23 @@ export const envSchema = z.object({
   SMTP_PORT: z.coerce.number().int().min(1).max(65535).optional(),
   SMTP_USER: z.string().optional(),
   SMTP_PASSWORD: z.string().optional(),
+
+  // n8n Automation & Email Notification Configuration
+  N8N_BASE_URL: z.string().optional().default(""),
+  N8N_WEBHOOK_SECRET: z.string().optional().default(""),
+  N8N_WEBHOOK_TIMEOUT_MS: z.coerce.number().int().min(500).max(60000).default(5000),
+  N8N_ENABLED: z
+    .preprocess((val) => {
+      if (typeof val === "boolean") return val;
+      if (typeof val === "string") return val.toLowerCase() === "true" || val === "1";
+      return Boolean(process.env.N8N_BASE_URL && process.env.N8N_BASE_URL.trim().length > 0);
+    }, z.boolean())
+    .default(false),
+  ADMIN_NOTIFICATION_EMAIL: z
+    .string()
+    .email()
+    .optional()
+    .default(() => process.env.ADMIN_NOTIFICATION_EMAIL || process.env.ADMIN_EMAIL || "admin@st-solutions.com"),
 }).superRefine((data, ctx) => {
   if (data.NODE_ENV === "production") {
     if (!data.DATABASE_URL) {

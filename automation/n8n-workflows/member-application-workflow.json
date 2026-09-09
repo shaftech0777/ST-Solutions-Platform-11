@@ -1,0 +1,102 @@
+{
+  "name": "ST-Solutions - Member Application & Talent Routing Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "member-application",
+        "options": {}
+      },
+      "name": "Webhook Ingest",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Verify HMAC SHA-256 signature\nconst crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET || 'your-32-character-secure-hmac-secret-here';\nconst signature = $node['Webhook Ingest'].json.headers['x-st-signature'];\nconst rawBody = JSON.stringify($input.item.json.body);\n\nconst calculated = crypto.createHmac('sha256', secret).update(rawBody).digest('hex');\n\nif (signature && signature !== calculated) {\n  throw new Error('HMAC signature mismatch: Unauthorized request');\n}\n\nreturn $input.item;"
+      },
+      "name": "Verify Signature",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [280, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.body.eventName }}",
+              "operation": "equal",
+              "value2": "member_application.submitted"
+            }
+          ]
+        }
+      },
+      "name": "Route by Event",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "talent@st-solutions.com",
+        "toEmail": "={{ $json.body.adminNotificationEmail || 'admin@st-solutions.com' }}",
+        "subject": "=New Talent Application: {{ $json.body.data.fullName }} ({{ $json.body.data.currentProfession || 'Candidate' }})",
+        "html": "<h2>New Talent / Member Application Received</h2><p><strong>Applicant:</strong> {{ $json.body.data.fullName }} ({{ $json.body.data.email }})</p><p><strong>Phone:</strong> {{ $json.body.data.phoneNumber }} | <strong>WhatsApp:</strong> {{ $json.body.data.whatsappNumber }}</p><p><strong>Location:</strong> {{ $json.body.data.city }}, {{ $json.body.data.country }}</p><p><strong>Profession:</strong> {{ $json.body.data.currentProfession }} | <strong>Qualification:</strong> {{ $json.body.data.currentQualification }}</p><p><strong>Skills Overview:</strong></p><blockquote>{{ $json.body.data.skillsDescription }}</blockquote><p><strong>LinkedIn:</strong> {{ $json.body.data.linkedinUrl || 'N/A' }} | <strong>GitHub:</strong> {{ $json.body.data.githubUrl || 'N/A' }}</p>"
+      },
+      "name": "Hiring Team Alert",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [700, 180]
+    },
+    {
+      "parameters": {
+        "fromEmail": "talent@st-solutions.com",
+        "toEmail": "={{ $json.body.data.email }}",
+        "subject": "ST-Solutions Application Received - Next Steps",
+        "html": "<h3>Hello {{ $json.body.data.fullName }},</h3><p>Thank you for submitting your member application to <strong>ST-Solutions</strong>.</p><p>Our talent review committee reviews all candidate submissions thoroughly against our engineering and delivery standards. You can track your status anytime via your candidate dashboard.</p><br/><p>Best regards,<br/><strong>ST-Solutions People & Culture Team</strong></p>"
+      },
+      "name": "Candidate Acknowledgment",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [700, 320]
+    },
+    {
+      "parameters": {
+        "requestMethod": "POST",
+        "url": "http://localhost:3000/api/v1/automation/callback",
+        "options": {},
+        "bodyParametersUi": {
+          "parameter": [
+            { "name": "deliveryId", "value": "={{ $node['Webhook Ingest'].json.body.deliveryId }}" },
+            { "name": "status", "value": "DELIVERED" },
+            { "name": "responseCode", "value": "200" },
+            { "name": "deliveredAt", "value": "={{ new Date().toISOString() }}" }
+          ]
+        }
+      },
+      "name": "Report Success Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [950, 250]
+    }
+  ],
+  "connections": {
+    "Webhook Ingest": {
+      "main": [[{ "node": "Verify Signature", "type": "main", "index": 0 }]]
+    },
+    "Verify Signature": {
+      "main": [[{ "node": "Route by Event", "type": "main", "index": 0 }]]
+    },
+    "Route by Event": {
+      "main": [
+        [{ "node": "Hiring Team Alert", "type": "main", "index": 0 },
+         { "node": "Candidate Acknowledgment", "type": "main", "index": 0 }]
+      ]
+    },
+    "Hiring Team Alert": {
+      "main": [[{ "node": "Report Success Callback", "type": "main", "index": 0 }]]
+    }
+  }
+}

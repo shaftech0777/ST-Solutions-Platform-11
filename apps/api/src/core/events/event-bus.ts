@@ -29,7 +29,8 @@ export class EventBus {
    * Catches and suppresses errors internally to maintain system resilience.
    */
   public async publish<T = any>(event: DomainEvent<T>): Promise<void> {
-    const eventHandlers = this.handlers.get(event.eventName) || [];
+    const key = event.eventName || (event as any).name;
+    const eventHandlers = key ? this.handlers.get(key) || [] : [];
     if (eventHandlers.length === 0) {
       return;
     }

@@ -1,0 +1,82 @@
+{
+  "name": "ST-Solutions - Project Inquiry Discovery Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "project-inquiry-created",
+        "options": {}
+      },
+      "name": "Webhook Ingest",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Verify HMAC SHA-256 signature\nconst crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET || 'your-32-character-secure-hmac-secret-here';\nconst signature = $node['Webhook Ingest'].json.headers['x-st-signature'];\nconst rawBody = JSON.stringify($input.item.json.body);\n\nconst calculated = crypto.createHmac('sha256', secret).update(rawBody).digest('hex');\n\nif (signature && signature !== calculated) {\n  throw new Error('HMAC signature mismatch: Unauthorized request');\n}\n\nreturn $input.item;"
+      },
+      "name": "Verify Signature",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [300, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "sales@st-solutions.com",
+        "toEmail": "={{ $json.body.adminNotificationEmail || 'admin@st-solutions.com' }}",
+        "subject": "=New Project Lead: {{ $json.body.data.visitorName }} - {{ $json.body.data.projectNameSnapshot }}",
+        "html": "<h2>New High-Priority Project Discovery Lead</h2><p><strong>Client / Prospect:</strong> {{ $json.body.data.visitorName }} ({{ $json.body.data.email }})</p><p><strong>Phone:</strong> {{ $json.body.data.phone }} | <strong>Preferred Contact:</strong> {{ $json.body.data.preferredContactMethod }}</p><p><strong>Company:</strong> {{ $json.body.data.companyName || 'N/A' }}</p><p><strong>Project Target:</strong> {{ $json.body.data.projectNameSnapshot }}</p><p><strong>Budget Range:</strong> {{ $json.body.data.budget || 'Not specified' }}</p><p><strong>Preferred Timing:</strong> {{ $json.body.data.preferredContactTime || 'Anytime' }}</p><p><strong>Scope & Requirements:</strong></p><blockquote>{{ $json.body.data.message }}</blockquote>"
+      },
+      "name": "Send Sales Alert",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [520, 200]
+    },
+    {
+      "parameters": {
+        "fromEmail": "consulting@st-solutions.com",
+        "toEmail": "={{ $json.body.data.email }}",
+        "subject": "We received your project inquiry - ST-Solutions Discovery Consultation",
+        "html": "<h3>Hello {{ $json.body.data.visitorName }},</h3><p>Thank you for initiating a project inquiry for <strong>\"{{ $json.body.data.projectNameSnapshot }}\"</strong> with ST-Solutions.</p><p>We have assigned a solutions architect to analyze your requirements. We will connect with you via {{ $json.body.data.preferredContactMethod }} shortly.</p><br/><p>Best regards,<br/><strong>ST-Solutions Enterprise Delivery</strong></p>"
+      },
+      "name": "Send Client Receipt",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [520, 400]
+    },
+    {
+      "parameters": {
+        "requestMethod": "POST",
+        "url": "http://localhost:3000/api/v1/automation/callback",
+        "options": {},
+        "bodyParametersUi": {
+          "parameter": [
+            { "name": "deliveryId", "value": "={{ $node['Webhook Ingest'].json.body.deliveryId }}" },
+            { "name": "status", "value": "DELIVERED" },
+            { "name": "responseCode", "value": "200" },
+            { "name": "deliveredAt", "value": "={{ new Date().toISOString() }}" }
+          ]
+        }
+      },
+      "name": "Report Success Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [750, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Ingest": {
+      "main": [[{ "node": "Verify Signature", "type": "main", "index": 0 }]]
+    },
+    "Verify Signature": {
+      "main": [
+        [{ "node": "Send Sales Alert", "type": "main", "index": 0 },
+         { "node": "Send Client Receipt", "type": "main", "index": 0 }]
+      ]
+    },
+    "Send Sales Alert": {
+      "main": [[{ "node": "Report Success Callback", "type": "main", "index": 0 }]]
+    }
+  }
+}

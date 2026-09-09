@@ -63,6 +63,17 @@ export interface EmailConfig {
 }
 
 /**
+ * n8n Automation & Webhook notification configuration interface.
+ */
+export interface N8nConfig {
+  readonly baseUrl: string;
+  readonly webhookSecret: string;
+  readonly timeoutMs: number;
+  readonly enabled: boolean;
+  readonly adminNotificationEmail: string;
+}
+
+/**
  * Master Enterprise API Configuration Interface.
  */
 export interface ApiConfig {
@@ -73,4 +84,5 @@ export interface ApiConfig {
   readonly logging: LoggingConfig;
   readonly ai: AiConfig;
   readonly email: EmailConfig;
+  readonly n8n: N8nConfig;
 }

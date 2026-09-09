@@ -29,6 +29,7 @@ import {
   NotificationsController,
 } from "../../modules/notifications/index.js";
 import { registerNotificationHandlers } from "../../modules/notifications/notification-handlers.js";
+import { registerAutomationEventListeners } from "../../modules/automation/index.js";
 import { eventBus } from "../events/event-bus.js";
 
 /**
@@ -156,6 +157,7 @@ export function createApplicationContainer(): Container {
   const notificationsController = new NotificationsController(notificationsService);
 
   registerNotificationHandlers(eventBus, notificationsService, prisma);
+  registerAutomationEventListeners(eventBus);
 
   containerInstance.registerValue(TOKENS.EventBus, eventBus);
   containerInstance.registerValue(TOKENS.NotificationsRepository, notificationsRepository);

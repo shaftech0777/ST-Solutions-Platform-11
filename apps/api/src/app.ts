@@ -1,6 +1,7 @@
 import express, { Express, Request, Response } from "express";
 import { securityConfig } from "./config/security.js";
 import { databaseService } from "./database/index.js";
+import "./core/container/container.js";
 import { apiRouter } from "./routes/api.router.js";
 import { authRouter } from "./modules/auth/index.js";
 import {

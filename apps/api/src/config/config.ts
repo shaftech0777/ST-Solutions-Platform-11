@@ -44,4 +44,11 @@ export const config: ApiConfig & { port: number; env: string } = {
     user: env.SMTP_USER,
     password: env.SMTP_PASSWORD,
   },
+  n8n: {
+    baseUrl: env.N8N_BASE_URL,
+    webhookSecret: env.N8N_WEBHOOK_SECRET,
+    timeoutMs: env.N8N_WEBHOOK_TIMEOUT_MS,
+    enabled: env.N8N_ENABLED,
+    adminNotificationEmail: env.ADMIN_NOTIFICATION_EMAIL || env.ADMIN_EMAIL,
+  },
 };

@@ -10,6 +10,8 @@ import { ERROR_CODES } from "../../core/errors/error.codes.js";
 import { Logger } from "../../core/logger/index.js";
 import { passwordService as defaultPasswordService, PasswordService } from "../../core/security/password.service.js";
 import { SecurityLogger } from "../../core/security/security.logger.js";
+import { eventBus } from "../../core/events/event-bus.js";
+import { DOMAIN_EVENTS } from "../../core/events/domain-event.types.js";
 import { sanitizeApplicationResponse, sanitizeQuestionResponse } from "./applicants.mapper.js";
 import { applicantsRepository as defaultApplicantsRepository, ApplicantsRepository } from "./applicants.repository.js";
 import {
@@ -201,6 +203,28 @@ export class ApplicantsService {
       `New Member Application submitted: ${createdApp.id}`
     );
 
+    // Publish domain event for automated notifications and n8n workflow
+    await eventBus.publish({
+      name: DOMAIN_EVENTS.MEMBER_APPLICATION_SUBMITTED,
+      timestamp: new Date().toISOString(),
+      entityId: createdApp.id,
+      payload: {
+        applicationId: createdApp.id,
+        fullName: createdApp.fullName,
+        email: createdApp.email,
+        phoneNumber: createdApp.phoneNumber,
+        whatsappNumber: createdApp.whatsappNumber,
+        country: createdApp.country,
+        city: createdApp.city,
+        currentProfession: createdApp.currentProfession,
+        currentQualification: createdApp.currentQualification,
+        skillsDescription: createdApp.skillsDescription,
+        linkedinUrl: createdApp.linkedinUrl,
+        githubUrl: createdApp.githubUrl,
+        joiningPurpose: createdApp.joiningPurpose,
+      },
+    });
+
     return sanitizeApplicationResponse(createdApp);
   }
 
@@ -293,6 +317,25 @@ export class ApplicantsService {
       `Application ${id} status reviewed and changed from ${currentStatus} to ${targetStatus}`
     );
 
+    // Publish status event for automated emails
+    const eventName = targetStatus === ApplicationStatus.APPROVED
+      ? DOMAIN_EVENTS.MEMBER_APPLICATION_APPROVED
+      : DOMAIN_EVENTS.MEMBER_APPLICATION_STATUS_CHANGED;
+
+    await eventBus.publish({
+      name: eventName,
+      timestamp: new Date().toISOString(),
+      entityId: updated.id,
+      payload: {
+        applicationId: updated.id,
+        fullName: updated.fullName,
+        email: updated.email,
+        status: targetStatus,
+        reviewNotes: dto.reviewNotes || null,
+        reviewerId: reviewer.userId,
+      },
+    });
+
     return sanitizeApplicationResponse(updated);
   }
 
@@ -349,6 +392,21 @@ export class ApplicantsService {
       { applicationId: id, reviewerId: reviewer.userId },
       `Application ${id} rejected: ${dto.rejectionReason}`
     );
+
+    // Publish rejection event for automated respectful status notification
+    await eventBus.publish({
+      name: DOMAIN_EVENTS.MEMBER_APPLICATION_REJECTED,
+      timestamp: new Date().toISOString(),
+      entityId: updated.id,
+      payload: {
+        applicationId: updated.id,
+        fullName: updated.fullName,
+        email: updated.email,
+        rejectionReason: dto.rejectionReason.trim(),
+        reviewNotes: dto.reviewNotes || null,
+        reviewerId: reviewer.userId,
+      },
+    });
 
     return sanitizeApplicationResponse(updated);
   }

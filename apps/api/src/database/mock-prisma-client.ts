@@ -570,6 +570,8 @@ export function createMockPrismaClient(): any {
     cmsSection: "cmsSections",
     projectInquiry: "projectInquiries",
     inquiryActivity: "inquiryActivities",
+    automationLog: "automationLogs",
+    newsletterSubscriber: "newsletterSubscribers",
   };
 
   const delegatesCache: Record<string, any> = {};

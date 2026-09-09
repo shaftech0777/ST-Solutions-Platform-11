@@ -31,6 +31,18 @@ export const DOMAIN_EVENTS = {
   PROJECT_INQUIRY_STATUS_CHANGED: "project_inquiry.status.changed",
   PROJECT_INQUIRY_CONTACTED: "project_inquiry.contacted",
 
+  // Contact Message Events
+  CONTACT_MESSAGE_RECEIVED: "contact.message.received",
+
+  // Applicant & Hiring Automation Events
+  MEMBER_APPLICATION_SUBMITTED: "member_application.submitted",
+  MEMBER_APPLICATION_APPROVED: "member_application.approved",
+  MEMBER_APPLICATION_REJECTED: "member_application.rejected",
+  MEMBER_APPLICATION_STATUS_CHANGED: "member_application.status_changed",
+
+  // Marketing & Subscriber Events
+  MARKETING_SUBSCRIBER_ADDED: "marketing.subscriber.added",
+
   // Settings & Security Domain Events
   SETTINGS_UPDATED: "settings.updated",
   SECURITY_EVENT: "security.event",
