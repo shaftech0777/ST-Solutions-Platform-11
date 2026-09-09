@@ -11,13 +11,13 @@ export class ContactService {
    */
   public async submitContactMessage(input: CreateContactInput) {
     if (!input.fullName || !input.fullName.trim()) {
-      throw new ValidationError("Full name is required.", ERROR_CODES.VALIDATION_ERROR);
+      throw new ValidationError("Full name is required.", ERROR_CODES.VALIDATION_INVALID_INPUT);
     }
     if (!input.email || !input.email.includes("@")) {
-      throw new ValidationError("A valid email address is required.", ERROR_CODES.VALIDATION_ERROR);
+      throw new ValidationError("A valid email address is required.", ERROR_CODES.VALIDATION_INVALID_INPUT);
     }
     if (!input.message || !input.message.trim()) {
-      throw new ValidationError("Message content is required.", ERROR_CODES.VALIDATION_ERROR);
+      throw new ValidationError("Message content is required.", ERROR_CODES.VALIDATION_INVALID_INPUT);
     }
 
     const cleanSubject = input.subject?.trim() || "Website Contact Form Submission";
@@ -38,10 +38,11 @@ export class ContactService {
     });
 
     // 2. Publish Domain Event to trigger notifications and n8n automation
-    await eventBus.publish({
-      name: DOMAIN_EVENTS.CONTACT_MESSAGE_RECEIVED,
-      timestamp: new Date().toISOString(),
-      entityId: contact.id,
+await eventBus.publish({
+  eventName: DOMAIN_EVENTS.CONTACT_MESSAGE_RECEIVED,
+  entityType: "contact_message",
+  entityId: contact.id,
+  timestamp: new Date(),
       payload: {
         id: contact.id,
         fullName: contact.fullName,

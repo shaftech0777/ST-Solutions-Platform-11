@@ -62,7 +62,7 @@ export class ProjectInquiriesService {
       if (!showcaseProject) {
         throw new NotFoundError(
           `Showcase project '${pid}' was not found or is not publicly published.`,
-          ERROR_CODES.RESOURCE_NOT_FOUND
+          ERROR_CODES.PROJECT_NOT_FOUND
         );
       }
 

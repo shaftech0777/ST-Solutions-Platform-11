@@ -141,10 +141,10 @@ export class AutomationService {
   /**
    * Executes HTTP delivery to n8n webhook with canonical HMAC signature.
    */
-  public async executeDelivery(
-    deliveryId: string,
-    envelope: AutomationPayloadEnvelope
-  ): Promise<AutomationDispatchResult> {
+public async executeDelivery<T extends Record<string, any>>(
+  deliveryId: string,
+  envelope: AutomationPayloadEnvelope<T>
+): Promise<AutomationDispatchResult> {
     const isEnabled = Boolean(config.n8n.enabled && config.n8n.baseUrl);
 
     // If n8n integration is disabled, record simulated delivery locally
@@ -390,7 +390,7 @@ export class AutomationService {
         const pendingItems = await this.repository.findPendingRetries(5);
         for (const item of pendingItems) {
           try {
-            const envelope = item.payload as AutomationPayloadEnvelope;
+            const envelope = item.payload as unknown as AutomationPayloadEnvelope<Record<string, any>>;
             await this.executeDelivery(item.deliveryId, envelope);
           } catch (itemErr) {
             Logger.warn({ deliveryId: item.deliveryId, itemErr }, "[AutomationService] Retry execution exception");

@@ -7,7 +7,7 @@ import { ERROR_CODES } from "../../core/errors/error.codes.js";
 export class NewsletterService {
   public async subscribe(email: string, source: string = "WEBSITE_FOOTER") {
     if (!email || !email.includes("@")) {
-      throw new ValidationError("A valid email address is required.", ERROR_CODES.VALIDATION_ERROR);
+      throw new ValidationError("A valid email address is required.", ERROR_CODES.VALIDATION_INVALID_INPUT);
     }
 
     const cleanEmail = email.trim().toLowerCase();
@@ -28,9 +28,10 @@ export class NewsletterService {
 
     // Publish domain event to trigger n8n welcome sequence
     await eventBus.publish({
-      name: DOMAIN_EVENTS.MARKETING_SUBSCRIBER_ADDED,
-      timestamp: new Date().toISOString(),
-      entityId: subscriber.id,
+  eventName: DOMAIN_EVENTS.MARKETING_SUBSCRIBER_ADDED,
+  entityType: "newsletter_subscriber",
+  entityId: subscriber.id,
+  timestamp: new Date(),
       payload: {
         subscriberId: subscriber.id,
         email: subscriber.email,
@@ -47,7 +48,7 @@ export class NewsletterService {
 
   public async unsubscribe(email: string) {
     if (!email || !email.includes("@")) {
-      throw new ValidationError("A valid email address is required.", ERROR_CODES.VALIDATION_ERROR);
+      throw new ValidationError("A valid email address is required.", ERROR_CODES.VALIDATION_INVALID_INPUT);
     }
     const cleanEmail = email.trim().toLowerCase();
     const updated = await prisma.newsletterSubscriber.updateMany({
@@ -62,7 +63,7 @@ export class NewsletterService {
 
   public async broadcastCampaign(title: string, subject: string, content: string) {
     if (!subject || !content) {
-      throw new ValidationError("Subject and content are required for marketing campaigns.", ERROR_CODES.VALIDATION_ERROR);
+      throw new ValidationError("Subject and content are required for marketing campaigns.", ERROR_CODES.VALIDATION_INVALID_INPUT);
     }
     const activeSubscribers = await prisma.newsletterSubscriber.findMany({
       where: { isActive: true },
@@ -70,9 +71,11 @@ export class NewsletterService {
     });
 
     await eventBus.publish({
-      name: DOMAIN_EVENTS.MARKETING_CAMPAIGN_REQUESTED,
-      timestamp: new Date().toISOString(),
-      payload: {
+  eventName: DOMAIN_EVENTS.MARKETING_CAMPAIGN_REQUESTED,
+  entityType: "newsletter_campaign",
+  entityId: `campaign-${Date.now()}`,
+  timestamp: new Date(),
+  payload: {
         title: title || "Newsletter Campaign",
         subject,
         content,
