@@ -205,10 +205,11 @@ export class ApplicantsService {
 
     // Publish domain event for automated notifications and n8n workflow
     await eventBus.publish({
-      name: DOMAIN_EVENTS.MEMBER_APPLICATION_SUBMITTED,
-      timestamp: new Date().toISOString(),
-      entityId: createdApp.id,
-      payload: {
+        eventName: DOMAIN_EVENTS.MEMBER_APPLICATION_SUBMITTED,
+        entityType: "member_application",
+        entityId: createdApp.id,
+        timestamp: new Date(),
+        payload: {
         applicationId: createdApp.id,
         fullName: createdApp.fullName,
         email: createdApp.email,
@@ -328,9 +329,10 @@ export class ApplicantsService {
     }
 
     await eventBus.publish({
-      name: eventName,
-      timestamp: new Date().toISOString(),
+      eventName,
+      entityType: "member_application",
       entityId: updated.id,
+      timestamp: new Date(),
       payload: {
         applicationId: updated.id,
         fullName: updated.fullName,
@@ -399,11 +401,12 @@ export class ApplicantsService {
     );
 
     // Publish rejection event for automated respectful status notification
-    await eventBus.publish({
-      name: DOMAIN_EVENTS.MEMBER_APPLICATION_REJECTED,
-      timestamp: new Date().toISOString(),
-      entityId: updated.id,
-      payload: {
+   await eventBus.publish({
+  eventName: DOMAIN_EVENTS.MEMBER_APPLICATION_REJECTED,
+  entityType: "member_application",
+  entityId: updated.id,
+  timestamp: new Date(),
+  payload: {
         applicationId: updated.id,
         fullName: updated.fullName,
         email: updated.email,
