@@ -46,8 +46,8 @@ test("ST-Solutions n8n Automation & Security Test Suite", async (t) => {
       recipient: "test@domain.com",
       status: "PENDING",
       payload: { test: true },
-      retryCount: 0,
-      maxRetries: 3,
+      attempts: 0,
+      maxAttempts: 3,
     });
 
     assert.ok(record);
@@ -58,7 +58,7 @@ test("ST-Solutions n8n Automation & Security Test Suite", async (t) => {
     assert.ok(found);
     assert.strictEqual(found.deliveryId, uniqueDeliveryId);
 
-    const updated = await automationRepository.updateStatus(uniqueDeliveryId, {
+    const updated = await automationRepository.updateLog(uniqueDeliveryId, {
       status: "DELIVERED",
       responseCode: 200,
       deliveredAt: new Date(),
@@ -75,26 +75,28 @@ test("ST-Solutions n8n Automation & Security Test Suite", async (t) => {
     const testEmail = `jane-${Date.now()}@company.com`;
 
     // Publish test domain event
-    await eventBus.publish({
-      name: DOMAIN_EVENTS.CONTACT_MESSAGE_RECEIVED,
-      eventName: DOMAIN_EVENTS.CONTACT_MESSAGE_RECEIVED,
-      timestamp: new Date().toISOString(),
-      entityId: "msg-test-1",
-      payload: {
-        id: "msg-test-1",
-        fullName: "Jane Doe",
-        email: testEmail,
-        subject: "Enterprise Architecture Inquiry",
-        message: "We need custom microservice architecture design.",
-        submissionTime: new Date().toISOString(),
-      },
-    });
-
+await eventBus.publish({
+  eventName: DOMAIN_EVENTS.CONTACT_MESSAGE_RECEIVED,
+  entityType: "contact_message",
+  entityId: "msg-test-1",
+  timestamp: new Date(),
+  payload: {
+    id: "msg-test-1",
+    fullName: "Jane Doe",
+    email: testEmail,
+    subject: "Enterprise Architecture Inquiry",
+    message: "We need custom microservice architecture design.",
+    submissionTime: new Date().toISOString(),
+  },
+});
     // Allow setImmediate event loop cycle to process outbox persistence
     await new Promise((resolve) => setTimeout(resolve, 600));
 
     // Verify outbox log exists
-    const logs = await automationRepository.listLogs(1, 10);
+  const logs = await automationRepository.findLogs({
+   page: 1,
+   limit: 10,
+   });
     assert.ok(logs.items.length > 0);
     const contactLog = logs.items.find(
       (l: any) => (l.event === "contact.message.received" || l.eventName === "contact.message.received") && l.recipient === testEmail
