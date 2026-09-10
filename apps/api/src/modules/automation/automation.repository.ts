@@ -112,13 +112,14 @@ export class AutomationRepository {
   ) {
     try {
       const current = await prisma.automationLog.findUnique({ where: { deliveryId } });
-      const finalStatuses = [
+      const finalStatuses: AutomationDeliveryStatus[] = [
         AutomationDeliveryStatus.SENT,
         AutomationDeliveryStatus.DELIVERED,
         AutomationDeliveryStatus.BOUNCED,
         AutomationDeliveryStatus.FAILED,
       ];
-      const hasReachedFinalStatus = current && finalStatuses.includes(current.status);
+      const hasReachedFinalStatus =
+        current !== null && finalStatuses.includes(current.status);
 
       return await prisma.automationLog.update({
         where: { deliveryId },
