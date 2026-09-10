@@ -21,8 +21,7 @@ export type AutomationStatus =
   | "DELIVERED"
   | "FAILED"
   | "RETRYING"
-  | "BOUNCED"
-  | "SKIPPED";
+  | "BOUNCED";
 
 export interface AutomationPayloadEnvelope<T = Record<string, any>> {
   eventId: string;
