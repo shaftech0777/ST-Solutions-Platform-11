@@ -87,6 +87,8 @@ export interface AutomationDispatchResult {
 export interface AutomationStatusResponse {
   enabled: boolean;
   baseUrl: string;
+  masterWebhookPath?: string;
+  masterWebhookUrl?: string;
   configured: boolean;
   webhookSecretConfigured: boolean;
   adminNotificationEmail: string;

@@ -52,6 +52,7 @@ export const envSchema = z.object({
   // n8n Automation & Email Notification Configuration
   N8N_BASE_URL: z.string().optional().default(""),
   N8N_CALLBACK_URL: z.string().optional().default(""),
+  N8N_MASTER_WEBHOOK_PATH: z.string().optional().default("/webhook/st-solutions-automation"),
   N8N_WEBHOOK_SECRET: z.string().optional().default(""),
   N8N_WEBHOOK_TIMEOUT_MS: z.coerce.number().int().min(500).max(60000).default(5000),
   N8N_ENABLED: z

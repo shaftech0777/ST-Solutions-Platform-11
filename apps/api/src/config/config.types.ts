@@ -68,6 +68,7 @@ export interface EmailConfig {
 export interface N8nConfig {
   readonly baseUrl: string;
   readonly callbackUrl: string;
+  readonly masterWebhookPath: string;
   readonly webhookSecret: string;
   readonly timeoutMs: number;
   readonly enabled: boolean;

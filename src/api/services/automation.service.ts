@@ -4,6 +4,8 @@ export interface AutomationSystemStatus {
   enabled: boolean;
   baseUrl: string;
   callbackUrl: string;
+  masterWebhookPath?: string;
+  masterWebhookUrl?: string;
   configured: boolean;
   webhookSecretConfigured: boolean;
   adminNotificationEmail: string;

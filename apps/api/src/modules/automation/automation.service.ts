@@ -222,10 +222,11 @@ export class AutomationService {
         config.n8n.webhookSecret
       );
 
-      // Build target webhook URL (e.g. <N8N_BASE_URL>/webhook/<event-slug>)
-      const baseUrl = config.n8n.baseUrl.replace(/\/$/, "");
-      const eventSlug = eventName.replace(/[\._]/g, "-");
-      const targetUrl = `${baseUrl}/webhook/${eventSlug}`;
+      // Build target master webhook URL (e.g. <N8N_BASE_URL>/webhook/st-solutions-automation)
+      const baseUrl = config.n8n.baseUrl.replace(/\/+$/, "");
+      const rawWebhookPath = config.n8n.masterWebhookPath || "/webhook/st-solutions-automation";
+      const normalizedPath = rawWebhookPath.startsWith("/") ? rawWebhookPath : `/${rawWebhookPath}`;
+      const targetUrl = `${baseUrl}${normalizedPath}`;
 
       // STRICT SECURITY: Send ONLY public authentication metadata.
       // NEVER send the raw webhook secret over HTTP headers.
@@ -302,8 +303,8 @@ export class AutomationService {
 
           if (response.status === 404) {
             Logger.info(
-              { deliveryId, attempt, statusCode: 404, eventSlug, nextRetryInSeconds: delaySeconds },
-              `[AutomationService] n8n webhook '${eventSlug}' not yet registered in active workflow; scheduled retry`
+              { deliveryId, attempt, statusCode: 404, targetUrl, nextRetryInSeconds: delaySeconds },
+              `[AutomationService] n8n master webhook '${targetUrl}' not yet registered or active; scheduled retry`
             );
           } else {
             Logger.warn(
@@ -487,11 +488,17 @@ export class AutomationService {
    */
   public async getSystemStatus(): Promise<AutomationStatusResponse> {
     const stats = await this.repository.getDeliveryStats();
+    const baseUrl = config.n8n.baseUrl.replace(/\/+$/, "");
+    const rawWebhookPath = config.n8n.masterWebhookPath || "/webhook/st-solutions-automation";
+    const normalizedPath = rawWebhookPath.startsWith("/") ? rawWebhookPath : `/${rawWebhookPath}`;
+    const masterWebhookUrl = baseUrl ? `${baseUrl}${normalizedPath}` : "";
 
     return {
       enabled: config.n8n.enabled,
       baseUrl: config.n8n.baseUrl,
       callbackUrl: config.n8n.callbackUrl,
+      masterWebhookPath: normalizedPath,
+      masterWebhookUrl,
       configured: Boolean(config.n8n.baseUrl && config.n8n.baseUrl.trim().length > 0),
       webhookSecretConfigured: Boolean(config.n8n.webhookSecret && config.n8n.webhookSecret.trim().length > 0),
       adminNotificationEmail: config.n8n.adminNotificationEmail,

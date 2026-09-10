@@ -51,6 +51,7 @@ export const config: ApiConfig & { port: number; env: string } = {
       (process.env.API_URL
         ? `${process.env.API_URL.replace(/\/$/, "")}/api/v1/automation/callback`
         : "http://localhost:3000/api/v1/automation/callback"),
+    masterWebhookPath: env.N8N_MASTER_WEBHOOK_PATH || "/webhook/st-solutions-automation",
     webhookSecret: env.N8N_WEBHOOK_SECRET,
     timeoutMs: env.N8N_WEBHOOK_TIMEOUT_MS,
     enabled: env.N8N_ENABLED,

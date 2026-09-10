@@ -292,9 +292,12 @@ export const AutomationManager: React.FC = () => {
             {/* Architecture Details Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 pt-6 border-t border-slate-200 dark:border-slate-800 text-sm">
               <div className="p-3 bg-white dark:bg-slate-800/80 rounded-lg border border-slate-200 dark:border-slate-700/60">
-                <div className="text-xs text-slate-500 font-medium">Outbound Webhook Target</div>
-                <div className="font-mono text-xs text-slate-800 dark:text-slate-200 truncate mt-1">
-                  {status?.baseUrl ? `${status.baseUrl}/webhook/<event>` : "Not Configured (N8N_BASE_URL)"}
+                <div className="text-xs text-slate-500 font-medium">Outbound Master Webhook Target</div>
+                <div className="font-mono text-xs text-slate-800 dark:text-slate-200 truncate mt-1" title={status?.masterWebhookUrl || (status?.baseUrl ? `${status.baseUrl.replace(/\/+$/, "")}${status.masterWebhookPath || "/webhook/st-solutions-automation"}` : undefined)}>
+                  {status?.masterWebhookUrl ||
+                    (status?.baseUrl
+                      ? `${status.baseUrl.replace(/\/+$/, "")}${status.masterWebhookPath || "/webhook/st-solutions-automation"}`
+                      : "Not Configured (N8N_BASE_URL)")}
                 </div>
               </div>
 
