@@ -140,6 +140,27 @@ export class PaymentsService {
       approvedBy: approvedById ? { connect: { id: approvedById } } : undefined,
     });
 
+    await eventBus.publish({
+      eventName: DOMAIN_EVENTS.PAYMENT_CREATED,
+      entityType: "PAYMENT",
+      entityId: createdPayment.id,
+      actorId: actor.userId,
+      timestamp: new Date(),
+      payload: {
+        paymentId: createdPayment.id,
+        amount: Number(createdPayment.amount),
+        currency: createdPayment.currency,
+        status: createdPayment.paymentStatus,
+        clientId: client.id,
+        clientName: client.fullName,
+        clientEmail: client.email,
+        projectId: input.projectId || null,
+        projectTitle: createdPayment.project?.title || null,
+        transactionReference: createdPayment.transactionReference,
+        paymentMethod: createdPayment.paymentMethod,
+      },
+    });
+
     return sanitizePaymentResponse(createdPayment);
   }
 
@@ -266,10 +287,14 @@ export class PaymentsService {
         timestamp: new Date(),
         payload: {
           paymentId,
-          amount: updatedPayment.amount,
+          amount: Number(updatedPayment.amount),
           currency: updatedPayment.currency,
           clientId: updatedPayment.clientId,
+          clientName: updatedPayment.client?.fullName || null,
+          clientEmail: updatedPayment.client?.email || null,
           projectId: updatedPayment.projectId,
+          projectTitle: updatedPayment.project?.title || null,
+          transactionReference: updatedPayment.transactionReference,
           submittedByUserId: actor.userId,
         },
       });
@@ -282,10 +307,15 @@ export class PaymentsService {
         timestamp: new Date(),
         payload: {
           paymentId,
-          amount: updatedPayment.amount,
+          amount: Number(updatedPayment.amount),
           currency: updatedPayment.currency,
           clientId: updatedPayment.clientId,
+          clientName: updatedPayment.client?.fullName || null,
+          clientEmail: updatedPayment.client?.email || null,
           projectId: updatedPayment.projectId,
+          projectTitle: updatedPayment.project?.title || null,
+          transactionReference: updatedPayment.transactionReference,
+          approvalNotes: updatedPayment.approvalNotes,
           approvedByUserId: actor.userId,
         },
       });
@@ -298,10 +328,15 @@ export class PaymentsService {
         timestamp: new Date(),
         payload: {
           paymentId,
-          amount: updatedPayment.amount,
+          amount: Number(updatedPayment.amount),
           currency: updatedPayment.currency,
           clientId: updatedPayment.clientId,
+          clientName: updatedPayment.client?.fullName || null,
+          clientEmail: updatedPayment.client?.email || null,
           projectId: updatedPayment.projectId,
+          projectTitle: updatedPayment.project?.title || null,
+          transactionReference: updatedPayment.transactionReference,
+          rejectionReason: input.approvalNotes || "Payment rejected",
           rejectedByUserId: actor.userId,
           reason: input.approvalNotes,
         },

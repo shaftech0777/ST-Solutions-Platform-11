@@ -1,13 +1,40 @@
 export const AUTOMATION_EVENTS = {
+  // Public website & intake events
   CONTACT_MESSAGE_RECEIVED: "contact.message.received",
+  CLIENT_REQUEST_CREATED: "client_request.created",
   PROJECT_INQUIRY_CREATED: "project_inquiry.created",
+
+  // Project lifecycle events
+  PROJECT_CREATED: "project.created",
+  PROJECT_STARTED: "project.started",
+  PROJECT_STATUS_CHANGED: "project.status.changed",
+  PROJECT_PROGRESS_UPDATED: "project.progress.updated",
+  PROJECT_UPDATE_CREATED: "project.update.created",
+  PROJECT_COMPLETED: "project.completed",
+
+  // Client lifecycle events
+  CLIENT_CREATED: "client.created",
+  CLIENT_STATUS_CHANGED: "client.status.changed",
+
+  // Payment lifecycle events
+  PAYMENT_CREATED: "payment.created",
+  PAYMENT_SUBMITTED: "payment.submitted",
+  PAYMENT_APPROVED: "payment.approved",
+  PAYMENT_REJECTED: "payment.rejected",
+
+  // Member Application & Onboarding
   MEMBER_APPLICATION_SUBMITTED: "member_application.submitted",
   MEMBER_APPLICATION_APPROVED: "member_application.approved",
   MEMBER_APPLICATION_REJECTED: "member_application.rejected",
   MEMBER_APPLICATION_MORE_INFORMATION_REQUIRED: "member_application.more_information_required",
   MEMBER_APPLICATION_STATUS_CHANGED: "member_application.status_changed",
+  MEMBER_ONBOARDED: "member.onboarded",
+
+  // Marketing & Subscriber Events
   MARKETING_SUBSCRIBER_ADDED: "marketing.subscriber.added",
   MARKETING_CAMPAIGN_REQUESTED: "marketing.campaign.requested",
+
+  // System
   SYSTEM_TEST_DISPATCHED: "system.test.dispatched",
 } as const;
 

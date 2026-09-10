@@ -286,6 +286,8 @@ export class ClientsService {
       payload: {
         clientId,
         companyName: updatedClient.companyName || updatedClient.fullName,
+        fullName: updatedClient.fullName,
+        email: updatedClient.email,
         previousStatus: currentStatus,
         newStatus,
         memberId: updatedClient.ownership?.memberId,

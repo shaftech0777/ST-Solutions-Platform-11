@@ -21,6 +21,7 @@ export interface ProjectInquiryData {
   fullName: string;
   email: string;
   phoneNumber?: string;
+  whatsappNumber?: string;
   companyName?: string;
 }
 
@@ -112,6 +113,9 @@ export function generateProjectInquiryMessage(data: ProjectInquiryData): string 
   }
   if (data.email && data.email.trim()) {
     parts.push(`Email: ${data.email.trim()}`);
+  }
+  if (data.whatsappNumber && data.whatsappNumber.trim()) {
+    parts.push(`WhatsApp: ${data.whatsappNumber.trim()}`);
   }
   if (data.phoneNumber && data.phoneNumber.trim()) {
     parts.push(`Phone: ${data.phoneNumber.trim()}`);

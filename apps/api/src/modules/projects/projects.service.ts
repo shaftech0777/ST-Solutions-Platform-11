@@ -165,11 +165,39 @@ export class ProjectsService {
       payload: {
         projectId: createdProject.id,
         title: createdProject.title,
+        description: createdProject.description,
+        category: createdProject.category,
+        budget: createdProject.budget,
+        currency: createdProject.currency,
+        projectStatus: createdProject.projectStatus,
         clientId: input.clientId,
+        clientName: createdProject.client.fullName,
+        clientEmail: createdProject.client.email,
+        companyName: createdProject.client.companyName,
         assignedManagerId: input.assignedManagerId,
         assignedMemberId: input.assignedMemberId,
       },
     });
+
+    if (createdProject.projectStatus === ProjectStatus.IN_PROGRESS) {
+      await eventBus.publish({
+        eventName: DOMAIN_EVENTS.PROJECT_STARTED,
+        entityType: "PROJECT",
+        entityId: createdProject.id,
+        actorId: actor.userId,
+        timestamp: new Date(),
+        payload: {
+          projectId: createdProject.id,
+          title: createdProject.title,
+          clientId: createdProject.client.id,
+          clientName: createdProject.client.fullName,
+          clientEmail: createdProject.client.email,
+          startDate: createdProject.startDate || new Date(),
+          assignedManagerId: input.assignedManagerId,
+          assignedMemberId: input.assignedMemberId,
+        },
+      });
+    }
 
     return sanitizeProjectDetailResponse(createdProject);
   }
@@ -378,10 +406,33 @@ export class ProjectsService {
         title: updatedProject.title,
         previousStatus: currentStatus,
         newStatus,
+        clientId: updatedProject.client.id,
+        clientName: updatedProject.client.fullName,
+        clientEmail: updatedProject.client.email,
         assignedManagerId: updatedProject.assignedManagerId,
         assignedMemberId: updatedProject.assignedMemberId,
       },
     });
+
+    if (newStatus === ProjectStatus.IN_PROGRESS) {
+      await eventBus.publish({
+        eventName: DOMAIN_EVENTS.PROJECT_STARTED,
+        entityType: "PROJECT",
+        entityId: projectId,
+        actorId: _actor?.userId,
+        timestamp: new Date(),
+        payload: {
+          projectId,
+          title: updatedProject.title,
+          clientId: updatedProject.client.id,
+          clientName: updatedProject.client.fullName,
+          clientEmail: updatedProject.client.email,
+          startDate: updatedProject.startDate || new Date(),
+          assignedManagerId: updatedProject.assignedManagerId,
+          assignedMemberId: updatedProject.assignedMemberId,
+        },
+      });
+    }
 
     if (newStatus === ProjectStatus.COMPLETED) {
       await eventBus.publish({
@@ -393,6 +444,11 @@ export class ProjectsService {
         payload: {
           projectId,
           title: updatedProject.title,
+          clientId: updatedProject.client.id,
+          clientName: updatedProject.client.fullName,
+          clientEmail: updatedProject.client.email,
+          completedDate: updatedProject.completedDate || new Date(),
+          productionUrl: updatedProject.productionUrl,
           assignedManagerId: updatedProject.assignedManagerId,
           assignedMemberId: updatedProject.assignedMemberId,
         },
@@ -500,9 +556,36 @@ export class ProjectsService {
         projectTitle: project.title,
         updateId: updateRecord.id,
         updateTitle: updateRecord.title,
+        updateType: updateRecord.updateType,
+        description: updateRecord.description,
+        blockers: updateRecord.blockers,
+        nextSteps: updateRecord.nextSteps,
         progressPercentage: updateRecord.progressPercentage,
+        clientId: project.client.id,
+        clientName: project.client.fullName,
+        clientEmail: project.client.email,
         assignedManagerId: project.assignedManagerId,
         assignedMemberId: project.assignedMemberId,
+      },
+    });
+
+    await eventBus.publish({
+      eventName: DOMAIN_EVENTS.PROJECT_PROGRESS_UPDATED,
+      entityType: "PROJECT",
+      entityId: projectId,
+      actorId: actor.userId,
+      timestamp: new Date(),
+      payload: {
+        projectId,
+        projectTitle: project.title,
+        progressPercentage: updateRecord.progressPercentage,
+        milestoneTitle: updateRecord.title,
+        updateType: updateRecord.updateType,
+        summary: updateRecord.description,
+        nextSteps: updateRecord.nextSteps,
+        clientId: project.client.id,
+        clientName: project.client.fullName,
+        clientEmail: project.client.email,
       },
     });
 

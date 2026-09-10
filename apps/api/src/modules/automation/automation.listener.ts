@@ -246,4 +246,340 @@ export function registerAutomationEventListeners(
       }
     );
   });
+
+  // 10. Project Created
+  eventBus.subscribe(DOMAIN_EVENTS.PROJECT_CREATED, async (event: DomainEvent) => {
+    const payload = event.payload;
+    await automationService.dispatch(
+      AUTOMATION_EVENTS.PROJECT_CREATED,
+      {
+        projectId: payload.projectId || event.entityId,
+        title: payload.title,
+        description: payload.description || null,
+        category: payload.category || null,
+        budget: payload.budget || null,
+        currency: payload.currency || "USD",
+        status: payload.projectStatus || "PENDING",
+        clientId: payload.clientId,
+        clientName: payload.clientName || null,
+        clientEmail: payload.clientEmail || null,
+        companyName: payload.companyName || null,
+        assignedManagerId: payload.assignedManagerId || null,
+        assignedMemberId: payload.assignedMemberId || null,
+        timestamp: event.timestamp || new Date().toISOString(),
+      },
+      {
+        recipient: payload.clientEmail || null,
+        entityType: "PROJECT",
+        entityId: event.entityId,
+      }
+    );
+  });
+
+  // 11. Project Started (In Progress)
+  eventBus.subscribe(DOMAIN_EVENTS.PROJECT_STARTED, async (event: DomainEvent) => {
+    const payload = event.payload;
+    await automationService.dispatch(
+      AUTOMATION_EVENTS.PROJECT_STARTED,
+      {
+        projectId: payload.projectId || event.entityId,
+        title: payload.title,
+        clientId: payload.clientId,
+        clientName: payload.clientName || null,
+        clientEmail: payload.clientEmail || null,
+        startDate: payload.startDate || new Date().toISOString(),
+        assignedManagerId: payload.assignedManagerId || null,
+        assignedMemberId: payload.assignedMemberId || null,
+        timestamp: event.timestamp || new Date().toISOString(),
+      },
+      {
+        recipient: payload.clientEmail || null,
+        entityType: "PROJECT",
+        entityId: event.entityId,
+      }
+    );
+  });
+
+  // 12. Project Status Changed
+  eventBus.subscribe(DOMAIN_EVENTS.PROJECT_STATUS_CHANGED, async (event: DomainEvent) => {
+    const payload = event.payload;
+    await automationService.dispatch(
+      AUTOMATION_EVENTS.PROJECT_STATUS_CHANGED,
+      {
+        projectId: payload.projectId || event.entityId,
+        title: payload.title,
+        previousStatus: payload.previousStatus || null,
+        newStatus: payload.newStatus,
+        clientId: payload.clientId || null,
+        clientName: payload.clientName || null,
+        clientEmail: payload.clientEmail || null,
+        assignedManagerId: payload.assignedManagerId || null,
+        assignedMemberId: payload.assignedMemberId || null,
+        timestamp: event.timestamp || new Date().toISOString(),
+      },
+      {
+        recipient: payload.clientEmail || null,
+        entityType: "PROJECT",
+        entityId: event.entityId,
+      }
+    );
+  });
+
+  // 13. Project Progress Updated
+  eventBus.subscribe(DOMAIN_EVENTS.PROJECT_PROGRESS_UPDATED, async (event: DomainEvent) => {
+    const payload = event.payload;
+    await automationService.dispatch(
+      AUTOMATION_EVENTS.PROJECT_PROGRESS_UPDATED,
+      {
+        projectId: payload.projectId || event.entityId,
+        projectTitle: payload.projectTitle,
+        progressPercentage: payload.progressPercentage,
+        milestoneTitle: payload.milestoneTitle || null,
+        updateType: payload.updateType || "PROGRESS_UPDATE",
+        summary: payload.summary || null,
+        nextSteps: payload.nextSteps || null,
+        clientId: payload.clientId || null,
+        clientName: payload.clientName || null,
+        clientEmail: payload.clientEmail || null,
+        timestamp: event.timestamp || new Date().toISOString(),
+      },
+      {
+        recipient: payload.clientEmail || null,
+        entityType: "PROJECT",
+        entityId: event.entityId,
+      }
+    );
+  });
+
+  // 14. Project Update Created
+  eventBus.subscribe(DOMAIN_EVENTS.PROJECT_UPDATE_CREATED, async (event: DomainEvent) => {
+    const payload = event.payload;
+    await automationService.dispatch(
+      AUTOMATION_EVENTS.PROJECT_UPDATE_CREATED,
+      {
+        projectId: payload.projectId || event.entityId,
+        projectTitle: payload.projectTitle,
+        updateId: payload.updateId,
+        updateTitle: payload.updateTitle,
+        updateType: payload.updateType || "DAILY_UPDATE",
+        description: payload.description || null,
+        blockers: payload.blockers || null,
+        nextSteps: payload.nextSteps || null,
+        progressPercentage: payload.progressPercentage ?? null,
+        clientId: payload.clientId || null,
+        clientName: payload.clientName || null,
+        clientEmail: payload.clientEmail || null,
+        assignedManagerId: payload.assignedManagerId || null,
+        assignedMemberId: payload.assignedMemberId || null,
+        timestamp: event.timestamp || new Date().toISOString(),
+      },
+      {
+        recipient: payload.clientEmail || null,
+        entityType: "PROJECT",
+        entityId: event.entityId,
+      }
+    );
+  });
+
+  // 15. Project Completed
+  eventBus.subscribe(DOMAIN_EVENTS.PROJECT_COMPLETED, async (event: DomainEvent) => {
+    const payload = event.payload;
+    await automationService.dispatch(
+      AUTOMATION_EVENTS.PROJECT_COMPLETED,
+      {
+        projectId: payload.projectId || event.entityId,
+        title: payload.title,
+        clientId: payload.clientId,
+        clientName: payload.clientName || null,
+        clientEmail: payload.clientEmail || null,
+        completedDate: payload.completedDate || new Date().toISOString(),
+        productionUrl: payload.productionUrl || null,
+        assignedManagerId: payload.assignedManagerId || null,
+        assignedMemberId: payload.assignedMemberId || null,
+        timestamp: event.timestamp || new Date().toISOString(),
+      },
+      {
+        recipient: payload.clientEmail || null,
+        entityType: "PROJECT",
+        entityId: event.entityId,
+      }
+    );
+  });
+
+  // 16. Client Created
+  eventBus.subscribe(DOMAIN_EVENTS.CLIENT_CREATED, async (event: DomainEvent) => {
+    const payload = event.payload;
+    await automationService.dispatch(
+      AUTOMATION_EVENTS.CLIENT_CREATED,
+      {
+        clientId: payload.clientId || event.entityId,
+        companyName: payload.companyName,
+        fullName: payload.fullName,
+        email: payload.email,
+        memberId: payload.memberId || null,
+        assignedManagerId: payload.assignedManagerId || null,
+        timestamp: event.timestamp || new Date().toISOString(),
+      },
+      {
+        recipient: payload.email,
+        entityType: "CLIENT",
+        entityId: event.entityId,
+      }
+    );
+  });
+
+  // 17. Client Status Changed
+  eventBus.subscribe(DOMAIN_EVENTS.CLIENT_STATUS_CHANGED, async (event: DomainEvent) => {
+    const payload = event.payload;
+    await automationService.dispatch(
+      AUTOMATION_EVENTS.CLIENT_STATUS_CHANGED,
+      {
+        clientId: payload.clientId || event.entityId,
+        companyName: payload.companyName,
+        fullName: payload.fullName || null,
+        email: payload.email || null,
+        previousStatus: payload.previousStatus || null,
+        newStatus: payload.newStatus,
+        memberId: payload.memberId || null,
+        assignedManagerId: payload.assignedManagerId || null,
+        timestamp: event.timestamp || new Date().toISOString(),
+      },
+      {
+        recipient: payload.email || null,
+        entityType: "CLIENT",
+        entityId: event.entityId,
+      }
+    );
+  });
+
+  // 18. Payment Created
+  eventBus.subscribe(DOMAIN_EVENTS.PAYMENT_CREATED, async (event: DomainEvent) => {
+    const payload = event.payload;
+    await automationService.dispatch(
+      AUTOMATION_EVENTS.PAYMENT_CREATED,
+      {
+        paymentId: payload.paymentId || event.entityId,
+        amount: payload.amount,
+        currency: payload.currency,
+        status: payload.status,
+        clientId: payload.clientId,
+        clientName: payload.clientName || null,
+        clientEmail: payload.clientEmail || null,
+        projectId: payload.projectId || null,
+        projectTitle: payload.projectTitle || null,
+        transactionReference: payload.transactionReference || null,
+        paymentMethod: payload.paymentMethod || null,
+        timestamp: event.timestamp || new Date().toISOString(),
+      },
+      {
+        recipient: payload.clientEmail || null,
+        entityType: "PAYMENT",
+        entityId: event.entityId,
+      }
+    );
+  });
+
+  // 19. Payment Submitted
+  eventBus.subscribe(DOMAIN_EVENTS.PAYMENT_SUBMITTED, async (event: DomainEvent) => {
+    const payload = event.payload;
+    await automationService.dispatch(
+      AUTOMATION_EVENTS.PAYMENT_SUBMITTED,
+      {
+        paymentId: payload.paymentId || event.entityId,
+        amount: payload.amount,
+        currency: payload.currency,
+        clientId: payload.clientId,
+        clientName: payload.clientName || null,
+        clientEmail: payload.clientEmail || null,
+        projectId: payload.projectId || null,
+        projectTitle: payload.projectTitle || null,
+        transactionReference: payload.transactionReference || null,
+        submittedByUserId: payload.submittedByUserId || null,
+        timestamp: event.timestamp || new Date().toISOString(),
+      },
+      {
+        recipient: payload.clientEmail || null,
+        entityType: "PAYMENT",
+        entityId: event.entityId,
+      }
+    );
+  });
+
+  // 20. Payment Approved
+  eventBus.subscribe(DOMAIN_EVENTS.PAYMENT_APPROVED, async (event: DomainEvent) => {
+    const payload = event.payload;
+    await automationService.dispatch(
+      AUTOMATION_EVENTS.PAYMENT_APPROVED,
+      {
+        paymentId: payload.paymentId || event.entityId,
+        amount: payload.amount,
+        currency: payload.currency,
+        clientId: payload.clientId,
+        clientName: payload.clientName || null,
+        clientEmail: payload.clientEmail || null,
+        projectId: payload.projectId || null,
+        projectTitle: payload.projectTitle || null,
+        transactionReference: payload.transactionReference || null,
+        approvalNotes: payload.approvalNotes || null,
+        approvedByUserId: payload.approvedByUserId || null,
+        timestamp: event.timestamp || new Date().toISOString(),
+      },
+      {
+        recipient: payload.clientEmail || null,
+        entityType: "PAYMENT",
+        entityId: event.entityId,
+      }
+    );
+  });
+
+  // 21. Payment Rejected
+  eventBus.subscribe(DOMAIN_EVENTS.PAYMENT_REJECTED, async (event: DomainEvent) => {
+    const payload = event.payload;
+    await automationService.dispatch(
+      AUTOMATION_EVENTS.PAYMENT_REJECTED,
+      {
+        paymentId: payload.paymentId || event.entityId,
+        amount: payload.amount,
+        currency: payload.currency,
+        clientId: payload.clientId,
+        clientName: payload.clientName || null,
+        clientEmail: payload.clientEmail || null,
+        projectId: payload.projectId || null,
+        projectTitle: payload.projectTitle || null,
+        transactionReference: payload.transactionReference || null,
+        rejectionReason: payload.rejectionReason || null,
+        rejectedByUserId: payload.rejectedByUserId || null,
+        timestamp: event.timestamp || new Date().toISOString(),
+      },
+      {
+        recipient: payload.clientEmail || null,
+        entityType: "PAYMENT",
+        entityId: event.entityId,
+      }
+    );
+  });
+
+  // 22. Member Onboarded
+  eventBus.subscribe(DOMAIN_EVENTS.MEMBER_ONBOARDED, async (event: DomainEvent) => {
+    const payload = event.payload;
+    await automationService.dispatch(
+      AUTOMATION_EVENTS.MEMBER_ONBOARDED,
+      {
+        memberId: payload.memberId || event.entityId,
+        userId: payload.userId,
+        fullName: payload.fullName,
+        email: payload.email,
+        phoneNumber: payload.phoneNumber || null,
+        whatsappNumber: payload.whatsappNumber || null,
+        role: payload.role || null,
+        department: payload.department || null,
+        onboardedAt: payload.onboardedAt || event.timestamp || new Date().toISOString(),
+      },
+      {
+        recipient: payload.email,
+        entityType: "MEMBER",
+        entityId: event.entityId,
+      }
+    );
+  });
 }

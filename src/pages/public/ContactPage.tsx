@@ -69,6 +69,11 @@ export const ContactPage: React.FC = () => {
       return;
     }
 
+    if (!formData.whatsappNumber.trim()) {
+      setErrorMessage("Please provide your WhatsApp number for direct communication.");
+      return;
+    }
+
     setIsSubmitting(true);
     setErrorMessage(null);
 
@@ -86,7 +91,7 @@ ${formData.message.trim()}
           fullName: formData.fullName.trim(),
           email: formData.email.trim(),
           phoneNumber: formData.phoneNumber.trim() || undefined,
-          whatsappNumber: formData.whatsappNumber.trim() || formData.phoneNumber.trim() || undefined,
+          whatsappNumber: formData.whatsappNumber.trim() || undefined,
           subject: formData.projectType ? `Inquiry: ${formData.projectType}` : "Website Contact Message",
           message: compiledMessage,
           sourcePage: "Contact Page",
@@ -352,10 +357,11 @@ ${formData.message.trim()}
 
                     <div>
                       <label className="block text-xs font-bold text-slate-800 mb-1">
-                        WhatsApp Number (Optional)
+                        WhatsApp Number *
                       </label>
                       <input
                         type="tel"
+                        required
                         value={formData.whatsappNumber}
                         onChange={(e) => setFormData({ ...formData, whatsappNumber: e.target.value })}
                         placeholder="+92 325 7263417"

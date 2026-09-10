@@ -178,6 +178,7 @@ export const StartProjectPage: React.FC = () => {
     fullName: "",
     email: "",
     phoneNumber: "",
+    whatsappNumber: "",
     companyName: "",
   });
 
@@ -212,6 +213,10 @@ export const StartProjectPage: React.FC = () => {
       }
       if (!formData.email.trim() || !formData.email.includes("@")) {
         setErrorMessage("Please enter a valid email address.");
+        return;
+      }
+      if (!formData.whatsappNumber.trim()) {
+        setErrorMessage("Please enter your WhatsApp number for direct project consultation.");
         return;
       }
     }
@@ -269,7 +274,7 @@ export const StartProjectPage: React.FC = () => {
           fullName: formData.fullName.trim(),
           email: formData.email.trim(),
           phoneNumber: formData.phoneNumber?.trim() || undefined,
-          whatsappNumber: formData.phoneNumber?.trim() || undefined,
+          whatsappNumber: formData.whatsappNumber?.trim() || undefined,
           message: generatedMessage,
         },
       });
@@ -841,13 +846,27 @@ export const StartProjectPage: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5 font-mono">
-                    Phone / WhatsApp Number
+                    WhatsApp Number *
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    value={formData.whatsappNumber || ""}
+                    onChange={(e) => setFormData({ ...formData, whatsappNumber: e.target.value })}
+                    placeholder="+92 325 7263417"
+                    className="w-full px-4 py-3 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm focus:border-[#D4AF37] outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5 font-mono">
+                    Direct Phone Number (Optional)
                   </label>
                   <input
                     type="tel"
                     value={formData.phoneNumber || ""}
                     onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                    placeholder="+92 325 7263417"
+                    placeholder="+1 (555) 000-0000"
                     className="w-full px-4 py-3 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm focus:border-[#D4AF37] outline-none"
                   />
                 </div>

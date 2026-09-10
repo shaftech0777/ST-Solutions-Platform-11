@@ -90,6 +90,10 @@ export class ClientRequestsService {
         fullName: created.fullName,
         email: created.email,
         companyName: null,
+        phoneNumber: created.phoneNumber,
+        whatsappNumber: created.whatsappNumber,
+        country: created.country,
+        message: created.message,
       },
     });
 

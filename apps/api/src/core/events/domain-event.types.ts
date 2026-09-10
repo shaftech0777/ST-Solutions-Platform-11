@@ -11,7 +11,9 @@ export const DOMAIN_EVENTS = {
   // Project Domain Events
   PROJECT_CREATED: "project.created",
   PROJECT_UPDATED: "project.updated",
+  PROJECT_STARTED: "project.started",
   PROJECT_STATUS_CHANGED: "project.status.changed",
+  PROJECT_PROGRESS_UPDATED: "project.progress.updated",
   PROJECT_COMPLETED: "project.completed",
   PROJECT_UPDATE_CREATED: "project.update.created",
 
@@ -40,6 +42,7 @@ export const DOMAIN_EVENTS = {
   MEMBER_APPLICATION_REJECTED: "member_application.rejected",
   MEMBER_APPLICATION_MORE_INFORMATION_REQUIRED: "member_application.more_information_required",
   MEMBER_APPLICATION_STATUS_CHANGED: "member_application.status_changed",
+  MEMBER_ONBOARDED: "member.onboarded",
 
   // Marketing & Subscriber Events
   MARKETING_SUBSCRIBER_ADDED: "marketing.subscriber.added",
@@ -118,6 +121,14 @@ export interface ProjectCreatedPayload {
   projectId: string;
   title: string;
   clientId: string;
+  clientName?: string | null;
+  clientEmail?: string | null;
+  companyName?: string | null;
+  description?: string | null;
+  category?: string | null;
+  budget?: number | null;
+  currency?: string | null;
+  projectStatus?: string | null;
   assignedMemberId?: string | null;
   assignedManagerId?: string | null;
 }
@@ -127,6 +138,20 @@ export interface ProjectStatusChangedPayload {
   title: string;
   previousStatus?: string;
   newStatus: string;
+  clientId?: string;
+  clientName?: string | null;
+  clientEmail?: string | null;
+  assignedMemberId?: string | null;
+  assignedManagerId?: string | null;
+}
+
+export interface ProjectStartedPayload {
+  projectId: string;
+  title: string;
+  clientId: string;
+  clientName?: string | null;
+  clientEmail?: string | null;
+  startDate?: Date | string | null;
   assignedMemberId?: string | null;
   assignedManagerId?: string | null;
 }
@@ -135,16 +160,54 @@ export interface ProjectCompletedPayload {
   projectId: string;
   title: string;
   clientId: string;
+  clientName?: string | null;
+  clientEmail?: string | null;
+  completedDate?: Date | string | null;
+  productionUrl?: string | null;
   assignedMemberId?: string | null;
   assignedManagerId?: string | null;
+}
+
+export interface ProjectProgressUpdatedPayload {
+  projectId: string;
+  projectTitle: string;
+  progressPercentage: number;
+  milestoneTitle?: string | null;
+  updateType?: string | null;
+  summary?: string | null;
+  nextSteps?: string | null;
+  clientId?: string;
+  clientName?: string | null;
+  clientEmail?: string | null;
 }
 
 export interface ProjectUpdateCreatedPayload {
   projectId: string;
   projectTitle: string;
+  updateId?: string;
   updateTitle: string;
+  updateType?: string;
+  description?: string | null;
+  blockers?: string | null;
+  nextSteps?: string | null;
+  progressPercentage?: number;
+  clientId?: string;
+  clientName?: string | null;
+  clientEmail?: string | null;
   assignedMemberId?: string | null;
   assignedManagerId?: string | null;
+}
+
+export interface MemberOnboardedPayload {
+  memberId: string;
+  userId: string;
+  fullName: string;
+  email: string;
+  phoneNumber?: string | null;
+  whatsappNumber?: string | null;
+  role?: string | null;
+  department?: string | null;
+  onboardedAt: string;
 }
 
 export interface PaymentCreatedPayload {
@@ -189,6 +252,9 @@ export interface ClientRequestCreatedPayload {
   fullName: string;
   companyName?: string | null;
   email: string;
+  phoneNumber?: string | null;
+  whatsappNumber?: string | null;
+  country?: string | null;
   message: string;
 }
 
