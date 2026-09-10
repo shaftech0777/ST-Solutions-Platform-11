@@ -80,14 +80,16 @@ ${formData.message.trim()}
 • Provided WhatsApp: ${formData.whatsappNumber || "Not provided"}`;
 
     try {
-      await apiClient("/client-requests", {
+      await apiClient("/public/contact", {
         method: "POST",
         body: {
           fullName: formData.fullName.trim(),
           email: formData.email.trim(),
           phoneNumber: formData.phoneNumber.trim() || undefined,
           whatsappNumber: formData.whatsappNumber.trim() || formData.phoneNumber.trim() || undefined,
+          subject: formData.projectType ? `Inquiry: ${formData.projectType}` : "Website Contact Message",
           message: compiledMessage,
+          sourcePage: "Contact Page",
         },
       });
 

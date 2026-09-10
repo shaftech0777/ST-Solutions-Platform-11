@@ -22,9 +22,20 @@ export function canonicalStringify(data: any): string {
 /**
  * Builds the canonical message string to sign.
  * Scheme: `${timestamp}.${deliveryId}.${canonicalPayload}`
+ *
+ * Ensures that both object payloads and JSON stringified payloads
+ * are parsed and canonically sorted by key recursively.
  */
 export function buildStringToSign(timestamp: string, deliveryId: string, payload: any): string {
-  const canonicalPayload = typeof payload === "string" ? payload : canonicalStringify(payload);
+  let parsed = payload;
+  if (typeof payload === "string") {
+    try {
+      parsed = JSON.parse(payload);
+    } catch {
+      parsed = payload;
+    }
+  }
+  const canonicalPayload = canonicalStringify(parsed);
   return `${timestamp}.${deliveryId}.${canonicalPayload}`;
 }
 
@@ -131,8 +142,12 @@ export function verifyCanonicalWebhookSignature(params: {
 
   // Calculate canonical signature
   const expectedCanonical = generateCanonicalSignature(timestamp, deliveryId, rawPayload, secret);
-  // Also calculate fallback raw signature in case caller signed raw body string directly
+  // Also calculate fallback signatures in case caller signed raw body string directly
   const rawString = typeof rawPayload === "string" ? rawPayload : JSON.stringify(rawPayload);
+  const expectedRawWithPrefix = crypto
+    .createHmac("sha256", secret)
+    .update(`${timestamp}.${deliveryId}.${rawString}`, "utf8")
+    .digest("hex");
   const expectedRaw = generateWebhookSignature(rawString, secret);
 
   try {
@@ -142,6 +157,14 @@ export function verifyCanonicalWebhookSignature(params: {
 
     if (providedBuffer.length === canonicalBuffer.length) {
       if (crypto.timingSafeEqual(providedBuffer, canonicalBuffer)) {
+        return { isValid: true };
+      }
+    }
+
+    // Fallback comparison for prefixed raw body signing
+    const rawWithPrefixBuffer = Buffer.from(expectedRawWithPrefix.toLowerCase(), "hex");
+    if (providedBuffer.length === rawWithPrefixBuffer.length) {
+      if (crypto.timingSafeEqual(providedBuffer, rawWithPrefixBuffer)) {
         return { isValid: true };
       }
     }

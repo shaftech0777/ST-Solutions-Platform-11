@@ -5,7 +5,7 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "contact-message-received",
-        "responseMode": "onReceived",
+        "responseMode": "responseNode",
         "responseData": "allEntries",
         "options": {}
       },
@@ -16,7 +16,7 @@
     },
     {
       "parameters": {
-        "functionCode": "// Canonical HMAC SHA-256 Signature Verification\nconst crypto = require('crypto');\n\nfunction canonicalStringify(obj) {\n  if (obj === null || typeof obj !== 'object') {\n    return JSON.stringify(obj);\n  }\n  if (Array.isArray(obj)) {\n    return '[' + obj.map(canonicalStringify).join(',') + ']';\n  }\n  const keys = Object.keys(obj).sort();\n  return '{' + keys.map(k => JSON.stringify(k) + ':' + canonicalStringify(obj[k])).join(',') + '}';\n}\n\nconst secret = $env.N8N_WEBHOOK_SECRET || 'your-32-character-secure-hmac-secret-here';\nconst headers = $node['Webhook Ingest'].json.headers;\nconst signature = headers['x-st-signature'];\nconst timestamp = headers['x-st-timestamp'];\nconst deliveryId = headers['x-st-delivery-id'] || $input.item.json.deliveryId;\n\nif (!signature || !timestamp || !deliveryId) {\n  throw new Error('Missing required security headers');\n}\n\n// Canonical message: timestamp.deliveryId.canonicalPayload\nconst canonicalPayload = canonicalStringify($input.item.json);\nconst stringToSign = `${timestamp}.${deliveryId}.${canonicalPayload}`;\nconst calculated = crypto.createHmac('sha256', secret).update(stringToSign).digest('hex');\n\nif (signature !== calculated) {\n  throw new Error('HMAC signature verification failed: Invalid payload signature');\n}\n\nreturn $input.item;"
+        "functionCode": "// Canonical HMAC SHA-256 Signature Verification\nconst crypto = require('crypto');\n\nfunction canonicalStringify(obj) {\n  if (obj === null || typeof obj !== 'object') {\n    return JSON.stringify(obj);\n  }\n  if (Array.isArray(obj)) {\n    return '[' + obj.map(canonicalStringify).join(',') + ']';\n  }\n  const keys = Object.keys(obj).sort();\n  return '{' + keys.map(k => JSON.stringify(k) + ':' + canonicalStringify(obj[k])).join(',') + '}';\n}\n\nconst secret = $env.N8N_WEBHOOK_SECRET || '';\nconst item = $input.item.json;\nconst headers = item.headers || ($node['Webhook Ingest'] && $node['Webhook Ingest'].json.headers) || {};\nconst payload = item.body || item;\n\nconst signature = headers['x-st-signature'] || headers['X-ST-Signature'];\nconst timestamp = headers['x-st-timestamp'] || headers['X-ST-Timestamp'];\nconst deliveryId = headers['x-st-delivery-id'] || headers['X-ST-Delivery-Id'] || payload.deliveryId;\n\nif (!signature || !timestamp || !deliveryId) {\n  throw new Error('Missing required security headers (X-ST-Signature, X-ST-Timestamp, X-ST-Delivery-Id)');\n}\n\n// Verify timestamp freshness (within 5 minutes = 300000ms)\nconst timeDiff = Math.abs(Date.now() - new Date(timestamp).getTime());\nif (isNaN(timeDiff) || timeDiff > 300000) {\n  throw new Error('Timestamp stale or malformed: ' + timestamp);\n}\n\n// Canonical string calculation\nconst canonicalPayload = canonicalStringify(payload);\nconst stringToSign = `${timestamp}.${deliveryId}.${canonicalPayload}`;\nconst calculated = crypto.createHmac('sha256', secret).update(stringToSign, 'utf8').digest('hex');\n\n// Constant-time comparison\nconst sigBuf = Buffer.from(signature.trim().toLowerCase(), 'hex');\nconst calcBuf = Buffer.from(calculated.toLowerCase(), 'hex');\nif (sigBuf.length !== calcBuf.length || !crypto.timingSafeEqual(sigBuf, calcBuf)) {\n  throw new Error('HMAC signature verification failed: Invalid payload signature');\n}\n\nreturn [{\n  json: {\n    ...payload,\n    headers\n  }\n}];"
       },
       "name": "Verify Canonical Signature",
       "type": "n8n-nodes-base.function",
@@ -33,7 +33,7 @@
       "name": "Send Admin Alert",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2,
-      "position": [560, 200]
+      "position": [540, 300]
     },
     {
       "parameters": {
@@ -45,16 +45,16 @@
       "name": "Send Customer Confirmation",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2,
-      "position": [560, 400]
+      "position": [760, 300]
     },
     {
       "parameters": {
-        "functionCode": "// Build authenticated callback payload to report DELIVERED status\nconst crypto = require('crypto');\n\nfunction canonicalStringify(obj) {\n  if (obj === null || typeof obj !== 'object') {\n    return JSON.stringify(obj);\n  }\n  if (Array.isArray(obj)) {\n    return '[' + obj.map(canonicalStringify).join(',') + ']';\n  }\n  const keys = Object.keys(obj).sort();\n  return '{' + keys.map(k => JSON.stringify(k) + ':' + canonicalStringify(obj[k])).join(',') + '}';\n}\n\nconst secret = $env.N8N_WEBHOOK_SECRET || 'your-32-character-secure-hmac-secret-here';\nconst deliveryId = $node['Verify Canonical Signature'].json.deliveryId;\nconst callbackUrl = $node['Verify Canonical Signature'].json.callbackUrl || 'http://localhost:3000/api/v1/automation/callback';\nconst timestamp = new Date().toISOString();\n\nconst callbackBody = {\n  deliveryId: deliveryId,\n  status: 'DELIVERED',\n  responseCode: 200,\n  providerMessageId: 'n8n-smtp-' + Date.now(),\n  deliveredAt: timestamp\n};\n\nconst canonical = canonicalStringify(callbackBody);\nconst signature = crypto.createHmac('sha256', secret).update(`${timestamp}.${deliveryId}.${canonical}`).digest('hex');\n\nreturn [{\n  json: {\n    callbackUrl,\n    callbackBody,\n    headers: {\n      'Content-Type': 'application/json',\n      'X-ST-Signature': signature,\n      'X-ST-Timestamp': timestamp,\n      'X-ST-Delivery-Id': deliveryId\n    }\n  }\n}];"
+        "functionCode": "// Build authenticated callback payload to report SENT status\nconst crypto = require('crypto');\n\nfunction canonicalStringify(obj) {\n  if (obj === null || typeof obj !== 'object') {\n    return JSON.stringify(obj);\n  }\n  if (Array.isArray(obj)) {\n    return '[' + obj.map(canonicalStringify).join(',') + ']';\n  }\n  const keys = Object.keys(obj).sort();\n  return '{' + keys.map(k => JSON.stringify(k) + ':' + canonicalStringify(obj[k])).join(',') + '}';\n}\n\nconst secret = $env.N8N_WEBHOOK_SECRET || '';\nconst source = $node['Verify Canonical Signature'].json;\nconst deliveryId = source.deliveryId;\nconst callbackUrl = source.callbackUrl || 'https://st-solutions-2ovq.onrender.com/api/v1/automation/callback';\nconst timestamp = new Date().toISOString();\n\nconst callbackBody = {\n  deliveryId: deliveryId,\n  status: 'SENT',\n  responseCode: 200,\n  providerMessageId: 'n8n-smtp-' + Date.now(),\n  deliveredAt: timestamp\n};\n\nconst canonical = canonicalStringify(callbackBody);\nconst signature = crypto.createHmac('sha256', secret).update(`${timestamp}.${deliveryId}.${canonical}`, 'utf8').digest('hex');\n\nreturn [{\n  json: {\n    deliveryId,\n    callbackUrl,\n    callbackBody,\n    headers: {\n      'Content-Type': 'application/json',\n      'X-ST-Signature': signature,\n      'X-ST-Timestamp': timestamp,\n      'X-ST-Delivery-Id': deliveryId\n    }\n  }\n}];"
       },
       "name": "Prepare Signed Callback",
       "type": "n8n-nodes-base.function",
       "typeVersion": 1,
-      "position": [800, 300]
+      "position": [980, 300]
     },
     {
       "parameters": {
@@ -75,7 +75,20 @@
       "name": "Report Delivery Callback",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
-      "position": [1020, 300]
+      "position": [1200, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"message\": \"Automation completed successfully\",\n  \"deliveryId\": $node[\"Verify Canonical Signature\"].json.deliveryId,\n  \"status\": \"SENT\"\n}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1420, 300]
     }
   ],
   "connections": {
@@ -97,7 +110,13 @@
             "node": "Send Admin Alert",
             "type": "main",
             "index": 0
-          },
+          }
+        ]
+      ]
+    },
+    "Send Admin Alert": {
+      "main": [
+        [
           {
             "node": "Send Customer Confirmation",
             "type": "main",
@@ -106,7 +125,7 @@
         ]
       ]
     },
-    "Send Admin Alert": {
+    "Send Customer Confirmation": {
       "main": [
         [
           {
@@ -122,6 +141,17 @@
         [
           {
             "node": "Report Delivery Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Report Delivery Callback": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
             "type": "main",
             "index": 0
           }

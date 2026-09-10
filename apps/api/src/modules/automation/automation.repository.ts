@@ -76,8 +76,7 @@ export class AutomationRepository {
         orderBy: { createdAt: "asc" },
         take: limit,
       });
-    } catch (err) {
-      console.warn("[AutomationRepository] Error querying pending retries:", err);
+    } catch {
       return [];
     }
   }
@@ -102,7 +101,8 @@ export class AutomationRepository {
 
   /**
    * Marks a log as ACCEPTED_BY_N8N upon receiving HTTP 2xx from n8n webhook.
-   * Note: This does NOT mean final delivery to recipient, only workflow ingestion.
+   * Note: This does NOT overwrite final statuses (SENT, DELIVERED, BOUNCED, FAILED)
+   * if a callback has already reported the final outcome.
    */
   public async markAccepted(
     deliveryId: string,
@@ -111,13 +111,22 @@ export class AutomationRepository {
     providerMsgId?: string | null
   ) {
     try {
+      const current = await prisma.automationLog.findUnique({ where: { deliveryId } });
+      const finalStatuses = [
+        AutomationDeliveryStatus.SENT,
+        AutomationDeliveryStatus.DELIVERED,
+        AutomationDeliveryStatus.BOUNCED,
+        AutomationDeliveryStatus.FAILED,
+      ];
+      const hasReachedFinalStatus = current && finalStatuses.includes(current.status);
+
       return await prisma.automationLog.update({
         where: { deliveryId },
         data: {
-          status: AutomationDeliveryStatus.ACCEPTED_BY_N8N,
+          ...(hasReachedFinalStatus ? {} : { status: AutomationDeliveryStatus.ACCEPTED_BY_N8N }),
           responseCode,
           responseBody,
-          providerMsgId: providerMsgId || null,
+          providerMsgId: providerMsgId || current?.providerMsgId || null,
           processedAt: new Date(),
           nextRetryAt: null,
           failureReason: null,

@@ -158,28 +158,6 @@ export class AutomationService {
         envelope = {};
       }
 
-      // 1. Bypass network dispatch for test dummy deliveries
-      const isTestDelivery =
-        deliveryId.startsWith("test-delivery-") ||
-        envelope.test === true ||
-        envelope.data?.test === true;
-
-      if (isTestDelivery) {
-        await this.repository.updateLog(deliveryId, {
-          status: "DELIVERED",
-          responseCode: 200,
-          responseBody: JSON.stringify({ message: "Test delivery handled locally" }),
-          deliveredAt: new Date(),
-        });
-
-        return {
-          deliveryId,
-          status: "DELIVERED",
-          responseCode: 200,
-          deliveredAt: new Date(),
-        };
-      }
-
       const isEnabled = Boolean(config.n8n.enabled && config.n8n.baseUrl);
 
       // 2. If n8n integration is disabled, record simulated delivery locally as DELIVERED
