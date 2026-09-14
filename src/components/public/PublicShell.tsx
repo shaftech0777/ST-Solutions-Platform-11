@@ -18,9 +18,6 @@ export const PublicShell: React.FC<PublicShellProps> = ({ children }) => {
         {children}
       </main>
 
-      {/* Floating Direct Contact Actions */}
-      <FloatingContactHub />
-
       {/* Public Footer */}
       <PublicFooter />
     </div>

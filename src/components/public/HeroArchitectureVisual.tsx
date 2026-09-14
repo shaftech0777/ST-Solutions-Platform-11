@@ -79,8 +79,8 @@ export const HeroArchitectureVisual: React.FC = () => {
       <div className="relative z-10 flex items-center justify-between pb-4 border-b border-[#E2E5E0]">
         <div className="flex items-center space-x-2">
           <div className="w-2.5 h-2.5 rounded-full bg-[#D4AF37] animate-pulse" />
-          <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-slate-900">
-            OUR CAPABILITIES
+          <span className="text-[11px] font-mono font-bold tracking-wider text-slate-900">
+            Our Capabilities
           </span>
         </div>
         <div className="flex items-center space-x-2">

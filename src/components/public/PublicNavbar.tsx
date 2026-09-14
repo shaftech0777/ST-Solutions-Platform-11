@@ -73,7 +73,7 @@ export const PublicNavbar: React.FC = () => {
             <span className="font-extrabold text-base tracking-tight text-slate-950 font-mono">
               ST-SOLUTIONS
             </span>
-            <span className="text-[10px] tracking-wider uppercase font-semibold text-slate-500 font-sans">
+            <span className="text-xs tracking-wider uppercase font-semibold text-slate-500 font-sans">
               Enterprise Technology
             </span>
           </div>
@@ -83,10 +83,10 @@ export const PublicNavbar: React.FC = () => {
         <nav className="hidden lg:flex items-center space-x-1 font-medium text-sm text-slate-700">
           <Link
             to="/"
-            className={`px-3.5 py-2 rounded-lg transition-colors ${
+            className={`px-3.5 py-2 rounded-lg transition-all ${
               isActive("/") && location.pathname === "/"
-                ? "text-slate-950 font-semibold bg-slate-200/70"
-                : "hover:text-slate-950 hover:bg-slate-100"
+                ? "text-[#D4AF37] font-semibold bg-slate-100 border-b-2 border-[#D4AF37]"
+                : "hover:text-slate-950 hover:bg-slate-100 border-b-2 border-transparent"
             }`}
           >
             Home
@@ -99,10 +99,10 @@ export const PublicNavbar: React.FC = () => {
             onMouseLeave={() => setIsServicesDropdownOpen(false)}
           >
             <button
-              className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-lg transition-colors ${
+              className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-lg transition-all ${
                 isActive("/services")
-                  ? "text-slate-950 font-semibold bg-slate-200/70"
-                  : "hover:text-slate-950 hover:bg-slate-100"
+                  ? "text-[#D4AF37] font-semibold bg-slate-100 border-b-2 border-[#D4AF37]"
+                  : "hover:text-slate-950 hover:bg-slate-100 border-b-2 border-transparent"
               }`}
               onClick={() => navigate("/services")}
             >
@@ -202,10 +202,10 @@ export const PublicNavbar: React.FC = () => {
             onMouseLeave={() => setIsSolutionsDropdownOpen(false)}
           >
             <button
-              className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-lg transition-colors ${
+              className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-lg transition-all ${
                 isActive("/solutions")
-                  ? "text-slate-950 font-semibold bg-slate-200/70"
-                  : "hover:text-slate-950 hover:bg-slate-100"
+                  ? "text-[#D4AF37] font-semibold bg-slate-100 border-b-2 border-[#D4AF37]"
+                  : "hover:text-slate-950 hover:bg-slate-100 border-b-2 border-transparent"
               }`}
               onClick={() => navigate("/solutions")}
             >
@@ -288,10 +288,10 @@ export const PublicNavbar: React.FC = () => {
 
           <Link
             to="/projects"
-            className={`px-3.5 py-2 rounded-lg transition-colors ${
+            className={`px-3.5 py-2 rounded-lg transition-all ${
               isActive("/projects")
-                ? "text-slate-950 font-semibold bg-slate-200/70"
-                : "hover:text-slate-950 hover:bg-slate-100"
+                ? "text-[#D4AF37] font-semibold bg-slate-100 border-b-2 border-[#D4AF37]"
+                : "hover:text-slate-950 hover:bg-slate-100 border-b-2 border-transparent"
             }`}
           >
             Projects
@@ -299,10 +299,10 @@ export const PublicNavbar: React.FC = () => {
 
           <Link
             to="/about"
-            className={`px-3.5 py-2 rounded-lg transition-colors ${
+            className={`px-3.5 py-2 rounded-lg transition-all ${
               isActive("/about")
-                ? "text-slate-950 font-semibold bg-slate-200/70"
-                : "hover:text-slate-950 hover:bg-slate-100"
+                ? "text-[#D4AF37] font-semibold bg-slate-100 border-b-2 border-[#D4AF37]"
+                : "hover:text-slate-950 hover:bg-slate-100 border-b-2 border-transparent"
             }`}
           >
             About
@@ -310,10 +310,10 @@ export const PublicNavbar: React.FC = () => {
 
           <Link
             to="/contact"
-            className={`px-3.5 py-2 rounded-lg transition-colors ${
+            className={`px-3.5 py-2 rounded-lg transition-all ${
               isActive("/contact")
-                ? "text-slate-950 font-semibold bg-slate-200/70"
-                : "hover:text-slate-950 hover:bg-slate-100"
+                ? "text-[#D4AF37] font-semibold bg-slate-100 border-b-2 border-[#D4AF37]"
+                : "hover:text-slate-950 hover:bg-slate-100 border-b-2 border-transparent"
             }`}
           >
             Contact
@@ -383,48 +383,48 @@ export const PublicNavbar: React.FC = () => {
           <nav className="flex flex-col space-y-2 text-sm font-medium text-slate-800">
             <Link
               to="/"
-              className={`p-2.5 rounded-xl transition-colors ${
-                isActive("/") && location.pathname === "/" ? "bg-slate-100 font-bold text-slate-950" : ""
+              className={`p-2.5 rounded-xl transition-all ${
+                isActive("/") && location.pathname === "/" ? "bg-slate-100 font-bold text-[#D4AF37]" : ""
               }`}
             >
               Home
             </Link>
             <Link
               to="/services"
-              className={`p-2.5 rounded-xl transition-colors ${
-                isActive("/services") ? "bg-slate-100 font-bold text-slate-950" : ""
+              className={`p-2.5 rounded-xl transition-all ${
+                isActive("/services") ? "bg-slate-100 font-bold text-[#D4AF37]" : ""
               }`}
             >
               Services
             </Link>
             <Link
               to="/solutions"
-              className={`p-2.5 rounded-xl transition-colors ${
-                isActive("/solutions") ? "bg-slate-100 font-bold text-slate-950" : ""
+              className={`p-2.5 rounded-xl transition-all ${
+                isActive("/solutions") ? "bg-slate-100 font-bold text-[#D4AF37]" : ""
               }`}
             >
               Solutions
             </Link>
             <Link
               to="/projects"
-              className={`p-2.5 rounded-xl transition-colors ${
-                isActive("/projects") ? "bg-slate-100 font-bold text-slate-950" : ""
+              className={`p-2.5 rounded-xl transition-all ${
+                isActive("/projects") ? "bg-slate-100 font-bold text-[#D4AF37]" : ""
               }`}
             >
               Projects
             </Link>
             <Link
               to="/about"
-              className={`p-2.5 rounded-xl transition-colors ${
-                isActive("/about") ? "bg-slate-100 font-bold text-slate-950" : ""
+              className={`p-2.5 rounded-xl transition-all ${
+                isActive("/about") ? "bg-slate-100 font-bold text-[#D4AF37]" : ""
               }`}
             >
               About
             </Link>
             <Link
               to="/contact"
-              className={`p-2.5 rounded-xl transition-colors ${
-                isActive("/contact") ? "bg-slate-100 font-bold text-slate-950" : ""
+              className={`p-2.5 rounded-xl transition-all ${
+                isActive("/contact") ? "bg-slate-100 font-bold text-[#D4AF37]" : ""
               }`}
             >
               Contact

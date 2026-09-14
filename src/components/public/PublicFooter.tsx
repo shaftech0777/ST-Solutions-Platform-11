@@ -73,7 +73,7 @@ export const PublicFooter: React.FC = () => {
 
           {/* Column 2: Navigation & Services */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200 font-mono">Services</h4>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-200 font-mono">Services</h2>
             <ul className="space-y-1 text-sm text-slate-300">
               <li>
                 <Link to="/services#web-development" className="block py-1 hover:text-[#D4AF37] transition-colors">
@@ -110,7 +110,7 @@ export const PublicFooter: React.FC = () => {
 
           {/* Column 3: Solutions & Platform */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200 font-mono">Solutions</h4>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-200 font-mono">Solutions</h2>
             <ul className="space-y-1 text-sm text-slate-300">
               <li>
                 <Link to="/solutions" className="block py-1 hover:text-[#D4AF37] transition-colors">
@@ -148,7 +148,7 @@ export const PublicFooter: React.FC = () => {
 
           {/* Column 4: Direct Channels */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200 font-mono">Direct Contact</h4>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-200 font-mono">Direct Contact</h2>
             <div className="space-y-1 text-sm">
               <a
                 href={companyConfig.contact.whatsappUrl}
@@ -173,7 +173,7 @@ export const PublicFooter: React.FC = () => {
                 className="flex items-center space-x-2 text-slate-300 hover:text-[#D4AF37] transition-colors py-1"
               >
                 <Mail className="w-4 h-4 text-[#D4AF37]" />
-                <span className="truncate">{companyConfig.contact.email}</span>
+                <span className="break-all">{companyConfig.contact.email}</span>
               </a>
 
               <button
@@ -188,7 +188,7 @@ export const PublicFooter: React.FC = () => {
         </div>
 
         {/* Bottom Bar: Copyright & Legal */}
-        <div className="border-t border-slate-800/80 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+        <div className="border-t border-slate-800/80 pt-8 pb-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
           <div className="flex items-center space-x-2">
             <span>© 2026 ST-Solutions. All rights reserved.</span>
             <span>•</span>
