@@ -69,16 +69,26 @@ export const envSchema = z.object({
     .default(() => process.env.ADMIN_NOTIFICATION_EMAIL || process.env.ADMIN_EMAIL || "admin@st-solutions.com"),
 }).superRefine((data, ctx) => {
   if (data.NODE_ENV === "production") {
-    if (!data.DATABASE_URL) {
+    if (!process.env.DATABASE_URL || data.DATABASE_URL.includes("localhost:5432")) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "DATABASE_URL is required in production environment.",
+        message: "A valid external DATABASE_URL is strictly required in production environment.",
         path: ["DATABASE_URL"],
       });
     }
 
-    if (!data.JWT_SECRET || data.JWT_SECRET.includes("default-development")) {
-      console.warn("[WARN] Production JWT_SECRET is using default; please configure a secure 32+ character JWT_SECRET in your environment.");
+    if (!process.env.JWT_SECRET && !process.env.JWT_ACCESS_SECRET) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "JWT_SECRET or JWT_ACCESS_SECRET must be explicitly provided in production.",
+        path: ["JWT_SECRET"],
+      });
+    } else if (data.JWT_SECRET.includes("default-development-jwt-secret") || data.JWT_SECRET.length < 32) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Production JWT_SECRET must be at least 32 characters long and cannot be a default value.",
+        path: ["JWT_SECRET"],
+      });
     }
   }
 });

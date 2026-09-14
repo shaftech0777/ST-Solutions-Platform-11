@@ -17,6 +17,10 @@ async function startServer() {
     await databaseService.connect();
     Logger.info("Database service ready.");
   } catch (err) {
+    if (process.env.NODE_ENV === "production") {
+      Logger.error({ err }, "FATAL: Database connection failed in production.");
+      process.exit(1);
+    }
     Logger.warn({ err }, "Database startup warning; using embedded data engine.");
   }
 
