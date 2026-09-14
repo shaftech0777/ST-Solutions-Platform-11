@@ -128,7 +128,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
               <span className="font-bold text-sm tracking-tight text-white leading-tight truncate">
                 ST-SOLUTIONS
               </span>
-              <span className="text-[10px] text-[#D4AF37] font-medium font-mono uppercase tracking-widest truncate">
+              <span className="text-xs text-[#D4AF37] font-medium font-mono truncate">
                 Shaf Tech Solutions
               </span>
             </div>
@@ -174,7 +174,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
         {filteredNavGroups.map((group, gIdx) => (
           <div key={gIdx} className="space-y-1">
             {!isCollapsed && (
-              <p className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono mb-1.5">
+              <p className="px-3 text-xs font-bold text-slate-400 font-mono mb-1.5">
                 {group.title}
               </p>
             )}
@@ -215,7 +215,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
           {!isCollapsed && (
             <div className="flex-1 min-w-0">
               <p className="text-xs font-bold text-white truncate">{currentUser?.profile?.fullName || currentUser?.email?.split("@")[0] || "User"}</p>
-              <p className="text-[10px] text-slate-400 truncate font-mono">{currentUser?.email}</p>
+              <p className="text-xs text-slate-400 truncate font-mono">{currentUser?.email}</p>
             </div>
           )}
           {!isCollapsed && (

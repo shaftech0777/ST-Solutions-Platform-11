@@ -83,9 +83,9 @@ export const StatCard: React.FC<StatCardProps> = ({
           {isLoading ? (
             <div className="h-8 w-24 bg-slate-200 dark:bg-slate-800 rounded animate-pulse my-1" />
           ) : (
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight font-mono">
+            <p className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight font-mono">
               {value}
-            </h3>
+            </p>
           )}
           {subtitle && <p className="text-xs text-slate-500 dark:text-slate-400">{subtitle}</p>}
         </div>

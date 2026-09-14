@@ -197,7 +197,7 @@ export const DashboardPage: React.FC = () => {
             <Bot className="w-48 h-48" />
           </div>
 
-          <div className="space-y-3 max-w-lg z-10">
+          <div className="space-y-3 max-w-lg z-10 pt-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/30 text-xs font-mono font-bold">
               <Sparkles className="w-3.5 h-3.5" />
               <span>ST-SOLUTIONS Intelligence Suite</span>
@@ -212,7 +212,7 @@ export const DashboardPage: React.FC = () => {
 
           <div className="mt-6 pt-4 border-t border-slate-800/80 flex flex-wrap items-center gap-3 z-10">
             <Button
-              variant="gold"
+              variant="outline"
               size="sm"
               leftIcon={<Bot className="w-4 h-4" />}
               onClick={() => navigate("/ai")}
@@ -233,36 +233,36 @@ export const DashboardPage: React.FC = () => {
         {/* Tenant Architecture & Security Status */}
         <Card className="p-6 bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 space-y-4 shadow-sm">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider font-mono">
+            <h2 className="text-xs font-bold text-slate-900 dark:text-white font-mono">
               Tenant Security Scope
-            </h3>
+            </h2>
             <Badge variant="gold" dot>
               Active Context
             </Badge>
           </div>
 
           <div className="space-y-3 text-xs">
-            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800">
-              <span className="text-slate-500 dark:text-slate-400 font-mono">Organization</span>
-              <span className="font-bold text-slate-900 dark:text-amber-300 truncate max-w-[130px]">
+            <div className="flex items-center justify-start gap-4 p-3 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800">
+              <span className="text-slate-500 dark:text-slate-400 font-mono min-w-[110px]">Organization</span>
+              <span className="font-bold text-slate-900 dark:text-amber-300 truncate">
                 {currentOrganization?.name || "Shaf Tech Solutions"}
               </span>
             </div>
-            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800">
-              <span className="text-slate-500 dark:text-slate-400 font-mono">Access Role</span>
+            <div className="flex items-center justify-start gap-4 p-3 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800">
+              <span className="text-slate-500 dark:text-slate-400 font-mono min-w-[110px]">Access Role</span>
               <span className="font-bold font-mono text-emerald-600 dark:text-emerald-400">
                 {currentUser?.accountType || "ADMIN"}
               </span>
             </div>
-            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800">
-              <span className="text-slate-500 dark:text-slate-400 font-mono">Active Workspace</span>
-              <span className="font-bold text-slate-900 dark:text-slate-200 truncate max-w-[130px]">
+            <div className="flex items-center justify-start gap-4 p-3 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800">
+              <span className="text-slate-500 dark:text-slate-400 font-mono min-w-[110px]">Workspace</span>
+              <span className="font-bold text-slate-900 dark:text-slate-200 truncate">
                 {currentWorkspace?.name || "Global Workspace"}
               </span>
             </div>
           </div>
 
-          <div className="pt-2 text-[11px] text-slate-500 dark:text-slate-400 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
+          <div className="pt-2 text-xs text-slate-500 dark:text-slate-400 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
             <span>Isolation: Strict PostgreSQL RBAC</span>
             <ShieldCheck className="w-4 h-4 text-emerald-500" />
           </div>
@@ -280,7 +280,7 @@ export const DashboardPage: React.FC = () => {
             </h3>
             <Link
               to="/platform/projects"
-              className="text-xs font-semibold text-[#D4AF37] hover:underline flex items-center gap-1"
+              className="text-xs font-semibold text-[#D4AF37] hover:underline flex items-center gap-1 py-1.5"
             >
               <span>View All</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -349,7 +349,7 @@ export const DashboardPage: React.FC = () => {
             </h3>
             <Link
               to="/payments"
-              className="text-xs font-semibold text-[#D4AF37] hover:underline flex items-center gap-1"
+              className="text-xs font-semibold text-[#D4AF37] hover:underline flex items-center gap-1 py-1.5"
             >
               <span>View All</span>
               <ArrowRight className="w-3.5 h-3.5" />
