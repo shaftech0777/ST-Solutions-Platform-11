@@ -92,7 +92,15 @@ export const updateApplicationSchema = createApplicationSchema.partial();
  * Review application schema.
  */
 export const reviewApplicationSchema = z.object({
-  status: z.nativeEnum(ApplicationStatus, { required_error: "Application status is required" }),
+  status: z
+    .string({ required_error: "Application status is required" })
+    .transform((val) => {
+      const v = val.toUpperCase();
+      if (v === "RECEIVED") return ApplicationStatus.PENDING;
+      if (v === "ACCEPTED") return ApplicationStatus.APPROVED;
+      return v as ApplicationStatus;
+    })
+    .pipe(z.nativeEnum(ApplicationStatus)),
   reviewNotes: z.string().trim().max(1000).optional(),
 });
 
@@ -101,7 +109,10 @@ export const reviewApplicationSchema = z.object({
  */
 export const approveApplicationSchema = z.object({
   reviewNotes: z.string().trim().max(1000).optional(),
-});
+  approvalNotes: z.string().trim().max(1000).optional(),
+}).transform((data) => ({
+  reviewNotes: data.approvalNotes || data.reviewNotes,
+}));
 
 /**
  * Reject application schema.
