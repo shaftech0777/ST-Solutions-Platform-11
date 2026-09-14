@@ -288,15 +288,15 @@ export const InquiriesPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center space-x-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-[#D4AF37]/15 border border-[#D4AF37]/40 text-amber-900 text-xs font-mono font-bold uppercase tracking-wider">
+            <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-900 dark:text-amber-400 text-xs font-mono font-bold uppercase tracking-wider">
               Lead Management
             </span>
-            <span className="text-xs text-slate-500 font-medium">Public Portal Submissions</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Public Portal Submissions</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight mt-1">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-1">
             Project Inquiries
           </h1>
-          <p className="text-xs sm:text-sm text-slate-600 mt-0.5">
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-0.5">
             Manage incoming visitor project requests, track outreach status, and connect via WhatsApp, Email, or Phone.
           </p>
         </div>
@@ -305,9 +305,9 @@ export const InquiriesPage: React.FC = () => {
           <button
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="px-4 py-2.5 rounded-xl bg-white border border-[#E2E5E0] text-xs font-bold text-slate-800 hover:bg-[#F1F2EE] transition-all flex items-center space-x-2 shadow-sm disabled:opacity-50"
+            className="px-4 py-2 rounded-xl bg-transparent border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center space-x-2 disabled:opacity-50"
           >
-            <RefreshCw className={`w-3.5 h-3.5 text-[#B88E20] ${isRefreshing ? "animate-spin" : ""}`} />
+            <RefreshCw className={`w-3.5 h-3.5 text-amber-600 dark:text-amber-400 ${isRefreshing ? "animate-spin" : ""}`} />
             <span>{isRefreshing ? "Syncing..." : "Refresh Feed"}</span>
           </button>
         </div>
@@ -362,7 +362,7 @@ export const InquiriesPage: React.FC = () => {
         ].map((kpi, idx) => (
           <div
             key={idx}
-            className={`p-4 rounded-2xl border ${kpi.border} ${kpi.bg} shadow-sm flex flex-col justify-between`}
+            className={`p-5 sm:p-6 rounded-2xl border ${kpi.border} ${kpi.bg} shadow-sm flex flex-col justify-between`}
           >
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider font-mono">
@@ -483,7 +483,7 @@ export const InquiriesPage: React.FC = () => {
                         {priorityStyle.label} Priority
                       </span>
 
-                      <span className="text-[11px] text-slate-400 font-mono">
+                      <span className="text-xs text-slate-500 font-mono">
                         {new Date(inquiry.createdAt).toLocaleString(undefined, {
                           month: "short",
                           day: "numeric",
@@ -496,9 +496,9 @@ export const InquiriesPage: React.FC = () => {
 
                     <div>
                       <div className="flex items-center space-x-2">
-                        <h3 className="text-base font-bold text-slate-950">
+                        <h2 className="text-base font-bold text-slate-900">
                           {inquiry.visitorName}
-                        </h3>
+                        </h2>
                         {inquiry.companyName && (
                           <span className="text-xs text-slate-600 font-medium flex items-center space-x-1">
                             <Building className="w-3 h-3 text-slate-400" />
@@ -506,19 +506,19 @@ export const InquiriesPage: React.FC = () => {
                           </span>
                         )}
                         {inquiry.country && (
-                          <span className="text-[10px] text-slate-500 font-mono">
+                          <span className="text-xs text-slate-500 font-mono">
                             • {inquiry.country}
                           </span>
                         )}
                       </div>
 
-                      <div className="flex items-center space-x-2 mt-1">
-                        <span className="text-xs font-semibold text-slate-600">Interested in:</span>
-                        <span className="text-xs font-bold text-[#B88E20] bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">
+                      <div className="flex items-center space-x-2 mt-1.5">
+                        <span className="text-xs font-semibold text-slate-600 inline-flex items-center h-6">Interested in:</span>
+                        <span className="text-xs font-bold text-amber-700 bg-amber-500/10 px-2 h-6 inline-flex items-center justify-center rounded-md border border-amber-500/20">
                           {inquiry.projectNameSnapshot}
                         </span>
                         {inquiry.category && (
-                          <span className="text-[10px] font-mono text-slate-500">
+                          <span className="text-xs font-mono text-slate-500 inline-flex items-center h-6">
                             [{inquiry.category}]
                           </span>
                         )}
@@ -556,44 +556,41 @@ export const InquiriesPage: React.FC = () => {
                   </div>
 
                   {/* Right Column: Direct Outreach & Detail Actions */}
-                  <div className="flex flex-row lg:flex-col items-center lg:items-end justify-between gap-2 border-t lg:border-t-0 pt-3 lg:pt-0 border-[#E2E5E0]">
+                  <div className="flex flex-col items-end justify-between gap-3 border-t lg:border-t-0 pt-4 lg:pt-0 border-slate-200 mt-4 lg:mt-0 min-w-[140px]">
                     {/* Quick Direct Contact Buttons */}
-                    <div className="flex items-center space-x-1.5">
+                    <div className="flex items-center justify-end space-x-2 w-full">
                       <button
                         onClick={() => handleRecordContactAttempt(inquiry, "WHATSAPP", true)}
                         title="Chat on WhatsApp (auto records outreach)"
-                        className="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center space-x-1.5 shadow-sm transition-all"
+                        className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 text-xs font-bold flex items-center justify-center shadow-sm transition-all flex-1 lg:flex-none"
                       >
-                        <MessageCircle className="w-3.5 h-3.5" />
-                        <span className="hidden sm:inline">WhatsApp</span>
+                        <MessageCircle className="w-4 h-4" />
                       </button>
 
                       <button
                         onClick={() => handleRecordContactAttempt(inquiry, "EMAIL", true)}
                         title="Send Email (auto records outreach)"
-                        className="px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center space-x-1.5 shadow-sm transition-all"
+                        className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 text-xs font-bold flex items-center justify-center shadow-sm transition-all flex-1 lg:flex-none"
                       >
-                        <Mail className="w-3.5 h-3.5" />
-                        <span className="hidden sm:inline">Email</span>
+                        <Mail className="w-4 h-4" />
                       </button>
 
                       <button
                         onClick={() => handleRecordContactAttempt(inquiry, "PHONE_CALL", true)}
                         title="Phone Call (auto records outreach)"
-                        className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold flex items-center space-x-1.5 shadow-sm transition-all"
+                        className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center justify-center shadow-sm transition-all flex-1 lg:flex-none"
                       >
-                        <Phone className="w-3.5 h-3.5" />
-                        <span className="hidden sm:inline">Call</span>
+                        <Phone className="w-4 h-4" />
                       </button>
                     </div>
 
                     {/* View Details / Management Button */}
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center justify-end space-x-2 w-full">
                       <button
                         onClick={() => handleOpenDetail(inquiry)}
-                        className="px-4 py-2 rounded-xl bg-[#F1F2EE] hover:bg-[#E2E5E0] text-slate-950 text-xs font-bold transition-all border border-[#E2E5E0] flex items-center space-x-1"
+                        className="px-4 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-900 text-xs font-bold transition-all border border-slate-200 flex items-center justify-center space-x-1 flex-1 lg:flex-none"
                       >
-                        <Edit3 className="w-3 h-3 text-[#B88E20]" />
+                        <Edit3 className="w-3.5 h-3.5 text-amber-600" />
                         <span>Manage Lead</span>
                       </button>
 
@@ -601,9 +598,9 @@ export const InquiriesPage: React.FC = () => {
                         <button
                           onClick={() => handleDeleteInquiry(inquiry.id)}
                           title="Delete inquiry"
-                          className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                          className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors flex-shrink-0"
                         >
-                          <Trash2 className="w-3.5 h-3.5" />
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       )}
                     </div>
@@ -793,12 +790,12 @@ export const InquiriesPage: React.FC = () => {
                     Clicking automatically logs an outreach activity timestamp.
                   </div>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 w-full sm:w-auto">
                   <button
                     onClick={() =>
                       handleRecordContactAttempt(selectedInquiry, "WHATSAPP", true)
                     }
-                    className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center space-x-1.5 shadow-sm"
+                    className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-white/10 hover:bg-emerald-600 text-white text-xs font-bold flex items-center justify-center space-x-1.5 transition-all border border-white/20"
                   >
                     <MessageCircle className="w-3.5 h-3.5" />
                     <span>WhatsApp</span>
@@ -807,7 +804,7 @@ export const InquiriesPage: React.FC = () => {
                     onClick={() =>
                       handleRecordContactAttempt(selectedInquiry, "EMAIL", true)
                     }
-                    className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center space-x-1.5 shadow-sm"
+                    className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-white/10 hover:bg-blue-600 text-white text-xs font-bold flex items-center justify-center space-x-1.5 transition-all border border-white/20"
                   >
                     <Mail className="w-3.5 h-3.5" />
                     <span>Email</span>
@@ -816,7 +813,7 @@ export const InquiriesPage: React.FC = () => {
                     onClick={() =>
                       handleRecordContactAttempt(selectedInquiry, "PHONE_CALL", true)
                     }
-                    className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold flex items-center space-x-1.5 shadow-sm"
+                    className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold flex items-center justify-center space-x-1.5 transition-all border border-white/20"
                   >
                     <Phone className="w-3.5 h-3.5" />
                     <span>Call</span>
