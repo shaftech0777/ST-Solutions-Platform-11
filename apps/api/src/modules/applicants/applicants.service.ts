@@ -41,6 +41,7 @@ import {
  */
 const ALLOWED_STATUS_TRANSITIONS: Record<ApplicationStatus, readonly ApplicationStatus[]> = {
   [ApplicationStatus.PENDING]: [
+    ApplicationStatus.APPROVED,
     ApplicationStatus.UNDER_REVIEW,
     ApplicationStatus.REJECTED,
     ApplicationStatus.MORE_INFORMATION_REQUIRED,
