@@ -40,7 +40,7 @@ export const PublicFooter: React.FC = () => {
                 </span>
               </div>
             </Link>
-            <p className="text-xs sm:text-sm text-slate-300 max-w-sm leading-relaxed">
+            <p className="text-sm text-slate-300 max-w-sm leading-relaxed">
               {companyConfig.shortDescription}
             </p>
 
@@ -53,7 +53,7 @@ export const PublicFooter: React.FC = () => {
                       MS
                     </div>
                     <div>
-                      <div className="text-xs font-semibold text-white">{companyConfig.founder.name}</div>
+                      <div className="text-sm font-semibold text-white">{companyConfig.founder.name}</div>
                       <div className="text-[10px] text-slate-300">{companyConfig.founder.role}</div>
                     </div>
                   </div>
@@ -62,7 +62,7 @@ export const PublicFooter: React.FC = () => {
                   href={companyConfig.founder.portfolioUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center space-x-1.5 text-xs text-[#D4AF37] hover:underline font-semibold group"
+                  className="inline-flex items-center space-x-1.5 text-sm text-[#D4AF37] hover:underline font-semibold group"
                 >
                   <span>View Official Portfolio</span>
                   <ExternalLink className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -74,34 +74,34 @@ export const PublicFooter: React.FC = () => {
           {/* Column 2: Navigation & Services */}
           <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200 font-mono">Services</h4>
-            <ul className="space-y-2 text-xs text-slate-300">
+            <ul className="space-y-1 text-sm text-slate-300">
               <li>
-                <Link to="/services#web-development" className="hover:text-[#D4AF37] transition-colors">
+                <Link to="/services#web-development" className="block py-1 hover:text-[#D4AF37] transition-colors">
                   Web Development
                 </Link>
               </li>
               <li>
-                <Link to="/services#software-development" className="hover:text-[#D4AF37] transition-colors">
+                <Link to="/services#software-development" className="block py-1 hover:text-[#D4AF37] transition-colors">
                   Software Development
                 </Link>
               </li>
               <li>
-                <Link to="/services#ai-solutions" className="hover:text-[#D4AF37] transition-colors">
+                <Link to="/services#ai-solutions" className="block py-1 hover:text-[#D4AF37] transition-colors">
                   AI Solutions
                 </Link>
               </li>
               <li>
-                <Link to="/services#business-automation" className="hover:text-[#D4AF37] transition-colors">
+                <Link to="/services#business-automation" className="block py-1 hover:text-[#D4AF37] transition-colors">
                   Business Automation
                 </Link>
               </li>
               <li>
-                <Link to="/services#e-commerce" className="hover:text-[#D4AF37] transition-colors">
+                <Link to="/services#e-commerce" className="block py-1 hover:text-[#D4AF37] transition-colors">
                   E-Commerce Systems
                 </Link>
               </li>
               <li>
-                <Link to="/services#digital-transformation" className="hover:text-[#D4AF37] transition-colors">
+                <Link to="/services#digital-transformation" className="block py-1 hover:text-[#D4AF37] transition-colors">
                   Digital Transformation
                 </Link>
               </li>
@@ -111,35 +111,35 @@ export const PublicFooter: React.FC = () => {
           {/* Column 3: Solutions & Platform */}
           <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200 font-mono">Solutions</h4>
-            <ul className="space-y-2 text-xs text-slate-300">
+            <ul className="space-y-1 text-sm text-slate-300">
               <li>
-                <Link to="/solutions" className="hover:text-[#D4AF37] transition-colors">
+                <Link to="/solutions" className="block py-1 hover:text-[#D4AF37] transition-colors">
                   Business Platforms
                 </Link>
               </li>
               <li>
-                <Link to="/solutions" className="hover:text-[#D4AF37] transition-colors">
+                <Link to="/solutions" className="block py-1 hover:text-[#D4AF37] transition-colors">
                   AI & Automation
                 </Link>
               </li>
               <li>
-                <Link to="/projects" className="hover:text-[#D4AF37] transition-colors">
+                <Link to="/projects" className="block py-1 hover:text-[#D4AF37] transition-colors">
                   Project Showcase
                 </Link>
               </li>
               <li>
-                <Link to="/about" className="hover:text-[#D4AF37] transition-colors">
+                <Link to="/about" className="block py-1 hover:text-[#D4AF37] transition-colors">
                   About ST-Solutions
                 </Link>
               </li>
               <li>
-                <Link to="/apply" className="hover:text-[#D4AF37] transition-colors text-amber-400 font-semibold flex items-center space-x-1">
+                <Link to="/apply" className="flex items-center space-x-1 py-1 hover:text-[#D4AF37] transition-colors text-amber-400 font-semibold">
                   <span>Member Application</span>
                   <ArrowUpRight className="w-3 h-3" />
                 </Link>
               </li>
               <li>
-                <Link to="/login" className="hover:text-[#D4AF37] transition-colors">
+                <Link to="/login" className="block py-1 hover:text-[#D4AF37] transition-colors">
                   Staff Sign In
                 </Link>
               </li>
@@ -149,28 +149,28 @@ export const PublicFooter: React.FC = () => {
           {/* Column 4: Direct Channels */}
           <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200 font-mono">Direct Contact</h4>
-            <div className="space-y-2 text-xs">
+            <div className="space-y-1 text-sm">
               <a
                 href={companyConfig.contact.whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center space-x-2 text-slate-300 hover:text-emerald-400 transition-colors"
+                className="flex items-center space-x-2 text-slate-300 hover:text-[#D4AF37] transition-colors py-1"
               >
-                <MessageCircle className="w-4 h-4 text-emerald-400" />
+                <MessageCircle className="w-4 h-4 text-slate-400" />
                 <span>WhatsApp: {companyConfig.contact.whatsappDisplay}</span>
               </a>
 
               <a
                 href={companyConfig.contact.phoneTel}
-                className="flex items-center space-x-2 text-slate-300 hover:text-blue-400 transition-colors"
+                className="flex items-center space-x-2 text-slate-300 hover:text-[#D4AF37] transition-colors py-1"
               >
-                <Phone className="w-4 h-4 text-blue-400" />
+                <Phone className="w-4 h-4 text-slate-400" />
                 <span>Call: {companyConfig.contact.phoneDisplay}</span>
               </a>
 
               <a
                 href={`mailto:${companyConfig.contact.email}`}
-                className="flex items-center space-x-2 text-slate-300 hover:text-amber-400 transition-colors"
+                className="flex items-center space-x-2 text-slate-300 hover:text-[#D4AF37] transition-colors py-1"
               >
                 <Mail className="w-4 h-4 text-[#D4AF37]" />
                 <span className="truncate">{companyConfig.contact.email}</span>
@@ -178,7 +178,7 @@ export const PublicFooter: React.FC = () => {
 
               <button
                 onClick={() => setIsWeChatOpen(true)}
-                className="flex items-center space-x-2 text-slate-300 hover:text-white transition-colors text-left"
+                className="flex items-center space-x-2 text-slate-300 hover:text-white transition-colors text-left py-1"
               >
                 <QrCode className="w-4 h-4 text-slate-400" />
                 <span>WeChat: Official Channel</span>

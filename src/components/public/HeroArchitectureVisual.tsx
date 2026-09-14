@@ -41,7 +41,7 @@ const pillars: NodeInfo[] = [
   },
   {
     id: "automation",
-    name: "Business Automation",
+    name: "Automation",
     category: "Streamlined",
     tag: "Webhooks / Queues / Sync",
     icon: Workflow,
@@ -80,12 +80,12 @@ export const HeroArchitectureVisual: React.FC = () => {
         <div className="flex items-center space-x-2">
           <div className="w-2.5 h-2.5 rounded-full bg-[#D4AF37] animate-pulse" />
           <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-slate-900">
-            SYSTEM ARCHITECTURE
+            OUR CAPABILITIES
           </span>
         </div>
         <div className="flex items-center space-x-2">
           <span className="px-2.5 py-0.5 rounded-md bg-blue-50 border border-blue-200 text-[10px] font-mono text-blue-700 font-semibold">
-            TypeScript + Postgres
+            Secure & Reliable
           </span>
         </div>
       </div>
@@ -177,19 +177,19 @@ export const HeroArchitectureVisual: React.FC = () => {
               </div>
               <div>
                 <div className="font-extrabold text-sm tracking-tight text-white flex items-center space-x-2">
-                  <span>ST-SOLUTIONS CORE</span>
+                  <span>The ST-Solutions Method</span>
                   <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono font-medium">
                     ACTIVE
                   </span>
                 </div>
                 <div className="text-[11px] text-slate-300 font-mono">
-                  Engineered Execution & Integration Layer
+                  Custom-built for your business needs
                 </div>
               </div>
             </div>
             <div className="hidden sm:block text-right text-[10px] font-mono text-slate-300">
-              <div>Strict RBAC</div>
-              <div className="text-[#D4AF37] font-semibold">Zero-Leak Architecture</div>
+              <div>Enterprise Grade</div>
+              <div className="text-[#D4AF37] font-semibold">Data Privacy</div>
             </div>
           </div>
 
@@ -222,15 +222,15 @@ export const HeroArchitectureVisual: React.FC = () => {
             </div>
             <div>
               <div className="text-xs font-bold text-slate-950">
-                Client Business Execution
+                Business Value Delivered
               </div>
               <div className="text-[10px] text-slate-600">
-                Growth, operational velocity, and automated efficiency.
+                Growth, efficiency, and automated workflows.
               </div>
             </div>
           </div>
           <span className="text-[11px] font-mono font-bold text-slate-900 bg-[#D4AF37]/20 px-2.5 py-0.5 rounded-md border border-[#D4AF37]/40">
-            BUSINESS VALUE
+            RESULTS
           </span>
         </div>
       </div>
