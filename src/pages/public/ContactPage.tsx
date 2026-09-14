@@ -156,7 +156,7 @@ ${formData.message.trim()}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
           {/* Left Column: Direct Contact Hub */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#E2E5E0] shadow-sm space-y-6">
+            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#E2E5E0] shadow-sm space-y-6 lg:-mt-2">
               <h2 className="text-xl font-bold text-slate-950">
                 Direct Channels
               </h2>
@@ -167,16 +167,16 @@ ${formData.message.trim()}
                   href={companyConfig.contact.whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center space-x-4 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 hover:scale-[1.01] transition-all group"
+                  className="flex items-center space-x-4 p-3 rounded-2xl bg-emerald-50 border border-emerald-200 hover:scale-[1.01] transition-all group"
                 >
-                  <div className="w-11 h-11 rounded-xl bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 shadow-sm">
                     <MessageCircle className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="text-xs font-bold uppercase text-emerald-800 font-mono">
-                      WhatsApp (Fastest Response)
+                    <div className="text-sm font-bold uppercase text-emerald-800 font-mono">
+                      WhatsApp (Fastest)
                     </div>
-                    <div className="text-sm font-semibold text-slate-950 font-mono">
+                    <div className="text-base font-semibold text-slate-950 font-mono">
                       {companyConfig.contact.whatsappDisplay}
                     </div>
                   </div>
@@ -185,16 +185,16 @@ ${formData.message.trim()}
                 {/* Phone */}
                 <a
                   href={companyConfig.contact.phoneTel}
-                  className="flex items-center space-x-4 p-4 rounded-2xl bg-blue-50 border border-blue-200 hover:scale-[1.01] transition-all group"
+                  className="flex items-center space-x-4 p-3 rounded-2xl bg-blue-50 border border-blue-200 hover:scale-[1.01] transition-all group"
                 >
-                  <div className="w-11 h-11 rounded-xl bg-blue-600 text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                  <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center flex-shrink-0 shadow-sm">
                     <Phone className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="text-xs font-bold uppercase text-blue-800 font-mono">
+                    <div className="text-sm font-bold uppercase text-blue-800 font-mono">
                       Direct Phone
                     </div>
-                    <div className="text-sm font-semibold text-slate-950 font-mono">
+                    <div className="text-base font-semibold text-slate-950 font-mono">
                       {companyConfig.contact.phoneDisplay}
                     </div>
                   </div>
@@ -203,16 +203,16 @@ ${formData.message.trim()}
                 {/* Email */}
                 <a
                   href={`mailto:${companyConfig.contact.email}`}
-                  className="flex items-center space-x-4 p-4 rounded-2xl bg-amber-50 border border-amber-200 hover:scale-[1.01] transition-all group"
+                  className="flex items-center space-x-4 p-3 rounded-2xl bg-amber-50 border border-amber-200 hover:scale-[1.01] transition-all group"
                 >
-                  <div className="w-11 h-11 rounded-xl bg-[#D4AF37] text-slate-950 flex items-center justify-center flex-shrink-0 shadow-sm">
+                  <div className="w-10 h-10 rounded-xl bg-[#D4AF37] text-slate-950 flex items-center justify-center flex-shrink-0 shadow-sm">
                     <Mail className="w-5 h-5" />
                   </div>
                   <div className="truncate">
-                    <div className="text-xs font-bold uppercase text-amber-900 font-mono">
+                    <div className="text-sm font-bold uppercase text-amber-900 font-mono">
                       Official Email
                     </div>
-                    <div className="text-sm font-semibold text-slate-950 truncate">
+                    <div className="text-base font-semibold text-slate-950 truncate">
                       {companyConfig.contact.email}
                     </div>
                   </div>
@@ -221,16 +221,16 @@ ${formData.message.trim()}
                 {/* WeChat */}
                 <button
                   onClick={() => setIsWeChatOpen(true)}
-                  className="w-full flex items-center space-x-4 p-4 rounded-2xl bg-[#F1F2EE] border border-[#E2E5E0] hover:scale-[1.01] transition-all group text-left"
+                  className="w-full flex items-center space-x-4 p-3 rounded-2xl bg-[#F1F2EE] border border-[#E2E5E0] hover:scale-[1.01] transition-all group text-left"
                 >
-                  <div className="w-11 h-11 rounded-xl bg-[#111827] text-[#D4AF37] flex items-center justify-center flex-shrink-0 shadow-sm">
+                  <div className="w-10 h-10 rounded-xl bg-[#111827] text-[#D4AF37] flex items-center justify-center flex-shrink-0 shadow-sm">
                     <QrCode className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="text-xs font-bold uppercase text-slate-600 font-mono">
+                    <div className="text-sm font-bold uppercase text-slate-600 font-mono">
                       Official WeChat
                     </div>
-                    <div className="text-sm font-semibold text-slate-950">
+                    <div className="text-base font-semibold text-slate-950">
                       Scan to connect
                     </div>
                   </div>

@@ -105,12 +105,12 @@ export const SolutionsPage: React.FC = () => {
                     {sol.goal}
                   </h3>
 
-                  <p className="text-xs text-slate-600 leading-relaxed">
+                  <p className="text-xs text-slate-600 leading-relaxed flex-grow">
                     {sol.shortDesc}
                   </p>
                 </div>
 
-                <div className="space-y-3 pt-2 border-t border-[#E2E5E0]">
+                <div className="space-y-4 pt-4 border-t border-[#E2E5E0] mt-auto">
                   <div className="flex flex-wrap gap-1">
                     {sol.tags.map((tag, idx) => (
                       <span
@@ -124,11 +124,11 @@ export const SolutionsPage: React.FC = () => {
 
                   <Link
                     to={`/contact?service=${encodeURIComponent(sol.recommendedService)}&goal=${encodeURIComponent(sol.goal)}`}
-                    className="inline-flex items-center space-x-1 text-xs font-bold text-[#B88E20] hover:underline"
+                    className="inline-flex items-center justify-center space-x-1 px-4 py-2 rounded-xl bg-slate-950 text-white text-xs font-bold shadow-sm hover:bg-slate-800 transition-all border border-slate-900 w-full"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <span>Request this solution</span>
-                    <ArrowRight className="w-3 h-3 text-[#B88E20]" />
+                    <span>Request Solution</span>
+                    <ArrowRight className="w-3.5 h-3.5 text-[#D4AF37]" />
                   </Link>
                 </div>
               </div>
@@ -164,14 +164,14 @@ export const SolutionsPage: React.FC = () => {
                   </div>
                   <span>{ind.name}</span>
                 </div>
-                <p className="text-[11px] text-slate-600 leading-relaxed">
+                <p className="text-xs text-slate-600 leading-relaxed">
                   {ind.desc}
                 </p>
               </div>
             ))}
           </div>
 
-          <div className="text-center pt-2">
+          <div className="text-center pt-0 sm:pt-2">
             <Link
               to="/contact"
               className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl bg-[#111827] text-white font-bold text-xs shadow-md hover:bg-[#1F2937] hover:scale-[1.02] active:scale-[0.98] transition-all border border-[#111827]"

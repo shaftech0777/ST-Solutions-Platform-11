@@ -37,25 +37,25 @@ export const AboutPage: React.FC = () => {
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
           {/* Mission Card */}
-          <div className="p-8 sm:p-10 rounded-3xl bg-white border border-[#E2E5E0] shadow-sm space-y-4">
+          <div className="p-8 sm:p-10 rounded-3xl bg-[#111827] text-white border border-[#1F2937] shadow-xl space-y-4">
             <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-[#B88E20] flex items-center justify-center">
               <Compass className="w-6 h-6" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-950">Our Mission</h2>
-            <p className="text-sm text-slate-600 leading-relaxed">
+            <h2 className="text-2xl font-bold text-white">Our Mission</h2>
+            <p className="text-sm text-slate-300 leading-relaxed">
               To empower modern enterprises and growing businesses with robust, high-performance software systems that eliminate operational bottlenecks, reduce manual friction, and accelerate measurable business growth.
             </p>
-            <ul className="space-y-2.5 text-xs text-slate-700 pt-2 font-medium">
+            <ul className="space-y-2.5 text-xs text-slate-300 pt-2 font-medium">
               <li className="flex items-center space-x-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-[#D4AF37] flex-shrink-0" />
                 <span>Zero bloated dependencies or fragile templates</span>
               </li>
               <li className="flex items-center space-x-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-[#D4AF37] flex-shrink-0" />
                 <span>Direct architectural alignment with business logic</span>
               </li>
               <li className="flex items-center space-x-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-[#D4AF37] flex-shrink-0" />
                 <span>Transparent, milestone-based engineering sprints</span>
               </li>
             </ul>
@@ -185,10 +185,10 @@ export const AboutPage: React.FC = () => {
                   href={companyConfig.founder.portfolioUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-[#D4AF37] hover:bg-[#E5C158] text-slate-950 font-bold text-xs shadow-md transition-all group"
+                  className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl bg-white text-slate-950 font-bold text-xs shadow-md transition-all group hover:bg-slate-100 active:scale-[0.98]"
                 >
                   <span>View Official Portfolio</span>
-                  <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform text-slate-950" />
                 </a>
               </div>
             </div>

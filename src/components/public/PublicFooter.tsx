@@ -35,7 +35,7 @@ export const PublicFooter: React.FC = () => {
                 <span className="font-extrabold text-lg tracking-tight text-white font-mono">
                   ST-SOLUTIONS
                 </span>
-                <span className="text-[10px] tracking-wider uppercase font-semibold text-slate-400 font-sans">
+                <span className="text-xs font-semibold text-slate-400 font-sans mt-0.5">
                   Enterprise Technology Partner
                 </span>
               </div>
@@ -133,7 +133,7 @@ export const PublicFooter: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/apply" className="flex items-center space-x-1 py-1 hover:text-[#D4AF37] transition-colors text-amber-400 font-semibold">
+                <Link to="/apply" className="flex items-center space-x-1 py-1 hover:text-[#D4AF37] transition-colors">
                   <span>Member Application</span>
                   <ArrowUpRight className="w-3 h-3" />
                 </Link>
@@ -206,9 +206,10 @@ export const PublicFooter: React.FC = () => {
               href={companyConfig.founder.portfolioUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-[#D4AF37] transition-colors"
+              className="flex items-center space-x-1 hover:text-[#D4AF37] transition-colors"
             >
-              Founder Portfolio
+              <span>Founder Portfolio</span>
+              <ArrowUpRight className="w-3 h-3" />
             </a>
           </div>
         </div>

@@ -73,7 +73,7 @@ export const PublicNavbar: React.FC = () => {
             <span className="font-extrabold text-base tracking-tight text-slate-950 font-mono">
               ST-SOLUTIONS
             </span>
-            <span className="text-xs tracking-wider uppercase font-semibold text-slate-500 font-sans">
+            <span className="text-xs tracking-wider font-semibold text-slate-500 font-sans mt-0.5">
               Enterprise Technology
             </span>
           </div>
@@ -312,7 +312,7 @@ export const PublicNavbar: React.FC = () => {
             to="/contact"
             className={`px-3.5 py-2 rounded-lg transition-all ${
               isActive("/contact")
-                ? "text-[#D4AF37] font-semibold bg-slate-100 border-b-2 border-[#D4AF37]"
+                ? "text-[#D4AF37] font-semibold border-b-2 border-[#D4AF37]"
                 : "hover:text-slate-950 hover:bg-slate-100 border-b-2 border-transparent"
             }`}
           >
