@@ -77,7 +77,7 @@ export const HomePage: React.FC = () => {
           {/* Left Column: Headline, Description & CTAs */}
           <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
             {/* Enterprise Tag */}
-            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-slate-800 text-xs font-semibold tracking-wide">
+            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-300 text-slate-900 text-xs font-bold tracking-wide">
               <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-pulse" />
               <span>Digital solutions for modern businesses</span>
             </div>

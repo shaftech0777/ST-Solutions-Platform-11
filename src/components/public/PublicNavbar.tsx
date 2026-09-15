@@ -343,11 +343,11 @@ export const PublicNavbar: React.FC = () => {
 
           <Link
             to="/start-project"
-            className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-slate-950 text-white font-semibold text-xs shadow-sm hover:opacity-90 hover:scale-[1.02] active:scale-[0.98] transition-all border border-slate-800"
+            className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-transparent text-slate-900 font-semibold text-xs shadow-sm hover:bg-slate-50 hover:scale-[1.02] active:scale-[0.98] transition-all border border-slate-300"
             id="nav-start-project-cta"
           >
             <span>Start a Project</span>
-            <ArrowRight className="w-3.5 h-3.5 text-[#D4AF37]" />
+            <ArrowRight className="w-3.5 h-3.5 text-slate-700" />
           </Link>
         </div>
 
@@ -435,10 +435,10 @@ export const PublicNavbar: React.FC = () => {
           <div className="border-t border-slate-100 pt-4 space-y-3">
             <Link
               to="/start-project"
-              className="w-full flex items-center justify-center space-x-2 py-3 rounded-xl bg-slate-950 text-white font-semibold text-sm shadow-md"
+              className="w-full flex items-center justify-center space-x-2 py-3 rounded-xl bg-transparent text-slate-900 font-semibold text-sm shadow-sm border border-slate-300 hover:bg-slate-50"
             >
               <span>Start a Project</span>
-              <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
+              <ArrowRight className="w-4 h-4 text-slate-700" />
             </Link>
 
             <Link

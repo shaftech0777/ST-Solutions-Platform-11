@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { Globe, Code2, Brain, Workflow, ShoppingBag, Sparkles, Check, ArrowDown } from "lucide-react";
 
 interface NodeInfo {
@@ -9,6 +10,7 @@ interface NodeInfo {
   icon: React.ElementType;
   color: string;
   accent: string;
+  description?: string;
 }
 
 const pillars: NodeInfo[] = [
@@ -32,7 +34,8 @@ const pillars: NodeInfo[] = [
     id: "ai",
     name: "AI Solutions",
     category: "Intelligence",
-    tag: "Gemini / Agents / RAG",
+    tag: "Gemini / AI Agents / RAG",
+    description: "AI systems that understand your business knowledge and automate workflows.",
     icon: Brain,
     color: "from-purple-500/10 to-purple-600/5",
     accent: "text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-800" },
@@ -41,6 +44,7 @@ const pillars: NodeInfo[] = [
     name: "Automation",
     category: "Streamlined",
     tag: "Webhooks / Queues / Sync",
+    description: "Seamlessly connect your tools and eliminate manual data entry.",
     icon: Workflow,
     color: "from-amber-500/10 to-amber-600/5",
     accent: "text-amber-600 dark:text-[#D4AF37] border-amber-200 dark:border-amber-800" },
@@ -49,6 +53,7 @@ const pillars: NodeInfo[] = [
     name: "E-Commerce",
     category: "Transactions",
     tag: "Storefronts & POS",
+    description: "Secure, high-converting digital commerce experiences.",
     icon: ShoppingBag,
     color: "from-rose-500/10 to-rose-600/5",
     accent: "text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800" },
@@ -95,6 +100,8 @@ export const HeroArchitectureVisual: React.FC = () => {
               <button
                 key={pillar.id}
                 onClick={() => setActiveNode(pillar.id)}
+                aria-pressed={isSelected}
+                aria-label={`Select ${pillar.name} capability`}
                 className={`flex-1 min-w-[70px] p-2 rounded-xl border text-center transition-all flex flex-col items-center space-y-1 ${
                   isSelected
                     ? "bg-[#111827] text-white border-[#D4AF37] shadow-sm ring-1 ring-[#D4AF37]"
@@ -195,8 +202,11 @@ export const HeroArchitectureVisual: React.FC = () => {
             </div>
             <div className="bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-700 flex justify-between items-center">
               <span className="text-slate-400">STACK:</span>
-              <span className="text-blue-400 font-bold truncate ml-1">{selectedPillar.tag}</span>
+              <span className="text-blue-400 font-bold truncate ml-1" title={selectedPillar.tag}>{selectedPillar.tag}</span>
             </div>
+          </div>
+          <div className="bg-slate-900/50 mt-2 px-2.5 py-1.5 rounded-lg border border-slate-800 text-[10px] text-slate-300 font-sans leading-snug">
+            {selectedPillar.description}
           </div>
         </div>
 
@@ -223,9 +233,9 @@ export const HeroArchitectureVisual: React.FC = () => {
               </div>
             </div>
           </div>
-          <span className="text-[11px] font-mono font-bold text-slate-900 bg-[#D4AF37]/20 px-2.5 py-0.5 rounded-md border border-[#D4AF37]/40">
-            RESULTS
-          </span>
+          <Link to="/projects" className="text-[11px] font-mono font-bold text-slate-900 bg-[#D4AF37]/20 px-2.5 py-1 rounded-md border border-[#D4AF37]/40 hover:bg-[#D4AF37]/30 transition-colors flex items-center shadow-sm">
+            View Case Studies
+          </Link>
         </div>
       </div>
     </div>
