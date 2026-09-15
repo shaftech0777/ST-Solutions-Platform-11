@@ -67,14 +67,14 @@ export const PublicNavbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Brand Logo */}
         <Link to="/" className="flex items-center space-x-3 group" id="nav-brand-logo">
-          <div className="w-9 h-9 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center text-[#D4AF37] font-extrabold text-sm tracking-wider shadow-sm group-hover:border-[#D4AF37] transition-all">
+          <div className="w-9 h-9 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center text-[#876F23]_PRESERVE font-extrabold text-sm tracking-wider shadow-sm group-hover:border-[#876F23] transition-all">
             ST
           </div>
           <div className="flex flex-col">
             <span className="font-extrabold text-base tracking-tight text-slate-950 font-mono">
               ST-SOLUTIONS
             </span>
-            <span className="text-xs tracking-wider font-semibold text-slate-500 font-sans mt-0.5">
+            <span className="text-xs tracking-wider font-semibold text-slate-600 font-sans mt-0.5">
               Enterprise Technology
             </span>
           </div>
@@ -86,7 +86,7 @@ export const PublicNavbar: React.FC = () => {
             to="/"
             className={`px-3.5 py-2 rounded-lg transition-all ${
               isActive("/") && location.pathname === "/"
-                ? "text-[#D4AF37] font-semibold bg-slate-100 border-b-2 border-[#D4AF37]"
+                ? "text-[#876F23] font-semibold bg-slate-100 border-b-2 border-[#876F23]"
                 : "hover:text-slate-950 hover:bg-slate-100 border-b-2 border-transparent"
             }`}
           >
@@ -102,13 +102,13 @@ export const PublicNavbar: React.FC = () => {
             <button
               className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-lg transition-all ${
                 isActive("/services")
-                  ? "text-[#D4AF37] font-semibold bg-slate-100 border-b-2 border-[#D4AF37]"
+                  ? "text-[#876F23] font-semibold bg-slate-100 border-b-2 border-[#876F23]"
                   : "hover:text-slate-950 hover:bg-slate-100 border-b-2 border-transparent"
               }`}
               onClick={() => navigate("/services")}
             >
               <span>Services</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isServicesDropdownOpen ? "rotate-180 text-[#D4AF37]" : "text-slate-400"}`} />
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isServicesDropdownOpen ? "rotate-180 text-[#876F23]" : "text-slate-400"}`} />
             </button>
 
             {isServicesDropdownOpen && (
@@ -160,7 +160,7 @@ export const PublicNavbar: React.FC = () => {
                     to="/services#business-automation"
                     className="flex items-center space-x-3 p-2 rounded-xl hover:bg-slate-50 group transition-colors"
                   >
-                    <div className="w-7 h-7 rounded-lg bg-amber-500/10 text-[#D4AF37] flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <div className="w-7 h-7 rounded-lg bg-amber-500/10 text-[#876F23] flex items-center justify-center group-hover:scale-105 transition-transform">
                       <Workflow className="w-3.5 h-3.5" />
                     </div>
                     <div>
@@ -185,7 +185,7 @@ export const PublicNavbar: React.FC = () => {
                   <div className="border-t border-slate-100 pt-1 mt-1">
                     <Link
                       to="/services"
-                      className="flex items-center justify-between px-3 py-1.5 text-xs font-semibold text-[#D4AF37] hover:underline"
+                      className="flex items-center justify-between px-3 py-1.5 text-xs font-semibold text-[#876F23] hover:underline"
                     >
                       <span>Explore all services</span>
                       <ArrowRight className="w-3 h-3" />
@@ -205,13 +205,13 @@ export const PublicNavbar: React.FC = () => {
             <button
               className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-lg transition-all ${
                 isActive("/solutions")
-                  ? "text-[#D4AF37] font-semibold bg-slate-100 border-b-2 border-[#D4AF37]"
+                  ? "text-[#876F23] font-semibold bg-slate-100 border-b-2 border-[#876F23]"
                   : "hover:text-slate-950 hover:bg-slate-100 border-b-2 border-transparent"
               }`}
               onClick={() => navigate("/solutions")}
             >
               <span>Solutions</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isSolutionsDropdownOpen ? "rotate-180 text-[#D4AF37]" : "text-slate-400"}`} />
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isSolutionsDropdownOpen ? "rotate-180 text-[#876F23]" : "text-slate-400"}`} />
             </button>
 
             {isSolutionsDropdownOpen && (
@@ -238,7 +238,7 @@ export const PublicNavbar: React.FC = () => {
                     to="/solutions?goal=automate-business"
                     className="flex items-center space-x-3 p-2 rounded-xl hover:bg-slate-50 group transition-colors"
                   >
-                    <div className="w-7 h-7 rounded-lg bg-amber-500/10 text-[#D4AF37] flex items-center justify-center">
+                    <div className="w-7 h-7 rounded-lg bg-amber-500/10 text-[#876F23] flex items-center justify-center">
                       <Cpu className="w-3.5 h-3.5" />
                     </div>
                     <div>
@@ -276,7 +276,7 @@ export const PublicNavbar: React.FC = () => {
                   <div className="border-t border-slate-100 pt-1 mt-1">
                     <Link
                       to="/solutions"
-                      className="flex items-center justify-between px-3 py-1.5 text-xs font-semibold text-[#D4AF37] hover:underline"
+                      className="flex items-center justify-between px-3 py-1.5 text-xs font-semibold text-[#876F23] hover:underline"
                     >
                       <span>Explore all solutions</span>
                       <ArrowRight className="w-3 h-3" />
@@ -291,7 +291,7 @@ export const PublicNavbar: React.FC = () => {
             to="/projects"
             className={`px-3.5 py-2 rounded-lg transition-all ${
               isActive("/projects")
-                ? "text-[#D4AF37] font-semibold bg-slate-100 border-b-2 border-[#D4AF37]"
+                ? "text-[#876F23] font-semibold bg-slate-100 border-b-2 border-[#876F23]"
                 : "hover:text-slate-950 hover:bg-slate-100 border-b-2 border-transparent"
             }`}
           >
@@ -302,7 +302,7 @@ export const PublicNavbar: React.FC = () => {
             to="/about"
             className={`px-3.5 py-2 rounded-lg transition-all ${
               isActive("/about")
-                ? "text-[#D4AF37] font-semibold bg-slate-100 border-b-2 border-[#D4AF37]"
+                ? "text-[#876F23] font-semibold bg-slate-100 border-b-2 border-[#876F23]"
                 : "hover:text-slate-950 hover:bg-slate-100 border-b-2 border-transparent"
             }`}
           >
@@ -313,7 +313,7 @@ export const PublicNavbar: React.FC = () => {
             to="/contact"
             className={`px-3.5 py-2 rounded-lg transition-all ${
               isActive("/contact")
-                ? "text-[#D4AF37] font-semibold border-b-2 border-[#D4AF37]"
+                ? "text-[#876F23] font-semibold border-b-2 border-[#876F23]"
                 : "hover:text-slate-950 hover:bg-slate-100 border-b-2 border-transparent"
             }`}
           >
@@ -328,7 +328,7 @@ export const PublicNavbar: React.FC = () => {
               to="/dashboard"
               className="flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-900 bg-slate-100 hover:bg-slate-200 transition-colors"
             >
-              <LayoutDashboard className="w-3.5 h-3.5 text-[#D4AF37]" />
+              <LayoutDashboard className="w-3.5 h-3.5 text-[#876F23]" />
               <span>Portal Dashboard</span>
             </Link>
           ) : (
@@ -385,7 +385,7 @@ export const PublicNavbar: React.FC = () => {
             <Link
               to="/"
               className={`p-2.5 rounded-xl transition-all ${
-                isActive("/") && location.pathname === "/" ? "bg-slate-100 font-bold text-[#D4AF37]" : ""
+                isActive("/") && location.pathname === "/" ? "bg-slate-100 font-bold text-[#876F23]" : ""
               }`}
             >
               Home
@@ -393,7 +393,7 @@ export const PublicNavbar: React.FC = () => {
             <Link
               to="/services"
               className={`p-2.5 rounded-xl transition-all ${
-                isActive("/services") ? "bg-slate-100 font-bold text-[#D4AF37]" : ""
+                isActive("/services") ? "bg-slate-100 font-bold text-[#876F23]" : ""
               }`}
             >
               Services
@@ -401,7 +401,7 @@ export const PublicNavbar: React.FC = () => {
             <Link
               to="/solutions"
               className={`p-2.5 rounded-xl transition-all ${
-                isActive("/solutions") ? "bg-slate-100 font-bold text-[#D4AF37]" : ""
+                isActive("/solutions") ? "bg-slate-100 font-bold text-[#876F23]" : ""
               }`}
             >
               Solutions
@@ -409,7 +409,7 @@ export const PublicNavbar: React.FC = () => {
             <Link
               to="/projects"
               className={`p-2.5 rounded-xl transition-all ${
-                isActive("/projects") ? "bg-slate-100 font-bold text-[#D4AF37]" : ""
+                isActive("/projects") ? "bg-slate-100 font-bold text-[#876F23]" : ""
               }`}
             >
               Projects
@@ -417,7 +417,7 @@ export const PublicNavbar: React.FC = () => {
             <Link
               to="/about"
               className={`p-2.5 rounded-xl transition-all ${
-                isActive("/about") ? "bg-slate-100 font-bold text-[#D4AF37]" : ""
+                isActive("/about") ? "bg-slate-100 font-bold text-[#876F23]" : ""
               }`}
             >
               About
@@ -425,7 +425,7 @@ export const PublicNavbar: React.FC = () => {
             <Link
               to="/contact"
               className={`p-2.5 rounded-xl transition-all ${
-                isActive("/contact") ? "bg-slate-100 font-bold text-[#D4AF37]" : ""
+                isActive("/contact") ? "bg-slate-100 font-bold text-[#876F23]" : ""
               }`}
             >
               Contact
@@ -445,7 +445,7 @@ export const PublicNavbar: React.FC = () => {
               to="/apply"
               className="w-full flex items-center justify-center space-x-2 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-semibold text-xs hover:bg-slate-50 transition-colors"
             >
-              <UserPlus className="w-4 h-4 text-[#D4AF37]" />
+              <UserPlus className="w-4 h-4 text-[#876F23]" />
               <span>Member Application</span>
             </Link>
 
@@ -455,7 +455,7 @@ export const PublicNavbar: React.FC = () => {
                 href={companyConfig.contact.whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-mono text-[#D4AF37] font-semibold"
+                className="font-mono text-[#876F23] font-semibold"
               >
                 {companyConfig.contact.whatsappDisplay}
               </a>

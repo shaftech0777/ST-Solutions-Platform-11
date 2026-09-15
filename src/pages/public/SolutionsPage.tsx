@@ -64,7 +64,7 @@ export const SolutionsPage: React.FC = () => {
         </div>
         <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-950 tracking-tight max-w-3xl mx-auto">
           Technology built around{" "}
-          <span className="text-[#B88E20]">your business.</span>
+          <span className="text-[#8D6D19]">your business.</span>
         </h1>
         <p className="text-base sm:text-lg text-slate-700 max-w-2xl mx-auto leading-relaxed">
           Every business challenges software differently. Tell us what you want to achieve, and we'll show you the exact technological path forward.
@@ -74,7 +74,7 @@ export const SolutionsPage: React.FC = () => {
       {/* Problem Options ("I want to...") */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center space-y-2 mb-8 sm:mb-12">
-          <div className="text-xs font-mono font-bold text-[#B88E20] uppercase tracking-wider">
+          <div className="text-xs font-mono font-bold text-[#8D6D19] uppercase tracking-wider">
             Discovery Matrix
           </div>
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-950 tracking-tight">
@@ -140,7 +140,7 @@ export const SolutionsPage: React.FC = () => {
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="p-8 sm:p-12 rounded-3xl bg-white border border-[#E2E5E0] shadow-lg space-y-8">
           <div className="text-center space-y-2 max-w-2xl mx-auto">
-            <span className="text-xs font-mono font-bold text-[#B88E20] uppercase tracking-wider">
+            <span className="text-xs font-mono font-bold text-[#8D6D19] uppercase tracking-wider">
               Sectors & Environments
             </span>
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-950 tracking-tight">
@@ -158,7 +158,7 @@ export const SolutionsPage: React.FC = () => {
                 className="p-4 rounded-2xl bg-[#F1F2EE] border border-[#E2E5E0] space-y-2 hover:border-[#D4AF37] transition-colors"
               >
                 <div className="flex items-center space-x-2 text-slate-950 font-bold text-xs sm:text-sm">
-                  <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-[#B88E20] flex items-center justify-center flex-shrink-0 border border-amber-500/20">
+                  <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-[#8D6D19] flex items-center justify-center flex-shrink-0 border border-amber-500/20">
                     {industryIconMap[ind.icon] || <Building2 className="w-4 h-4" />}
                   </div>
                   <span>{ind.name}</span>

@@ -1,13 +1,9 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ST-Solutions</title>
-    <meta name="description" content="ST-SOLUTIONS Enterprise Operations Platform — Unified multi-tenant workspace telemetry, project delivery, financial ledger, and organizational governance." />
-    <meta property="og:title" content="ST-Solutions" />
-    <meta property="og:description" content="ST-SOLUTIONS Enterprise Operations Platform — Unified multi-tenant workspace telemetry, project delivery, financial ledger, and organizational governance." />
-  
+const fs = require('fs');
+const file = 'index.html';
+let content = fs.readFileSync(file, 'utf8');
+
+// Add canonical and JSON-LD
+const headInjection = `
     <link rel="canonical" href="https://st-solutions-official.vercel.app/" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://st-solutions-official.vercel.app/" />
@@ -33,10 +29,10 @@
       ]
     }
     </script>
-</head>
-  <body class="bg-[#F7F7F3] text-[#090D16] antialiased">
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
+`;
 
+if (!content.includes('<link rel="canonical"')) {
+  content = content.replace('</head>', headInjection + '</head>');
+  fs.writeFileSync(file, content);
+  console.log("Patched index.html with SEO elements");
+}

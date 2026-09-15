@@ -116,13 +116,13 @@ export const HomePage: React.FC = () => {
             </div>
 
             {/* Quick Trust Checks */}
-            <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2 text-xs text-slate-700 font-medium">
+            <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2 text-sm text-slate-700 font-medium">
               <div className="flex items-center space-x-1.5">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                 <span>Zero bloated templates</span>
               </div>
               <div className="flex items-center space-x-1.5">
-                <CheckCircle2 className="w-4 h-4 text-[#B88E20] flex-shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-[#8D6D19] flex-shrink-0" />
                 <span>Direct lead architect oversight</span>
               </div>
               <div className="flex items-center space-x-1.5">
@@ -146,7 +146,7 @@ export const HomePage: React.FC = () => {
               <Clock className="w-3.5 h-3.5 text-[#D4AF37]" />
             </div>
             <div className="text-xl sm:text-2xl font-extrabold text-slate-950 font-mono">24h</div>
-            <div className="text-xs text-slate-600 font-medium">Technical scoping response</div>
+            <div className="text-sm text-slate-600 font-medium">Technical scoping response</div>
           </div>
 
           <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E2E5E0] shadow-sm flex flex-col justify-between space-y-1">
@@ -155,7 +155,7 @@ export const HomePage: React.FC = () => {
               <Terminal className="w-3.5 h-3.5 text-slate-400" />
             </div>
             <div className="text-xl sm:text-2xl font-extrabold text-slate-950 font-mono">100%</div>
-            <div className="text-xs text-slate-600 font-medium">Full-stack TypeScript & SQL</div>
+            <div className="text-sm text-slate-600 font-medium">Full-stack TypeScript & SQL</div>
           </div>
 
           <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E2E5E0] shadow-sm flex flex-col justify-between space-y-1">
@@ -164,7 +164,7 @@ export const HomePage: React.FC = () => {
               <Shield className="w-3.5 h-3.5 text-emerald-600" />
             </div>
             <div className="text-xl sm:text-2xl font-extrabold text-slate-950 font-mono">RBAC</div>
-            <div className="text-xs text-slate-600 font-medium">Isolated multi-tenant data</div>
+            <div className="text-sm text-slate-600 font-medium">Isolated multi-tenant data</div>
           </div>
 
           <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E2E5E0] shadow-sm flex flex-col justify-between space-y-1">
@@ -173,22 +173,44 @@ export const HomePage: React.FC = () => {
               <Sparkles className="w-3.5 h-3.5 text-slate-400" />
             </div>
             <div className="text-xl sm:text-2xl font-extrabold text-slate-950 font-mono">Direct</div>
-            <div className="text-xs text-slate-600 font-medium">Zero vendor lock-in</div>
+            <div className="text-sm text-slate-600 font-medium">Zero vendor lock-in</div>
+          </div>
+        </div>
+      </section>
+
+      
+      {/* AEO / Entity Clarity Section */}
+      <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pb-8 sm:pb-16" aria-labelledby="about-st-solutions">
+        <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-10 flex flex-col md:flex-row gap-8 items-start">
+          <div className="md:w-1/3">
+            <h2 id="about-st-solutions" className="text-xl sm:text-2xl font-bold text-slate-950 mb-2">
+              What is ST-SOLUTIONS?
+            </h2>
+            <div className="w-12 h-1.5 bg-[#D4AF37] rounded-full"></div>
+          </div>
+          <div className="md:w-2/3 space-y-4 text-sm sm:text-base text-slate-700">
+            <p>
+              <strong>ST-SOLUTIONS</strong> is a digital solutions company that helps modern businesses build custom websites, scalable software systems, AI solutions, business automation workflows, and tailored e-commerce platforms.
+            </p>
+            <p>
+              We solve operational friction by engineering technology around the way your business actually works, providing end-to-end digital transformation. From retail POS platforms to operational CRM dashboards and 24/7 AI assistants, our solutions deliver clear business value, efficiency, and growth.
+            </p>
           </div>
         </div>
       </section>
 
       {/* 2. SERVICES SECTION ("What can we build for your business?") */}
+
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center space-y-2 mb-8 sm:mb-12">
-          <div className="inline-flex items-center space-x-1.5 text-xs font-bold text-[#B88E20] uppercase tracking-wider font-mono">
+          <div className="inline-flex items-center space-x-1.5 text-xs font-bold text-[#8D6D19] uppercase tracking-wider font-mono">
             <Layers className="w-3.5 h-3.5" />
             <span>Core Capabilities</span>
           </div>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-950 tracking-tight">
             What can we build for your business?
           </h2>
-          <p className="text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
+          <p className="text-sm sm:text-base text-slate-600 max-w-xl mx-auto">
             Choose an area below to explore how ST-Solutions engineers technology tailored to your operations.
           </p>
         </div>
@@ -212,7 +234,7 @@ export const HomePage: React.FC = () => {
                       {service.id === "e-commerce" && <ShoppingBag className="w-5 h-5" />}
                       {service.id === "digital-transformation" && <Cpu className="w-5 h-5" />}
                     </div>
-                    <span className="text-xl font-black font-mono text-slate-300 group-hover:text-[#B88E20] transition-colors">
+                    <span className="text-xl font-black font-mono text-slate-300 group-hover:text-[#8D6D19] transition-colors">
                       {stepNum}
                     </span>
                   </div>
@@ -230,7 +252,7 @@ export const HomePage: React.FC = () => {
                   <div className="space-y-1.5 pt-2 border-t border-[#E2E5E0]/60">
                     {service.builds.slice(0, 2).map((b, bIdx) => (
                       <div key={bIdx} className="flex items-center space-x-1.5 text-xs text-slate-700">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-[#B88E20] flex-shrink-0" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#8D6D19] flex-shrink-0" />
                         <span className="truncate">{b}</span>
                       </div>
                     ))}
@@ -254,10 +276,10 @@ export const HomePage: React.FC = () => {
           <div className="space-y-2">
             <div className="inline-flex items-center space-x-2 text-xs font-bold text-slate-900 uppercase tracking-wider font-mono">
               <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
-              <span>CAPABILITIES &amp; SHOWCASES</span>
+              <span>COMMERCIAL PROOF</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight">
-              What We Build for Growing Businesses
+              Explore Our Work & Selected Projects
             </h2>
             <p className="text-sm text-slate-600 max-w-xl">
               From custom e-commerce and retail POS platforms to operational CRM dashboards and 24/7 AI customer assistants, explore real systems we can build and deploy for your organization.
@@ -397,7 +419,7 @@ export const HomePage: React.FC = () => {
       {/* 5. PROCESS SECTION (01 Discover -> 06 Support) */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center space-y-2 mb-10 sm:mb-14">
-          <div className="inline-flex items-center space-x-1.5 text-xs font-bold text-[#B88E20] uppercase tracking-wider font-mono">
+          <div className="inline-flex items-center space-x-1.5 text-xs font-bold text-[#8D6D19] uppercase tracking-wider font-mono">
             <span>Engineering Discipline</span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight">
@@ -415,7 +437,7 @@ export const HomePage: React.FC = () => {
               className="p-6 rounded-3xl bg-white border border-[#E2E5E0] shadow-sm space-y-3 relative group hover:border-[#D4AF37] transition-colors"
             >
               <div className="flex items-center justify-between">
-                <span className="text-2xl font-black font-mono text-slate-300 group-hover:text-[#B88E20] transition-colors">
+                <span className="text-2xl font-black font-mono text-slate-300 group-hover:text-[#8D6D19] transition-colors">
                   {step.step}
                 </span>
                 <div className="w-8 h-8 rounded-xl bg-[#F1F2EE] text-slate-900 flex items-center justify-center text-xs font-bold font-mono">
@@ -424,7 +446,7 @@ export const HomePage: React.FC = () => {
               </div>
 
               <h3 className="text-base font-bold text-slate-950">{step.title}</h3>
-              <div className="text-[11px] font-semibold text-[#B88E20] font-mono">{step.tagline}</div>
+              <div className="text-[11px] font-semibold text-[#8D6D19] font-mono">{step.tagline}</div>
               <p className="text-xs text-slate-600 leading-relaxed">
                 {step.description}
               </p>

@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /login
+Disallow: /portal
+Disallow: /dashboard
+
+Sitemap: https://st-solutions-official.vercel.app/sitemap.xml
