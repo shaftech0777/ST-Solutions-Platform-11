@@ -12,9 +12,9 @@ import {
   CheckCircle2,
   ShieldCheck,
   Zap,
-  FileText,
-} from "lucide-react";
-import { servicesData, companyConfig } from "../../data/companyConfig.js";
+  FileText } from "lucide-react";
+import { servicesData } from "../../data/companyConfig.js";
+import { usePublicCMS } from "../../context/PublicCMSContext.js";
 import { ProjectInquiryModal } from "../../components/public/ProjectInquiryModal.js";
 
 const iconMap: Record<string, React.ReactNode> = {
@@ -24,10 +24,10 @@ const iconMap: Record<string, React.ReactNode> = {
   Workflow: <Workflow className="w-6 h-6" />,
   ShoppingBag: <ShoppingBag className="w-6 h-6" />,
   Cpu: <Cpu className="w-6 h-6" />,
-  Layers: <Layers className="w-6 h-6" />,
-};
+  Layers: <Layers className="w-6 h-6" /> };
 
 export const ServicesPage: React.FC = () => {
+  const companyConfig = usePublicCMS();
   const [selectedServiceTitle, setSelectedServiceTitle] = useState<string | null>(null);
   const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false);
 

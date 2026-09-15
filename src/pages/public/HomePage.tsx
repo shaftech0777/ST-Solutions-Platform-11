@@ -20,15 +20,16 @@ import {
   Layers,
   Shield,
   Clock,
-  Terminal,
-} from "lucide-react";
-import { companyConfig, servicesData, processSteps } from "../../data/companyConfig.js";
+  Terminal } from "lucide-react";
+import { servicesData, processSteps } from "../../data/companyConfig.js";
+import { usePublicCMS } from "../../context/PublicCMSContext.js";
 import { HeroArchitectureVisual } from "../../components/public/HeroArchitectureVisual.js";
 import { ProjectCardVisual } from "../../components/public/ProjectCardVisual.js";
 import { WeChatModal } from "../../components/public/WeChatModal.js";
 import { showcaseService, ShowcaseProject } from "../../api/services/showcase.service.js";
 
 export const HomePage: React.FC = () => {
+  const companyConfig = usePublicCMS();
   const [isWeChatModalOpen, setIsWeChatModalOpen] = useState(false);
   const [featuredProjects, setFeaturedProjects] = useState<ShowcaseProject[]>([]);
   const [isLoadingProjects, setIsLoadingProjects] = useState(true);

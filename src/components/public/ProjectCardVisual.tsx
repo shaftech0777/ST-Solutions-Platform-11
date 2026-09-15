@@ -15,8 +15,7 @@ import {
   Clock,
   Shield,
   Smartphone,
-  CreditCard,
-} from "lucide-react";
+  CreditCard } from "lucide-react";
 
 interface ProjectCardVisualProps {
   projectId: string;

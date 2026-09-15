@@ -30,8 +30,7 @@ export const AIAssistantPage: React.FC = () => {
       text: `Hello! I am the ST AI Assistant, powered by Gemini and trained on ST-Solutions platform telemetry. I can analyze project budgets, draft client proposals, review RBAC roles, or generate operational reports for ${
         currentOrganization?.name || "your organization"
       }. How can I assist you today?`,
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    },
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) },
   ]);
 
   const quickPrompts = [
@@ -49,8 +48,7 @@ export const AIAssistantPage: React.FC = () => {
       id: Date.now().toString(),
       sender: "user",
       text: queryText,
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    };
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) };
 
     setMessages((prev) => [...prev, userMsg]);
     if (!textToSend) setPrompt("");
@@ -59,8 +57,7 @@ export const AIAssistantPage: React.FC = () => {
     try {
       const res = await aiService.queryAi(queryText, {
         organizationId: currentOrganization?.id,
-        workspaceId: currentWorkspace?.id,
-      });
+        workspaceId: currentWorkspace?.id });
 
       const aiMsgText =
         res.data?.reply ||
@@ -73,8 +70,7 @@ export const AIAssistantPage: React.FC = () => {
         id: (Date.now() + 1).toString(),
         sender: "ai",
         text: aiMsgText,
-        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      };
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) };
 
       setMessages((prev) => [...prev, aiMsg]);
     } catch (err: any) {
@@ -85,8 +81,7 @@ export const AIAssistantPage: React.FC = () => {
         text: `[ST-AI Intelligence Engine]\nAnalyzed request: "${queryText}"\n\nContext Scope: ${
           currentOrganization?.name || "ST-Solutions Enterprise"
         } / ${currentWorkspace?.name || "Default Workspace"}\n\nSummary:\n• Workspace Status: Optimal\n• Active Pipeline Projects: 12\n• Security Policy Compliance: 100%\n• Recommended Action: Review quarterly deliverables and verify payment clearance.`,
-        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      };
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) };
       setMessages((prev) => [...prev, fallbackAiMsg]);
     } finally {
       setIsLoading(false);
@@ -108,8 +103,7 @@ export const AIAssistantPage: React.FC = () => {
                   id: "1",
                   sender: "ai",
                   text: "Chat context cleared. How can I assist you with ST-Solutions platform operations?",
-                  timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-                },
+                  timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) },
               ]);
               showToast("Chat context reset", "info");
             }}

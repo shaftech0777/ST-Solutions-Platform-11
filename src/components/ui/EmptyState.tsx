@@ -15,8 +15,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   description,
   actionLabel,
   onAction,
-  icon,
-}) => {
+  icon }) => {
   return (
     <div className="flex flex-col items-center justify-center p-8 lg:p-12 text-center rounded-2xl border border-dashed border-slate-300 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 my-4">
       <div className="p-4 rounded-full bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/20 mb-4 shrink-0">
@@ -46,8 +45,7 @@ export interface ErrorStateProps {
 export const ErrorState: React.FC<ErrorStateProps> = ({
   title = "Failed to load data",
   message = "An error occurred while communicating with the server. Please check your connection and try again.",
-  onRetry,
-}) => {
+  onRetry }) => {
   return (
     <div className="flex flex-col items-center justify-center p-8 text-center rounded-2xl border border-red-500/20 bg-red-500/5 my-4">
       <div className="p-3 rounded-full bg-red-500/10 text-red-500 mb-3">

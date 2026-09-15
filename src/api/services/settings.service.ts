@@ -66,4 +66,20 @@ export const settingsService = {
       body: { enabled },
     });
   },
+
+  async getCMSSection<T>(key: string): Promise<T | null> {
+    try {
+      const response = await apiClient<any>(`/settings/cms/${key}`);
+      return response?.content ? JSON.parse(response.content) : null;
+    } catch (err) {
+      return null;
+    }
+  },
+
+  async updateCMSSection(key: string, data: any) {
+    return apiClient(`/settings/cms/${key}`, {
+      method: "PUT",
+      body: { content: data },
+    });
+  },
 };

@@ -23,8 +23,7 @@ import {
   X,
   FileText,
   HelpCircle,
-  Sparkles,
-} from "lucide-react";
+  Sparkles } from "lucide-react";
 import { inquiriesService } from "../api/services/inquiries.service.js";
 import { useAuth } from "../context/AuthContext.js";
 import {
@@ -32,8 +31,7 @@ import {
   InquiryPriority,
   InquiryStatus,
   ProjectInquiry,
-  ProjectInquiryStats,
-} from "../types/index.js";
+  ProjectInquiryStats } from "../types/index.js";
 
 const STATUS_CONFIG: Record<
   InquiryStatus,
@@ -44,8 +42,7 @@ const STATUS_CONFIG: Record<
   IN_PROGRESS: { label: "In Discussion", bg: "bg-amber-500/10", text: "text-amber-800", border: "border-amber-500/30" },
   CONVERTED: { label: "Converted", bg: "bg-emerald-500/10", text: "text-emerald-700", border: "border-emerald-500/30" },
   CLOSED: { label: "Closed", bg: "bg-slate-500/10", text: "text-slate-700", border: "border-slate-500/30" },
-  SPAM: { label: "Spam / Invalid", bg: "bg-rose-500/10", text: "text-rose-700", border: "border-rose-500/30" },
-};
+  SPAM: { label: "Spam / Invalid", bg: "bg-rose-500/10", text: "text-rose-700", border: "border-rose-500/30" } };
 
 const PRIORITY_CONFIG: Record<
   InquiryPriority,
@@ -54,8 +51,7 @@ const PRIORITY_CONFIG: Record<
   LOW: { label: "Low", bg: "bg-slate-100", text: "text-slate-600" },
   NORMAL: { label: "Normal", bg: "bg-blue-100", text: "text-blue-700" },
   HIGH: { label: "High", bg: "bg-amber-100", text: "text-amber-800" },
-  URGENT: { label: "Urgent", bg: "bg-rose-100", text: "text-rose-700" },
-};
+  URGENT: { label: "Urgent", bg: "bg-rose-100", text: "text-rose-700" } };
 
 export const InquiriesPage: React.FC = () => {
   const { currentUser } = useAuth();
@@ -119,8 +115,7 @@ export const InquiriesPage: React.FC = () => {
             status: statusFilter !== "ALL" ? statusFilter : undefined,
             priority: priorityFilter !== "ALL" ? priorityFilter : undefined,
             page,
-            limit: 15,
-          }),
+            limit: 15 }),
           inquiriesService.getStatistics().catch(() => null),
         ]);
 
@@ -232,8 +227,7 @@ export const InquiriesPage: React.FC = () => {
       const res = await inquiriesService.recordContact(inquiry.id, {
         contactMethod: method,
         notes: `Initiated contact via ${method} from admin dashboard.`,
-        updateStatusToContacted: inquiry.status === "NEW",
-      });
+        updateStatusToContacted: inquiry.status === "NEW" });
       const updated: ProjectInquiry = (res as any)?.data || res;
 
       setInquiries((prev) => prev.map((item) => (item.id === inquiry.id ? updated : item)));
@@ -321,44 +315,38 @@ export const InquiriesPage: React.FC = () => {
             value: stats?.total ?? inquiries.length,
             color: "text-slate-950",
             bg: "bg-white",
-            border: "border-[#E2E5E0]",
-          },
+            border: "border-[#E2E5E0]" },
           {
             label: "New Leads",
             value: stats?.newCount ?? inquiries.filter((i) => i.status === "NEW").length,
             color: "text-blue-700",
             bg: "bg-blue-50/60",
             border: "border-blue-200",
-            badge: "Needs Action",
-          },
+            badge: "Needs Action" },
           {
             label: "Contacted",
             value: stats?.contactedCount ?? inquiries.filter((i) => i.status === "CONTACTED").length,
             color: "text-purple-700",
             bg: "bg-purple-50/60",
-            border: "border-purple-200",
-          },
+            border: "border-purple-200" },
           {
             label: "In Discussion",
             value: stats?.inProgressCount ?? inquiries.filter((i) => i.status === "IN_PROGRESS").length,
             color: "text-amber-800",
             bg: "bg-amber-50/60",
-            border: "border-amber-200",
-          },
+            border: "border-amber-200" },
           {
             label: "Converted",
             value: stats?.convertedCount ?? inquiries.filter((i) => i.status === "CONVERTED").length,
             color: "text-emerald-700",
             bg: "bg-emerald-50/60",
-            border: "border-emerald-200",
-          },
+            border: "border-emerald-200" },
           {
             label: "Urgent Priority",
             value: stats?.urgentCount ?? inquiries.filter((i) => i.priority === "URGENT").length,
             color: "text-rose-700",
             bg: "bg-rose-50/60",
-            border: "border-rose-200",
-          },
+            border: "border-rose-200" },
         ].map((kpi, idx) => (
           <div
             key={idx}
@@ -489,8 +477,7 @@ export const InquiriesPage: React.FC = () => {
                           day: "numeric",
                           year: "numeric",
                           hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                          minute: "2-digit" })}
                       </span>
                     </div>
 

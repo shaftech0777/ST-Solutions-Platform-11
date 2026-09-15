@@ -18,8 +18,7 @@ import {
   ListOrdered,
   ToggleLeft,
   ToggleRight,
-  ExternalLink,
-} from "lucide-react";
+  ExternalLink } from "lucide-react";
 import { Button, IconButton } from "../ui/Button.js";
 import { Badge } from "../ui/Badge.js";
 import { Card } from "../ui/Card.js";
@@ -100,8 +99,7 @@ export const ApplicationFormBuilder: React.FC = () => {
     placeholder: "",
     helpText: "",
     category: "GENERAL",
-    isActive: true,
-  });
+    isActive: true });
 
   const loadQuestions = async () => {
     setIsLoading(true);
@@ -118,8 +116,7 @@ export const ApplicationFormBuilder: React.FC = () => {
       addToast({
         title: "Error loading form builder",
         description: err.message || "Failed to load application questions",
-        type: "error",
-      });
+        type: "error" });
     } finally {
       setIsLoading(false);
     }
@@ -140,8 +137,7 @@ export const ApplicationFormBuilder: React.FC = () => {
       placeholder: "",
       helpText: "",
       category: "GENERAL",
-      isActive: true,
-    });
+      isActive: true });
     setIsEditModalOpen(true);
   };
 
@@ -162,8 +158,7 @@ export const ApplicationFormBuilder: React.FC = () => {
       placeholder: q.placeholder || "",
       helpText: q.helpText || "",
       category: q.category || "GENERAL",
-      isActive: q.isActive !== false,
-    });
+      isActive: q.isActive !== false });
     setIsEditModalOpen(true);
   };
 
@@ -172,15 +167,13 @@ export const ApplicationFormBuilder: React.FC = () => {
     setFormData((prev) => ({
       ...prev,
       options: [...prev.options, prev.newOptionText.trim()],
-      newOptionText: "",
-    }));
+      newOptionText: "" }));
   };
 
   const handleRemoveOption = (indexToRemove: number) => {
     setFormData((prev) => ({
       ...prev,
-      options: prev.options.filter((_, idx) => idx !== indexToRemove),
-    }));
+      options: prev.options.filter((_, idx) => idx !== indexToRemove) }));
   };
 
   const handleSaveQuestion = async (e: React.FormEvent) => {
@@ -189,8 +182,7 @@ export const ApplicationFormBuilder: React.FC = () => {
       addToast({
         title: "Validation Error",
         description: "Question prompt text is required",
-        type: "error",
-      });
+        type: "error" });
       return;
     }
 
@@ -204,26 +196,22 @@ export const ApplicationFormBuilder: React.FC = () => {
         placeholder: formData.placeholder.trim() || undefined,
         helpText: formData.helpText.trim() || undefined,
         category: formData.category,
-        isActive: formData.isActive,
-      };
+        isActive: formData.isActive };
 
       if (editingQuestion) {
         await applicantsService.updateQuestion(editingQuestion.id, payload);
         addToast({
           title: "Question Updated",
           description: "Application field modified successfully",
-          type: "success",
-        });
+          type: "success" });
       } else {
         await applicantsService.createQuestion({
           ...payload,
-          orderNumber: questions.length + 1,
-        });
+          orderNumber: questions.length + 1 });
         addToast({
           title: "Question Created",
           description: "New application field added to public candidate form",
-          type: "success",
-        });
+          type: "success" });
       }
 
       setIsEditModalOpen(false);
@@ -232,8 +220,7 @@ export const ApplicationFormBuilder: React.FC = () => {
       addToast({
         title: "Save Failed",
         description: err.message || "Failed to save application question",
-        type: "error",
-      });
+        type: "error" });
     } finally {
       setIsSaving(false);
     }
@@ -246,16 +233,14 @@ export const ApplicationFormBuilder: React.FC = () => {
       addToast({
         title: "Question Removed",
         description: "Field has been deactivated or deleted from application form",
-        type: "success",
-      });
+        type: "success" });
       setDeletingQuestion(null);
       await loadQuestions();
     } catch (err: any) {
       addToast({
         title: "Delete Failed",
         description: err.message || "Failed to remove question",
-        type: "error",
-      });
+        type: "error" });
     }
   };
 
@@ -271,8 +256,7 @@ export const ApplicationFormBuilder: React.FC = () => {
     // Build reorder payload
     const questionOrders = newQuestions.map((q, idx) => ({
       id: q.id,
-      orderNumber: idx + 1,
-    }));
+      orderNumber: idx + 1 }));
 
     setQuestions(newQuestions);
 
@@ -281,14 +265,12 @@ export const ApplicationFormBuilder: React.FC = () => {
       addToast({
         title: "Order Saved",
         description: "Application form sequence updated",
-        type: "success",
-      });
+        type: "success" });
     } catch (err: any) {
       addToast({
         title: "Reorder Failed",
         description: err.message || "Failed to persist question ordering",
-        type: "error",
-      });
+        type: "error" });
       await loadQuestions();
     }
   };
@@ -297,8 +279,7 @@ export const ApplicationFormBuilder: React.FC = () => {
     try {
       const nextActive = q.isActive === false;
       await applicantsService.updateQuestion(q.id, {
-        isActive: nextActive,
-      });
+        isActive: nextActive });
       setQuestions((prev) =>
         prev.map((item) => (item.id === q.id ? { ...item, isActive: nextActive } : item))
       );
@@ -307,14 +288,12 @@ export const ApplicationFormBuilder: React.FC = () => {
         description: nextActive
           ? "Field is now active on candidate application form"
           : "Field hidden from candidate application form",
-        type: "info",
-      });
+        type: "info" });
     } catch (err: any) {
       addToast({
         title: "Update Failed",
         description: err.message || "Could not toggle question status",
-        type: "error",
-      });
+        type: "error" });
     }
   };
 
@@ -494,8 +473,7 @@ export const ApplicationFormBuilder: React.FC = () => {
           description="Create custom qualification and assessment fields to dynamically gather structured candidate profiles."
           action={{
             label: "Create First Question",
-            onClick: openCreateModal,
-          }}
+            onClick: openCreateModal }}
         />
       ) : (
         /* Questions Management List */

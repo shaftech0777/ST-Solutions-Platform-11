@@ -13,8 +13,7 @@ import {
   getStoredWsId,
   setStoredWsId,
   isTokenExpired,
-  performTokenRefresh,
-} from "../api/client.js";
+  performTokenRefresh } from "../api/client.js";
 
 interface AuthContextType {
   currentUser: User | null;
@@ -131,11 +130,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 id: rawData.roleId || "",
                 name: rawData.roleName,
                 permissions: (rawData.permissions || []).map((p: string) => ({
-                  permission: { id: p, name: p },
-                })),
-              }
-            : rawData.role || rawData.user?.role || null,
-        };
+                  permission: { id: p, name: p } })) }
+            : rawData.role || rawData.user?.role || null };
 
         setCurrentUser(userObj);
 
@@ -276,8 +272,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         logout,
         switchOrganization,
         switchWorkspace,
-        refreshUser,
-      }}
+        refreshUser }}
     >
       {children}
     </AuthContext.Provider>

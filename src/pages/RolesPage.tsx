@@ -19,8 +19,7 @@ import {
   AlertCircle,
   ChevronRight,
   Shield,
-  FileCode,
-} from "lucide-react";
+  FileCode } from "lucide-react";
 import { PageHeader } from "../components/shell/PageHeader.js";
 import { Table, TableHeader, TableRow, TableHead, TableCell } from "../components/ui/Table.js";
 import { Button, IconButton } from "../components/ui/Button.js";
@@ -161,14 +160,12 @@ export const RolesPage: React.FC = () => {
       await rolesService.createRole({
         name: newRoleName.trim().toUpperCase().replace(/\s+/g, "_"),
         description: newRoleDesc.trim() || undefined,
-        permissionIds: selectedPermissionIds,
-      });
+        permissionIds: selectedPermissionIds });
 
       addToast({
         type: "success",
         title: "Role Created",
-        message: `Security role ${newRoleName.toUpperCase()} has been created.`,
-      });
+        message: `Security role ${newRoleName.toUpperCase()} has been created.` });
 
       setIsCreateModalOpen(false);
       setNewRoleName("");
@@ -205,16 +202,14 @@ export const RolesPage: React.FC = () => {
       addToast({
         type: "success",
         title: "Permissions Updated",
-        message: `Assigned ${selectedPermissionIds.length} permissions to ${roleToManagePermissions.name}.`,
-      });
+        message: `Assigned ${selectedPermissionIds.length} permissions to ${roleToManagePermissions.name}.` });
       setRoleToManagePermissions(null);
       loadData();
     } catch (err: any) {
       addToast({
         type: "danger",
         title: "Update Failed",
-        message: err.message || "Failed to assign permissions.",
-      });
+        message: err.message || "Failed to assign permissions." });
     } finally {
       setIsSubmitting(false);
     }
@@ -228,16 +223,14 @@ export const RolesPage: React.FC = () => {
       addToast({
         type: "info",
         title: "Role Deleted",
-        message: `Security role ${roleToDelete.name} has been removed.`,
-      });
+        message: `Security role ${roleToDelete.name} has been removed.` });
       setRoleToDelete(null);
       loadData();
     } catch (err: any) {
       addToast({
         type: "danger",
         title: "Deletion Prohibited",
-        message: err.message || "Cannot delete this system role.",
-      });
+        message: err.message || "Cannot delete this system role." });
     } finally {
       setIsDeleting(false);
     }
@@ -348,8 +341,7 @@ export const RolesPage: React.FC = () => {
               <Select
                 options={permissionCategories.map((c) => ({
                   value: c,
-                  label: c === "ALL" ? "All Categories" : c,
-                }))}
+                  label: c === "ALL" ? "All Categories" : c }))}
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
               />

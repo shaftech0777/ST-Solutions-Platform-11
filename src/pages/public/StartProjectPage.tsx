@@ -35,10 +35,9 @@ import {
   Phone,
   CheckCheck,
   ChevronDown,
-  Award,
-} from "lucide-react";
+  Award } from "lucide-react";
 import { apiClient } from "../../api/client.js";
-import { companyConfig } from "../../data/companyConfig.js";
+import { usePublicCMS } from "../../context/PublicCMSContext.js";
 import { generateProjectInquiryMessage, ProjectInquiryData } from "../../utils/inquiryMessage.js";
 
 // STEP 1 OPTIONS: Technology Scope
@@ -110,36 +109,31 @@ const qualityLevels = [
     badge: "Core Essentials",
     title: "Starter",
     desc: "A clean and focused solution for getting started with fundamental capabilities.",
-    features: ["Clean UI architecture", "Essential functionality", "Mobile responsive", "Production ready"],
-  },
+    features: ["Clean UI architecture", "Essential functionality", "Mobile responsive", "Production ready"] },
   {
     id: "Professional",
     badge: "Business Ready",
     title: "Professional",
     desc: "A polished business-grade solution with essential features and robust integrations.",
-    features: ["Custom business workflows", "Role access control", "Optimized performance", "Standard third-party sync"],
-  },
+    features: ["Custom business workflows", "Role access control", "Optimized performance", "Standard third-party sync"] },
   {
     id: "Advanced",
     badge: "Extended Scope",
     title: "Advanced",
     desc: "A more powerful system with advanced functionality, custom data flows, and deep logic.",
-    features: ["Advanced automated pipelines", "Multi-role dashboard", "Relational database", "Telemetry & analytics"],
-  },
+    features: ["Advanced automated pipelines", "Multi-role dashboard", "Relational database", "Telemetry & analytics"] },
   {
     id: "Premium",
     badge: "High Craftsmanship",
     title: "Premium",
     desc: "A highly refined, feature-rich solution with advanced UX, top-tier reliability, and architecture.",
-    features: ["Bespoke micro-interactions", "High-throughput APIs", "AI / Automation synergy", "Dedicated QA auditing"],
-  },
+    features: ["Bespoke micro-interactions", "High-throughput APIs", "AI / Automation synergy", "Dedicated QA auditing"] },
   {
     id: "Enterprise",
     badge: "Mission Critical",
     title: "Enterprise",
     desc: "A large-scale, highly customized solution designed for complex business requirements and scaling.",
-    features: ["Multi-tenant isolation", "Comprehensive audit trails", "Maximum resilience", "Bespoke SLA support"],
-  },
+    features: ["Multi-tenant isolation", "Comprehensive audit trails", "Maximum resilience", "Bespoke SLA support"] },
 ];
 
 // STEP 6 OPTIONS: Timeline
@@ -154,6 +148,7 @@ const timelineOptions = [
 const currencyOptions = ["PKR", "USD", "EUR", "GBP", "AED", "CNY", "Other"];
 
 export const StartProjectPage: React.FC = () => {
+  const companyConfig = usePublicCMS();
   // Wizard state (1 through 7, plus 8 for Review & Dispatch)
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [copied, setCopied] = useState<boolean>(false);
@@ -179,8 +174,7 @@ export const StartProjectPage: React.FC = () => {
     email: "",
     phoneNumber: "",
     whatsappNumber: "",
-    companyName: "",
-  });
+    companyName: "" });
 
   // Toggle multi-select items
   const toggleSelection = (key: "projectTypes" | "goals" | "features", val: string) => {
@@ -238,8 +232,7 @@ export const StartProjectPage: React.FC = () => {
 
   const consolidatedData: ProjectInquiryData = {
     ...formData,
-    budget: resolvedBudget,
-  };
+    budget: resolvedBudget };
 
   // Generate standardized message
   const generatedMessage = generateProjectInquiryMessage(consolidatedData);
@@ -275,9 +268,7 @@ export const StartProjectPage: React.FC = () => {
           email: formData.email.trim(),
           phoneNumber: formData.phoneNumber?.trim() || undefined,
           whatsappNumber: formData.whatsappNumber?.trim() || undefined,
-          message: generatedMessage,
-        },
-      });
+          message: generatedMessage } });
       setSubmitSuccess(true);
     } catch {
       // Gracefully silent - direct contact options are always functional
@@ -742,8 +733,7 @@ export const StartProjectPage: React.FC = () => {
                         ...formData,
                         budgetKnown: false,
                         budgetAmount: "",
-                        budget: "Not decided yet",
-                      })
+                        budget: "Not decided yet" })
                     }
                     className={`p-4 rounded-2xl border text-center font-bold text-xs sm:text-sm transition-all ${
                       !formData.budgetKnown

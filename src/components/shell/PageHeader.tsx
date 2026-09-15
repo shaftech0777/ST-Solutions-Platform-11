@@ -15,8 +15,7 @@ export const PermissionGate: React.FC<PermissionGateProps> = ({
   permissions,
   role,
   children,
-  fallback = null,
-}) => {
+  fallback = null }) => {
   const { hasPermission, hasAnyPermission, hasRole } = usePermission();
 
   let isAllowed = true;
@@ -57,8 +56,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   badge,
   actions,
   action,
-  children,
-}) => {
+  children }) => {
   const actionElements = actions || action || children;
 
   return (

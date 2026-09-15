@@ -12,10 +12,9 @@ import {
   DollarSign,
   Layers,
   Sparkles,
-  AlertCircle,
-} from "lucide-react";
+  AlertCircle } from "lucide-react";
 import { inquiriesService } from "../../api/services/inquiries.service.js";
-import { companyConfig } from "../../data/companyConfig.js";
+import { usePublicCMS } from "../../context/PublicCMSContext.js";
 import { InquiryContactMethod } from "../../types/index.js";
 
 interface ProjectInquiryModalProps {
@@ -35,8 +34,8 @@ export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
   onClose,
   initialProject,
   initialService,
-  defaultProjectName,
-}) => {
+  defaultProjectName }) => {
+  const companyConfig = usePublicCMS();
   const [formData, setFormData] = useState({
     visitorName: "",
     email: "",
@@ -49,8 +48,7 @@ export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
     message: "",
     preferredContactMethod: "WHATSAPP" as InquiryContactMethod,
     budget: "$10,000 - $25,000",
-    preferredContactTime: "Anytime",
-  });
+    preferredContactTime: "Anytime" });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -65,28 +63,24 @@ export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
           ...prev,
           projectId: initialProject.id || "",
           projectNameSnapshot: initialProject.title,
-          category: initialProject.category || "Custom Solution",
-        }));
+          category: initialProject.category || "Custom Solution" }));
       } else if (defaultProjectName) {
         setFormData((prev) => ({
           ...prev,
           projectId: "",
           projectNameSnapshot: defaultProjectName,
-          category: "Showcase Solution Inquiry",
-        }));
+          category: "Showcase Solution Inquiry" }));
       } else if (initialService) {
         setFormData((prev) => ({
           ...prev,
           projectId: "",
           projectNameSnapshot: initialService,
-          category: "Service Consultation",
-        }));
+          category: "Service Consultation" }));
       } else {
         setFormData((prev) => ({
           ...prev,
           projectNameSnapshot: "Custom Engineering Solution",
-          category: "Custom Architecture",
-        }));
+          category: "Custom Architecture" }));
       }
     }
   }, [isOpen, initialProject, initialService, defaultProjectName]);
@@ -132,8 +126,7 @@ export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
         message: formData.message.trim(),
         preferredContactMethod: formData.preferredContactMethod,
         budget: formData.budget || undefined,
-        preferredContactTime: formData.preferredContactTime || undefined,
-      });
+        preferredContactTime: formData.preferredContactTime || undefined });
 
       setIsSubmitted(true);
     } catch (err: any) {
@@ -327,8 +320,7 @@ export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
                         onClick={() =>
                           setFormData({
                             ...formData,
-                            preferredContactMethod: method.id as InquiryContactMethod,
-                          })
+                            preferredContactMethod: method.id as InquiryContactMethod })
                         }
                         className={`p-3 rounded-xl border text-xs font-bold flex flex-col items-center justify-center space-y-1.5 transition-all ${
                           isSelected

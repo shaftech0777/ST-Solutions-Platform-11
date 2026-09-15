@@ -17,8 +17,7 @@ import {
   ChevronRight,
   UserCheck,
   Inbox,
-  Network,
-} from "lucide-react";
+  Network } from "lucide-react";
 import { useAuth } from "../../context/AuthContext.js";
 import { usePermission } from "../../hooks/usePermission.js";
 import { Avatar } from "../ui/Badge.js";
@@ -64,8 +63,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
       title: "Command Center",
       items: [
         { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard, module: "dashboard" },
-      ],
-    },
+      ] },
     {
       title: "Business Operations",
       items: [
@@ -75,22 +73,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
         { label: "Clients", path: "/clients", icon: Users, module: "clients" },
         { label: "Projects", path: "/platform/projects", icon: FolderKanban, module: "projects" },
         { label: "Payments", path: "/payments", icon: CreditCard, module: "payments" },
-      ],
-    },
+      ] },
     {
       title: "People & Talent",
       items: [
         { label: "Members", path: "/members", icon: Users, module: "members" },
         { label: "Team Hierarchy", path: "/members?tab=hierarchy", icon: Network, module: "members" },
         { label: "Applicants", path: "/applicants", icon: UserCheck, module: "applicants" },
-      ],
-    },
+      ] },
     {
       title: "AI & Intelligence",
       items: [
         { label: "AI Assistant", path: "/ai", icon: Bot, badge: "AI", module: "ai" },
-      ],
-    },
+      ] },
     {
       title: "System & Governance",
       items: [
@@ -98,8 +93,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
         { label: "Audit Logs", path: "/audit", icon: FileText, module: "audit" },
         { label: "Notifications", path: "/notifications", icon: Bell, module: "notifications" },
         { label: "Settings", path: "/settings", icon: Settings, module: "settings" },
-      ],
-    },
+      ] },
   ];
 
 
@@ -107,8 +101,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
   const filteredNavGroups = navGroups
     .map((group) => ({
       ...group,
-      items: group.items.filter((item) => canAccess(item.module)),
-    }))
+      items: group.items.filter((item) => canAccess(item.module)) }))
     .filter((group) => group.items.length > 0);
 
   return (

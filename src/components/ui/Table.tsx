@@ -54,8 +54,7 @@ export const TableHeader: React.FC<{ children: React.ReactNode }> = ({ children 
 export const TableRow: React.FC<{ children: React.ReactNode; onClick?: () => void; className?: string }> = ({
   children,
   onClick,
-  className = "",
-}) => {
+  className = "" }) => {
   return (
     <tr
       onClick={onClick}
@@ -70,15 +69,13 @@ export const TableRow: React.FC<{ children: React.ReactNode; onClick?: () => voi
 
 export const TableHead: React.FC<{ children: React.ReactNode; className?: string }> = ({
   children,
-  className = "",
-}) => {
+  className = "" }) => {
   return <th className={`p-3.5 font-semibold text-slate-700 dark:text-slate-300 ${className}`}>{children}</th>;
 };
 
 export const TableCell: React.FC<{ children: React.ReactNode; className?: string }> = ({
   children,
-  className = "",
-}) => {
+  className = "" }) => {
   return <td className={`p-3.5 text-slate-800 dark:text-slate-200 align-middle ${className}`}>{children}</td>;
 };
 
@@ -95,8 +92,7 @@ export const Pagination: React.FC<PaginationProps> = ({
   totalPages,
   onPageChange,
   totalRecords,
-  limit = 10,
-}) => {
+  limit = 10 }) => {
   if (totalPages <= 1) return null;
 
   const start = (currentPage - 1) * limit + 1;

@@ -9,12 +9,12 @@ import {
   ExternalLink,
   ArrowUpRight,
   Shield,
-  Layers,
-} from "lucide-react";
-import { companyConfig } from "../../data/companyConfig.js";
+  Layers } from "lucide-react";
+import { usePublicCMS } from "../../context/PublicCMSContext.js";
 import { WeChatModal } from "./WeChatModal.js";
 
 export const PublicFooter: React.FC = () => {
+  const companyConfig = usePublicCMS();
   const [isWeChatOpen, setIsWeChatOpen] = useState(false);
 
   return (

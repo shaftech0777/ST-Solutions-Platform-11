@@ -432,11 +432,15 @@ export class SettingsRepository extends BaseRepository {
       const client = this.getClient(tx);
       const key = sectionKey.trim();
       const existing = await client.cMSSection.findUnique({ where: { sectionKey: key } });
+      
+      const contentStr = typeof data.content === 'object' ? JSON.stringify(data.content) : data.content;
+      
       if (existing) {
         return client.cMSSection.update({
           where: { id: existing.id },
           data: {
             ...data,
+            content: contentStr,
             updatedAt: new Date(),
           },
         });
@@ -446,7 +450,7 @@ export class SettingsRepository extends BaseRepository {
           sectionKey: key,
           title: data.title || key,
           subtitle: data.subtitle || null,
-          content: data.content || {},
+          content: contentStr || null,
           isVisible: data.isVisible ?? true,
           displayOrder: data.displayOrder ?? 0,
         },

@@ -19,8 +19,7 @@ const pillars: NodeInfo[] = [
     tag: "React / Vite / SSR",
     icon: Globe,
     color: "from-blue-500/10 to-blue-600/5",
-    accent: "text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800",
-  },
+    accent: "text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800" },
   {
     id: "software",
     name: "Custom Software",
@@ -28,8 +27,7 @@ const pillars: NodeInfo[] = [
     tag: "Node / Postgres / RBAC",
     icon: Code2,
     color: "from-emerald-500/10 to-emerald-600/5",
-    accent: "text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800",
-  },
+    accent: "text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800" },
   {
     id: "ai",
     name: "AI Solutions",
@@ -37,8 +35,7 @@ const pillars: NodeInfo[] = [
     tag: "Gemini / Agents / RAG",
     icon: Brain,
     color: "from-purple-500/10 to-purple-600/5",
-    accent: "text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-800",
-  },
+    accent: "text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-800" },
   {
     id: "automation",
     name: "Automation",
@@ -46,8 +43,7 @@ const pillars: NodeInfo[] = [
     tag: "Webhooks / Queues / Sync",
     icon: Workflow,
     color: "from-amber-500/10 to-amber-600/5",
-    accent: "text-amber-600 dark:text-[#D4AF37] border-amber-200 dark:border-amber-800",
-  },
+    accent: "text-amber-600 dark:text-[#D4AF37] border-amber-200 dark:border-amber-800" },
   {
     id: "ecommerce",
     name: "E-Commerce",
@@ -55,8 +51,7 @@ const pillars: NodeInfo[] = [
     tag: "Storefronts & POS",
     icon: ShoppingBag,
     color: "from-rose-500/10 to-rose-600/5",
-    accent: "text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800",
-  },
+    accent: "text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800" },
 ];
 
 export const HeroArchitectureVisual: React.FC = () => {
@@ -71,8 +66,7 @@ export const HeroArchitectureVisual: React.FC = () => {
         className="absolute inset-0 opacity-20 pointer-events-none"
         style={{
           backgroundImage: `linear-gradient(to right, #94a3b8 1px, transparent 1px), linear-gradient(to bottom, #94a3b8 1px, transparent 1px)`,
-          backgroundSize: "24px 24px",
-        }}
+          backgroundSize: "24px 24px" }}
       />
 
       {/* Top Architecture Status Bar */}

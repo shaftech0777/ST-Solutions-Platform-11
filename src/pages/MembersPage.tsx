@@ -16,8 +16,7 @@ import {
   Award,
   Plus,
   KeyRound,
-  Layers,
-} from "lucide-react";
+  Layers } from "lucide-react";
 import { TeamHierarchyTree } from "../components/hierarchy/TeamHierarchyTree.js";
 import { PageHeader } from "../components/shell/PageHeader.js";
 import { Table, TableHeader, TableRow, TableHead, TableCell } from "../components/ui/Table.js";
@@ -165,8 +164,7 @@ export const MembersPage: React.FC = () => {
             role: { name: u.accountType },
             user: u,
             createdAt: u.createdAt,
-            updatedAt: u.updatedAt,
-          }));
+            updatedAt: u.updatedAt }));
         }
       } catch {
         // Fallback to org members
@@ -274,16 +272,13 @@ export const MembersPage: React.FC = () => {
         accountType: createRole,
         status: createStatus,
         profile: {
-          fullName: createFullName.trim() || undefined,
-        },
-      });
+          fullName: createFullName.trim() || undefined } });
 
       const identifierDisplay = cleanUserId ? `User ID ${cleanUserId}` : cleanEmail;
       addToast({
         type: "success",
         title: "User Account Provisioned",
-        message: `Successfully created ${createRole} account for ${identifierDisplay}.`,
-      });
+        message: `Successfully created ${createRole} account for ${identifierDisplay}.` });
 
       setIsCreateUserModalOpen(false);
       setCreateFullName("");
@@ -312,14 +307,12 @@ export const MembersPage: React.FC = () => {
     try {
       await organizationsService.inviteMember(currentOrganization.id, {
         email: inviteEmail.trim(),
-        role: inviteRole,
-      });
+        role: inviteRole });
 
       addToast({
         type: "success",
         title: "Invitation Dispatched",
-        message: `An invitation to join ${currentOrganization.name} has been sent to ${inviteEmail}.`,
-      });
+        message: `An invitation to join ${currentOrganization.name} has been sent to ${inviteEmail}.` });
 
       setIsInviteModalOpen(false);
       setInviteEmail("");
@@ -351,16 +344,14 @@ export const MembersPage: React.FC = () => {
       addToast({
         type: "success",
         title: "Role Updated",
-        message: `Account role transitioned to ${newRole}.`,
-      });
+        message: `Account role transitioned to ${newRole}.` });
       setMemberToEditRole(null);
       loadMembers();
     } catch (err: any) {
       addToast({
         type: "danger",
         title: "Role Update Failed",
-        message: err.message || "Could not update user role.",
-      });
+        message: err.message || "Could not update user role." });
     } finally {
       setIsSubmitting(false);
     }
@@ -381,8 +372,7 @@ export const MembersPage: React.FC = () => {
       addToast({
         type: "success",
         title: "Status Updated",
-        message: `Member status updated to ${newStatus}.`,
-      });
+        message: `Member status updated to ${newStatus}.` });
       setMemberToEditStatus(null);
       setStatusReason("");
       loadMembers();
@@ -390,8 +380,7 @@ export const MembersPage: React.FC = () => {
       addToast({
         type: "danger",
         title: "Status Update Failed",
-        message: err.message || "Could not update member status.",
-      });
+        message: err.message || "Could not update member status." });
     } finally {
       setIsSubmitting(false);
     }
@@ -414,8 +403,7 @@ export const MembersPage: React.FC = () => {
       addToast({
         type: "success",
         title: "Password Reset Complete",
-        message: `Password has been reset for ${memberToResetPassword.user?.profile?.fullName || memberToResetPassword.fullName || memberToResetPassword.email || targetUserId}. Previous sessions have been revoked.`,
-      });
+        message: `Password has been reset for ${memberToResetPassword.user?.profile?.fullName || memberToResetPassword.fullName || memberToResetPassword.email || targetUserId}. Previous sessions have been revoked.` });
 
       setMemberToResetPassword(null);
       setResetPasswordValue("");
@@ -443,16 +431,14 @@ export const MembersPage: React.FC = () => {
       addToast({
         type: "info",
         title: "Member Deleted",
-        message: "User account was removed from the system.",
-      });
+        message: "User account was removed from the system." });
       setMemberToRemove(null);
       loadMembers();
     } catch (err: any) {
       addToast({
         type: "danger",
         title: "Removal Failed",
-        message: err.message || "Failed to remove user account.",
-      });
+        message: err.message || "Failed to remove user account." });
     } finally {
       setIsRemoving(false);
     }

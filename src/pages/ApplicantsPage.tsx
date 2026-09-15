@@ -28,8 +28,7 @@ import {
   Sparkles,
   Award,
   Sliders,
-  FileQuestion,
-} from "lucide-react";
+  FileQuestion } from "lucide-react";
 import { PageHeader } from "../components/shell/PageHeader.js";
 import { Table, TableHeader, TableRow, TableHead, TableCell } from "../components/ui/Table.js";
 import { Button, IconButton } from "../components/ui/Button.js";
@@ -99,21 +98,18 @@ export const ApplicantsPage: React.FC = () => {
     heardAboutSTSolutions: "LinkedIn",
     linkedinUrl: "",
     githubUrl: "",
-    notes: "",
-  });
+    notes: "" });
 
   const [reviewData, setReviewData] = useState({
     status: "UNDER_REVIEW",
     reviewNotes: "",
     approvalNotes: "",
-    rejectionReason: "",
-  });
+    rejectionReason: "" });
 
   const [onboardData, setOnboardData] = useState({
     roleId: "",
     accountType: "MEMBER",
-    temporaryPassword: "TempPassword123!",
-  });
+    temporaryPassword: "TempPassword123!" });
 
   const handleOpenDossier = async (applicant: Applicant) => {
     setSelectedApplicant(applicant);
@@ -139,8 +135,7 @@ export const ApplicantsPage: React.FC = () => {
       const res = await applicantsService.getAll({
         search: search.trim() || undefined,
         status: statusFilter !== "ALL" ? statusFilter : undefined,
-        limit: 100,
-      });
+        limit: 100 });
 
       let items: Applicant[] = [];
       if (Array.isArray(res.data)) {
@@ -245,14 +240,12 @@ export const ApplicantsPage: React.FC = () => {
         heardAboutSTSolutions: createFormData.heardAboutSTSolutions || undefined,
         linkedinUrl: createFormData.linkedinUrl || undefined,
         githubUrl: createFormData.githubUrl || undefined,
-        notes: createFormData.notes || undefined,
-      });
+        notes: createFormData.notes || undefined });
 
       addToast({
         type: "success",
         title: "Candidate Registered",
-        message: `${createFormData.fullName} application record created successfully.`,
-      });
+        message: `${createFormData.fullName} application record created successfully.` });
       setIsCreateModalOpen(false);
       loadApplicants();
     } catch (err: any) {
@@ -268,32 +261,26 @@ export const ApplicantsPage: React.FC = () => {
     try {
       if (newStatus === "ACCEPTED") {
         await applicantsService.approve(reviewingApplicant.id, {
-          approvalNotes: reviewData.approvalNotes || reviewData.reviewNotes || "Approved by recruitment committee",
-        });
+          approvalNotes: reviewData.approvalNotes || reviewData.reviewNotes || "Approved by recruitment committee" });
         addToast({
           type: "success",
           title: "Application Approved",
-          message: `${reviewingApplicant.fullName} has been accepted. You can now onboard them.`,
-        });
+          message: `${reviewingApplicant.fullName} has been accepted. You can now onboard them.` });
       } else if (newStatus === "REJECTED") {
         await applicantsService.reject(reviewingApplicant.id, {
-          rejectionReason: reviewData.rejectionReason || "Candidate does not meet technical requirements at this time.",
-        });
+          rejectionReason: reviewData.rejectionReason || "Candidate does not meet technical requirements at this time." });
         addToast({
           type: "info",
           title: "Application Rejected",
-          message: `${reviewingApplicant.fullName} application marked as rejected.`,
-        });
+          message: `${reviewingApplicant.fullName} application marked as rejected.` });
       } else {
         await applicantsService.review(reviewingApplicant.id, {
           status: newStatus,
-          reviewNotes: reviewData.reviewNotes,
-        });
+          reviewNotes: reviewData.reviewNotes });
         addToast({
           type: "success",
           title: "Review Updated",
-          message: `Stage updated to ${newStatus.replace(/_/g, " ")}.`,
-        });
+          message: `Stage updated to ${newStatus.replace(/_/g, " ")}.` });
       }
 
       setReviewingApplicant(null);
@@ -302,8 +289,7 @@ export const ApplicantsPage: React.FC = () => {
       addToast({
         type: "danger",
         title: "Stage Transition Failed",
-        message: err.message || "Could not update application status.",
-      });
+        message: err.message || "Could not update application status." });
     } finally {
       setIsSubmitting(false);
     }
@@ -316,22 +302,19 @@ export const ApplicantsPage: React.FC = () => {
       await applicantsService.onboard(onboardingApplicant.id, {
         organizationId: currentOrganization?.id,
         workspaceId: currentWorkspace?.id,
-        accountType: onboardData.accountType,
-      });
+        accountType: onboardData.accountType });
 
       addToast({
         type: "success",
         title: "Candidate Onboarded",
-        message: `${onboardingApplicant.fullName} has been created as an active member in ${currentOrganization?.name || "your organization"}.`,
-      });
+        message: `${onboardingApplicant.fullName} has been created as an active member in ${currentOrganization?.name || "your organization"}.` });
       setOnboardingApplicant(null);
       loadApplicants();
     } catch (err: any) {
       addToast({
         type: "danger",
         title: "Onboarding Failed",
-        message: err.message || "Failed to convert applicant to member.",
-      });
+        message: err.message || "Failed to convert applicant to member." });
     } finally {
       setIsSubmitting(false);
     }
@@ -663,8 +646,7 @@ export const ApplicantsPage: React.FC = () => {
                                   status: (status as string) || "UNDER_REVIEW",
                                   reviewNotes: applicant.reviewNotes || "",
                                   approvalNotes: applicant.approvalNotes || "",
-                                  rejectionReason: applicant.rejectionReason || "",
-                                });
+                                  rejectionReason: applicant.rejectionReason || "" });
                               }}
                             >
                               Review
@@ -748,8 +730,7 @@ export const ApplicantsPage: React.FC = () => {
                             status: (status as string) || "UNDER_REVIEW",
                             reviewNotes: applicant.reviewNotes || "",
                             approvalNotes: applicant.approvalNotes || "",
-                            rejectionReason: applicant.rejectionReason || "",
-                          });
+                            rejectionReason: applicant.rejectionReason || "" });
                         }}
                       >
                         Review
@@ -818,8 +799,7 @@ export const ApplicantsPage: React.FC = () => {
                           <span className="text-[10px] text-text-muted">
                             {new Date(applicant.appliedDate || applicant.createdAt).toLocaleDateString([], {
                               month: "short",
-                              day: "numeric",
-                            })}
+                              day: "numeric" })}
                           </span>
                         </div>
 
@@ -841,8 +821,7 @@ export const ApplicantsPage: React.FC = () => {
                                 status: ((applicant.applicationStatus || applicant.status) as string) || "UNDER_REVIEW",
                                 reviewNotes: applicant.reviewNotes || "",
                                 approvalNotes: applicant.approvalNotes || "",
-                                rejectionReason: applicant.rejectionReason || "",
-                              });
+                                rejectionReason: applicant.rejectionReason || "" });
                             }}
                             className="text-[11px] text-gold hover:underline font-medium"
                           >
@@ -1152,8 +1131,7 @@ export const ApplicantsPage: React.FC = () => {
                     status: ((selectedApplicant.applicationStatus || selectedApplicant.status) as string) || "UNDER_REVIEW",
                     reviewNotes: selectedApplicant.reviewNotes || "",
                     approvalNotes: selectedApplicant.approvalNotes || "",
-                    rejectionReason: selectedApplicant.rejectionReason || "",
-                  });
+                    rejectionReason: selectedApplicant.rejectionReason || "" });
                   setSelectedApplicant(null);
                 }}
               >

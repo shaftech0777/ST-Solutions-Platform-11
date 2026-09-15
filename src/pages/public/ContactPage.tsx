@@ -11,9 +11,8 @@ import {
   AlertCircle,
   Clock,
   Send,
-  Sparkles,
-} from "lucide-react";
-import { companyConfig } from "../../data/companyConfig.js";
+  Sparkles } from "lucide-react";
+import { usePublicCMS } from "../../context/PublicCMSContext.js";
 import { apiClient } from "../../api/client.js";
 import { WeChatModal } from "../../components/public/WeChatModal.js";
 
@@ -29,6 +28,7 @@ const projectTypes = [
 ];
 
 export const ContactPage: React.FC = () => {
+  const companyConfig = usePublicCMS();
   const [searchParams] = useSearchParams();
   const [isWeChatOpen, setIsWeChatOpen] = useState(false);
 
@@ -46,8 +46,7 @@ export const ContactPage: React.FC = () => {
       ? `Inquiry regarding similar architecture to ${initialProjectRef}. ${initialGoal ? `Our goal is to: ${initialGoal}.` : ""}`
       : initialGoal
       ? `Our goal is to: ${initialGoal}.`
-      : "",
-  });
+      : "" });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -94,9 +93,7 @@ ${formData.message.trim()}
           whatsappNumber: formData.whatsappNumber.trim() || undefined,
           subject: formData.projectType ? `Inquiry: ${formData.projectType}` : "Website Contact Message",
           message: compiledMessage,
-          sourcePage: "Contact Page",
-        },
-      });
+          sourcePage: "Contact Page" } });
 
       setIsSuccess(true);
     } catch (err: any) {
@@ -286,8 +283,7 @@ ${formData.message.trim()}
                           phoneNumber: "",
                           whatsappNumber: "",
                           projectType: projectTypes[0],
-                          message: "",
-                        });
+                          message: "" });
                       }}
                       className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[#F1F2EE] hover:bg-slate-200 text-slate-800 text-xs font-semibold transition-colors border border-[#E2E5E0]"
                     >

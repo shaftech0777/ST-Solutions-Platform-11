@@ -13,9 +13,9 @@ import {
   ShieldCheck,
   Zap,
   Users,
-  Target,
-} from "lucide-react";
-import { ProjectShowcaseItem, companyConfig } from "../../data/companyConfig.js";
+  Target } from "lucide-react";
+import { ProjectShowcaseItem } from "../../data/companyConfig.js";
+import { usePublicCMS } from "../../context/PublicCMSContext.js";
 import { ProjectCardVisual } from "../../components/public/ProjectCardVisual.js";
 import { ProjectInquiryModal } from "../../components/public/ProjectInquiryModal.js";
 import { showcaseService, ShowcaseProject } from "../../api/services/showcase.service.js";
@@ -23,6 +23,7 @@ import { showcaseService, ShowcaseProject } from "../../api/services/showcase.se
 const categories = ["All", "E-Commerce", "Software", "Web", "AI", "Automation"] as const;
 
 export const ProjectsPage: React.FC = () => {
+  const companyConfig = usePublicCMS();
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedProject, setSelectedProject] = useState<ProjectShowcaseItem | null>(null);
@@ -42,8 +43,7 @@ export const ProjectsPage: React.FC = () => {
         setError(null);
         const res = await showcaseService.getPublicProjects({
           category: selectedCategory === "All" ? undefined : selectedCategory,
-          search: searchQuery.trim() || undefined,
-        });
+          search: searchQuery.trim() || undefined });
 
         if (isMounted) {
           if (Array.isArray(res)) {
@@ -68,8 +68,7 @@ export const ProjectsPage: React.FC = () => {
                 { label: "Ownership", value: "100% Client" },
                 { label: "Deployment", value: "Fast Track" },
               ],
-              liveUrl: p.liveUrl || undefined,
-            }));
+              liveUrl: p.liveUrl || undefined }));
             setProjectsList(adapted);
           } else {
             setProjectsList([]);

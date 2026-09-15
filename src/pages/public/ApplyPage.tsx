@@ -13,10 +13,9 @@ import {
   Layers,
   FileText,
   Briefcase,
-  ExternalLink,
-} from "lucide-react";
+  ExternalLink } from "lucide-react";
 import { apiClient } from "../../api/client.js";
-import { companyConfig } from "../../data/companyConfig.js";
+import { usePublicCMS } from "../../context/PublicCMSContext.js";
 
 const availableRoles = [
   "Full-Stack TypeScript Engineer",
@@ -29,6 +28,7 @@ const availableRoles = [
 ];
 
 export const ApplyPage: React.FC = () => {
+  const companyConfig = usePublicCMS();
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -37,8 +37,7 @@ export const ApplyPage: React.FC = () => {
     experienceYears: 2,
     skills: "React, TypeScript, Tailwind CSS, Node.js, PostgreSQL",
     portfolioUrl: "",
-    resumeText: "",
-  });
+    resumeText: "" });
 
   const [dynamicQuestions, setDynamicQuestions] = useState<any[]>([]);
   const [dynamicAnswers, setDynamicAnswers] = useState<Record<string, any>>({});
@@ -67,8 +66,7 @@ export const ApplyPage: React.FC = () => {
   const handleDynamicAnswerChange = (questionId: string, value: any) => {
     setDynamicAnswers((prev) => ({
       ...prev,
-      [questionId]: value,
-    }));
+      [questionId]: value }));
   };
 
   const handleCheckboxToggle = (questionId: string, option: string) => {
@@ -78,8 +76,7 @@ export const ApplyPage: React.FC = () => {
       const nextList = exists ? currentList.filter((item) => item !== option) : [...currentList, option];
       return {
         ...prev,
-        [questionId]: nextList,
-      };
+        [questionId]: nextList };
     });
   };
 
@@ -118,8 +115,7 @@ export const ApplyPage: React.FC = () => {
       .filter(([_, val]) => val !== undefined && val !== null && String(val).trim() !== "")
       .map(([questionId, val]) => ({
         questionId,
-        answer: Array.isArray(val) ? JSON.stringify(val) : String(val),
-      }));
+        answer: Array.isArray(val) ? JSON.stringify(val) : String(val) }));
 
     try {
       await apiClient("/applicants", {
@@ -133,9 +129,7 @@ export const ApplyPage: React.FC = () => {
           skills: skillsArray,
           portfolioUrl: formData.portfolioUrl.trim() || undefined,
           resumeText: formData.resumeText.trim() || undefined,
-          answers: formattedAnswers.length > 0 ? formattedAnswers : undefined,
-        },
-      });
+          answers: formattedAnswers.length > 0 ? formattedAnswers : undefined } });
 
       setIsSuccess(true);
     } catch (err: any) {
@@ -227,8 +221,7 @@ export const ApplyPage: React.FC = () => {
                       experienceYears: 2,
                       skills: "",
                       portfolioUrl: "",
-                      resumeText: "",
-                    });
+                      resumeText: "" });
                   }}
                   className="px-5 py-2.5 rounded-xl bg-[#F1F2EE] hover:bg-slate-200 text-slate-800 text-xs font-semibold transition-colors border border-[#E2E5E0]"
                 >

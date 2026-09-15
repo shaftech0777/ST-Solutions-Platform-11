@@ -19,8 +19,7 @@ import {
   Building2,
   Briefcase,
   CreditCard,
-  Key,
-} from "lucide-react";
+  Key } from "lucide-react";
 import { PageHeader } from "../components/shell/PageHeader.js";
 import { Table, TableHeader, TableRow, TableHead, TableCell } from "../components/ui/Table.js";
 import { Button, IconButton } from "../components/ui/Button.js";
@@ -72,8 +71,7 @@ export const AuditLogsPage: React.FC = () => {
         auditService.getAll({
           search: search.trim() || undefined,
           action: actionCategory !== "ALL" ? actionCategory : undefined,
-          limit: 100,
-        }),
+          limit: 100 }),
         auditService.getStatistics(),
       ]);
 
@@ -123,8 +121,7 @@ export const AuditLogsPage: React.FC = () => {
       total: statsData?.totalLogs ?? total,
       authEvents,
       entityChanges,
-      securityModifications,
-    };
+      securityModifications };
   }, [logs, statsData]);
 
   // Filtered audit entries

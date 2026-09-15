@@ -22,8 +22,7 @@ import {
   Phone,
   Server,
   Layers,
-  Workflow,
-} from "lucide-react";
+  Workflow } from "lucide-react";
 import { PageHeader } from "../components/shell/PageHeader.js";
 import { Card } from "../components/ui/Card.js";
 import { Button } from "../components/ui/Button.js";
@@ -59,8 +58,7 @@ export const SettingsPage: React.FC = () => {
     contactEmail: "support@st-solutions.com",
     contactPhone: "+1 (800) 555-0199",
     maintenanceMode: false,
-    allowRegistrations: true,
-  });
+    allowRegistrations: true });
 
   // Company Profile Settings
   const [companyProfile, setCompanyProfile] = useState<CompanyProfileData>({
@@ -68,8 +66,7 @@ export const SettingsPage: React.FC = () => {
     taxNumber: "US-EIN-94-2849102",
     headquarters: "San Francisco, CA, United States",
     websiteUrl: "https://st-solutions.enterprise",
-    aboutUs: "Enterprise software solutions powering mission-critical workflow infrastructure.",
-  });
+    aboutUs: "Enterprise software solutions powering mission-critical workflow infrastructure." });
 
   // Feature Flags
   const [featureFlags, setFeatureFlags] = useState<Record<string, boolean>>({
@@ -77,8 +74,7 @@ export const SettingsPage: React.FC = () => {
     applicant_onboarding_pipeline: true,
     realtime_audit_streaming: true,
     automated_invoice_generation: true,
-    two_factor_enforcement: false,
-  });
+    two_factor_enforcement: false });
 
   // Security Form (Password change)
   const [currentPassword, setCurrentPassword] = useState("");
@@ -133,14 +129,12 @@ export const SettingsPage: React.FC = () => {
       addToast({
         type: "success",
         title: "Platform Settings Saved",
-        message: "General platform configuration updated successfully.",
-      });
+        message: "General platform configuration updated successfully." });
     } catch (err: any) {
       addToast({
         type: "danger",
         title: "Update Failed",
-        message: err.message || "Failed to update platform settings.",
-      });
+        message: err.message || "Failed to update platform settings." });
     } finally {
       setIsSavingGeneral(false);
     }
@@ -154,14 +148,12 @@ export const SettingsPage: React.FC = () => {
       addToast({
         type: "success",
         title: "Company Profile Saved",
-        message: "Organization legal and business identity updated.",
-      });
+        message: "Organization legal and business identity updated." });
     } catch (err: any) {
       addToast({
         type: "danger",
         title: "Update Failed",
-        message: err.message || "Failed to update company profile.",
-      });
+        message: err.message || "Failed to update company profile." });
     } finally {
       setIsSavingCompany(false);
     }
@@ -175,16 +167,14 @@ export const SettingsPage: React.FC = () => {
       addToast({
         type: "info",
         title: "Feature Flag Toggled",
-        message: `${flagName.replace(/_/g, " ").toUpperCase()} is now ${nextState ? "ENABLED" : "DISABLED"}.`,
-      });
+        message: `${flagName.replace(/_/g, " ").toUpperCase()} is now ${nextState ? "ENABLED" : "DISABLED"}.` });
     } catch (err: any) {
       // Revert state
       setFeatureFlags((prev) => ({ ...prev, [flagName]: !nextState }));
       addToast({
         type: "danger",
         title: "Toggle Failed",
-        message: err.message || "Could not update feature flag.",
-      });
+        message: err.message || "Could not update feature flag." });
     }
   };
 
@@ -209,14 +199,12 @@ export const SettingsPage: React.FC = () => {
     try {
       await authService.changePassword({
         currentPassword,
-        newPassword,
-      });
+        newPassword });
 
       addToast({
         type: "success",
         title: "Password Changed",
-        message: "Your credentials have been securely rotated.",
-      });
+        message: "Your credentials have been securely rotated." });
 
       setCurrentPassword("");
       setNewPassword("");
@@ -607,28 +595,23 @@ export const SettingsPage: React.FC = () => {
               {
                 key: "ai_copilot",
                 label: "AI Copilot & Smart Assistant",
-                desc: "Enable generative AI summaries and candidate screening aids",
-              },
+                desc: "Enable generative AI summaries and candidate screening aids" },
               {
                 key: "applicant_onboarding_pipeline",
                 label: "Applicant Onboarding Pipeline",
-                desc: "Direct single-click conversion of approved applicants to team members",
-              },
+                desc: "Direct single-click conversion of approved applicants to team members" },
               {
                 key: "realtime_audit_streaming",
                 label: "Real-Time Audit Telemetry",
-                desc: "Capture and index all user mutations in the security audit ledger",
-              },
+                desc: "Capture and index all user mutations in the security audit ledger" },
               {
                 key: "automated_invoice_generation",
                 label: "Automated Invoice Generation",
-                desc: "Auto-generate PDF invoices upon payment milestone completions",
-              },
+                desc: "Auto-generate PDF invoices upon payment milestone completions" },
               {
                 key: "two_factor_enforcement",
                 label: "Mandatory 2FA for Administrators",
-                desc: "Enforce OTP authentication for all users holding ADMIN or OWNER roles",
-              },
+                desc: "Enforce OTP authentication for all users holding ADMIN or OWNER roles" },
             ].map((flag) => {
               const isEnabled = !!featureFlags[flag.key];
 

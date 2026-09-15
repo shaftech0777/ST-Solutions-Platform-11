@@ -18,8 +18,7 @@ export const Card: React.FC<CardProps> = ({
   hoverable = false,
   title,
   description,
-  headerAction,
-}) => {
+  headerAction }) => {
   return (
     <div
       onClick={onClick}
@@ -71,8 +70,7 @@ export const StatCard: React.FC<StatCardProps> = ({
   icon: Icon,
   trend,
   isLoading = false,
-  onClick,
-}) => {
+  onClick }) => {
   return (
     <Card onClick={onClick} hoverable={!!onClick} className="relative overflow-hidden group">
       <div className="flex items-start justify-between">

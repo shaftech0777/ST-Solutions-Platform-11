@@ -17,8 +17,7 @@ import {
   LayoutGrid,
   List,
   ExternalLink,
-  MessageSquare,
-} from "lucide-react";
+  MessageSquare } from "lucide-react";
 import { PageHeader } from "../components/shell/PageHeader.js";
 import { Table, TableHeader, TableRow, TableHead, TableCell, Pagination } from "../components/ui/Table.js";
 import { Button, IconButton } from "../components/ui/Button.js";
@@ -102,13 +101,11 @@ export const ClientsPage: React.FC = () => {
         type: commType,
         destination: commDestination.trim() || undefined,
         subject: commSubject.trim() || undefined,
-        content: commContent.trim(),
-      });
+        content: commContent.trim() });
       addToast({
         type: "success",
         title: "Communication Logged",
-        message: "Interaction recorded in client relationship history.",
-      });
+        message: "Interaction recorded in client relationship history." });
       setCommContent("");
       setCommSubject("");
       setCommDestination("");
@@ -117,8 +114,7 @@ export const ClientsPage: React.FC = () => {
       addToast({
         type: "danger",
         title: "Communication Error",
-        message: err.message || "Failed to record communication",
-      });
+        message: err.message || "Failed to record communication" });
     } finally {
       setIsLoggingCommunication(false);
     }
@@ -140,8 +136,7 @@ export const ClientsPage: React.FC = () => {
     address: "",
     businessType: "",
     businessDescription: "",
-    clientStatus: "ACTIVE" as ClientStatus,
-  });
+    clientStatus: "ACTIVE" as ClientStatus });
 
   const loadClients = async () => {
     if (!currentUser) {
@@ -202,8 +197,7 @@ export const ClientsPage: React.FC = () => {
       address: "",
       businessType: "",
       businessDescription: "",
-      clientStatus: "ACTIVE",
-    });
+      clientStatus: "ACTIVE" });
     setModalError(null);
     setIsModalOpen(true);
   };
@@ -221,8 +215,7 @@ export const ClientsPage: React.FC = () => {
       address: client.address || "",
       businessType: client.businessType || "",
       businessDescription: client.businessDescription || "",
-      clientStatus: (client.clientStatus as ClientStatus) || "ACTIVE",
-    });
+      clientStatus: (client.clientStatus as ClientStatus) || "ACTIVE" });
     setModalError(null);
     setIsModalOpen(true);
   };
@@ -256,8 +249,7 @@ export const ClientsPage: React.FC = () => {
       address: formData.address.trim() || undefined,
       businessType: formData.businessType.trim() || undefined,
       businessDescription: formData.businessDescription.trim() || undefined,
-      clientStatus: formData.clientStatus,
-    };
+      clientStatus: formData.clientStatus };
 
     try {
       if (editingClient) {
@@ -266,8 +258,7 @@ export const ClientsPage: React.FC = () => {
           addToast({
             type: "success",
             title: "Client Updated",
-            message: `Client "${formData.fullName}" updated successfully`,
-          });
+            message: `Client "${formData.fullName}" updated successfully` });
           setIsModalOpen(false);
           await loadClients();
         } else {
@@ -279,8 +270,7 @@ export const ClientsPage: React.FC = () => {
           addToast({
             type: "success",
             title: "Client Registered",
-            message: `Client "${formData.fullName}" registered in workspace directory`,
-          });
+            message: `Client "${formData.fullName}" registered in workspace directory` });
           setIsModalOpen(false);
           await loadClients();
         } else {
@@ -305,8 +295,7 @@ export const ClientsPage: React.FC = () => {
         addToast({
           type: "info",
           title: "Client Removed",
-          message: `Client record deleted from workspace`,
-        });
+          message: `Client record deleted from workspace` });
         setClientToDelete(null);
         if (selectedClient?.id === clientToDelete.id) {
           setSelectedClient(null);
@@ -316,15 +305,13 @@ export const ClientsPage: React.FC = () => {
         addToast({
           type: "danger",
           title: "Deletion Failed",
-          message: res.error || "Could not delete client record",
-        });
+          message: res.error || "Could not delete client record" });
       }
     } catch (err: any) {
       addToast({
         type: "danger",
         title: "Deletion Error",
-        message: err.message || "Failed to delete client",
-      });
+        message: err.message || "Failed to delete client" });
     } finally {
       setIsDeleting(false);
     }
@@ -354,8 +341,7 @@ export const ClientsPage: React.FC = () => {
       return new Date(dateStr).toLocaleDateString("en-US", {
         year: "numeric",
         month: "short",
-        day: "numeric",
-      });
+        day: "numeric" });
     } catch {
       return dateStr;
     }

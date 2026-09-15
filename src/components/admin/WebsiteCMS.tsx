@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Globe,
   Save,
@@ -15,8 +15,7 @@ import {
   Shield,
   Clock,
   MapPin,
-  Sparkles,
-} from "lucide-react";
+  Sparkles } from "lucide-react";
 import { Button } from "../ui/Button.js";
 import { Input, Textarea } from "../ui/Input.js";
 import { Card } from "../ui/Card.js";
@@ -24,6 +23,7 @@ import { Badge } from "../ui/Badge.js";
 import { Modal, ConfirmModal } from "../ui/Modal.js";
 import { useToast } from "../../context/ToastContext.js";
 import { companyConfig, CompanyConfig, SocialPlatformConfig } from "../../data/companyConfig.js";
+import { settingsService } from "../../api/services/settings.service.js";
 
 interface FAQItem {
   id: string;
@@ -37,99 +37,176 @@ const DEFAULT_FAQS: FAQItem[] = [
     id: "faq-1",
     question: "What types of software systems does ST-Solutions build?",
     answer: "We build custom web platforms, e-commerce stores with mobile checkout, retail & pharmacy POS systems, business operations dashboards, customer CRMs, 24/7 AI assistants, and automated scheduling workflows.",
-    category: "Services",
-  },
+    category: "Services" },
   {
     id: "faq-2",
     question: "Do I own 100% of the source code and database?",
     answer: "Yes, completely. Unlike SaaS products that charge monthly per-user licensing fees, any custom system we engineer for you is 100% your property, including database schemas and deployment credentials.",
-    category: "Ownership",
-  },
+    category: "Ownership" },
   {
     id: "faq-3",
     question: "How long does a typical software project take to deliver?",
     answer: "Standard web platforms and specialized systems are typically delivered within 2 to 6 weeks depending on scope, with milestone demos every week so you can test features in real time.",
-    category: "Timeline",
-  },
+    category: "Timeline" },
   {
     id: "faq-4",
     question: "How do we get started or receive a project quote?",
     answer: "You can click 'Start a Project' to use our interactive requirement planner, or message us directly on WhatsApp at 0325-7263417 for an immediate architectural consultation.",
-    category: "Getting Started",
-  },
+    category: "Getting Started" },
 ];
 
 export const WebsiteCMS: React.FC = () => {
   const { addToast } = useToast();
   const [activeSubTab, setActiveSubTab] = useState<"brand" | "contact" | "socials" | "faqs">("brand");
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Brand Copy State
   const [brandData, setBrandData] = useState({
-    name: companyConfig.name,
-    legalName: companyConfig.legalName,
-    tagline: companyConfig.tagline,
-    shortDescription: companyConfig.shortDescription,
-    longDescription: companyConfig.longDescription,
-  });
+    name: "",
+    legalName: "",
+    tagline: "",
+    shortDescription: "",
+    longDescription: "" });
 
   // Contact Channels State
   const [contactData, setContactData] = useState({
-    whatsappNumber: companyConfig.contact.whatsappNumber,
-    whatsappDisplay: companyConfig.contact.whatsappDisplay,
-    whatsappUrl: companyConfig.contact.whatsappUrl,
-    phoneNumber: companyConfig.contact.phoneNumber,
-    phoneDisplay: companyConfig.contact.phoneDisplay,
-    email: companyConfig.contact.email,
-    weChatId: companyConfig.contact.weChatId,
-    weChatDisplayName: companyConfig.contact.weChatDisplayName,
-    address: companyConfig.contact.address,
-    workingHours: companyConfig.contact.workingHours,
-  });
+    whatsappNumber: "",
+    whatsappDisplay: "",
+    whatsappUrl: "",
+    phoneNumber: "",
+    phoneDisplay: "",
+    email: "",
+    weChatId: "",
+    weChatDisplayName: "",
+    address: "",
+    workingHours: "" });
 
   // Social Links State
-  const [socials, setSocials] = useState<SocialPlatformConfig[]>(companyConfig.socials);
+  const [socials, setSocials] = useState<SocialPlatformConfig[]>([]);
 
   // FAQs State
-  const [faqs, setFaqs] = useState<FAQItem[]>(DEFAULT_FAQS);
+  const [faqs, setFaqs] = useState<FAQItem[]>([]);
   const [isFaqModalOpen, setIsFaqModalOpen] = useState(false);
   const [editingFaq, setEditingFaq] = useState<FAQItem | null>(null);
   const [faqForm, setFaqForm] = useState({ question: "", answer: "", category: "General" });
   const [deletingFaq, setDeletingFaq] = useState<FAQItem | null>(null);
 
-  const handleSaveBrand = (e: React.FormEvent) => {
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      // Fetch Brand Data
+      const brandRes = await settingsService.getCMSSection<any>("brand");
+      if (brandRes) {
+        setBrandData(brandRes);
+      } else {
+        setBrandData({
+          name: companyConfig.name,
+          legalName: companyConfig.legalName,
+          tagline: companyConfig.tagline,
+          shortDescription: companyConfig.shortDescription,
+          longDescription: companyConfig.longDescription });
+      }
+
+      // Fetch Contact Data
+      const contactRes = await settingsService.getCMSSection<any>("contact");
+      if (contactRes) {
+        setContactData(contactRes);
+      } else {
+        setContactData({
+          whatsappNumber: companyConfig.contact.whatsappNumber,
+          whatsappDisplay: companyConfig.contact.whatsappDisplay,
+          whatsappUrl: companyConfig.contact.whatsappUrl,
+          phoneNumber: companyConfig.contact.phoneNumber,
+          phoneDisplay: companyConfig.contact.phoneDisplay,
+          email: companyConfig.contact.email,
+          weChatId: companyConfig.contact.weChatId,
+          weChatDisplayName: companyConfig.contact.weChatDisplayName,
+          address: companyConfig.contact.address,
+          workingHours: companyConfig.contact.workingHours });
+      }
+
+      // Fetch Socials
+      const socialsRes = await settingsService.getCMSSection<SocialPlatformConfig[]>("socials");
+      if (socialsRes && Array.isArray(socialsRes)) {
+        setSocials(socialsRes);
+      } else {
+        setSocials(companyConfig.socials);
+      }
+
+      // Fetch FAQs
+      const faqsRes = await settingsService.getCMSSection<FAQItem[]>("faqs");
+      if (faqsRes && Array.isArray(faqsRes)) {
+        setFaqs(faqsRes);
+      } else {
+        setFaqs(DEFAULT_FAQS);
+      }
+    } catch (err) {
+      console.error(err);
+      addToast({ type: "error", message: "Failed to load website settings." });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSaveBrand = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
-    setTimeout(() => {
-      // Update in memory
-      companyConfig.name = brandData.name;
-      companyConfig.legalName = brandData.legalName;
-      companyConfig.tagline = brandData.tagline;
-      companyConfig.shortDescription = brandData.shortDescription;
-      companyConfig.longDescription = brandData.longDescription;
-      setIsSaving(false);
+    try {
+      await settingsService.updateCMSSection("brand", brandData);
+      
+      // Sync basic profile data backward for generic settings endpoints
+      await settingsService.updateCompanyProfile({
+        companyName: brandData.name,
+        legalName: brandData.legalName,
+        tagline: brandData.tagline,
+        description: brandData.shortDescription,
+        mission: brandData.longDescription
+      }).catch(e => console.warn('Could not sync to generic company profile', e));
+
       addToast({ type: "success", message: "Brand & Hero settings updated successfully." });
-    }, 400);
+    } catch (err: any) {
+      addToast({ type: "error", message: err?.message || "Failed to save brand content." });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleSaveContact = (e: React.FormEvent) => {
+  const handleSaveContact = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
-    setTimeout(() => {
-      companyConfig.contact = {
-        ...companyConfig.contact,
-        ...contactData,
-      };
-      setIsSaving(false);
+    try {
+      await settingsService.updateCMSSection("contact", contactData);
+      
+      await settingsService.updateCompanyProfile({
+        email: contactData.email,
+        phoneNumber: contactData.phoneNumber,
+        whatsappNumber: contactData.whatsappNumber,
+        address: contactData.address
+      }).catch(e => console.warn('Could not sync contact info to generic profile', e));
+
       addToast({ type: "success", message: "Official contact channels updated." });
-    }, 400);
+    } catch (err: any) {
+      addToast({ type: "error", message: err?.message || "Failed to update contact info." });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleToggleSocial = (id: string) => {
-    setSocials((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, enabled: !s.enabled } : s))
-    );
-    addToast({ type: "info", message: "Social channel visibility toggled." });
+  const handleToggleSocial = async (id: string) => {
+    const updated = socials.map((s) => (s.id === id ? { ...s, enabled: !s.enabled } : s));
+    setSocials(updated);
+    try {
+      await settingsService.updateCMSSection("socials", updated);
+      addToast({ type: "info", message: "Social channel visibility toggled." });
+    } catch (err: any) {
+      setSocials(socials); // revert
+      addToast({ type: "error", message: err?.message || "Failed to save social changes." });
+    }
   };
 
   const handleOpenFaqModal = (faq?: FAQItem) => {
@@ -143,37 +220,62 @@ export const WebsiteCMS: React.FC = () => {
     setIsFaqModalOpen(true);
   };
 
-  const handleSaveFaq = (e: React.FormEvent) => {
+  const handleSaveFaq = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!faqForm.question.trim() || !faqForm.answer.trim()) {
       addToast({ type: "error", message: "Question and answer are required." });
       return;
     }
 
+    const prevFaqs = [...faqs];
+    let newFaqs = [];
+
     if (editingFaq) {
-      setFaqs((prev) =>
-        prev.map((f) => (f.id === editingFaq.id ? { ...f, ...faqForm } : f))
-      );
-      addToast({ type: "success", message: "FAQ item updated." });
+      newFaqs = faqs.map((f) => (f.id === editingFaq.id ? { ...f, ...faqForm } : f));
     } else {
       const newFaq: FAQItem = {
         id: `faq-${Date.now()}`,
         question: faqForm.question.trim(),
         answer: faqForm.answer.trim(),
-        category: faqForm.category.trim(),
-      };
-      setFaqs((prev) => [...prev, newFaq]);
-      addToast({ type: "success", message: "New FAQ item added." });
+        category: faqForm.category.trim() };
+      newFaqs = [...faqs, newFaq];
     }
+    
+    setFaqs(newFaqs);
     setIsFaqModalOpen(false);
+
+    try {
+      await settingsService.updateCMSSection("faqs", newFaqs);
+      addToast({ type: "success", message: editingFaq ? "FAQ item updated." : "New FAQ item added." });
+    } catch (err: any) {
+      setFaqs(prevFaqs); // revert
+      addToast({ type: "error", message: err?.message || "Failed to save FAQ." });
+    }
   };
 
-  const handleDeleteFaq = () => {
+  const handleDeleteFaq = async () => {
     if (!deletingFaq) return;
-    setFaqs((prev) => prev.filter((f) => f.id !== deletingFaq.id));
-    addToast({ type: "success", message: "FAQ item removed." });
+    const prevFaqs = [...faqs];
+    const newFaqs = faqs.filter((f) => f.id !== deletingFaq.id);
+    setFaqs(newFaqs);
     setDeletingFaq(null);
+
+    try {
+      await settingsService.updateCMSSection("faqs", newFaqs);
+      addToast({ type: "success", message: "FAQ item removed." });
+    } catch (err: any) {
+      setFaqs(prevFaqs); // revert
+      addToast({ type: "error", message: err?.message || "Failed to delete FAQ." });
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-48">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900 dark:border-white"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

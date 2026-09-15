@@ -12,11 +12,11 @@ import {
   CheckCircle2,
   Workflow,
   Lock,
-  HeartHandshake,
-} from "lucide-react";
-import { companyConfig } from "../../data/companyConfig.js";
+  HeartHandshake } from "lucide-react";
+import { usePublicCMS } from "../../context/PublicCMSContext.js";
 
 export const AboutPage: React.FC = () => {
+  const companyConfig = usePublicCMS();
   return (
     <div className="space-y-16 sm:space-y-24 pb-16 font-sans">
       {/* Header Banner */}

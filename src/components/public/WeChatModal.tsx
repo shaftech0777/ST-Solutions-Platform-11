@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { X, Check, Copy, QrCode, MessageCircle } from "lucide-react";
-import { companyConfig } from "../../data/companyConfig.js";
+import { usePublicCMS } from "../../context/PublicCMSContext.js";
 
 interface WeChatModalProps {
   isOpen: boolean;
@@ -8,6 +8,7 @@ interface WeChatModalProps {
 }
 
 export const WeChatModal: React.FC<WeChatModalProps> = ({ isOpen, onClose }) => {
+  const companyConfig = usePublicCMS();
   const [copied, setCopied] = useState(false);
 
   if (!isOpen) return null;

@@ -18,13 +18,11 @@ import {
   Copy,
   Check,
   Sparkles,
-  Users,
-} from "lucide-react";
+  Users } from "lucide-react";
 import {
   automationService,
   AutomationSystemStatus,
-  AutomationLogItem,
-} from "../../api/services/automation.service.js";
+  AutomationLogItem } from "../../api/services/automation.service.js";
 import { Card } from "../ui/Card.js";
 import { Button } from "../ui/Button.js";
 import { Badge } from "../ui/Badge.js";
@@ -71,8 +69,7 @@ export const AutomationManager: React.FC = () => {
           status: statusFilter === "ALL" ? undefined : statusFilter,
           event: eventFilter === "ALL" ? undefined : eventFilter,
           recipient: recipientSearch.trim() || undefined,
-          limit: 50,
-        }),
+          limit: 50 }),
       ]);
 
       if (statusRes.status === "fulfilled" && statusRes.value?.data) {
@@ -124,8 +121,7 @@ export const AutomationManager: React.FC = () => {
       const res = await automationService.broadcastNewsletter({
         title: campaignTitle.trim() || "Community Newsletter",
         subject: campaignSubject.trim(),
-        content: campaignContent.trim(),
-      });
+        content: campaignContent.trim() });
       addToast(`Broadcast queued for ${res.data?.recipientCount || 0} active subscribers!`, "success");
       setCampaignTitle("");
       setCampaignSubject("");

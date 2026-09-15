@@ -13,14 +13,14 @@ import {
   Clock,
   Code2,
   ChevronRight,
-  Share2,
-} from "lucide-react";
+  Share2 } from "lucide-react";
 import { showcaseService, ShowcaseProject } from "../../api/services/showcase.service.js";
 import { ProjectCardVisual } from "../../components/public/ProjectCardVisual.js";
 import { ProjectInquiryModal } from "../../components/public/ProjectInquiryModal.js";
-import { companyConfig } from "../../data/companyConfig.js";
+import { usePublicCMS } from "../../context/PublicCMSContext.js";
 
 export const ProjectDetailPage: React.FC = () => {
+  const companyConfig = usePublicCMS();
   const { idOrSlug } = useParams<{ idOrSlug: string }>();
   const navigate = useNavigate();
 
@@ -342,8 +342,7 @@ export const ProjectDetailPage: React.FC = () => {
           initialProject={{
             id: project.id,
             title: project.title,
-            category: categoryName,
-          }}
+            category: categoryName }}
         />
       )}
     </div>

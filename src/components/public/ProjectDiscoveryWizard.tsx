@@ -16,10 +16,9 @@ import {
   CheckCircle2,
   Loader2,
   AlertCircle,
-  MessageCircle,
-} from "lucide-react";
+  MessageCircle } from "lucide-react";
 import { apiClient } from "../../api/client.js";
-import { companyConfig } from "../../data/companyConfig.js";
+import { usePublicCMS } from "../../context/PublicCMSContext.js";
 
 interface WizardData {
   buildType: string;
@@ -42,8 +41,7 @@ const initialWizardData: WizardData = {
   email: "",
   phoneNumber: "",
   whatsappNumber: "",
-  message: "",
-};
+  message: "" };
 
 const buildTypeOptions = [
   { id: "website", label: "Website / Web Portal", desc: "Corporate site, landing page, or portal", icon: Globe },
@@ -77,6 +75,7 @@ const industryOptions = [
 ];
 
 export const ProjectDiscoveryWizard: React.FC = () => {
+  const companyConfig = usePublicCMS();
   const [step, setStep] = useState<number>(1);
   const [data, setData] = useState<WizardData>(initialWizardData);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -145,9 +144,7 @@ export const ProjectDiscoveryWizard: React.FC = () => {
           email: data.email.trim(),
           phoneNumber: data.phoneNumber.trim() || undefined,
           whatsappNumber: data.whatsappNumber.trim() || data.phoneNumber.trim() || undefined,
-          message: compiledMessage,
-        },
-      });
+          message: compiledMessage } });
 
       setIsSuccess(true);
     } catch (err: any) {

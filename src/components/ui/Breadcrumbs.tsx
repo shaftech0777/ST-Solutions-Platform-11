@@ -31,8 +31,7 @@ export const Breadcrumbs: React.FC<{ items: BreadcrumbItem[] }> = ({ items }) =>
 
 export const CommandSearch: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   isOpen,
-  onClose,
-}) => {
+  onClose }) => {
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
 

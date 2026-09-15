@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import { AuthProvider } from "./context/AuthContext.js";
 import { ThemeProvider } from "./context/ThemeContext.js";
 import { ToastProvider } from "./context/ToastContext.js";
+import { PublicCMSProvider } from "./context/PublicCMSContext.js";
 import { ApplicationShell } from "./components/shell/ApplicationShell.js";
 import { PublicShell } from "./components/public/PublicShell.js";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute.js";
@@ -108,8 +109,9 @@ export function App() {
     <ThemeProvider>
       <ToastProvider>
         <AuthProvider>
-          <BrowserRouter>
-            <Suspense fallback={<PageSuspenseLoader />}>
+          <PublicCMSProvider>
+            <BrowserRouter>
+              <Suspense fallback={<PageSuspenseLoader />}>
               <Routes>
                 {/* 1. Public Visitor-Facing Website Routes */}
                 <Route
@@ -351,7 +353,8 @@ export function App() {
                 />
               </Routes>
             </Suspense>
-          </BrowserRouter>
+            </BrowserRouter>
+          </PublicCMSProvider>
         </AuthProvider>
       </ToastProvider>
     </ThemeProvider>

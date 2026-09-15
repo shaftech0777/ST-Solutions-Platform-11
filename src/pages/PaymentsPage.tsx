@@ -23,8 +23,7 @@ import {
   ExternalLink,
   ShieldCheck,
   ChevronRight,
-  TrendingUp,
-} from "lucide-react";
+  TrendingUp } from "lucide-react";
 import { PageHeader } from "../components/shell/PageHeader.js";
 import { Table, TableHeader, TableRow, TableHead, TableCell, Pagination } from "../components/ui/Table.js";
 import { Button, IconButton } from "../components/ui/Button.js";
@@ -117,8 +116,7 @@ export const PaymentsPage: React.FC = () => {
     paymentMethod: "WIRE_TRANSFER",
     transactionReference: "",
     approvalNotes: "",
-    paymentStatus: "PENDING",
-  });
+    paymentStatus: "PENDING" });
 
   const loadData = async () => {
     if (!currentUser) return;
@@ -131,8 +129,7 @@ export const PaymentsPage: React.FC = () => {
           status: statusFilter !== "ALL" ? statusFilter : undefined,
           paymentMethod: methodFilter !== "ALL" ? methodFilter : undefined,
           page,
-          limit: 100,
-        }),
+          limit: 100 }),
         clientsService.getAll({ limit: 100 }),
         projectsService.getAll({ limit: 100 }),
         paymentsService.getStatistics(),
@@ -193,8 +190,7 @@ export const PaymentsPage: React.FC = () => {
         totalCount: statsData.totalPayments || payments.length,
         totalCollected: statsData.paidAmount ?? 0,
         pendingAmount: statsData.pendingAmount ?? 0,
-        failedAmount: statsData.rejectedAmount ?? 0,
-      };
+        failedAmount: statsData.rejectedAmount ?? 0 };
     }
 
     let totalCount = payments.length;
@@ -270,8 +266,7 @@ export const PaymentsPage: React.FC = () => {
       paymentMethod: "WIRE_TRANSFER",
       transactionReference: "",
       approvalNotes: "",
-      paymentStatus: "PENDING",
-    });
+      paymentStatus: "PENDING" });
     setModalError(null);
     setIsCreateModalOpen(true);
   };
@@ -286,8 +281,7 @@ export const PaymentsPage: React.FC = () => {
       paymentMethod: payment.paymentMethod || "WIRE_TRANSFER",
       transactionReference: payment.transactionReference || "",
       approvalNotes: payment.approvalNotes || "",
-      paymentStatus: payment.paymentStatus || "PENDING",
-    });
+      paymentStatus: payment.paymentStatus || "PENDING" });
     setModalError(null);
     setIsCreateModalOpen(true);
   };
@@ -316,13 +310,11 @@ export const PaymentsPage: React.FC = () => {
           currency: formData.currency,
           paymentMethod: formData.paymentMethod,
           transactionReference: formData.transactionReference || null,
-          approvalNotes: formData.approvalNotes || null,
-        });
+          approvalNotes: formData.approvalNotes || null });
         addToast({
           type: "success",
           title: "Payment Updated",
-          message: "Financial ledger record updated successfully.",
-        });
+          message: "Financial ledger record updated successfully." });
       } else {
         await paymentsService.create({
           clientId: formData.clientId,
@@ -332,13 +324,11 @@ export const PaymentsPage: React.FC = () => {
           paymentMethod: formData.paymentMethod,
           transactionReference: formData.transactionReference || undefined,
           approvalNotes: formData.approvalNotes || undefined,
-          paymentStatus: formData.paymentStatus,
-        });
+          paymentStatus: formData.paymentStatus });
         addToast({
           type: "success",
           title: "Payment Recorded",
-          message: "Payment entry successfully registered in the financial ledger.",
-        });
+          message: "Payment entry successfully registered in the financial ledger." });
       }
 
       setIsCreateModalOpen(false);
@@ -362,8 +352,7 @@ export const PaymentsPage: React.FC = () => {
       addToast({
         type: "success",
         title: "Status Updated",
-        message: `Payment status transitioned to ${paymentToStatusUpdate.newStatus}.`,
-      });
+        message: `Payment status transitioned to ${paymentToStatusUpdate.newStatus}.` });
       setPaymentToStatusUpdate(null);
       setStatusNotes("");
       loadData();
@@ -371,8 +360,7 @@ export const PaymentsPage: React.FC = () => {
       addToast({
         type: "danger",
         title: "Status Update Failed",
-        message: err.message || "Could not update payment status.",
-      });
+        message: err.message || "Could not update payment status." });
     } finally {
       setIsSubmitting(false);
     }
@@ -386,16 +374,14 @@ export const PaymentsPage: React.FC = () => {
       addToast({
         type: "success",
         title: "Payment Deleted",
-        message: "Payment ledger record removed.",
-      });
+        message: "Payment ledger record removed." });
       setPaymentToDelete(null);
       loadData();
     } catch (err: any) {
       addToast({
         type: "danger",
         title: "Deletion Failed",
-        message: err.message || "Failed to remove payment record.",
-      });
+        message: err.message || "Failed to remove payment record." });
     } finally {
       setIsDeleting(false);
     }
@@ -407,8 +393,7 @@ export const PaymentsPage: React.FC = () => {
         style: "currency",
         currency: currency.toUpperCase(),
         minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(amount);
+        maximumFractionDigits: 2 }).format(amount);
     } catch {
       return `${currency} ${amount.toFixed(2)}`;
     }
@@ -795,8 +780,7 @@ export const PaymentsPage: React.FC = () => {
                 { value: "", label: "Select Client" },
                 ...clients.map((c) => ({
                   value: c.id,
-                  label: `${c.fullName || c.name || "Client"} (${c.companyName || c.email})`,
-                })),
+                  label: `${c.fullName || c.name || "Client"} (${c.companyName || c.email})` })),
               ]}
               value={formData.clientId}
               onChange={(e) => setFormData({ ...formData, clientId: e.target.value, projectId: "" })}
@@ -808,8 +792,7 @@ export const PaymentsPage: React.FC = () => {
                 { value: "", label: "None / Direct Client Account" },
                 ...clientProjects.map((p) => ({
                   value: p.id,
-                  label: `${p.title} (${p.projectStatus})`,
-                })),
+                  label: `${p.title} (${p.projectStatus})` })),
               ]}
               value={formData.projectId}
               onChange={(e) => setFormData({ ...formData, projectId: e.target.value })}

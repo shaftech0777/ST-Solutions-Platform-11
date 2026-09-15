@@ -11,8 +11,7 @@ import {
   Filter,
   X,
   LayoutGrid,
-  List,
-} from "lucide-react";
+  List } from "lucide-react";
 import { PageHeader } from "../components/shell/PageHeader.js";
 import { Card } from "../components/ui/Card.js";
 import { Button, IconButton } from "../components/ui/Button.js";
@@ -89,15 +88,13 @@ export const OrganizationsPage: React.FC = () => {
         // Update existing organization
         const res = await organizationsService.update(editingOrg.id, {
           name: trimmedName,
-          slug: formSlug.trim() || undefined,
-        });
+          slug: formSlug.trim() || undefined });
 
         if (res.success) {
           addToast({
             type: "success",
             title: "Organization Updated",
-            message: `Organization "${trimmedName}" updated successfully`,
-          });
+            message: `Organization "${trimmedName}" updated successfully` });
           setIsModalOpen(false);
           await refreshUser();
         } else {
@@ -107,15 +104,13 @@ export const OrganizationsPage: React.FC = () => {
         // Create new organization
         const res = await organizationsService.create({
           name: trimmedName,
-          slug: formSlug.trim() || undefined,
-        });
+          slug: formSlug.trim() || undefined });
 
         if (res.success && res.data) {
           addToast({
             type: "success",
             title: "Organization Created",
-            message: `Organization "${res.data.name}" established successfully`,
-          });
+            message: `Organization "${res.data.name}" established successfully` });
           setIsModalOpen(false);
           await refreshUser();
           if (res.data.id) {
@@ -147,8 +142,7 @@ export const OrganizationsPage: React.FC = () => {
       return new Date(dateStr).toLocaleDateString("en-US", {
         year: "numeric",
         month: "short",
-        day: "numeric",
-      });
+        day: "numeric" });
     } catch {
       return dateStr;
     }

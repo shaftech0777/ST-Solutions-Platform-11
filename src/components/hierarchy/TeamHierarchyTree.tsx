@@ -17,8 +17,7 @@ import {
   AlertTriangle,
   Layers,
   Sparkles,
-  ExternalLink,
-} from "lucide-react";
+  ExternalLink } from "lucide-react";
 import { usersService } from "../../api/services/users.service.js";
 import { Card } from "../ui/Card.js";
 import { Button, IconButton } from "../ui/Button.js";

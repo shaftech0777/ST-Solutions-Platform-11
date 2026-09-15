@@ -10,13 +10,11 @@ export interface LoadingSpinnerProps {
 export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   size = "md",
   text,
-  fullPage = false,
-}) => {
+  fullPage = false }) => {
   const sizeClasses = {
     sm: "w-4 h-4",
     md: "w-8 h-8",
-    lg: "w-12 h-12",
-  };
+    lg: "w-12 h-12" };
 
   const content = (
     <div className="flex flex-col items-center justify-center p-6 space-y-3">

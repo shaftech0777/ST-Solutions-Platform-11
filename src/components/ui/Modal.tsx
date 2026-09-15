@@ -18,8 +18,7 @@ export const Modal: React.FC<ModalProps> = ({
   description,
   children,
   footer,
-  maxWidth = "md",
-}) => {
+  maxWidth = "md" }) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -41,8 +40,7 @@ export const Modal: React.FC<ModalProps> = ({
     md: "max-w-md",
     lg: "max-w-lg",
     xl: "max-w-xl",
-    "2xl": "max-w-2xl",
-  }[maxWidth];
+    "2xl": "max-w-2xl" }[maxWidth];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
@@ -101,8 +99,7 @@ export const Drawer: React.FC<DrawerProps> = ({
   onClose,
   title,
   children,
-  position = "left",
-}) => {
+  position = "left" }) => {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -164,8 +161,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   confirmLabel = "Confirm",
   cancelLabel = "Cancel",
   variant = "danger",
-  isLoading = false,
-}) => {
+  isLoading = false }) => {
   return (
     <Modal
       isOpen={isOpen}

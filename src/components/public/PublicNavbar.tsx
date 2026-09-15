@@ -15,12 +15,13 @@ import {
   Sparkles,
   UserPlus,
   LogIn,
-  LayoutDashboard,
-} from "lucide-react";
+  LayoutDashboard } from "lucide-react";
 import { useAuth } from "../../context/AuthContext.js";
-import { companyConfig, servicesData } from "../../data/companyConfig.js";
+import { servicesData } from "../../data/companyConfig.js";
+import { usePublicCMS } from "../../context/PublicCMSContext.js";
 
 export const PublicNavbar: React.FC = () => {
+  const companyConfig = usePublicCMS();
   const location = useLocation();
   const navigate = useNavigate();
   const { currentUser } = useAuth();

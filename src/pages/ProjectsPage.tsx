@@ -21,8 +21,7 @@ import {
   Tag,
   ChevronRight,
   CheckSquare,
-  Square,
-} from "lucide-react";
+  Square } from "lucide-react";
 import { PageHeader } from "../components/shell/PageHeader.js";
 import { Table, TableHeader, TableRow, TableHead, TableCell } from "../components/ui/Table.js";
 import { Button, IconButton } from "../components/ui/Button.js";
@@ -48,8 +47,7 @@ const ALLOWED_PROJECT_STATUS_TRANSITIONS: Record<string, ProjectStatus[]> = {
   REVIEW: ["IN_PROGRESS", "COMPLETED", "CANCELLED"],
   COMPLETED: ["IN_PROGRESS"],
   CANCELLED: ["PENDING", "DISCUSSION", "CONFIRMED"],
-  ON_HOLD: ["IN_PROGRESS", "CANCELLED"],
-};
+  ON_HOLD: ["IN_PROGRESS", "CANCELLED"] };
 
 const PROJECT_STATUS_OPTIONS: { value: string; label: string }[] = [
   { value: "ALL", label: "All Statuses" },
@@ -119,8 +117,7 @@ export const ProjectsPage: React.FC = () => {
     budget: "",
     startDate: "",
     expectedCompletionDate: "",
-    projectStatus: "IN_PROGRESS" as ProjectStatus,
-  });
+    projectStatus: "IN_PROGRESS" as ProjectStatus });
 
   const loadData = async () => {
     if (!currentUser) {
@@ -134,8 +131,7 @@ export const ProjectsPage: React.FC = () => {
         projectsService.getAll({
           search: search.trim() || undefined,
           status: statusFilter !== "ALL" ? (statusFilter as ProjectStatus) : undefined,
-          limit: 100,
-        }),
+          limit: 100 }),
         clientsService.getAll({ limit: 100 }),
       ]);
 
@@ -182,8 +178,7 @@ export const ProjectsPage: React.FC = () => {
       budget: "",
       startDate: "",
       expectedCompletionDate: "",
-      projectStatus: "IN_PROGRESS",
-    });
+      projectStatus: "IN_PROGRESS" });
     setModalError(null);
     setIsModalOpen(true);
   };
@@ -200,8 +195,7 @@ export const ProjectsPage: React.FC = () => {
       expectedCompletionDate: project.expectedCompletionDate
         ? project.expectedCompletionDate.split("T")[0]
         : "",
-      projectStatus: project.projectStatus,
-    });
+      projectStatus: project.projectStatus });
     setModalError(null);
     setIsModalOpen(true);
   };
@@ -228,8 +222,7 @@ export const ProjectsPage: React.FC = () => {
       budget: formData.budget ? parseFloat(formData.budget) : undefined,
       startDate: formData.startDate || undefined,
       expectedCompletionDate: formData.expectedCompletionDate || undefined,
-      projectStatus: formData.projectStatus,
-    };
+      projectStatus: formData.projectStatus };
 
     try {
       if (editingProject) {
@@ -238,8 +231,7 @@ export const ProjectsPage: React.FC = () => {
           addToast({
             type: "success",
             title: "Project Updated",
-            message: `Project "${formData.title}" updated successfully`,
-          });
+            message: `Project "${formData.title}" updated successfully` });
           setIsModalOpen(false);
           await loadData();
         } else {
@@ -251,8 +243,7 @@ export const ProjectsPage: React.FC = () => {
           addToast({
             type: "success",
             title: "Project Established",
-            message: `Project "${formData.title}" added to pipeline`,
-          });
+            message: `Project "${formData.title}" added to pipeline` });
           setIsModalOpen(false);
           await loadData();
         } else {
@@ -278,8 +269,7 @@ export const ProjectsPage: React.FC = () => {
         addToast({
           type: "success",
           title: "Status Updated",
-          message: `Project status transitioned to ${newStatus}`,
-        });
+          message: `Project status transitioned to ${newStatus}` });
         await loadData();
         if (selectedProject?.id === projectId) {
           setSelectedProject((prev) => (prev ? { ...prev, projectStatus: newStatus } : null));
@@ -288,16 +278,14 @@ export const ProjectsPage: React.FC = () => {
         addToast({
           type: "danger",
           title: "Transition Invalid",
-          message: res.error || `Cannot transition project from ${currentStatus} to ${newStatus}`,
-        });
+          message: res.error || `Cannot transition project from ${currentStatus} to ${newStatus}` });
         await loadData(); // Resync UI to prevent stale state
       }
     } catch (err: any) {
       addToast({
         type: "danger",
         title: "Update Failed",
-        message: err.message || "Failed to update project status",
-      });
+        message: err.message || "Failed to update project status" });
       await loadData(); // Resync UI
     } finally {
       setTransitioningProjectId(null);
@@ -313,8 +301,7 @@ export const ProjectsPage: React.FC = () => {
         addToast({
           type: "info",
           title: "Project Deleted",
-          message: `Project "${projectToDelete.title}" removed from workspace`,
-        });
+          message: `Project "${projectToDelete.title}" removed from workspace` });
         setProjectToDelete(null);
         if (selectedProject?.id === projectToDelete.id) {
           setSelectedProject(null);
@@ -324,15 +311,13 @@ export const ProjectsPage: React.FC = () => {
         addToast({
           type: "danger",
           title: "Deletion Failed",
-          message: res.error || "Failed to delete project",
-        });
+          message: res.error || "Failed to delete project" });
       }
     } catch (err: any) {
       addToast({
         type: "danger",
         title: "Deletion Error",
-        message: err.message || "Failed to delete project",
-      });
+        message: err.message || "Failed to delete project" });
     } finally {
       setIsDeleting(false);
     }
@@ -364,8 +349,7 @@ export const ProjectsPage: React.FC = () => {
     try {
       await projectsService.updateRequirement(selectedProject.id, reqId, {
         isCompleted: !currentCompleted,
-        status: !currentCompleted ? "COMPLETED" : "IN_PROGRESS",
-      });
+        status: !currentCompleted ? "COMPLETED" : "IN_PROGRESS" });
       setRequirements((prev) =>
         prev.map((r) =>
           r.id === reqId
@@ -386,8 +370,7 @@ export const ProjectsPage: React.FC = () => {
       const created = await projectsService.createRequirement(selectedProject.id, {
         title: newReqTitle.trim(),
         priority: newReqPriority,
-        status: "PENDING",
-      });
+        status: "PENDING" });
       const newObj = (created as any)?.data || created;
       setRequirements((prev) => [...prev, newObj]);
       setNewReqTitle("");
@@ -415,8 +398,7 @@ export const ProjectsPage: React.FC = () => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
-      maximumFractionDigits: 0,
-    }).format(amount);
+      maximumFractionDigits: 0 }).format(amount);
   };
 
   const formatDate = (dateStr?: string | null) => {
@@ -425,8 +407,7 @@ export const ProjectsPage: React.FC = () => {
       return new Date(dateStr).toLocaleDateString("en-US", {
         year: "numeric",
         month: "short",
-        day: "numeric",
-      });
+        day: "numeric" });
     } catch {
       return dateStr;
     }
@@ -535,8 +516,7 @@ export const ProjectsPage: React.FC = () => {
                   { value: "ALL", label: "All Clients" },
                   ...clients.map((c) => ({
                     value: c.id,
-                    label: c.companyName || c.fullName || c.name || c.email,
-                  })),
+                    label: c.companyName || c.fullName || c.name || c.email })),
                 ]}
                 value={clientFilter}
                 onChange={(e) => setClientFilter(e.target.value)}
@@ -1003,8 +983,7 @@ export const ProjectsPage: React.FC = () => {
                     style={{
                       width: `${Math.round(
                         (requirements.filter((r) => r.isCompleted).length / requirements.length) * 100
-                      )}%`,
-                    }}
+                      )}%` }}
                   />
                 </div>
               )}
@@ -1173,8 +1152,7 @@ export const ProjectsPage: React.FC = () => {
             required
             options={clients.map((c) => ({
               value: c.id,
-              label: `${c.companyName || c.fullName || c.name || c.email} (${c.email})`,
-            }))}
+              label: `${c.companyName || c.fullName || c.name || c.email} (${c.email})` }))}
             value={formData.clientId}
             onChange={(e) => setFormData({ ...formData, clientId: e.target.value })}
             placeholder={clients.length === 0 ? "No clients available. Add a client first." : "Select Client..."}

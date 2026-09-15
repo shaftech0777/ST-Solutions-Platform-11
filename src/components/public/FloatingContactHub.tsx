@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { MessageCircle, Phone, Mail, QrCode, X, ChevronUp, MessageSquare } from "lucide-react";
-import { companyConfig } from "../../data/companyConfig.js";
+import { usePublicCMS } from "../../context/PublicCMSContext.js";
 import { WeChatModal } from "./WeChatModal.js";
 
 export const FloatingContactHub: React.FC = () => {
+  const companyConfig = usePublicCMS();
   const [isOpen, setIsOpen] = useState(false);
   const [isWeChatOpen, setIsWeChatOpen] = useState(false);
 

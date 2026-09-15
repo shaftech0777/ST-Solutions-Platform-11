@@ -15,8 +15,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   module,
   requiredPermission,
-  requiredRole,
-}) => {
+  requiredRole }) => {
   const { currentUser, isLoading } = useAuth();
   const { canAccess, hasPermission, hasRole } = usePermission();
 

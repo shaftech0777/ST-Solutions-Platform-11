@@ -14,8 +14,7 @@ import {
   LayoutGrid,
   List,
   FolderKanban,
-  ShieldCheck,
-} from "lucide-react";
+  ShieldCheck } from "lucide-react";
 import { PageHeader } from "../components/shell/PageHeader.js";
 import { Card } from "../components/ui/Card.js";
 import { Button, IconButton } from "../components/ui/Button.js";
@@ -37,8 +36,7 @@ export const WorkspacesPage: React.FC = () => {
     switchWorkspace,
     refreshUser,
     currentUser,
-    isLoading: isAuthLoading,
-  } = useAuth();
+    isLoading: isAuthLoading } = useAuth();
   const { addToast } = useToast();
 
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
@@ -133,15 +131,13 @@ export const WorkspacesPage: React.FC = () => {
         // Edit workspace
         const res = await workspacesService.update(editingWorkspace.id, {
           name: trimmedName,
-          description: wsDesc.trim() || undefined,
-        });
+          description: wsDesc.trim() || undefined });
 
         if (res.success) {
           addToast({
             type: "success",
             title: "Workspace Updated",
-            message: `Workspace "${trimmedName}" updated successfully`,
-          });
+            message: `Workspace "${trimmedName}" updated successfully` });
           setIsModalOpen(false);
           await loadWorkspaces();
           await refreshUser();
@@ -153,15 +149,13 @@ export const WorkspacesPage: React.FC = () => {
         const res = await workspacesService.create({
           name: trimmedName,
           description: wsDesc.trim() || undefined,
-          organizationId: currentOrganization.id,
-        });
+          organizationId: currentOrganization.id });
 
         if (res.success && res.data) {
           addToast({
             type: "success",
             title: "Workspace Created",
-            message: `Workspace "${res.data.name}" established under ${currentOrganization.name}`,
-          });
+            message: `Workspace "${res.data.name}" established under ${currentOrganization.name}` });
           setIsModalOpen(false);
           await loadWorkspaces();
           await refreshUser();
@@ -190,8 +184,7 @@ export const WorkspacesPage: React.FC = () => {
         addToast({
           type: "info",
           title: "Workspace Deleted",
-          message: `Workspace "${workspaceToDelete.name}" removed successfully`,
-        });
+          message: `Workspace "${workspaceToDelete.name}" removed successfully` });
         setWorkspaceToDelete(null);
         await loadWorkspaces();
         await refreshUser();
@@ -199,15 +192,13 @@ export const WorkspacesPage: React.FC = () => {
         addToast({
           type: "danger",
           title: "Deletion Failed",
-          message: res.error || "Could not delete workspace",
-        });
+          message: res.error || "Could not delete workspace" });
       }
     } catch (err: any) {
       addToast({
         type: "danger",
         title: "Deletion Error",
-        message: err.message || "Failed to delete workspace",
-      });
+        message: err.message || "Failed to delete workspace" });
     } finally {
       setIsDeleting(false);
     }
@@ -219,8 +210,7 @@ export const WorkspacesPage: React.FC = () => {
       return new Date(dateStr).toLocaleDateString("en-US", {
         year: "numeric",
         month: "short",
-        day: "numeric",
-      });
+        day: "numeric" });
     } catch {
       return dateStr;
     }

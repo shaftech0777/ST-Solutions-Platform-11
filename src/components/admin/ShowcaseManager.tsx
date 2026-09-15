@@ -15,8 +15,7 @@ import {
   RefreshCw,
   Sliders,
   Globe,
-  AlertCircle,
-} from "lucide-react";
+  AlertCircle } from "lucide-react";
 import { Button, IconButton } from "../ui/Button.js";
 import { Badge } from "../ui/Badge.js";
 import { Card } from "../ui/Card.js";
@@ -81,8 +80,7 @@ export const ShowcaseManager: React.FC = () => {
     technologies: "React, TypeScript, PostgreSQL",
     liveUrl: "",
     status: "PUBLISHED",
-    featured: true,
-  });
+    featured: true });
 
   const loadProjects = async () => {
     setIsLoading(true);
@@ -132,8 +130,7 @@ export const ShowcaseManager: React.FC = () => {
       technologies: "React, TypeScript, Tailwind CSS, PostgreSQL",
       liveUrl: "",
       status: "PUBLISHED",
-      featured: true,
-    });
+      featured: true });
     setIsModalOpen(true);
   };
 
@@ -153,8 +150,7 @@ export const ShowcaseManager: React.FC = () => {
       technologies: Array.isArray(p.technologies) ? p.technologies.join(", ") : "",
       liveUrl: p.liveUrl || "",
       status: p.status,
-      featured: p.featured,
-    });
+      featured: p.featured });
     setIsModalOpen(true);
   };
 
@@ -188,8 +184,7 @@ export const ShowcaseManager: React.FC = () => {
         liveUrl: formData.liveUrl.trim() || null,
         status: formData.status,
         featured: formData.featured,
-        projectType: formData.projectType,
-      };
+        projectType: formData.projectType };
 
       if (formData.category) {
         const matchedCat = categories.find(
@@ -213,8 +208,7 @@ export const ShowcaseManager: React.FC = () => {
     } catch (err: any) {
       addToast({
         type: "error",
-        message: err.message || "Failed to save project. Please verify inputs.",
-      });
+        message: err.message || "Failed to save project. Please verify inputs." });
     } finally {
       setIsSaving(false);
     }

@@ -12,34 +12,28 @@ export const Alert: React.FC<AlertProps> = ({
   type = "info",
   title,
   children,
-  className = "",
-}) => {
+  className = "" }) => {
   const typeConfig = {
     success: {
       bg: "bg-emerald-500/10 dark:bg-emerald-950/40",
       border: "border-emerald-500/30",
       text: "text-emerald-900 dark:text-emerald-200",
-      icon: <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />,
-    },
+      icon: <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" /> },
     warning: {
       bg: "bg-amber-500/10 dark:bg-amber-950/40",
       border: "border-amber-500/30",
       text: "text-amber-900 dark:text-amber-200",
-      icon: <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />,
-    },
+      icon: <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" /> },
     danger: {
       bg: "bg-red-500/10 dark:bg-red-950/40",
       border: "border-red-500/30",
       text: "text-red-900 dark:text-red-200",
-      icon: <XCircle className="w-4 h-4 text-red-500 shrink-0" />,
-    },
+      icon: <XCircle className="w-4 h-4 text-red-500 shrink-0" /> },
     info: {
       bg: "bg-blue-500/10 dark:bg-blue-950/40",
       border: "border-blue-500/30",
       text: "text-blue-900 dark:text-blue-200",
-      icon: <Info className="w-4 h-4 text-blue-500 shrink-0" />,
-    },
-  }[type];
+      icon: <Info className="w-4 h-4 text-blue-500 shrink-0" /> } }[type];
 
   return (
     <div className={`p-3.5 rounded-xl border flex items-start gap-3 ${typeConfig.bg} ${typeConfig.border} ${typeConfig.text} ${className}`}>

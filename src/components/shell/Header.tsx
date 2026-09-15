@@ -10,8 +10,7 @@ import {
   Settings,
   LogOut,
   ShieldAlert,
-  CheckCircle,
-} from "lucide-react";
+  CheckCircle } from "lucide-react";
 import { useAuth } from "../../context/AuthContext.js";
 import { useTheme } from "../../context/ThemeContext.js";
 import { OrganizationSelector, WorkspaceSelector } from "./OrganizationSelector.js";
@@ -26,8 +25,7 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({
   onOpenMobileSidebar,
-  onOpenCommandSearch,
-}) => {
+  onOpenCommandSearch }) => {
   const { currentUser, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
@@ -91,8 +89,7 @@ export const Header: React.FC<HeaderProps> = ({
         onUnreadCount: (count) => {
           if (!isMounted) return;
           setUnreadCount(count);
-        },
-      });
+        } });
     }
 
     return () => {

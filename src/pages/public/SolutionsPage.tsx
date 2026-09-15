@@ -19,9 +19,9 @@ import {
   GraduationCap,
   Briefcase,
   Sparkles,
-  ChevronRight,
-} from "lucide-react";
-import { solutionOptions, industryOptions, companyConfig } from "../../data/companyConfig.js";
+  ChevronRight } from "lucide-react";
+import { solutionOptions, industryOptions } from "../../data/companyConfig.js";
+import { usePublicCMS } from "../../context/PublicCMSContext.js";
 
 const iconMap: Record<string, React.ReactNode> = {
   ShoppingBag: <ShoppingBag className="w-5 h-5" />,
@@ -31,8 +31,7 @@ const iconMap: Record<string, React.ReactNode> = {
   Users: <Users className="w-5 h-5" />,
   Boxes: <Boxes className="w-5 h-5" />,
   Layers: <Layers className="w-5 h-5" />,
-  Cpu: <Cpu className="w-5 h-5" />,
-};
+  Cpu: <Cpu className="w-5 h-5" /> };
 
 const industryIconMap: Record<string, React.ReactNode> = {
   Activity: <Activity className="w-5 h-5" />,
@@ -42,10 +41,10 @@ const industryIconMap: Record<string, React.ReactNode> = {
   GraduationCap: <GraduationCap className="w-5 h-5" />,
   Briefcase: <Briefcase className="w-5 h-5" />,
   Sparkles: <Sparkles className="w-5 h-5" />,
-  Building2: <Building2 className="w-5 h-5" />,
-};
+  Building2: <Building2 className="w-5 h-5" /> };
 
 export const SolutionsPage: React.FC = () => {
+  const companyConfig = usePublicCMS();
   const [searchParams] = useSearchParams();
   const [selectedGoal, setSelectedGoal] = useState<string | null>(searchParams.get("goal"));
 

@@ -18,8 +18,7 @@ import {
   CheckCircle2,
   Clock,
   Sparkles,
-  ArrowUpRight,
-} from "lucide-react";
+  ArrowUpRight } from "lucide-react";
 import { PageHeader } from "../components/shell/PageHeader.js";
 import { StatCard, Card } from "../components/ui/Card.js";
 import { Button } from "../components/ui/Button.js";
@@ -93,8 +92,7 @@ export const DashboardPage: React.FC = () => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
-      maximumFractionDigits: 0,
-    }).format(amount);
+      maximumFractionDigits: 0 }).format(amount);
   };
 
   const activeProjectsCount = projects.filter(

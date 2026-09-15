@@ -19,8 +19,7 @@ import {
   RefreshCw,
   Eye,
   ExternalLink,
-  ChevronRight,
-} from "lucide-react";
+  ChevronRight } from "lucide-react";
 import { PageHeader } from "../components/shell/PageHeader.js";
 import { Card } from "../components/ui/Card.js";
 import { Button, IconButton } from "../components/ui/Button.js";
@@ -56,8 +55,7 @@ export const NotificationsPage: React.FC = () => {
     paymentAlerts: true,
     applicantSubmissions: true,
     securityAlerts: true,
-    systemAnnouncements: true,
-  });
+    systemAnnouncements: true });
   const [isSavingPrefs, setIsSavingPrefs] = useState(false);
 
   const loadNotifications = async () => {
@@ -68,8 +66,7 @@ export const NotificationsPage: React.FC = () => {
       const [notifsRes, unreadRes] = await Promise.allSettled([
         notificationsService.getAll({
           unreadOnly: activeTab === "unread" ? true : undefined,
-          limit: 100,
-        }),
+          limit: 100 }),
         notificationsService.getUnreadCount(),
       ]);
 
@@ -104,8 +101,7 @@ export const NotificationsPage: React.FC = () => {
       },
       onUnreadCount: (count) => {
         setUnreadCount(count);
-      },
-    });
+      } });
 
     return () => {
       if (eventSource) {
@@ -134,15 +130,13 @@ export const NotificationsPage: React.FC = () => {
       addToast({
         type: "success",
         title: "Preferences Saved",
-        message: "Your alert and email delivery preferences have been updated.",
-      });
+        message: "Your alert and email delivery preferences have been updated." });
       setIsPrefsModalOpen(false);
     } catch (err: any) {
       addToast({
         type: "danger",
         title: "Update Failed",
-        message: err.message || "Failed to update notification preferences.",
-      });
+        message: err.message || "Failed to update notification preferences." });
     } finally {
       setIsSavingPrefs(false);
     }
@@ -158,14 +152,12 @@ export const NotificationsPage: React.FC = () => {
       addToast({
         type: "info",
         title: "Marked as Read",
-        message: "Notification updated.",
-      });
+        message: "Notification updated." });
     } catch (err: any) {
       addToast({
         type: "danger",
         title: "Action Failed",
-        message: err.message || "Could not mark notification as read.",
-      });
+        message: err.message || "Could not mark notification as read." });
     }
   };
 
@@ -179,14 +171,12 @@ export const NotificationsPage: React.FC = () => {
       addToast({
         type: "info",
         title: "Marked as Unread",
-        message: "Notification set to unread.",
-      });
+        message: "Notification set to unread." });
     } catch (err: any) {
       addToast({
         type: "danger",
         title: "Action Failed",
-        message: err.message || "Could not mark notification as unread.",
-      });
+        message: err.message || "Could not mark notification as unread." });
     }
   };
 
@@ -198,14 +188,12 @@ export const NotificationsPage: React.FC = () => {
       addToast({
         type: "success",
         title: "All Caught Up",
-        message: "All alerts have been marked as read.",
-      });
+        message: "All alerts have been marked as read." });
     } catch (err: any) {
       addToast({
         type: "danger",
         title: "Action Failed",
-        message: err.message || "Failed to mark notifications as read.",
-      });
+        message: err.message || "Failed to mark notifications as read." });
     }
   };
 
@@ -524,28 +512,23 @@ export const NotificationsPage: React.FC = () => {
               {
                 key: "emailNotifications",
                 label: "Email Digest Notifications",
-                desc: "Receive email notifications for critical tenant events",
-              },
+                desc: "Receive email notifications for critical tenant events" },
               {
                 key: "paymentAlerts",
                 label: "Financial & Payment Alerts",
-                desc: "Alerts when wire transfers, invoices, or settlements change status",
-              },
+                desc: "Alerts when wire transfers, invoices, or settlements change status" },
               {
                 key: "projectUpdates",
                 label: "Project Milestone Changes",
-                desc: "Notifications on deliverable completions, status transitions",
-              },
+                desc: "Notifications on deliverable completions, status transitions" },
               {
                 key: "applicantSubmissions",
                 label: "Applicant & Recruitment Pipeline",
-                desc: "Alerts when new candidate registrations or interview notes are added",
-              },
+                desc: "Alerts when new candidate registrations or interview notes are added" },
               {
                 key: "securityAlerts",
                 label: "Security & Access Audits",
-                desc: "High-priority alerts for permission modifications and login sessions",
-              },
+                desc: "High-priority alerts for permission modifications and login sessions" },
             ].map((item) => {
               const checked = !!(preferences as any)[item.key];
               return (
@@ -554,8 +537,7 @@ export const NotificationsPage: React.FC = () => {
                   onClick={() =>
                     setPreferences({
                       ...preferences,
-                      [item.key]: !checked,
-                    })
+                      [item.key]: !checked })
                   }
                   className="flex items-center justify-between p-3 rounded-lg border border-border/60 bg-surface-hover/40 cursor-pointer hover:border-gold/30 transition-colors"
                 >
