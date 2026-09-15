@@ -13,6 +13,11 @@ async function bootstrap(): Promise<void> {
     Logger.info(`Connecting to database service [Environment: ${config.app.env}]...`);
     await databaseService.connect();
     
+    // Safely initialize missing CMS content
+    const { initializeCMSSections } = await import("./modules/settings/settings.init.js");
+    await initializeCMSSections();
+
+    
     // Execute live probe query (SELECT 1)
     const health = await databaseService.healthCheck();
     if (isProduction && health.status !== "up") {

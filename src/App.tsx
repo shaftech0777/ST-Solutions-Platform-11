@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 
 import { AuthProvider } from "./context/AuthContext.js";
+import { FeatureProvider } from "./context/FeatureContext.js";
 import { ThemeProvider } from "./context/ThemeContext.js";
 import { ToastProvider } from "./context/ToastContext.js";
 import { PublicCMSProvider } from "./context/PublicCMSContext.js";
@@ -109,6 +110,7 @@ export function App() {
     <ThemeProvider>
       <ToastProvider>
         <AuthProvider>
+          <FeatureProvider>
           <PublicCMSProvider>
             <BrowserRouter>
               <Suspense fallback={<PageSuspenseLoader />}>
@@ -355,6 +357,7 @@ export function App() {
             </Suspense>
             </BrowserRouter>
           </PublicCMSProvider>
+          </FeatureProvider>
         </AuthProvider>
       </ToastProvider>
     </ThemeProvider>

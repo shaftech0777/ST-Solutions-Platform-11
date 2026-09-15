@@ -70,7 +70,7 @@ export const settingsService = {
   async getCMSSection<T>(key: string): Promise<T | null> {
     try {
       const response = await apiClient<any>(`/settings/cms/${key}`);
-      return response?.content ? JSON.parse(response.content) : null;
+      return response?.data?.content ? (typeof response.data.content === "string" ? JSON.parse(response.data.content) : response.data.content) : null;
     } catch (err) {
       return null;
     }

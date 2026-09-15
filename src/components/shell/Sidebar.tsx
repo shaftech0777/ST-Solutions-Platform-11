@@ -19,6 +19,7 @@ import {
   Inbox,
   Network } from "lucide-react";
 import { useAuth } from "../../context/AuthContext.js";
+import { useFeatures } from "../../context/FeatureContext.js";
 import { usePermission } from "../../hooks/usePermission.js";
 import { Avatar } from "../ui/Badge.js";
 
@@ -79,12 +80,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
       items: [
         { label: "Members", path: "/members", icon: Users, module: "members" },
         { label: "Team Hierarchy", path: "/members?tab=hierarchy", icon: Network, module: "members" },
-        { label: "Applicants", path: "/applicants", icon: UserCheck, module: "applicants" },
+        ...(features.applicant_onboarding_pipeline ? [{ label: "Applicants", path: "/applicants", icon: UserCheck, module: "applicants" }] : []),//
       ] },
     {
       title: "AI & Intelligence",
       items: [
-        { label: "AI Assistant", path: "/ai", icon: Bot, badge: "AI", module: "ai" },
+        ...(features.ai_copilot ? [{ label: "AI Assistant", path: "/ai", icon: Bot, badge: "AI", module: "ai" }] : []),//
       ] },
     {
       title: "System & Governance",
