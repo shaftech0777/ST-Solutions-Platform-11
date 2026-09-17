@@ -11,8 +11,18 @@ export function requestLoggerMiddleware(
   res: Response,
   next: NextFunction
 ): void {
-  const startTime = Date.now();
   const path = req.originalUrl || req.url;
+
+  // Filter out Vite internal assets, client source modules, and frontend static assets
+  if (
+    !path.startsWith("/api") &&
+    !path.startsWith("/auth") &&
+    !path.startsWith("/health")
+  ) {
+    return next();
+  }
+
+  const startTime = Date.now();
   const method = req.method;
   const requestId = req.requestId || (req.headers["x-request-id"] as string | undefined);
 

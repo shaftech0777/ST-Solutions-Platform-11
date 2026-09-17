@@ -14,11 +14,12 @@ export const LoginPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // If already authenticated and not currently submitting login credentials, redirect cleanly to /dashboard
   useEffect(() => {
-    if (currentUser && !isAuthLoading) {
+    if (!isSubmitting && currentUser && !isAuthLoading) {
       navigate("/dashboard", { replace: true });
     }
-  }, [currentUser, isAuthLoading, navigate]);
+  }, [currentUser, isAuthLoading, isSubmitting, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,8 +39,8 @@ export const LoginPage: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      await login({ identifier: trimmedIdentifier, email: trimmedIdentifier, password });
-      navigate("/dashboard");
+      await login({ email: trimmedIdentifier, username: trimmedIdentifier, password });
+      navigate("/dashboard", { replace: true });
     } catch (err: any) {
       const msg = err.data?.message || err.data?.error || err.message || "Invalid credentials or unauthorized access";
       setError(msg);

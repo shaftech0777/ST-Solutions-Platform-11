@@ -142,7 +142,7 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="flex items-center gap-2 sm:gap-3">
         <button
           onClick={onOpenMobileSidebar}
-          className="p-2 min-h-[40px] min-w-[40px] flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white dark:bg-slate-900 lg:hidden focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50"
+          className="p-2 min-h-[40px] min-w-[40px] flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50"
           aria-label="Open navigation menu"
         >
           <Menu className="w-5 h-5" />
@@ -150,7 +150,7 @@ export const Header: React.FC<HeaderProps> = ({
 
         <div className="flex items-center gap-1.5 sm:gap-2">
           <OrganizationSelector />
-          <span className="text-slate-700 dark:text-slate-300 dark:text-slate-700 text-sm sm:text-sm hidden sm:inline">/</span>
+          <span className="text-slate-400 dark:text-slate-600 text-sm hidden sm:inline">/</span>
           <div className="hidden md:block">
             <WorkspaceSelector />
           </div>
@@ -167,7 +167,7 @@ export const Header: React.FC<HeaderProps> = ({
         >
           <Search className="w-3.5 h-3.5 text-[#D4AF37]" />
           <span className="hidden md:inline">Search...</span>
-          <kbd className="hidden md:inline-block px-1.5 py-0.2 text-sm font-mono rounded bg-white dark:bg-slate-950 text-slate-500 border border-slate-200 dark:border-slate-800">
+          <kbd className="hidden md:inline-block px-1.5 py-0.5 text-xs font-mono rounded bg-white dark:bg-slate-950 text-slate-500 border border-slate-200 dark:border-slate-800">
             ⌘K
           </kbd>
         </button>
@@ -175,7 +175,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
-          className="p-2 min-h-[40px] min-w-[40px] flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-white dark:bg-slate-900 transition-colors focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50"
+          className="p-2 min-h-[40px] min-w-[40px] flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50"
           title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
           aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
         >
@@ -186,7 +186,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="relative">
           <button
             onClick={() => setIsNotifOpen(!isNotifOpen)}
-            className="p-2 min-h-[40px] min-w-[40px] flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-white dark:bg-slate-900 transition-colors relative focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50"
+            className="p-2 min-h-[40px] min-w-[40px] flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors relative focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50"
             aria-label="Notifications"
           >
             <Bell className="w-4 h-4" />
@@ -236,7 +236,7 @@ export const Header: React.FC<HeaderProps> = ({
                             )}
                           </div>
                           <p className="text-slate-600 dark:text-slate-400 mt-0.5 leading-snug line-clamp-2">{n.message}</p>
-                          <span className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500 font-mono mt-1 block">
+                          <span className="text-xs text-slate-400 dark:text-slate-500 font-mono mt-1 block">
                             {new Date(n.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                           </span>
                         </div>
@@ -270,7 +270,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="relative">
           <button
             onClick={() => setIsProfileOpen(!isProfileOpen)}
-            className="flex items-center gap-2 p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-white dark:bg-slate-900 transition-colors focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50"
+            className="flex items-center gap-2 p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50"
             aria-label="User account menu"
           >
             <Avatar name={currentUser?.profile?.fullName || currentUser?.email} size="sm" />
@@ -328,7 +328,7 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Logout Confirmation Modal */}
       {showLogoutModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white dark:bg-slate-950/60 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs">
           <div className="w-full max-w-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-2xl">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 shrink-0">

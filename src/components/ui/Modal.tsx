@@ -9,6 +9,7 @@ export interface ModalProps {
   children: React.ReactNode;
   footer?: React.ReactNode;
   maxWidth?: "sm" | "md" | "lg" | "xl" | "2xl";
+  size?: "sm" | "md" | "lg" | "xl" | "2xl" | string;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -18,7 +19,8 @@ export const Modal: React.FC<ModalProps> = ({
   description,
   children,
   footer,
-  maxWidth = "md" }) => {
+  maxWidth,
+  size }) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -35,12 +37,14 @@ export const Modal: React.FC<ModalProps> = ({
 
   if (!isOpen) return null;
 
+  const resolvedWidth = maxWidth || (size as any) || "md";
+
   const maxWidthClass = {
     sm: "max-w-sm",
     md: "max-w-md",
     lg: "max-w-lg",
     xl: "max-w-xl",
-    "2xl": "max-w-2xl" }[maxWidth];
+    "2xl": "max-w-2xl" }[resolvedWidth] || "max-w-md";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
@@ -143,12 +147,14 @@ export const Drawer: React.FC<DrawerProps> = ({
 export interface ConfirmModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: () => void | Promise<void>;
   title: string;
   message: string;
   confirmLabel?: string;
+  confirmText?: string;
   cancelLabel?: string;
-  variant?: "danger" | "warning" | "primary" | "gold";
+  variant?: "danger" | "warning" | "primary" | "gold" | string;
+  confirmVariant?: "danger" | "warning" | "primary" | "gold" | string;
   isLoading?: boolean;
 }
 
@@ -158,10 +164,14 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   onConfirm,
   title,
   message,
-  confirmLabel = "Confirm",
+  confirmLabel,
+  confirmText,
   cancelLabel = "Cancel",
-  variant = "danger",
+  variant,
+  confirmVariant,
   isLoading = false }) => {
+  const resolvedConfirmLabel = confirmText || confirmLabel || "Confirm";
+  const resolvedVariant = (confirmVariant || variant || "danger") as any;
   return (
     <Modal
       isOpen={isOpen}

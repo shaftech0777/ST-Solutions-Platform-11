@@ -149,7 +149,7 @@ export const ShowcaseManager: React.FC = () => {
       benefits: Array.isArray(p.benefits) ? p.benefits.join("\n") : "",
       technologies: Array.isArray(p.technologies) ? p.technologies.join(", ") : "",
       liveUrl: p.liveUrl || "",
-      status: p.status,
+      status: p.status === "PUBLISHED" ? "PUBLISHED" : "DRAFT",
       featured: p.featured });
     setIsModalOpen(true);
   };

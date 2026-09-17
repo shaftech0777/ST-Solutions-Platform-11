@@ -67,16 +67,38 @@ export const TableRow: React.FC<{ children: React.ReactNode; onClick?: () => voi
   );
 };
 
-export const TableHead: React.FC<{ children: React.ReactNode; className?: string }> = ({
+export interface TableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElement> {
+  children?: React.ReactNode;
+  className?: string;
+}
+
+export const TableHead: React.FC<TableHeadProps> = ({
   children,
-  className = "" }) => {
-  return <th className={`p-3.5 font-semibold text-slate-700 dark:text-slate-300 ${className}`}>{children}</th>;
+  className = "",
+  ...props
+}) => {
+  return (
+    <th className={`p-3.5 font-semibold text-slate-700 dark:text-slate-300 ${className}`} {...props}>
+      {children}
+    </th>
+  );
 };
 
-export const TableCell: React.FC<{ children: React.ReactNode; className?: string }> = ({
+export interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {
+  children?: React.ReactNode;
+  className?: string;
+}
+
+export const TableCell: React.FC<TableCellProps> = ({
   children,
-  className = "" }) => {
-  return <td className={`p-3.5 text-slate-800 dark:text-slate-200 align-middle ${className}`}>{children}</td>;
+  className = "",
+  ...props
+}) => {
+  return (
+    <td className={`p-3.5 text-slate-800 dark:text-slate-200 align-middle ${className}`} {...props}>
+      {children}
+    </td>
+  );
 };
 
 export interface PaginationProps {

@@ -190,20 +190,20 @@ export const DashboardPage: React.FC = () => {
 
       {/* Enterprise AI Intelligence Callout + Tenant Security Card */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 border border-slate-200 dark:border-slate-800/90 p-6 flex flex-col justify-between relative overflow-hidden shadow-xl">
-          <div className="absolute top-0 right-0 p-6 opacity-10 text-[#D4AF37] pointer-events-none">
+        <Card className="lg:col-span-2 bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 border border-slate-200 dark:border-slate-800/90 p-6 flex flex-col justify-between relative overflow-hidden shadow-sm">
+          <div className="absolute top-0 right-0 p-6 opacity-15 dark:opacity-10 text-[#D4AF37] pointer-events-none">
             <Bot className="w-48 h-48" />
           </div>
 
           <div className="space-y-3 max-w-lg z-10 pt-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/30 text-sm font-mono font-bold">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D4AF37]/10 dark:bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/25 text-xs font-mono font-bold">
               <Sparkles className="w-3.5 h-3.5" />
               <span>ST-SOLUTIONS Intelligence Suite</span>
             </div>
             <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
               Enterprise AI Insights & Workflow Automation
             </h3>
-            <p className="text-sm sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
               Query tenant metrics, draft project milestones, summarize audit logs, or analyze candidate resumes with real backend Google Gemini models.
             </p>
           </div>
@@ -212,7 +212,7 @@ export const DashboardPage: React.FC = () => {
             <Button
               variant="outline"
               size="sm"
-              leftIcon={<Bot className="w-4 h-4" />}
+              leftIcon={<Bot className="w-4 h-4 text-[#D4AF37]" />}
               onClick={() => navigate("/ai")}
             >
               Launch AI Assistant

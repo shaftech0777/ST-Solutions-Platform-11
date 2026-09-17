@@ -8,6 +8,7 @@ export interface EmptyStateProps {
   actionLabel?: string;
   onAction?: () => void;
   icon?: React.ReactNode;
+  action?: React.ReactNode | { label: string; onClick: () => void };
 }
 
 export const EmptyState: React.FC<EmptyStateProps> = ({
@@ -15,7 +16,8 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   description,
   actionLabel,
   onAction,
-  icon }) => {
+  icon,
+  action }) => {
   return (
     <div className="flex flex-col items-center justify-center p-8 lg:p-12 text-center rounded-2xl border border-dashed border-slate-300 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 my-4">
       <div className="p-4 rounded-full bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/20 mb-4 shrink-0">
@@ -27,11 +29,19 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
           {description}
         </p>
       )}
-      {actionLabel && onAction && (
+      {action ? (
+        React.isValidElement(action) ? (
+          action
+        ) : typeof action === "object" && "label" in action ? (
+          <Button variant="gold" size="sm" onClick={(action as any).onClick}>
+            {(action as any).label}
+          </Button>
+        ) : null
+      ) : actionLabel && onAction ? (
         <Button variant="gold" size="sm" onClick={onAction}>
           {actionLabel}
         </Button>
-      )}
+      ) : null}
     </div>
   );
 };

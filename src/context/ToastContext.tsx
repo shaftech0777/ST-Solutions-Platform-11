@@ -1,18 +1,26 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
 import { CheckCircle2, AlertTriangle, XCircle, Info, X } from "lucide-react";
 
-export type ToastType = "success" | "warning" | "danger" | "info";
+export type ToastType = "success" | "warning" | "danger" | "info" | "error";
 
 export interface ToastMessage {
   id: string;
   type: ToastType;
-  title: string;
+  title?: string;
   message?: string;
+  description?: string;
 }
 
+export type ToastInput = {
+  type?: ToastType | string;
+  title?: string;
+  message?: string;
+  description?: string;
+};
+
 interface ToastContextType {
-  addToast: (toast: Omit<ToastMessage, "id">) => void;
-  showToast: (title: string, type?: ToastType, message?: string) => void;
+  addToast: (toastOrMessage: ToastInput | string, type?: ToastType | string) => void;
+  showToast: (title: string, type?: ToastType | string, message?: string) => void;
   removeToast: (id: string) => void;
 }
 
@@ -26,9 +34,27 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, []);
 
   const addToast = useCallback(
-    ({ type, title, message }: Omit<ToastMessage, "id">) => {
+    (toastOrMessage: ToastInput | string, typeParam?: ToastType | string) => {
       const id = Math.random().toString(36).substring(2, 9);
-      const newToast: ToastMessage = { id, type, title, message };
+      let rawType = "info";
+      let title: string | undefined;
+      let message: string | undefined;
+      let description: string | undefined;
+
+      if (typeof toastOrMessage === "string") {
+        message = toastOrMessage;
+        rawType = typeParam ? String(typeParam).toLowerCase() : "info";
+      } else if (toastOrMessage && typeof toastOrMessage === "object") {
+        rawType = (toastOrMessage.type || typeParam || "info").toString().toLowerCase();
+        title = toastOrMessage.title;
+        message = toastOrMessage.message;
+        description = toastOrMessage.description;
+      }
+
+      const resolvedType: ToastType = rawType === "error" ? "danger" : (rawType as ToastType);
+      const resolvedTitle = title || message || description || "Notification";
+      const resolvedMessage = title ? (message || description) : undefined;
+      const newToast: ToastMessage = { id, type: resolvedType, title: resolvedTitle, message: resolvedMessage };
       setToasts((prev) => [...prev, newToast]);
 
       setTimeout(() => {
@@ -39,7 +65,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   );
 
   const showToast = useCallback(
-    (title: string, type: ToastType = "info", message?: string) => {
+    (title: string, type: ToastType | string = "info", message?: string) => {
       addToast({ title, type, message });
     },
     [addToast]

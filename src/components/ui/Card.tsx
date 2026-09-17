@@ -9,6 +9,7 @@ export interface CardProps {
   title?: string;
   description?: string;
   headerAction?: React.ReactNode;
+  orientation?: string;
 }
 
 export const Card: React.FC<CardProps> = ({

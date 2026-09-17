@@ -8,6 +8,8 @@ export const securityConfig = {
   helmet: helmet({
     contentSecurityPolicy: false,
     crossOriginEmbedderPolicy: false,
+    crossOriginOpenerPolicy: false,
+    crossOriginResourcePolicy: false,
     frameguard: false,
   }),
   cors: cors({
@@ -52,6 +54,11 @@ export const securityConfig = {
     max: 1000,
     standardHeaders: true,
     legacyHeaders: false,
+    skip: (req) => {
+      // Never rate-limit frontend assets, Vite requests, or health checks
+      const p = req.originalUrl || req.url;
+      return !p.startsWith("/api") && !p.startsWith("/auth");
+    },
     validate: { xForwardedForHeader: false, trustProxy: false },
     message: { error: "Too many requests from this IP, please try again later." },
   }) as unknown as RequestHandler),

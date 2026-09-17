@@ -81,12 +81,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
       items: [
         { label: "Members", path: "/members", icon: Users, module: "members" },
         { label: "Team Hierarchy", path: "/members?tab=hierarchy", icon: Network, module: "members" },
-        ...(features.applicant_onboarding_pipeline ? [{ label: "Applicants", path: "/applicants", icon: UserCheck, module: "applicants" }] : []),//
+        ...(features?.applicant_onboarding_pipeline ? [{ label: "Applicants", path: "/applicants", icon: UserCheck, module: "applicants" }] : []),
       ] },
     {
       title: "AI & Intelligence",
       items: [
-        ...(features.ai_copilot ? [{ label: "AI Assistant", path: "/ai", icon: Bot, badge: "AI", module: "ai" }] : []),//
+        ...(features?.ai_copilot ? [{ label: "AI Assistant", path: "/ai", icon: Bot, badge: "AI", module: "ai" }] : []),
       ] },
     {
       title: "System & Governance",
@@ -97,7 +97,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
         { label: "Settings", path: "/settings", icon: Settings, module: "settings" },
       ] },
   ];
-
 
   // Filter groups according to current user access permissions
   const filteredNavGroups = navGroups
@@ -142,7 +141,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
                 Organization
               </div>
               <div className="text-xs font-semibold text-slate-900 dark:text-white truncate">
-                {currentOrganization?.name || "Shaf Tech Solutions"}
+                {currentOrganization?.name || "No Organization"}
               </div>
               {currentWorkspace && (
                 <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
@@ -162,7 +161,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
         {filteredNavGroups.map((group, gIdx) => (
           <div key={gIdx} className="space-y-1">
             {!isCollapsed && (
-              <p className="px-3 text-sm font-bold text-slate-500 dark:text-slate-400 font-sans mb-1.5">
+              <p className="px-3 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider font-mono mb-1.5">
                 {group.title}
               </p>
             )}
@@ -174,13 +173,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
                   to={item.path}
                   end={item.path === "/"}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all group relative ${
-                      isActive ? "bg-[#D4AF37]/10 dark:bg-gradient-to-r dark:from-[#D4AF37]/20 dark:via-[#D4AF37]/10 dark:to-transparent text-[#B88E20] dark:text-[#D4AF37] border-l-2 border-[#D4AF37]" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900/90"
+                    `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group relative ${
+                      isActive
+                        ? "bg-[#D4AF37]/10 text-slate-900 dark:text-white font-semibold border-l-2 border-[#D4AF37]"
+                        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-900/90"
                     } ${isCollapsed ? "justify-center px-0" : ""}`
                   }
                   title={isCollapsed ? item.label : undefined}
                 >
-                  <Icon className="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" />
+                  <Icon className="w-4 h-4 shrink-0 transition-transform group-hover:scale-105" />
                   {!isCollapsed && <span className="truncate">{item.label}</span>}
                   {!isCollapsed && item.badge && (
                     <span className="ml-auto px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-[#D4AF37]/20 text-[#D4AF37] border border-[#D4AF37]/30 shadow-xs">

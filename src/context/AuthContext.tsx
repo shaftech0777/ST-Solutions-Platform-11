@@ -64,15 +64,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       if (activeOrg) {
-        const wsRes = await workspacesService.getAll(activeOrg.id);
-        const wsList = Array.isArray(wsRes.data) ? wsRes.data : [];
-        setWorkspaces(wsList);
+        try {
+          const wsRes = await workspacesService.getAll(activeOrg.id);
+          const wsList = Array.isArray(wsRes.data) ? wsRes.data : [];
+          setWorkspaces(wsList);
 
-        let activeWs = wsList.find((w) => w.id === selectedWsId) || wsList[0] || null;
-        setCurrentWorkspace(activeWs);
-        if (activeWs) {
-          setStoredWsId(activeWs.id);
-        } else {
+          let activeWs = wsList.find((w) => w.id === selectedWsId) || wsList[0] || null;
+          setCurrentWorkspace(activeWs);
+          if (activeWs) {
+            setStoredWsId(activeWs.id);
+          } else {
+            setStoredWsId(null);
+          }
+        } catch (wsErr) {
+          console.warn("Could not load workspaces for active organization:", wsErr);
+          setWorkspaces([]);
+          setCurrentWorkspace(null);
           setStoredWsId(null);
         }
       } else {
@@ -82,6 +89,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     } catch (err) {
       console.warn("Failed to load tenant scope:", err);
+      setOrganizations([]);
+      setCurrentOrganization(null);
+      setWorkspaces([]);
+      setCurrentWorkspace(null);
     }
   }, []);
 
@@ -111,12 +122,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
 
+    // Step 1: Verify authenticated user with /auth/me
+    let userObj: User | null = null;
+    let userPerms: string[] = [];
+
     try {
       const meRes = await authService.getMe();
       const rawData = (meRes as any)?.data || meRes;
 
       if ((meRes.success || rawData?.id || rawData?.user?.id) && rawData) {
-        const userObj: User = {
+        userObj = {
           id: rawData.id || rawData.user?.id,
           email: rawData.email || rawData.user?.email,
           accountType: rawData.accountType || rawData.user?.accountType || "MEMBER",
@@ -133,26 +148,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                   permission: { id: p, name: p } })) }
             : rawData.role || rawData.user?.role || null };
 
-        setCurrentUser(userObj);
-
-        // Extract permissions array
-        const userPerms: string[] = Array.isArray(rawData?.permissions)
+        userPerms = Array.isArray(rawData?.permissions)
           ? rawData.permissions
           : Array.isArray(userObj.role?.permissions)
           ? userObj.role.permissions.map((p: any) => p.permission?.name || p.name || String(p))
           : [];
-        setPermissions(userPerms);
 
-        const savedOrgId = getStoredOrgId();
-        const savedWsId = getStoredWsId();
-        await fetchTenantScope(savedOrgId || undefined, savedWsId || undefined);
+        setCurrentUser(userObj);
+        setPermissions(userPerms);
       } else {
-        throw new Error("Invalid session response");
+        throw new Error("Invalid session response from /auth/me");
       }
-    } catch (err) {
+    } catch (authErr: any) {
+      console.error("Authentication session check failed:", authErr);
       clearStoredTokens();
       setCurrentUser(null);
       setPermissions([]);
+      setOrganizations([]);
+      setCurrentOrganization(null);
+      setWorkspaces([]);
+      setCurrentWorkspace(null);
+      setIsLoading(false);
+      return;
+    }
+
+    // Step 2: Tenant Scope Loading - COMPLETELY SEPARATED FROM AUTH!
+    // Even if tenant data is empty or errors, the valid authenticated admin session is preserved!
+    try {
+      const savedOrgId = getStoredOrgId();
+      const savedWsId = getStoredWsId();
+      await fetchTenantScope(savedOrgId || undefined, savedWsId || undefined);
+    } catch (tenantErr) {
+      console.warn("Tenant scope loading encountered an issue (authenticated session preserved):", tenantErr);
       setOrganizations([]);
       setCurrentOrganization(null);
       setWorkspaces([]);

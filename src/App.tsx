@@ -10,89 +10,120 @@ import { PublicCMSProvider } from "./context/PublicCMSContext.js";
 import { ApplicationShell } from "./components/shell/ApplicationShell.js";
 import { PublicShell } from "./components/public/PublicShell.js";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute.js";
+import { ErrorBoundary } from "./components/ui/ErrorBoundary.js";
+
+/**
+ * Resilient lazy-loading helper with automatic retry for stale chunks, network hiccups, or module exceptions.
+ */
+function lazyWithRetry<T extends React.ComponentType<any>>(
+  factory: () => Promise<any>,
+  retries = 2,
+  interval = 800
+): React.LazyExoticComponent<T> {
+  return lazy(() =>
+    new Promise<{ default: T }>((resolve, reject) => {
+      const attempt = (remaining: number) => {
+        factory()
+          .then((module) => {
+            const component = module.default || module;
+            resolve({ default: component });
+          })
+          .catch((error) => {
+            if (remaining > 0) {
+              setTimeout(() => attempt(remaining - 1), interval);
+            } else {
+              console.error("ST-Solutions: Dynamic chunk failed to load after retries:", error);
+              reject(error);
+            }
+          });
+      };
+      attempt(retries);
+    })
+  );
+}
 
 // Public Visitor-Facing Pages
-const HomePage = lazy(() =>
+const HomePage = lazyWithRetry(() =>
   import("./pages/public/HomePage.js").then((m) => ({ default: m.HomePage }))
 );
-const AboutPage = lazy(() =>
+const AboutPage = lazyWithRetry(() =>
   import("./pages/public/AboutPage.js").then((m) => ({ default: m.AboutPage }))
 );
-const ServicesPage = lazy(() =>
+const ServicesPage = lazyWithRetry(() =>
   import("./pages/public/ServicesPage.js").then((m) => ({ default: m.ServicesPage }))
 );
-const SolutionsPage = lazy(() =>
+const SolutionsPage = lazyWithRetry(() =>
   import("./pages/public/SolutionsPage.js").then((m) => ({ default: m.SolutionsPage }))
 );
-const PublicProjectsPage = lazy(() =>
+const PublicProjectsPage = lazyWithRetry(() =>
   import("./pages/public/ProjectsPage.js").then((m) => ({ default: m.ProjectsPage }))
 );
-const ProjectDetailPage = lazy(() =>
+const ProjectDetailPage = lazyWithRetry(() =>
   import("./pages/public/ProjectDetailPage.js").then((m) => ({ default: m.ProjectDetailPage }))
 );
-const ContactPage = lazy(() =>
+const ContactPage = lazyWithRetry(() =>
   import("./pages/public/ContactPage.js").then((m) => ({ default: m.ContactPage }))
 );
-const ApplyPage = lazy(() =>
+const ApplyPage = lazyWithRetry(() =>
   import("./pages/public/ApplyPage.js").then((m) => ({ default: m.ApplyPage }))
 );
-const StartProjectPage = lazy(() =>
+const StartProjectPage = lazyWithRetry(() =>
   import("./pages/public/StartProjectPage.js").then((m) => ({ default: m.StartProjectPage }))
 );
 
 // Platform Internal Management Pages
-const DashboardPage = lazy(() =>
+const DashboardPage = lazyWithRetry(() =>
   import("./pages/DashboardPage.js").then((m) => ({ default: m.DashboardPage }))
 );
-const AIAssistantPage = lazy(() =>
+const AIAssistantPage = lazyWithRetry(() =>
   import("./pages/AIAssistantPage.js").then((m) => ({ default: m.AIAssistantPage }))
 );
-const OrganizationsPage = lazy(() =>
+const OrganizationsPage = lazyWithRetry(() =>
   import("./pages/OrganizationsPage.js").then((m) => ({ default: m.OrganizationsPage }))
 );
-const WorkspacesPage = lazy(() =>
+const WorkspacesPage = lazyWithRetry(() =>
   import("./pages/WorkspacesPage.js").then((m) => ({ default: m.WorkspacesPage }))
 );
-const ClientsPage = lazy(() =>
+const ClientsPage = lazyWithRetry(() =>
   import("./pages/ClientsPage.js").then((m) => ({ default: m.ClientsPage }))
 );
-const InquiriesPage = lazy(() =>
+const InquiriesPage = lazyWithRetry(() =>
   import("./pages/InquiriesPage.js").then((m) => ({ default: m.InquiriesPage }))
 );
-const PlatformProjectsPage = lazy(() =>
+const PlatformProjectsPage = lazyWithRetry(() =>
   import("./pages/ProjectsPage.js").then((m) => ({ default: m.ProjectsPage }))
 );
-const PaymentsPage = lazy(() =>
+const PaymentsPage = lazyWithRetry(() =>
   import("./pages/PaymentsPage.js").then((m) => ({ default: m.PaymentsPage }))
 );
-const ApplicantsPage = lazy(() =>
+const ApplicantsPage = lazyWithRetry(() =>
   import("./pages/ApplicantsPage.js").then((m) => ({ default: m.ApplicantsPage }))
 );
-const MembersPage = lazy(() =>
+const MembersPage = lazyWithRetry(() =>
   import("./pages/MembersPage.js").then((m) => ({ default: m.MembersPage }))
 );
-const RolesPage = lazy(() =>
+const RolesPage = lazyWithRetry(() =>
   import("./pages/RolesPage.js").then((m) => ({ default: m.RolesPage }))
 );
-const AuditLogsPage = lazy(() =>
+const AuditLogsPage = lazyWithRetry(() =>
   import("./pages/AuditLogsPage.js").then((m) => ({ default: m.AuditLogsPage }))
 );
-const NotificationsPage = lazy(() =>
+const NotificationsPage = lazyWithRetry(() =>
   import("./pages/NotificationsPage.js").then((m) => ({ default: m.NotificationsPage }))
 );
-const SettingsPage = lazy(() =>
+const SettingsPage = lazyWithRetry(() =>
   import("./pages/SettingsPage.js").then((m) => ({ default: m.SettingsPage }))
 );
-const LoginPage = lazy(() =>
+const LoginPage = lazyWithRetry(() =>
   import("./pages/LoginPage.js").then((m) => ({ default: m.LoginPage }))
 );
-const RegisterPage = lazy(() =>
+const RegisterPage = lazyWithRetry(() =>
   import("./pages/RegisterPage.js").then((m) => ({ default: m.RegisterPage }))
 );
-const AccessDeniedPage = lazy(() =>
+const AccessDeniedPage = lazyWithRetry(() =>
   import("./pages/AccessDeniedPage.js").then((m) => ({ default: m.AccessDeniedPage }))
 );
-const NotFoundPage = lazy(() =>
+const NotFoundPage = lazyWithRetry(() =>
   import("./pages/NotFoundPage.js").then((m) => ({ default: m.NotFoundPage }))
 );
 
@@ -113,8 +144,9 @@ export function App() {
           <FeatureProvider>
           <PublicCMSProvider>
             <BrowserRouter>
-              <Suspense fallback={<PageSuspenseLoader />}>
-              <Routes>
+              <ErrorBoundary fallbackTitle="Application failed to load page">
+                <Suspense fallback={<PageSuspenseLoader />}>
+                  <Routes>
                 {/* 1. Public Visitor-Facing Website Routes */}
                 <Route
                   path="/"
@@ -355,7 +387,8 @@ export function App() {
                 />
               </Routes>
             </Suspense>
-            </BrowserRouter>
+          </ErrorBoundary>
+          </BrowserRouter>
           </PublicCMSProvider>
           </FeatureProvider>
         </AuthProvider>

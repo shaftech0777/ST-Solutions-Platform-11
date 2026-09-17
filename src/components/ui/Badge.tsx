@@ -2,7 +2,7 @@ import React from "react";
 
 export interface BadgeProps {
   children: React.ReactNode;
-  variant?: "gold" | "success" | "warning" | "danger" | "info" | "neutral";
+  variant?: "gold" | "success" | "warning" | "danger" | "info" | "neutral" | "default" | "outline" | "rose" | "secondary" | "error";
   size?: "sm" | "md";
   className?: string;
   dot?: boolean;
@@ -14,6 +14,13 @@ export const Badge: React.FC<BadgeProps> = ({
   size = "md",
   className = "",
   dot = false }) => {
+  const normalizedVariant =
+    variant === "default" || variant === "outline" || variant === "secondary"
+      ? "neutral"
+      : variant === "rose" || variant === "error"
+      ? "danger"
+      : variant;
+
   const variantClasses = {
     gold: "bg-[#D4AF37]/10 text-[#D4AF37] border-[#D4AF37]/30",
     success: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
@@ -36,9 +43,9 @@ export const Badge: React.FC<BadgeProps> = ({
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 font-medium rounded-full border tracking-wide uppercase font-mono ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
+      className={`inline-flex items-center gap-1.5 font-medium rounded-full border tracking-wide uppercase font-mono ${variantClasses[normalizedVariant]} ${sizeClasses[size]} ${className}`}
     >
-      {dot && <span className={`w-1.5 h-1.5 rounded-full ${dotColorClass[variant]}`} />}
+      {dot && <span className={`w-1.5 h-1.5 rounded-full ${dotColorClass[normalizedVariant]}`} />}
       {children}
     </span>
   );
