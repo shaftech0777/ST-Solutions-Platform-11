@@ -67,17 +67,7 @@ export const PublicNavbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Brand Logo */}
         <Link to="/" className="flex items-center space-x-3 group" id="nav-brand-logo">
-          <div className="w-9 h-9 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-[#876F23]_PRESERVE font-extrabold text-sm tracking-wider shadow-sm group-hover:border-[#876F23] transition-all">
-            ST
-          </div>
-          <div className="flex flex-col">
-            <span className="font-extrabold text-base tracking-tight text-slate-950 font-mono">
-              ST-SOLUTIONS
-            </span>
-            <span className="text-xs tracking-wider font-semibold text-slate-600 font-sans mt-0.5">
-              Enterprise Technology
-            </span>
-          </div>
+          <img src="/favicon.svg" alt="ST-Solutions Logo" className="w-9 h-9 shrink-0" /><img src="/st-solutions-logo.svg" alt="ST-Solutions" className="h-6 hidden sm:block dark:hidden" /><img src="/st-solutions-logo-dark.svg" alt="ST-Solutions" className="h-6 hidden sm:dark:block" />
         </Link>
 
         {/* Desktop Navigation Links */}

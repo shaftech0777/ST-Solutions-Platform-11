@@ -294,9 +294,7 @@ export const OrganizationsPage: React.FC = () => {
                   <TableRow key={org.id} className={isCurrent ? "bg-amber-500/[0.03]" : ""}>
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#D4AF37]/20 to-[#B88E20]/10 text-[#D4AF37] border border-[#D4AF37]/30 font-bold flex items-center justify-center text-sm shrink-0 shadow-xs">
-                          {org.name[0]?.toUpperCase() || "O"}
-                        </div>
+                        <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 font-bold flex items-center justify-center text-slate-600 dark:text-slate-300 text-sm shrink-0 shadow-sm">{org.name[0]?.toUpperCase() || "O"}</div>
                         <div>
                           <span className="font-bold text-slate-900 dark:text-white block">
                             {org.name}
@@ -387,9 +385,7 @@ export const OrganizationsPage: React.FC = () => {
               >
                 <div className="space-y-4">
                   <div className="flex items-start justify-between">
-                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#D4AF37]/20 to-[#B88E20]/10 text-[#D4AF37] border border-[#D4AF37]/30 font-bold flex items-center justify-center text-base shrink-0 shadow-xs">
-                      {org.name[0]?.toUpperCase() || "O"}
-                    </div>
+                    <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 font-bold flex items-center justify-center text-slate-600 dark:text-slate-300 text-base shrink-0 shadow-sm">{org.name[0]?.toUpperCase() || "O"}</div>
                     <div className="flex items-center gap-2">
                       {isCurrent ? (
                         <Badge variant="gold" dot>

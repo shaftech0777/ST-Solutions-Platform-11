@@ -248,9 +248,7 @@ export const WorkspacesPage: React.FC = () => {
       {/* Organization Hierarchy Breadcrumb Card */}
       <div className="p-4 rounded-2xl bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-slate-950/80 border border-slate-200 dark:border-slate-800/90 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-sm shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#D4AF37]/20 to-[#B88E20]/10 text-[#D4AF37] border border-[#D4AF37]/30 font-bold flex items-center justify-center text-sm shrink-0">
-            <Building2 className="w-4 h-4" />
-          </div>
+          <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 font-bold flex items-center justify-center text-slate-600 dark:text-slate-300 text-sm shrink-0 shadow-sm"><Building2 className="w-4 h-4" /></div>
           <div>
             <div className="text-sm font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Active Organization Hierarchy

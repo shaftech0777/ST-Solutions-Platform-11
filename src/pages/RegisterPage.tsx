@@ -13,9 +13,7 @@ export const RegisterPage: React.FC = () => {
       <div className="w-full max-w-md space-y-6 relative z-10">
         {/* Brand Emblem */}
         <div className="text-center space-y-2 mb-4">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#B88E20] text-black font-black text-xl shadow-xl shadow-amber-500/10 border border-amber-300/40 mb-2">
-            ST
-          </div>
+          <img src="/favicon.svg" alt="ST-Solutions Logo" className="w-14 h-14 mx-auto mb-2 drop-shadow-md" />
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">ST-SOLUTIONS</h1>
           <p className="text-sm text-amber-400 font-mono uppercase tracking-widest font-semibold">
             Shaf Tech Enterprise Gateway

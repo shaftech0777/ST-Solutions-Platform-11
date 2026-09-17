@@ -52,9 +52,7 @@ export const LoginPage: React.FC = () => {
 
         {/* Top Brand Emblem */}
         <div className="flex items-center gap-3 relative z-10">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#B88E20] text-black font-black text-xl flex items-center justify-center shadow-xl shadow-amber-500/10 border border-amber-300/40 select-none">
-            ST
-          </div>
+          <img src="/favicon.svg" alt="ST-Solutions Logo" className="w-12 h-12 shrink-0 drop-shadow-md" />
           <div>
             <span className="font-bold text-base tracking-tight text-slate-900 dark:text-white block">ST-SOLUTIONS</span>
             <span className="text-sm text-[#D4AF37] font-mono tracking-widest uppercase block">
@@ -107,9 +105,7 @@ export const LoginPage: React.FC = () => {
         <div className="w-full max-w-md space-y-6">
           {/* Mobile Brand Emblem */}
           <div className="lg:hidden text-center space-y-2 mb-6">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#B88E20] text-black font-black text-xl shadow-xl shadow-amber-500/10 border border-amber-300/40 mb-2">
-              ST
-            </div>
+            <img src="/favicon.svg" alt="ST-Solutions Logo" className="w-14 h-14 mx-auto mb-2 drop-shadow-md" />
             <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">ST-SOLUTIONS</h1>
             <p className="text-sm text-amber-400 font-mono uppercase tracking-widest font-semibold">
               Shaf Tech Enterprise Gateway
