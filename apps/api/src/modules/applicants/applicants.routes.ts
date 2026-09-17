@@ -214,3 +214,15 @@ applicantsRouter.post(
   validate({ params: applicationIdParamSchema, body: onboardApplicantSchema }),
   applicantsController.onboardApplicant
 );
+
+/**
+ * @route DELETE /applicants/:applicationId
+ * @desc Permanently deletes a member application
+ * @access Protected (Requires applicants.delete permission or ADMIN)
+ */
+applicantsRouter.delete(
+  "/:applicationId",
+  requirePermission("applicants.delete"),
+  validate({ params: applicationIdParamSchema }),
+  applicantsController.deleteApplication
+);

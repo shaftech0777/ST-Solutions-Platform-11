@@ -686,6 +686,43 @@ export class ApplicantsService {
       onboardedAt: result.joinedAt,
     };
   }
+
+  /**
+   * Permanently deletes a member application and associated child records.
+   */
+  public async deleteApplication(
+    applicationId: string,
+    actor?: { userId?: string }
+  ): Promise<{ success: boolean; id: string }> {
+    const app = await this.applicantsRepository.findById(applicationId);
+
+    if (!app) {
+      throw new NotFoundError(
+        `Member application with ID '${applicationId}' was not found`,
+        ERROR_CODES.APPLICATION_NOT_FOUND
+      );
+    }
+
+    await this.applicantsRepository.delete(applicationId);
+
+    SecurityLogger.info({
+      action: "MEMBER_APPLICATION_DELETED",
+      actorId: actor?.userId,
+      targetId: applicationId,
+      metadata: {
+        applicantEmail: app.email,
+        applicantName: app.fullName,
+        applicationStatus: app.applicationStatus,
+      },
+    });
+
+    Logger.info(
+      { applicationId, email: app.email, actorId: actor?.userId },
+      `Member application '${applicationId}' permanently deleted`
+    );
+
+    return { success: true, id: applicationId };
+  }
 }
 
 export const applicantsService = new ApplicantsService();

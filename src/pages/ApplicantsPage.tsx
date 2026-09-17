@@ -76,6 +76,9 @@ export const ApplicantsPage: React.FC = () => {
   const [reviewingApplicant, setReviewingApplicant] = useState<Applicant | null>(null);
   const [onboardingApplicant, setOnboardingApplicant] = useState<Applicant | null>(null);
   const [rejectingApplicant, setRejectingApplicant] = useState<Applicant | null>(null);
+  const [deletingApplicant, setDeletingApplicant] = useState<Applicant | null>(null);
+  const [isCleaningRejected, setIsCleaningRejected] = useState(false);
+  const [showCleanRejectedConfirm, setShowCleanRejectedConfirm] = useState(false);
 
   // Form States
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -110,6 +113,67 @@ export const ApplicantsPage: React.FC = () => {
     roleId: "",
     accountType: "MEMBER",
     temporaryPassword: "TempPassword123!" });
+
+  const handleDeleteSubmit = async () => {
+    if (!deletingApplicant) return;
+    setIsSubmitting(true);
+    try {
+      await applicantsService.delete(deletingApplicant.id);
+      addToast({
+        type: "success",
+        title: "Application Deleted",
+        message: `Application record for ${deletingApplicant.fullName} has been permanently deleted.`
+      });
+      setDeletingApplicant(null);
+      if (selectedApplicant?.id === deletingApplicant.id) {
+        setSelectedApplicant(null);
+      }
+      loadApplicants();
+    } catch (err: any) {
+      addToast({
+        type: "danger",
+        title: "Delete Failed",
+        message: err.message || "Failed to delete application record."
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCleanAllRejected = async () => {
+    const rejectedList = applicants.filter((a) => {
+      const s = ((a.applicationStatus || a.status || "") as string).toUpperCase();
+      return s === "REJECTED";
+    });
+    if (rejectedList.length === 0) return;
+    setIsCleaningRejected(true);
+    try {
+      let deletedCount = 0;
+      for (const app of rejectedList) {
+        try {
+          await applicantsService.delete(app.id);
+          deletedCount++;
+        } catch (e) {
+          console.error("Failed deleting application", app.id, e);
+        }
+      }
+      addToast({
+        type: "success",
+        title: "Rejected Records Purged",
+        message: `Successfully purged ${deletedCount} rejected application record(s).`
+      });
+      setShowCleanRejectedConfirm(false);
+      loadApplicants();
+    } catch (err: any) {
+      addToast({
+        type: "danger",
+        title: "Purge Incomplete",
+        message: err.message || "Could not complete cleanup of rejected applications."
+      });
+    } finally {
+      setIsCleaningRejected(false);
+    }
+  };
 
   const handleOpenDossier = async (applicant: Applicant) => {
     setSelectedApplicant(applicant);
@@ -346,6 +410,18 @@ export const ApplicantsPage: React.FC = () => {
         description="Candidate review pipelines, qualification screening, interviewer feedback, and member onboarding."
         actions={
           <div className="flex items-center gap-2">
+            {stats.rejected > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-rose-500/30 text-rose-500 hover:bg-rose-500/10 hover:border-rose-500/50"
+                leftIcon={<Trash2 className="w-4 h-4 text-rose-500" />}
+                onClick={() => setShowCleanRejectedConfirm(true)}
+                disabled={isLoading || isCleaningRejected}
+              >
+                Purge Rejected ({stats.rejected})
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"
@@ -662,6 +738,17 @@ export const ApplicantsPage: React.FC = () => {
                                 Onboard
                               </Button>
                             )}
+
+                            <Button
+                              variant="ghost"
+                              size="xs"
+                              className="text-rose-500 hover:text-rose-600 hover:bg-rose-500/10"
+                              leftIcon={<Trash2 className="w-3.5 h-3.5" />}
+                              onClick={() => setDeletingApplicant(applicant)}
+                              title="Delete Application"
+                            >
+                              Delete
+                            </Button>
                           </div>
                         </TableCell>
                       </TableRow>
@@ -744,6 +831,14 @@ export const ApplicantsPage: React.FC = () => {
                           Onboard
                         </Button>
                       )}
+                      <Button
+                        variant="ghost"
+                        size="xs"
+                        className="text-rose-500 hover:text-rose-600 hover:bg-rose-500/10"
+                        onClick={() => setDeletingApplicant(applicant)}
+                      >
+                        Delete
+                      </Button>
                     </div>
                   </div>
                 </Card>
@@ -1123,24 +1218,40 @@ export const ApplicantsPage: React.FC = () => {
 
             <div className="flex items-center justify-between pt-4 border-t border-border/60">
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
+                className="text-rose-500 hover:text-rose-600 hover:bg-rose-500/10"
+                leftIcon={<Trash2 className="w-4 h-4" />}
                 onClick={() => {
-                  setReviewingApplicant(selectedApplicant);
-                  setReviewData({
-                    status: ((selectedApplicant.applicationStatus || selectedApplicant.status) as string) || "UNDER_REVIEW",
-                    reviewNotes: selectedApplicant.reviewNotes || "",
-                    approvalNotes: selectedApplicant.approvalNotes || "",
-                    rejectionReason: selectedApplicant.rejectionReason || "" });
+                  const target = selectedApplicant;
                   setSelectedApplicant(null);
+                  setDeletingApplicant(target);
                 }}
               >
-                Change Stage / Review
+                Delete Record
               </Button>
 
-              <Button variant="outline" size="sm" onClick={() => setSelectedApplicant(null)}>
-                Close
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setReviewingApplicant(selectedApplicant);
+                    setReviewData({
+                      status: ((selectedApplicant.applicationStatus || selectedApplicant.status) as string) || "UNDER_REVIEW",
+                      reviewNotes: selectedApplicant.reviewNotes || "",
+                      approvalNotes: selectedApplicant.approvalNotes || "",
+                      rejectionReason: selectedApplicant.rejectionReason || "" });
+                    setSelectedApplicant(null);
+                  }}
+                >
+                  Change Stage / Review
+                </Button>
+
+                <Button variant="outline" size="sm" onClick={() => setSelectedApplicant(null)}>
+                  Close
+                </Button>
+              </div>
             </div>
           </div>
         )}
@@ -1206,7 +1317,22 @@ export const ApplicantsPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex justify-end pt-2">
+            <div className="flex items-center justify-between pt-3 border-t border-border/40">
+              <Button
+                variant="ghost"
+                size="xs"
+                className="text-rose-500 hover:text-rose-600 hover:bg-rose-500/10"
+                leftIcon={<Trash2 className="w-3.5 h-3.5" />}
+                onClick={() => {
+                  const target = reviewingApplicant;
+                  setReviewingApplicant(null);
+                  setDeletingApplicant(target);
+                }}
+                disabled={isSubmitting}
+              >
+                Delete Record Directly
+              </Button>
+
               <Button
                 variant="outline"
                 size="sm"
@@ -1267,6 +1393,30 @@ export const ApplicantsPage: React.FC = () => {
           </div>
         )}
       </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={!!deletingApplicant}
+        onClose={() => setDeletingApplicant(null)}
+        onConfirm={handleDeleteSubmit}
+        title="Permanently Delete Application"
+        message={`Are you sure you want to permanently delete the application record for "${deletingApplicant?.fullName}" (${deletingApplicant?.email})? This will permanently remove all submitted questionnaire answers and screening notes.`}
+        confirmText="Delete Application"
+        confirmVariant="danger"
+        isLoading={isSubmitting}
+      />
+
+      {/* Bulk Clean Rejected Modal */}
+      <ConfirmModal
+        isOpen={showCleanRejectedConfirm}
+        onClose={() => setShowCleanRejectedConfirm(false)}
+        onConfirm={handleCleanAllRejected}
+        title="Purge All Rejected Applications"
+        message={`Are you sure you want to permanently delete all ${stats.rejected} rejected application record(s)? This will clean up the talent pool database.`}
+        confirmText="Purge Rejected Records"
+        confirmVariant="danger"
+        isLoading={isCleaningRejected}
+      />
     </div>
   );
 };

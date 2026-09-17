@@ -619,6 +619,47 @@ export class ApplicantsRepository extends BaseRepository {
       return prisma.$transaction(fn);
     });
   }
+
+  /**
+   * Deletes application and its dependent records safely within a transaction.
+   */
+  public async delete(id: string, tx?: TransactionClient): Promise<boolean> {
+    return this.execute(async () => {
+      const fn = async (transaction: Prisma.TransactionClient) => {
+        // 1. Disassociate communication logs
+        await transaction.communicationLog.updateMany({
+          where: { memberApplicationId: id },
+          data: { memberApplicationId: null },
+        });
+
+        // 2. Explicitly delete child answers, verifications, application-linked member profiles
+        await transaction.applicationAnswer.deleteMany({
+          where: { applicationId: id },
+        });
+
+        await transaction.memberVerification.deleteMany({
+          where: { applicationId: id },
+        });
+
+        await transaction.memberProfile.deleteMany({
+          where: { applicationId: id },
+        });
+
+        // 3. Delete application
+        await transaction.memberApplication.delete({
+          where: { id },
+        });
+
+        return true;
+      };
+
+      if (tx) {
+        return fn(tx as Prisma.TransactionClient);
+      }
+
+      return prisma.$transaction(fn);
+    });
+  }
 }
 
 export const applicantsRepository = new ApplicantsRepository();

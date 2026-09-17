@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { AccountType } from "@prisma/client";
 import { ResponseBuilder } from "../../core/responses/index.js";
 import { AuthenticatedRequest } from "../../core/security/security.types.js";
+import { auditService } from "../audit/audit.service.js";
 import { applicantsService as defaultApplicantsService, ApplicantsService } from "./applicants.service.js";
 import {
   CreateQuestionInput,
@@ -344,8 +345,42 @@ export class ApplicantsController {
 
       const result = await this.applicantsService.onboardApplicant(applicationId, body, actor);
 
+      await auditService.recordEvent(
+        req,
+        "APPLICANT_ONBOARDED",
+        `Onboarded approved applicant ${applicationId} to Member user ${result.userId}`
+      );
+
       ResponseBuilder.success(res, result, {
         message: "Approved applicant successfully onboarded as a active Member",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * DELETE /api/v1/applicants/:applicationId
+   * Permanently deletes an application.
+   */
+  public deleteApplication = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const authReq = req as AuthenticatedRequest;
+      const { applicationId } = req.params;
+
+      const result = await this.applicantsService.deleteApplication(
+        applicationId,
+        authReq.user ? { userId: authReq.user.userId } : undefined
+      );
+
+      await auditService.recordEvent(
+        req,
+        "APPLICANT_DELETED",
+        `Permanently deleted member application ${applicationId}`
+      );
+
+      ResponseBuilder.success(res, result, {
+        message: "Member application permanently deleted successfully",
       });
     } catch (error) {
       next(error);

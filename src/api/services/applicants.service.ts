@@ -153,5 +153,11 @@ export const applicantsService = {
       body: data,
     });
   },
+
+  async delete(id: string) {
+    return apiClient<{ success: boolean; id: string }>(`/applicants/${id}`, {
+      method: "DELETE",
+    });
+  },
 };
 

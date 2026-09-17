@@ -146,8 +146,8 @@ export const LegalLayout: React.FC<LegalLayoutProps> = ({
             </div>
 
             {/* General Legal Disclaimer Note */}
-            <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20 text-xs text-slate-600 space-y-1">
-              <span className="font-bold font-mono text-amber-800 uppercase block">Policy & Operational Notice</span>
+            <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-slate-700 space-y-1">
+              <span className="font-bold font-mono text-amber-900 uppercase block">Policy & Operational Notice</span>
               <p>
                 This document accurately outlines the technical, data processing, and operational practices of the ST-SOLUTIONS platform and website. It is provided for user guidance and transparency, and may be updated as platform capabilities evolve.
               </p>
@@ -157,7 +157,7 @@ export const LegalLayout: React.FC<LegalLayoutProps> = ({
             <div className="p-6 sm:p-8 rounded-2xl bg-[#111827] text-white border border-slate-800 space-y-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
               <div className="space-y-1 max-w-md">
                 <h3 className="text-base font-bold text-white font-sans">Have questions about our policies?</h3>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-300">
                   Contact our administrative team directly regarding data rights, platform security, or service inquiries.
                 </p>
               </div>
