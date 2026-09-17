@@ -72,4 +72,28 @@ export class SecurityLogger {
       `SecurityEvent [ACCESS_DENIED]: User '${details.userId}' denied access to ${details.endpoint}. Required: ${details.requiredRoleOrPermission}`
     );
   }
+
+  /**
+   * Logs a structured security or lifecycle audit event.
+   */
+  public static logSecurityEvent(details: {
+    action: string;
+    actorId?: string;
+    targetId?: string;
+    metadata?: Record<string, unknown>;
+    ipAddress?: string;
+    userAgent?: string;
+  }): void {
+    Logger.info(
+      {
+        securityEvent: details.action,
+        actorId: details.actorId,
+        targetId: details.targetId,
+        ipAddress: details.ipAddress,
+        userAgent: details.userAgent,
+        ...details.metadata,
+      },
+      `SecurityEvent [${details.action}]: Target '${details.targetId ?? "N/A"}' by actor '${details.actorId ?? "system"}'`
+    );
+  }
 }

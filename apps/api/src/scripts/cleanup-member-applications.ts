@@ -153,7 +153,11 @@ export async function cleanupMemberApplications(isDryRun = false): Promise<Clean
   };
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+const isDirectExecution =
+  (typeof require !== "undefined" && require.main === module) ||
+  Boolean(process.argv[1] && process.argv[1].includes("cleanup-member-applications"));
+
+if (isDirectExecution) {
   const isDry = process.argv.includes("--dry-run");
   cleanupMemberApplications(isDry)
     .then((res) => {

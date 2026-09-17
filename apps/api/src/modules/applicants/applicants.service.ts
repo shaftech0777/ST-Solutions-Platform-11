@@ -705,7 +705,7 @@ export class ApplicantsService {
 
     await this.applicantsRepository.delete(applicationId);
 
-    SecurityLogger.info({
+    SecurityLogger.logSecurityEvent({
       action: "MEMBER_APPLICATION_DELETED",
       actorId: actor?.userId,
       targetId: applicationId,
