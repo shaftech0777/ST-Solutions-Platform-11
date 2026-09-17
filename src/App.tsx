@@ -70,6 +70,21 @@ const ApplyPage = lazyWithRetry(() =>
 const StartProjectPage = lazyWithRetry(() =>
   import("./pages/public/StartProjectPage.js").then((m) => ({ default: m.StartProjectPage }))
 );
+const PrivacyPolicyPage = lazyWithRetry(() =>
+  import("./pages/public/PrivacyPolicyPage.js").then((m) => ({ default: m.PrivacyPolicyPage }))
+);
+const TermsPage = lazyWithRetry(() =>
+  import("./pages/public/TermsPage.js").then((m) => ({ default: m.TermsPage }))
+);
+const CookiePolicyPage = lazyWithRetry(() =>
+  import("./pages/public/CookiePolicyPage.js").then((m) => ({ default: m.CookiePolicyPage }))
+);
+const AcceptableUsePage = lazyWithRetry(() =>
+  import("./pages/public/AcceptableUsePage.js").then((m) => ({ default: m.AcceptableUsePage }))
+);
+const SecurityPage = lazyWithRetry(() =>
+  import("./pages/public/SecurityPage.js").then((m) => ({ default: m.SecurityPage }))
+);
 
 // Platform Internal Management Pages
 const DashboardPage = lazyWithRetry(() =>
@@ -217,6 +232,46 @@ export function App() {
                   element={
                     <PublicShell>
                       <StartProjectPage />
+                    </PublicShell>
+                  }
+                />
+                <Route
+                  path="/privacy-policy"
+                  element={
+                    <PublicShell>
+                      <PrivacyPolicyPage />
+                    </PublicShell>
+                  }
+                />
+                <Route
+                  path="/terms"
+                  element={
+                    <PublicShell>
+                      <TermsPage />
+                    </PublicShell>
+                  }
+                />
+                <Route
+                  path="/cookie-policy"
+                  element={
+                    <PublicShell>
+                      <CookiePolicyPage />
+                    </PublicShell>
+                  }
+                />
+                <Route
+                  path="/acceptable-use"
+                  element={
+                    <PublicShell>
+                      <AcceptableUsePage />
+                    </PublicShell>
+                  }
+                />
+                <Route
+                  path="/security"
+                  element={
+                    <PublicShell>
+                      <SecurityPage />
                     </PublicShell>
                   }
                 />

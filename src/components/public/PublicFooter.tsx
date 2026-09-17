@@ -24,7 +24,7 @@ export const PublicFooter: React.FC = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10 space-y-12">
         {/* Top Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 lg:gap-10">
           {/* Column 1: Brand & Positioning */}
           <div className="lg:col-span-2 space-y-4">
             <Link to="/" className="flex items-center space-x-3 group">
@@ -146,7 +146,39 @@ export const PublicFooter: React.FC = () => {
             </ul>
           </div>
 
-          {/* Column 4: Direct Channels */}
+          {/* Column 4: Dedicated Legal Section */}
+          <div className="space-y-3">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 font-mono">Legal</h2>
+            <ul className="space-y-1 text-sm text-slate-700 dark:text-slate-300">
+              <li>
+                <Link to="/privacy-policy" className="block py-1 hover:text-[#D4AF37] transition-colors">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms" className="block py-1 hover:text-[#D4AF37] transition-colors">
+                  Terms & Conditions
+                </Link>
+              </li>
+              <li>
+                <Link to="/cookie-policy" className="block py-1 hover:text-[#D4AF37] transition-colors">
+                  Cookie Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/acceptable-use" className="block py-1 hover:text-[#D4AF37] transition-colors">
+                  Acceptable Use
+                </Link>
+              </li>
+              <li>
+                <Link to="/security" className="block py-1 hover:text-[#D4AF37] transition-colors">
+                  Security
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 5: Direct Channels */}
           <div className="space-y-3">
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 font-mono">Direct Contact</h2>
             <div className="space-y-1 text-sm">
@@ -189,18 +221,24 @@ export const PublicFooter: React.FC = () => {
 
         {/* Bottom Bar: Copyright & Legal */}
         <div className="border-t border-slate-200 dark:border-slate-800/80 pt-8 pb-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-slate-400">
-          <div className="flex items-center space-x-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span>© 2026 ST-Solutions. All rights reserved.</span>
             <span>•</span>
             <span className="text-slate-700 dark:text-slate-300">Enterprise Technology Partner</span>
           </div>
 
-          <div className="flex items-center space-x-6">
-            <Link to="/contact" className="hover:text-slate-200 transition-colors">
-              Contact Center
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+            <Link to="/privacy-policy" className="hover:text-slate-200 transition-colors">
+              Privacy
             </Link>
-            <Link to="/apply" className="hover:text-slate-200 transition-colors">
-              Careers / Apply
+            <Link to="/terms" className="hover:text-slate-200 transition-colors">
+              Terms
+            </Link>
+            <Link to="/cookie-policy" className="hover:text-slate-200 transition-colors">
+              Cookies
+            </Link>
+            <Link to="/security" className="hover:text-slate-200 transition-colors">
+              Security
             </Link>
             <a
               href={companyConfig.founder.portfolioUrl}
@@ -208,7 +246,7 @@ export const PublicFooter: React.FC = () => {
               rel="noopener noreferrer"
               className="flex items-center space-x-1 hover:text-[#D4AF37] transition-colors"
             >
-              <span>Founder Portfolio</span>
+              <span>Founder</span>
               <ArrowUpRight className="w-3 h-3" />
             </a>
           </div>
