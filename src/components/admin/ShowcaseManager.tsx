@@ -196,15 +196,23 @@ export const ShowcaseManager: React.FC = () => {
       }
 
       if (editingProject) {
-        await showcaseService.updateProject(editingProject.id, payload);
-        addToast({ type: "success", message: "Showcase project updated successfully." });
+        const res = await showcaseService.updateProject(editingProject.id, payload);
+        const record = res?.data || res;
+        if (!record || !record.id) {
+          throw new Error(res?.message || "Database failed to update showcase project.");
+        }
+        addToast({ type: "success", message: `Showcase project '${record.title}' updated successfully.` });
       } else {
-        await showcaseService.createProject(payload);
-        addToast({ type: "success", message: "New showcase project created." });
+        const res = await showcaseService.createProject(payload);
+        const record = res?.data || res;
+        if (!record || !record.id) {
+          throw new Error(res?.message || "Database failed to create showcase project.");
+        }
+        addToast({ type: "success", message: `New showcase project '${record.title}' created successfully.` });
       }
 
       setIsModalOpen(false);
-      loadProjects();
+      await loadProjects();
     } catch (err: any) {
       addToast({
         type: "error",
@@ -217,10 +225,13 @@ export const ShowcaseManager: React.FC = () => {
   const handleDelete = async () => {
     if (!deletingProject) return;
     try {
-      await showcaseService.deleteProject(deletingProject.id);
+      const res = await showcaseService.deleteProject(deletingProject.id);
+      if (res && res.success === false) {
+        throw new Error(res.message || "Database failed to delete project.");
+      }
       addToast({ type: "success", message: "Project deleted successfully." });
       setDeletingProject(null);
-      loadProjects();
+      await loadProjects();
     } catch (err: any) {
       addToast({ type: "error", message: err.message || "Failed to delete project." });
     }

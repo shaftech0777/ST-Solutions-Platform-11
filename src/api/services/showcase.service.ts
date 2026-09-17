@@ -44,41 +44,63 @@ export const showcaseService = {
   /**
    * Fetch published showcase projects for the public site
    */
-  async getPublicProjects(params?: { category?: string; search?: string; featured?: boolean }) {
+  async getPublicProjects(params?: { category?: string; search?: string; featured?: boolean }): Promise<ShowcaseProject[]> {
     const query = new URLSearchParams();
     if (params?.category && params.category !== "All") query.append("category", params.category);
     if (params?.search) query.append("search", params.search);
     if (params?.featured !== undefined) query.append("featured", String(params.featured));
     const qs = query.toString() ? `?${query.toString()}` : "";
-    return apiClient<ShowcaseProject[]>(`/showcase-projects${qs}`);
+    const res = await apiClient<any>(`/showcase-projects${qs}`);
+    if (res && Array.isArray(res.data)) {
+      return res.data;
+    }
+    if (Array.isArray(res)) {
+      return res;
+    }
+    return [];
   },
 
   /**
    * Fetch a single published showcase project by ID or Slug
    */
-  async getPublicProject(idOrSlug: string) {
-    return apiClient<ShowcaseProject>(`/showcase-projects/${idOrSlug}`);
+  async getPublicProject(idOrSlug: string): Promise<ShowcaseProject | null> {
+    const res = await apiClient<any>(`/showcase-projects/${idOrSlug}`);
+    return res?.data ?? res ?? null;
   },
 
   /**
    * Fetch showcase categories
    */
-  async getCategories() {
-    return apiClient<ShowcaseCategory[]>("/showcase-projects/categories");
+  async getCategories(): Promise<ShowcaseCategory[]> {
+    const res = await apiClient<any>("/showcase-projects/categories");
+    if (res && Array.isArray(res.data)) {
+      return res.data;
+    }
+    if (Array.isArray(res)) {
+      return res;
+    }
+    return [];
   },
 
   /**
    * Admin: Get all showcase projects (drafts included)
    */
-  async getAdminProjects() {
-    return apiClient<ShowcaseProject[]>("/showcase-projects/admin/all");
+  async getAdminProjects(): Promise<ShowcaseProject[]> {
+    const res = await apiClient<any>("/showcase-projects/admin/all");
+    if (res && Array.isArray(res.data)) {
+      return res.data;
+    }
+    if (Array.isArray(res)) {
+      return res;
+    }
+    return [];
   },
 
   /**
    * Admin: Create a new showcase project
    */
   async createProject(data: Partial<ShowcaseProject>) {
-    return apiClient<ShowcaseProject>("/showcase-projects", {
+    return apiClient<any>("/showcase-projects", {
       method: "POST",
       body: data,
     });
@@ -88,7 +110,7 @@ export const showcaseService = {
    * Admin: Update a showcase project
    */
   async updateProject(id: string, data: Partial<ShowcaseProject>) {
-    return apiClient<ShowcaseProject>(`/showcase-projects/${id}`, {
+    return apiClient<any>(`/showcase-projects/${id}`, {
       method: "PATCH",
       body: data,
     });
@@ -98,7 +120,7 @@ export const showcaseService = {
    * Admin: Delete a showcase project
    */
   async deleteProject(id: string) {
-    return apiClient<{ id: string }>(`/showcase-projects/${id}`, {
+    return apiClient<any>(`/showcase-projects/${id}`, {
       method: "DELETE",
     });
   },
@@ -107,7 +129,7 @@ export const showcaseService = {
    * Admin: Reorder showcase projects
    */
   async reorderProjects(items: { id: string; displayOrder: number }[]) {
-    return apiClient<{ success: boolean }>("/showcase-projects/reorder", {
+    return apiClient<any>("/showcase-projects/reorder", {
       method: "POST",
       body: { items },
     });

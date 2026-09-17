@@ -157,12 +157,15 @@ export const WebsiteCMS: React.FC = () => {
     e.preventDefault();
     setIsSaving(true);
     try {
-      await settingsService.updateCMSSection("brand", brandData);
+      const res = await settingsService.updateCMSSection("brand", brandData);
+      if (res && res.success === false) {
+        throw new Error(res.message || "Failed to save brand content to database.");
+      }
       
       // Sync basic profile data backward for generic settings endpoints
       await settingsService.updateCompanyProfile({ companyName: brandData.name }).catch(e => console.warn('Could not sync to generic company profile', e));
 
-      addToast({ type: "success", message: "Brand & Hero settings updated successfully." });
+      addToast({ type: "success", message: "Brand & Hero settings updated in database." });
     } catch (err: any) {
       addToast({ type: "error", message: err?.message || "Failed to save brand content." });
     } finally {
@@ -174,11 +177,14 @@ export const WebsiteCMS: React.FC = () => {
     e.preventDefault();
     setIsSaving(true);
     try {
-      await settingsService.updateCMSSection("contact", contactData);
+      const res = await settingsService.updateCMSSection("contact", contactData);
+      if (res && res.success === false) {
+        throw new Error(res.message || "Failed to save contact info to database.");
+      }
       
       await settingsService.updateCompanyProfile({}).catch(e => console.warn('Could not sync contact info to generic profile', e));
 
-      addToast({ type: "success", message: "Official contact channels updated." });
+      addToast({ type: "success", message: "Official contact channels updated in database." });
     } catch (err: any) {
       addToast({ type: "error", message: err?.message || "Failed to update contact info." });
     } finally {
@@ -190,8 +196,11 @@ export const WebsiteCMS: React.FC = () => {
     const updated = socials.map((s) => (s.id === id ? { ...s, enabled: !s.enabled } : s));
     setSocials(updated);
     try {
-      await settingsService.updateCMSSection("socials", updated);
-      addToast({ type: "info", message: "Social channel visibility toggled." });
+      const res = await settingsService.updateCMSSection("socials", updated);
+      if (res && res.success === false) {
+        throw new Error(res.message || "Failed to update social channels in database.");
+      }
+      addToast({ type: "info", message: "Social channel visibility updated in database." });
     } catch (err: any) {
       setSocials(socials); // revert
       addToast({ type: "error", message: err?.message || "Failed to save social changes." });
@@ -234,8 +243,11 @@ export const WebsiteCMS: React.FC = () => {
     setIsFaqModalOpen(false);
 
     try {
-      await settingsService.updateCMSSection("faqs", newFaqs);
-      addToast({ type: "success", message: editingFaq ? "FAQ item updated." : "New FAQ item added." });
+      const res = await settingsService.updateCMSSection("faqs", newFaqs);
+      if (res && res.success === false) {
+        throw new Error(res.message || "Failed to update FAQs in database.");
+      }
+      addToast({ type: "success", message: editingFaq ? "FAQ item updated in database." : "New FAQ item added to database." });
     } catch (err: any) {
       setFaqs(prevFaqs); // revert
       addToast({ type: "error", message: err?.message || "Failed to save FAQ." });
@@ -250,8 +262,11 @@ export const WebsiteCMS: React.FC = () => {
     setDeletingFaq(null);
 
     try {
-      await settingsService.updateCMSSection("faqs", newFaqs);
-      addToast({ type: "success", message: "FAQ item removed." });
+      const res = await settingsService.updateCMSSection("faqs", newFaqs);
+      if (res && res.success === false) {
+        throw new Error(res.message || "Failed to delete FAQ from database.");
+      }
+      addToast({ type: "success", message: "FAQ item removed from database." });
     } catch (err: any) {
       setFaqs(prevFaqs); // revert
       addToast({ type: "error", message: err?.message || "Failed to delete FAQ." });

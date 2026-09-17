@@ -67,19 +67,25 @@ export const settingsService = {
     });
   },
 
-  async getCMSSection<T>(key: string): Promise<T | null> {
-    try {
-      const response = await apiClient<any>(`/settings/cms/${key}`);
-      return response?.data?.content ? (typeof response.data.content === "string" ? JSON.parse(response.data.content) : response.data.content) : null;
-    } catch (err) {
-      return null;
+  async getCMSSection<T>(key: string): Promise<T> {
+    const response = await apiClient<any>(`/settings/cms/${key}`);
+    const sectionRecord = response?.data;
+    if (!sectionRecord || sectionRecord.content === undefined || sectionRecord.content === null) {
+      throw new Error(`CMS section '${key}' content is empty or missing`);
     }
+    const rawContent = sectionRecord.content;
+    const parsed = typeof rawContent === "string" ? JSON.parse(rawContent) : rawContent;
+    return parsed;
   },
 
   async updateCMSSection(key: string, data: any) {
-    return apiClient(`/settings/cms/${key}`, {
+    const res = await apiClient<any>(`/settings/cms/${key}`, {
       method: "PUT",
       body: { content: data },
     });
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("st_cms_updated", { detail: { key, data } }));
+    }
+    return res;
   },
 };
