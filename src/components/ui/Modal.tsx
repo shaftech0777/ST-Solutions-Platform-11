@@ -89,7 +89,7 @@ export const Modal: React.FC<ModalProps> = ({
 export interface DrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  title?: string;
+  title?: React.ReactNode;
   children: React.ReactNode;
   position?: "left" | "right";
 }

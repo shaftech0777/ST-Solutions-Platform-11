@@ -113,9 +113,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     try {
       const meRes = await authService.getMe();
-      const rawData = meRes.data as any;
+      const rawData = (meRes as any)?.data || meRes;
 
-      if (meRes.success && rawData) {
+      if ((meRes.success || rawData?.id || rawData?.user?.id) && rawData) {
         const userObj: User = {
           id: rawData.id || rawData.user?.id,
           email: rawData.email || rawData.user?.email,
@@ -180,12 +180,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, [refreshUser]);
 
-  const login = async (credentials: { email?: string; username?: string; password: string }) => {
+  const login = async (credentials: { email?: string; username?: string; password: string; identifier?: string }) => {
     setIsLoading(true);
     try {
       const res = await authService.login(credentials);
       if (res.data?.accessToken) {
         setStoredTokens(res.data.accessToken, res.data.refreshToken);
+
+        // Populate user immediately from login response payload to eliminate intermediate null state
+        if (res.data.user) {
+          const u = res.data.user as any;
+          setCurrentUser({
+            id: u.id,
+            email: u.email,
+            accountType: u.accountType || "MEMBER",
+            status: u.status || "ACTIVE",
+            roleId: u.roleId || null,
+            createdAt: u.createdAt || new Date().toISOString(),
+            updatedAt: u.updatedAt || new Date().toISOString(),
+            profile: u.profile || null,
+            role: u.role || null,
+          });
+          if (Array.isArray(u.permissions)) {
+            setPermissions(u.permissions);
+          }
+        }
+
         await refreshUser();
       } else {
         throw new Error(res.message || "Login failed");

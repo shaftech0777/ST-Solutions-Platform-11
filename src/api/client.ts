@@ -146,7 +146,9 @@ export function isTokenExpired(token: string | null, bufferSeconds = 30): boolea
     const parts = token.split(".");
     if (parts.length !== 3) return true;
     const base64Url = parts[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    let base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const padLength = (4 - (base64.length % 4)) % 4;
+    base64 += "=".repeat(padLength);
     const jsonPayload = decodeURIComponent(
       atob(base64)
         .split("")
@@ -157,7 +159,7 @@ export function isTokenExpired(token: string | null, bufferSeconds = 30): boolea
     if (!decoded.exp) return false;
     return decoded.exp * 1000 <= Date.now() + bufferSeconds * 1000;
   } catch {
-    return true;
+    return false;
   }
 }
 

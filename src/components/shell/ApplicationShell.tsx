@@ -24,7 +24,12 @@ export const ApplicationShell: React.FC<{ children: React.ReactNode }> = ({ chil
   if (isAuthLoading) {
     return (
       <div className="min-h-screen bg-[#F7F8FA] dark:bg-[#090A0F] text-slate-900 dark:text-slate-100 flex flex-col items-center justify-center p-6 space-y-4">
-        <img src="/favicon.svg" alt="ST-Solutions Loading" className="w-16 h-16 animate-pulse" />
+        <div className="flex items-center gap-3">
+          <img src="/favicon.svg" alt="ST-Solutions Loading" className="w-10 h-10 animate-pulse" />
+          <span className="font-extrabold text-xl tracking-wider text-slate-900 dark:text-white font-mono">
+            ST-SOLUTIONS
+          </span>
+        </div>
         <div className="flex items-center space-x-2 text-sm text-slate-500 dark:text-slate-400 font-mono">
           <Loader2 className="w-4 h-4 animate-spin text-[#D4AF37]" />
           <span>Authenticating ST-Solutions secure session...</span>
@@ -37,7 +42,12 @@ export const ApplicationShell: React.FC<{ children: React.ReactNode }> = ({ chil
   if (!currentUser) {
     return (
       <div className="min-h-screen bg-[#F7F8FA] dark:bg-[#090A0F] text-slate-900 dark:text-slate-100 flex flex-col items-center justify-center p-6 space-y-6">
-        <div className="w-16 h-16 rounded-3xl bg-white border border-slate-200 flex items-center justify-center text-[#D4AF37] shadow-xl"><ShieldAlert className="w-8 h-8" /></div>
+        <div className="flex items-center gap-3">
+          <img src="/favicon.svg" alt="ST-Solutions Logo" className="w-12 h-12" />
+          <span className="font-extrabold text-2xl tracking-wider text-slate-900 dark:text-white font-mono">
+            ST-SOLUTIONS
+          </span>
+        </div>
         <div className="text-center space-y-2 max-w-md">
           <h2 className="text-xl font-bold text-slate-900 dark:text-white">Authentication Required</h2>
           <p className="text-sm text-slate-500 dark:text-slate-400">
@@ -67,7 +77,14 @@ export const ApplicationShell: React.FC<{ children: React.ReactNode }> = ({ chil
       <Drawer
         isOpen={isMobileSidebarOpen}
         onClose={() => setIsMobileSidebarOpen(false)}
-        title="ST-SOLUTIONS"
+        title={
+          <div className="flex items-center gap-2.5">
+            <img src="/favicon.svg" alt="ST-Solutions Logo" className="w-6 h-6 shrink-0" />
+            <span className="font-extrabold text-sm tracking-wider text-slate-900 dark:text-white font-mono">
+              ST-SOLUTIONS
+            </span>
+          </div>
+        }
       >
         <div onClick={() => setIsMobileSidebarOpen(false)}>
           <Sidebar isCollapsed={false} onToggleCollapse={() => setIsMobileSidebarOpen(false)} />

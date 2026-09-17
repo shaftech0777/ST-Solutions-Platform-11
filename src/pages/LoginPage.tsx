@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ShieldCheck, Lock, Mail, ArrowRight, AlertCircle, Sparkles, Building2, CheckCircle2, Shield } from "lucide-react";
 import { useAuth } from "../context/AuthContext.js";
@@ -6,13 +6,19 @@ import { Input, PasswordInput } from "../components/ui/Input.js";
 import { Button } from "../components/ui/Button.js";
 
 export const LoginPage: React.FC = () => {
-  const { login } = useAuth();
+  const { login, currentUser, isLoading: isAuthLoading } = useAuth();
   const navigate = useNavigate();
 
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (currentUser && !isAuthLoading) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [currentUser, isAuthLoading, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -115,13 +115,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
       
       {/* Brand Header */}
       <div className="h-16 px-4 flex items-center justify-between border-b border-slate-200 dark:border-slate-800/80 shrink-0">
-        <div className="flex items-center gap-3 overflow-hidden">
+        <div className="flex items-center gap-2.5 overflow-hidden">
           <img src="/favicon.svg" alt="ST-Solutions Logo" className="w-8 h-8 shrink-0" />
           {!isCollapsed && (
-            <img src="/st-solutions-logo.svg" alt="ST-Solutions" className="h-6 dark:hidden" />
-          )}
-          {!isCollapsed && (
-            <img src="/st-solutions-logo-dark.svg" alt="ST-Solutions" className="h-6 hidden dark:block" />
+            <span className="font-extrabold text-base tracking-wider text-slate-900 dark:text-white font-mono whitespace-nowrap">
+              ST-SOLUTIONS
+            </span>
           )}
         </div>
         <button
