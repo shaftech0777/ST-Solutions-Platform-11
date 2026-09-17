@@ -145,7 +145,7 @@ export const ApplyPage: React.FC = () => {
     <div className="space-y-16 sm:space-y-24 pb-16 font-sans">
       {/* Header Banner */}
       <section className="pt-8 sm:pt-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center space-y-4">
-        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-900 text-xs font-semibold uppercase tracking-wider font-mono">
+        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-900 text-sm font-semibold uppercase tracking-wider font-mono">
           <span>Careers & Talent</span>
         </div>
         <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-950 tracking-tight max-w-3xl mx-auto">
@@ -165,7 +165,7 @@ export const ApplyPage: React.FC = () => {
               <Code2 className="w-5 h-5" />
             </div>
             <h3 className="text-base font-bold text-slate-950">Strict Craftsmanship</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-sm text-slate-600 leading-relaxed">
               We care deeply about clean architectures, predictable database models, type safety, and maintainable codebases.
             </p>
           </div>
@@ -175,7 +175,7 @@ export const ApplyPage: React.FC = () => {
               <Layers className="w-5 h-5" />
             </div>
             <h3 className="text-base font-bold text-slate-950">Real Enterprise Impact</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-sm text-slate-600 leading-relaxed">
               You will build systems used by real clinics, retailers, and high-growth organizations every single day.
             </p>
           </div>
@@ -185,7 +185,7 @@ export const ApplyPage: React.FC = () => {
               <Brain className="w-5 h-5" />
             </div>
             <h3 className="text-base font-bold text-slate-950">Autonomy & Learning</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-sm text-slate-600 leading-relaxed">
               Direct access to leadership, modern AI engineering pipelines, and continuous architectural growth.
             </p>
           </div>
@@ -223,7 +223,7 @@ export const ApplyPage: React.FC = () => {
                       portfolioUrl: "",
                       resumeText: "" });
                   }}
-                  className="px-5 py-2.5 rounded-xl bg-[#F1F2EE] hover:bg-slate-200 text-slate-800 text-xs font-semibold transition-colors border border-[#E2E5E0]"
+                  className="px-5 py-2.5 rounded-xl bg-[#F1F2EE] hover:bg-slate-200 text-slate-800 text-sm font-semibold transition-colors border border-[#E2E5E0]"
                 >
                   Submit Another Profile
                 </button>
@@ -235,13 +235,13 @@ export const ApplyPage: React.FC = () => {
                 <h2 className="text-xl sm:text-2xl font-bold text-slate-950">
                   Member Application
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-600 mt-1">
+                <p className="text-sm sm:text-sm text-slate-600 mt-1">
                   Fill in your credentials to apply for open engineering, design, and project roles.
                 </p>
               </div>
 
               {errorMessage && (
-                <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-700 text-xs flex items-center space-x-2 animate-fade-in font-medium">
+                <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-700 text-sm flex items-center space-x-2 animate-fade-in font-medium">
                   <AlertCircle className="w-4 h-4 flex-shrink-0" />
                   <span>{errorMessage}</span>
                 </div>
@@ -249,7 +249,7 @@ export const ApplyPage: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                  <label className="block text-sm font-bold text-slate-800 mb-1">
                     Full Name *
                   </label>
                   <input
@@ -258,12 +258,12 @@ export const ApplyPage: React.FC = () => {
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                     placeholder="e.g. David Zhao"
-                    className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm sm:text-sm focus:border-[#D4AF37] outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                  <label className="block text-sm font-bold text-slate-800 mb-1">
                     Email Address *
                   </label>
                   <input
@@ -272,12 +272,12 @@ export const ApplyPage: React.FC = () => {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="david@domain.com"
-                    className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm sm:text-sm focus:border-[#D4AF37] outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                  <label className="block text-sm font-bold text-slate-800 mb-1">
                     Phone / WhatsApp Number
                   </label>
                   <input
@@ -285,12 +285,12 @@ export const ApplyPage: React.FC = () => {
                     value={formData.phoneNumber}
                     onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
                     placeholder="+92 325 7263417"
-                    className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm sm:text-sm focus:border-[#D4AF37] outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                  <label className="block text-sm font-bold text-slate-800 mb-1">
                     Years of Relevant Experience *
                   </label>
                   <input
@@ -302,20 +302,20 @@ export const ApplyPage: React.FC = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, experienceYears: parseInt(e.target.value) || 0 })
                     }
-                    className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm sm:text-sm focus:border-[#D4AF37] outline-none"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                  <label className="block text-sm font-bold text-slate-800 mb-1">
                     Role Applied For *
                   </label>
                   <select
                     value={formData.roleApplied}
                     onChange={(e) => setFormData({ ...formData, roleApplied: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm sm:text-sm focus:border-[#D4AF37] outline-none"
                   >
                     {availableRoles.map((role) => (
                       <option key={role} value={role}>
@@ -326,7 +326,7 @@ export const ApplyPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                  <label className="block text-sm font-bold text-slate-800 mb-1">
                     Portfolio / GitHub URL (Optional)
                   </label>
                   <input
@@ -334,13 +334,13 @@ export const ApplyPage: React.FC = () => {
                     value={formData.portfolioUrl}
                     onChange={(e) => setFormData({ ...formData, portfolioUrl: e.target.value })}
                     placeholder="https://github.com/yourhandle"
-                    className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm sm:text-sm focus:border-[#D4AF37] outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-800 mb-1">
+                <label className="block text-sm font-bold text-slate-800 mb-1">
                   Primary Technical Skills (Comma-separated)
                 </label>
                 <input
@@ -348,12 +348,12 @@ export const ApplyPage: React.FC = () => {
                   value={formData.skills}
                   onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
                   placeholder="React, TypeScript, Tailwind, Node.js, Prisma, PostgreSQL, Docker"
-                  className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                  className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm sm:text-sm focus:border-[#D4AF37] outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-800 mb-1">
+                <label className="block text-sm font-bold text-slate-800 mb-1">
                   Brief Bio / Cover Note / Summary
                 </label>
                 <textarea
@@ -361,7 +361,7 @@ export const ApplyPage: React.FC = () => {
                   value={formData.resumeText}
                   onChange={(e) => setFormData({ ...formData, resumeText: e.target.value })}
                   placeholder="Share a brief introduction, your background with modern web/software engineering, and why you would like to contribute at ST-Solutions..."
-                  className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none resize-none"
+                  className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm sm:text-sm focus:border-[#D4AF37] outline-none resize-none"
                 />
               </div>
 
@@ -372,7 +372,7 @@ export const ApplyPage: React.FC = () => {
                     <h3 className="text-sm font-bold text-slate-950">
                       Additional Position Details
                     </h3>
-                    <span className="text-[11px] text-[#B88E20] font-medium font-mono">
+                    <span className="text-sm text-[#B88E20] font-medium font-mono">
                       Dynamic Form Builder
                     </span>
                   </div>
@@ -389,11 +389,11 @@ export const ApplyPage: React.FC = () => {
 
                     return (
                       <div key={q.id} className="space-y-1.5">
-                        <label className="block text-xs font-bold text-slate-800">
+                        <label className="block text-sm font-bold text-slate-800">
                           {qTitle} {q.isRequired && <span className="text-rose-500">*</span>}
                         </label>
                         {q.helpText && (
-                          <p className="text-[11px] text-slate-500">{q.helpText}</p>
+                          <p className="text-sm text-slate-500">{q.helpText}</p>
                         )}
 
                         {type === "LONG_TEXT" ? (
@@ -403,14 +403,14 @@ export const ApplyPage: React.FC = () => {
                             value={value}
                             onChange={(e) => handleDynamicAnswerChange(q.id, e.target.value)}
                             placeholder={q.placeholder || "Enter your response..."}
-                            className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none resize-none"
+                            className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm sm:text-sm focus:border-[#D4AF37] outline-none resize-none"
                           />
                         ) : type === "DROPDOWN" || type === "SELECT" ? (
                           <select
                             required={q.isRequired}
                             value={value}
                             onChange={(e) => handleDynamicAnswerChange(q.id, e.target.value)}
-                            className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                            className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm sm:text-sm focus:border-[#D4AF37] outline-none"
                           >
                             <option value="">Select an option...</option>
                             {optionsList.map((opt: string, idx: number) => (
@@ -422,7 +422,7 @@ export const ApplyPage: React.FC = () => {
                         ) : type === "RADIO" ? (
                           <div className="space-y-2 pt-1">
                             {optionsList.map((opt: string, idx: number) => (
-                              <label key={idx} className="flex items-center gap-2 text-xs text-slate-800 cursor-pointer">
+                              <label key={idx} className="flex items-center gap-2 text-sm text-slate-800 cursor-pointer">
                                 <input
                                   type="radio"
                                   name={`question_${q.id}`}
@@ -443,7 +443,7 @@ export const ApplyPage: React.FC = () => {
                                 const selectedArr = Array.isArray(value) ? value : [];
                                 const isChecked = selectedArr.includes(opt);
                                 return (
-                                  <label key={idx} className="flex items-center gap-2 text-xs text-slate-800 cursor-pointer">
+                                  <label key={idx} className="flex items-center gap-2 text-sm text-slate-800 cursor-pointer">
                                     <input
                                       type="checkbox"
                                       value={opt}
@@ -456,7 +456,7 @@ export const ApplyPage: React.FC = () => {
                                 );
                               })
                             ) : (
-                              <label className="flex items-center gap-2 text-xs text-slate-800 cursor-pointer">
+                              <label className="flex items-center gap-2 text-sm text-slate-800 cursor-pointer">
                                 <input
                                   type="checkbox"
                                   checked={!!value}
@@ -474,7 +474,7 @@ export const ApplyPage: React.FC = () => {
                             value={value}
                             onChange={(e) => handleDynamicAnswerChange(q.id, e.target.value)}
                             placeholder={q.placeholder || "0"}
-                            className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                            className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm sm:text-sm focus:border-[#D4AF37] outline-none"
                           />
                         ) : type === "DATE" ? (
                           <input
@@ -482,7 +482,7 @@ export const ApplyPage: React.FC = () => {
                             required={q.isRequired}
                             value={value}
                             onChange={(e) => handleDynamicAnswerChange(q.id, e.target.value)}
-                            className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                            className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm sm:text-sm focus:border-[#D4AF37] outline-none"
                           />
                         ) : type === "EMAIL" ? (
                           <input
@@ -491,7 +491,7 @@ export const ApplyPage: React.FC = () => {
                             value={value}
                             onChange={(e) => handleDynamicAnswerChange(q.id, e.target.value)}
                             placeholder={q.placeholder || "name@example.com"}
-                            className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                            className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm sm:text-sm focus:border-[#D4AF37] outline-none"
                           />
                         ) : type === "PHONE" ? (
                           <input
@@ -500,7 +500,7 @@ export const ApplyPage: React.FC = () => {
                             value={value}
                             onChange={(e) => handleDynamicAnswerChange(q.id, e.target.value)}
                             placeholder={q.placeholder || "+1 (555) 000-0000"}
-                            className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                            className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm sm:text-sm focus:border-[#D4AF37] outline-none"
                           />
                         ) : type === "URL" || type === "FILE_UPLOAD" ? (
                           <input
@@ -509,7 +509,7 @@ export const ApplyPage: React.FC = () => {
                             value={value}
                             onChange={(e) => handleDynamicAnswerChange(q.id, e.target.value)}
                             placeholder={q.placeholder || (type === "FILE_UPLOAD" ? "https://drive.google.com/... or resume URL" : "https://...")}
-                            className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                            className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm sm:text-sm focus:border-[#D4AF37] outline-none"
                           />
                         ) : (
                           <input
@@ -518,7 +518,7 @@ export const ApplyPage: React.FC = () => {
                             value={value}
                             onChange={(e) => handleDynamicAnswerChange(q.id, e.target.value)}
                             placeholder={q.placeholder || "Your answer..."}
-                            className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                            className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm sm:text-sm focus:border-[#D4AF37] outline-none"
                           />
                         )}
                       </div>
@@ -531,7 +531,7 @@ export const ApplyPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl bg-[#111827] text-white font-bold text-xs sm:text-sm shadow-md hover:bg-[#1F2937] active:scale-[0.99] transition-all disabled:opacity-50 border border-[#111827]"
+                  className="w-full inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl bg-[#111827] text-white font-bold text-sm sm:text-sm shadow-md hover:bg-[#1F2937] active:scale-[0.99] transition-all disabled:opacity-50 border border-[#111827]"
                 >
                   {isSubmitting ? (
                     <>

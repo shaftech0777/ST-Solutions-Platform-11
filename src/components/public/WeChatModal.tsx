@@ -25,7 +25,7 @@ export const WeChatModal: React.FC<WeChatModalProps> = ({ isOpen, onClose }) => 
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white dark:bg-slate-950/70 backdrop-blur-sm animate-fade-in"
       onClick={onClose}
     >
       <div
@@ -35,7 +35,7 @@ export const WeChatModal: React.FC<WeChatModalProps> = ({ isOpen, onClose }) => 
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-900 rounded-lg transition-colors"
+          className="absolute top-4 right-4 p-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 rounded-lg transition-colors"
           aria-label="Close modal"
         >
           <X className="w-5 h-5" />
@@ -72,7 +72,7 @@ export const WeChatModal: React.FC<WeChatModalProps> = ({ isOpen, onClose }) => 
             </div>
           ) : (
             <div className="space-y-3 py-3">
-              <div className="w-16 h-16 rounded-2xl bg-white text-slate-400 flex items-center justify-center mx-auto border border-dashed border-slate-300 shadow-sm">
+              <div className="w-16 h-16 rounded-2xl bg-white text-slate-500 dark:text-slate-400 flex items-center justify-center mx-auto border border-dashed border-slate-300 shadow-sm">
                 <QrCode className="w-8 h-8 opacity-50 text-slate-600" />
               </div>
               <div className="space-y-1">

@@ -110,7 +110,7 @@ ${formData.message.trim()}
     <div className="space-y-16 sm:space-y-24 pb-16 font-sans">
       {/* Header Banner */}
       <section className="pt-8 sm:pt-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center space-y-4">
-        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-900 text-xs font-semibold uppercase tracking-wider font-mono">
+        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-900 text-sm font-semibold uppercase tracking-wider font-mono">
           <span>Direct Communications</span>
         </div>
         <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-950 tracking-tight max-w-3xl mx-auto">
@@ -132,15 +132,15 @@ ${formData.message.trim()}
                 <Sparkles className="w-4 h-4" />
               </div>
               <div>
-                <div className="text-xs sm:text-sm font-bold text-slate-950">
+                <div className="text-sm sm:text-sm font-bold text-slate-950">
                   Prefer a step-by-step guided experience?
                 </div>
-                <div className="text-[11px] text-slate-600">
+                <div className="text-sm text-slate-600">
                   Try our 7-Step Project Wizard for instant brief generation
                 </div>
               </div>
             </div>
-            <div className="text-xs font-bold text-[#B88E20] flex items-center space-x-1">
+            <div className="text-sm font-bold text-[#B88E20] flex items-center space-x-1">
               <span>Start Wizard</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform text-[#B88E20]" />
             </div>
@@ -237,11 +237,11 @@ ${formData.message.trim()}
 
             {/* Operating Response SLA (Intentional Dark Contrast Section) */}
             <div className="p-6 rounded-3xl bg-[#111827] text-white border border-[#1F2937] space-y-3 shadow-md">
-              <div className="flex items-center space-x-2 text-xs font-bold text-[#D4AF37] uppercase tracking-wider font-mono">
+              <div className="flex items-center space-x-2 text-sm font-bold text-[#D4AF37] uppercase tracking-wider font-mono">
                 <Clock className="w-4 h-4" />
                 <span>Response Guarantee</span>
               </div>
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                 All client requests submitted through the form or WhatsApp receive technical assessment and scoping follow-up within 24 hours.
               </p>
             </div>
@@ -269,7 +269,7 @@ ${formData.message.trim()}
                       href={companyConfig.contact.whatsappUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors shadow-sm"
+                      className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold transition-colors shadow-sm"
                     >
                       <MessageCircle className="w-4 h-4" />
                       <span>Instant Chat on WhatsApp</span>
@@ -285,7 +285,7 @@ ${formData.message.trim()}
                           projectType: projectTypes[0],
                           message: "" });
                       }}
-                      className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[#F1F2EE] hover:bg-slate-200 text-slate-800 text-xs font-semibold transition-colors border border-[#E2E5E0]"
+                      className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[#F1F2EE] hover:bg-slate-200 text-slate-800 text-sm font-semibold transition-colors border border-[#E2E5E0]"
                     >
                       Send Another Message
                     </button>
@@ -297,13 +297,13 @@ ${formData.message.trim()}
                     <h2 className="text-xl font-bold text-slate-950">
                       Project Inquiry Form
                     </h2>
-                    <p className="text-xs text-slate-600 mt-1">
+                    <p className="text-sm text-slate-600 mt-1">
                       Share your business objectives and project requirements with our engineering team.
                     </p>
                   </div>
 
                   {errorMessage && (
-                    <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-700 text-xs flex items-center space-x-2 animate-fade-in font-medium">
+                    <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-700 text-sm flex items-center space-x-2 animate-fade-in font-medium">
                       <AlertCircle className="w-4 h-4 flex-shrink-0" />
                       <span>{errorMessage}</span>
                     </div>
@@ -311,7 +311,7 @@ ${formData.message.trim()}
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-bold text-slate-800 mb-1">
+                      <label className="block text-sm font-bold text-slate-800 mb-1">
                         Full Name *
                       </label>
                       <input
@@ -320,12 +320,12 @@ ${formData.message.trim()}
                         value={formData.fullName}
                         onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                         placeholder="e.g. Sarah Jenkins"
-                        className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] outline-none"
+                        className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm sm:text-sm focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] outline-none"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-slate-800 mb-1">
+                      <label className="block text-sm font-bold text-slate-800 mb-1">
                         Email Address *
                       </label>
                       <input
@@ -334,12 +334,12 @@ ${formData.message.trim()}
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         placeholder="sarah@company.com"
-                        className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] outline-none"
+                        className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm sm:text-sm focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] outline-none"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-slate-800 mb-1">
+                      <label className="block text-sm font-bold text-slate-800 mb-1">
                         Phone Number (Optional)
                       </label>
                       <input
@@ -347,12 +347,12 @@ ${formData.message.trim()}
                         value={formData.phoneNumber}
                         onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
                         placeholder="+1 (555) 000-0000"
-                        className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                        className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm sm:text-sm focus:border-[#D4AF37] outline-none"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-slate-800 mb-1">
+                      <label className="block text-sm font-bold text-slate-800 mb-1">
                         WhatsApp Number *
                       </label>
                       <input
@@ -361,19 +361,19 @@ ${formData.message.trim()}
                         value={formData.whatsappNumber}
                         onChange={(e) => setFormData({ ...formData, whatsappNumber: e.target.value })}
                         placeholder="+92 325 7263417"
-                        className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                        className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm sm:text-sm focus:border-[#D4AF37] outline-none"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-800 mb-1">
+                    <label className="block text-sm font-bold text-slate-800 mb-1">
                       Project Domain / Service
                     </label>
                     <select
                       value={formData.projectType}
                       onChange={(e) => setFormData({ ...formData, projectType: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] outline-none"
+                      className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm sm:text-sm focus:border-[#D4AF37] outline-none"
                     >
                       {projectTypes.map((t) => (
                         <option key={t} value={t}>
@@ -384,7 +384,7 @@ ${formData.message.trim()}
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-800 mb-1">
+                    <label className="block text-sm font-bold text-slate-800 mb-1">
                       Project Details & Objectives *
                     </label>
                     <textarea
@@ -393,7 +393,7 @@ ${formData.message.trim()}
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                       placeholder="Describe your current business challenge, target platform features, desired timeline, or existing software tools..."
-                      className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-xs sm:text-sm focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] outline-none resize-none"
+                      className="w-full px-4 py-2.5 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 text-sm sm:text-sm focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] outline-none resize-none"
                     />
                   </div>
 
@@ -401,7 +401,7 @@ ${formData.message.trim()}
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl bg-[#111827] text-white font-bold text-xs sm:text-sm shadow-md hover:bg-[#1F2937] active:scale-[0.99] transition-all disabled:opacity-50 border border-[#111827]"
+                      className="w-full inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl bg-[#111827] text-white font-bold text-sm sm:text-sm shadow-md hover:bg-[#1F2937] active:scale-[0.99] transition-all disabled:opacity-50 border border-[#111827]"
                     >
                       {isSubmitting ? (
                         <>

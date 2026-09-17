@@ -39,7 +39,7 @@ export const ServicesPage: React.FC = () => {
     <div className="space-y-16 sm:space-y-24 pb-16 font-sans">
       {/* Header Banner */}
       <section className="pt-8 sm:pt-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center space-y-4">
-        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-900 text-xs font-semibold uppercase tracking-wider font-mono">
+        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-900 text-sm font-semibold uppercase tracking-wider font-mono">
           <span>Engineering & Solutions</span>
         </div>
         <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-950 tracking-tight max-w-3xl mx-auto">
@@ -68,7 +68,7 @@ export const ServicesPage: React.FC = () => {
                       {iconMap[service.icon] || <Code2 className="w-6 h-6" />}
                     </div>
                     <div>
-                      <span className="text-[11px] font-mono uppercase tracking-wider text-[#8D6D19] font-bold">
+                      <span className="text-sm font-mono uppercase tracking-wider text-[#8D6D19] font-bold">
                         {service.category}
                       </span>
                       <h2 className="text-2xl font-bold text-slate-950">
@@ -83,14 +83,14 @@ export const ServicesPage: React.FC = () => {
 
                   {/* Tech stack pills */}
                   <div className="pt-2">
-                    <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 font-mono">
+                    <div className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 font-mono">
                       Core Technologies
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       {service.technologies.map((tech, idx) => (
                         <span
                           key={idx}
-                          className="px-2.5 py-1 rounded-lg bg-[#F1F2EE] text-slate-800 text-xs font-mono border border-[#E2E5E0]"
+                          className="px-2.5 py-1 rounded-lg bg-[#F1F2EE] text-slate-800 text-sm font-mono border border-[#E2E5E0]"
                         >
                           {tech}
                         </span>
@@ -102,14 +102,14 @@ export const ServicesPage: React.FC = () => {
                   <div className="pt-4 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
                     <button
                       onClick={() => handleOpenInquiry(service.title)}
-                      className="inline-flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl bg-[#111827] text-white font-semibold text-xs shadow-md hover:bg-[#1F2937] hover:scale-[1.02] active:scale-[0.98] transition-all border border-[#111827] whitespace-nowrap"
+                      className="inline-flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl bg-[#111827] text-white font-semibold text-sm shadow-md hover:bg-[#1F2937] hover:scale-[1.02] active:scale-[0.98] transition-all border border-[#111827] whitespace-nowrap"
                     >
                       <FileText className="w-3.5 h-3.5 text-[#D4AF37]" />
                       <span>Inquire About {service.title}</span>
                     </button>
                     <Link
                       to={`/contact?service=${encodeURIComponent(service.title)}`}
-                      className="inline-flex items-center justify-center space-x-1 px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-all border border-transparent whitespace-nowrap"
+                      className="inline-flex items-center justify-center space-x-1 px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-sm transition-all border border-transparent whitespace-nowrap"
                     >
                       <span>Custom Consultation</span>
                       <ArrowRight className="w-3 h-3 text-[#8D6D19]" />
@@ -121,10 +121,10 @@ export const ServicesPage: React.FC = () => {
                 <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-8 lg:gap-12 bg-[#F1F2EE] p-6 sm:p-8 rounded-2xl border border-[#E2E5E0]">
                   {/* What We Build */}
                   <div className="space-y-3">
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#8D6D19] font-mono">
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-[#8D6D19] font-mono">
                       What We Build
                     </h3>
-                    <ul className="space-y-2.5 text-xs text-slate-800 font-medium">
+                    <ul className="space-y-2.5 text-sm text-slate-800 font-medium">
                       {service.builds.map((item, idx) => (
                         <li key={idx} className="flex items-start space-x-2">
                           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0 mt-0.5" />
@@ -136,10 +136,10 @@ export const ServicesPage: React.FC = () => {
 
                   {/* Enterprise Benefits */}
                   <div className="space-y-3">
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-blue-700 font-mono">
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-blue-700 font-mono">
                       Key Outcomes
                     </h3>
-                    <ul className="space-y-2.5 text-xs text-slate-800 font-medium">
+                    <ul className="space-y-2.5 text-sm text-slate-800 font-medium">
                       {service.benefits.map((benefit, idx) => (
                         <li key={idx} className="flex items-start space-x-2">
                           <Zap className="w-3.5 h-3.5 text-[#8D6D19] flex-shrink-0 mt-0.5" />
@@ -158,16 +158,16 @@ export const ServicesPage: React.FC = () => {
       {/* Bottom Consultation Box (Intentional Dark Contrast Section) */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center space-y-6">
         <div className="p-8 sm:p-12 rounded-3xl bg-[#111827] text-white border border-[#1F2937] shadow-2xl space-y-4 max-w-3xl mx-auto">
-          <h3 className="text-2xl font-bold tracking-tight text-white">
+          <h3 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
             Not sure which service fits best?
           </h3>
-          <p className="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto">
+          <p className="text-sm sm:text-sm text-slate-700 dark:text-slate-300 max-w-xl mx-auto">
             Our engineers can review your current technical setup or business goals and recommend the optimal solution architecture.
           </p>
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               to="/contact"
-              className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl bg-[#D4AF37] hover:bg-[#E5C158] text-slate-950 font-bold text-xs shadow-md transition-all"
+              className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl bg-[#D4AF37] hover:bg-[#E5C158] text-slate-950 font-bold text-sm shadow-md transition-all"
             >
               <span>Schedule a Consultation</span>
               <ArrowRight className="w-3.5 h-3.5 text-slate-950" />
@@ -176,7 +176,7 @@ export const ServicesPage: React.FC = () => {
               href={companyConfig.contact.whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto px-6 py-3.5 rounded-xl border border-slate-700 hover:bg-slate-800 text-white font-semibold text-xs transition-colors"
+              className="w-full sm:w-auto px-6 py-3.5 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-800 text-white font-semibold text-sm transition-colors"
             >
               Chat on WhatsApp ({companyConfig.contact.whatsappDisplay})
             </a>

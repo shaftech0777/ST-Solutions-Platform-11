@@ -769,7 +769,7 @@ export const AutomationManager: React.FC = () => {
             {selectedLog.responseBody && (
               <div>
                 <span className="text-xs font-semibold text-slate-500 block mb-1">Response Body:</span>
-                <pre className="p-3 bg-slate-900 text-slate-100 rounded-lg text-xs font-mono overflow-x-auto max-h-40">
+                <pre className="p-3 bg-white dark:bg-slate-900 text-slate-100 rounded-lg text-xs font-mono overflow-x-auto max-h-40">
                   {selectedLog.responseBody}
                 </pre>
               </div>

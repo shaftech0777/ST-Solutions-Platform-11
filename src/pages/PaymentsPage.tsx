@@ -453,20 +453,20 @@ export const PaymentsPage: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="payments-kpi-summary">
         <Card className="p-5 border-border/60 bg-surface">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">Total Recorded</span>
+            <span className="text-sm font-semibold text-text-muted uppercase tracking-wider">Total Recorded</span>
             <div className="w-8 h-8 rounded-lg bg-surface-hover flex items-center justify-center text-text">
               <FileText className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl font-bold text-text">{summary.totalCount}</div>
-            <p className="text-xs text-text-muted mt-1">Total transaction entries in ledger</p>
+            <p className="text-sm text-text-muted mt-1">Total transaction entries in ledger</p>
           </div>
         </Card>
 
         <Card className="p-5 border-emerald-500/20 bg-surface">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-emerald-500 uppercase tracking-wider">Total Collected</span>
+            <span className="text-sm font-semibold text-emerald-500 uppercase tracking-wider">Total Collected</span>
             <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">
               <CheckCircle2 className="w-4 h-4" />
             </div>
@@ -475,13 +475,13 @@ export const PaymentsPage: React.FC = () => {
             <div className="text-2xl font-bold text-text">
               {formatCurrency(summary.totalCollected, "USD")}
             </div>
-            <p className="text-xs text-text-muted mt-1">Settled & approved payments</p>
+            <p className="text-sm text-text-muted mt-1">Settled & approved payments</p>
           </div>
         </Card>
 
         <Card className="p-5 border-amber-500/20 bg-surface">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-amber-500 uppercase tracking-wider">Pending Verification</span>
+            <span className="text-sm font-semibold text-amber-500 uppercase tracking-wider">Pending Verification</span>
             <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-500">
               <Clock className="w-4 h-4" />
             </div>
@@ -490,13 +490,13 @@ export const PaymentsPage: React.FC = () => {
             <div className="text-2xl font-bold text-text">
               {formatCurrency(summary.pendingAmount, "USD")}
             </div>
-            <p className="text-xs text-text-muted mt-1">Awaiting compliance confirmation</p>
+            <p className="text-sm text-text-muted mt-1">Awaiting compliance confirmation</p>
           </div>
         </Card>
 
         <Card className="p-5 border-rose-500/20 bg-surface">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-rose-500 uppercase tracking-wider">Failed / Rejected</span>
+            <span className="text-sm font-semibold text-rose-500 uppercase tracking-wider">Failed / Rejected</span>
             <div className="w-8 h-8 rounded-lg bg-rose-500/10 flex items-center justify-center text-rose-500">
               <XCircle className="w-4 h-4" />
             </div>
@@ -505,7 +505,7 @@ export const PaymentsPage: React.FC = () => {
             <div className="text-2xl font-bold text-text">
               {formatCurrency(summary.failedAmount, "USD")}
             </div>
-            <p className="text-xs text-text-muted mt-1">Declined or refunded records</p>
+            <p className="text-sm text-text-muted mt-1">Declined or refunded records</p>
           </div>
         </Card>
       </div>
@@ -614,11 +614,11 @@ export const PaymentsPage: React.FC = () => {
                     return (
                       <TableRow key={payment.id} className="hover:bg-surface-hover/50 transition-colors">
                         <TableCell>
-                          <div className="font-mono text-xs font-semibold text-text">
+                          <div className="font-mono text-sm font-semibold text-text">
                             {payment.transactionReference || payment.id.slice(0, 13)}
                           </div>
                           {payment.approvalNotes && (
-                            <div className="text-xs text-text-muted truncate max-w-[200px] mt-0.5" title={payment.approvalNotes}>
+                            <div className="text-sm text-text-muted truncate max-w-[200px] mt-0.5" title={payment.approvalNotes}>
                               {payment.approvalNotes}
                             </div>
                           )}
@@ -628,7 +628,7 @@ export const PaymentsPage: React.FC = () => {
                             <Building2 className="w-3.5 h-3.5 text-gold shrink-0" />
                             <span className="truncate max-w-[180px]">{clientName}</span>
                           </div>
-                          <div className="text-xs text-text-muted flex items-center gap-1.5 mt-0.5">
+                          <div className="text-sm text-text-muted flex items-center gap-1.5 mt-0.5">
                             <Briefcase className="w-3 h-3 shrink-0" />
                             <span className="truncate max-w-[180px]">{projectTitle}</span>
                           </div>
@@ -637,19 +637,19 @@ export const PaymentsPage: React.FC = () => {
                           <div className="font-semibold text-sm text-text">
                             {formatCurrency(payment.amount, payment.currency)}
                           </div>
-                          <div className="text-[11px] text-text-muted uppercase tracking-wider">{payment.currency}</div>
+                          <div className="text-sm text-text-muted uppercase tracking-wider">{payment.currency}</div>
                         </TableCell>
                         <TableCell>
-                          <div className="text-xs text-text bg-surface-hover px-2 py-1 rounded inline-block">
+                          <div className="text-sm text-text bg-surface-hover px-2 py-1 rounded inline-block">
                             {(payment.paymentMethod || "WIRE_TRANSFER").replace(/_/g, " ")}
                           </div>
                         </TableCell>
                         <TableCell>{getStatusBadge(payment.paymentStatus)}</TableCell>
                         <TableCell>
-                          <div className="text-xs text-text">
+                          <div className="text-sm text-text">
                             {new Date(payment.createdAt).toLocaleDateString()}
                           </div>
-                          <div className="text-[11px] text-text-muted">
+                          <div className="text-sm text-text-muted">
                             {new Date(payment.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                           </div>
                         </TableCell>
@@ -696,17 +696,17 @@ export const PaymentsPage: React.FC = () => {
                 <Card key={payment.id} className="p-4 border-border/60 bg-surface space-y-3">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <div className="font-mono text-xs font-semibold text-text">
+                      <div className="font-mono text-sm font-semibold text-text">
                         {payment.transactionReference || payment.id.slice(0, 13)}
                       </div>
-                      <div className="text-xs text-text-muted mt-0.5">
+                      <div className="text-sm text-text-muted mt-0.5">
                         {new Date(payment.createdAt).toLocaleDateString()}
                       </div>
                     </div>
                     {getStatusBadge(payment.paymentStatus)}
                   </div>
 
-                  <div className="space-y-1.5 text-xs">
+                  <div className="space-y-1.5 text-sm">
                     <div className="flex items-center gap-1.5 text-text">
                       <Building2 className="w-3.5 h-3.5 text-gold shrink-0" />
                       <span className="font-medium">{clientName}</span>
@@ -722,7 +722,7 @@ export const PaymentsPage: React.FC = () => {
                       <div className="text-base font-bold text-text">
                         {formatCurrency(payment.amount, payment.currency)}
                       </div>
-                      <div className="text-[10px] text-text-muted uppercase">
+                      <div className="text-sm text-text-muted uppercase">
                         {(payment.paymentMethod || "WIRE_TRANSFER").replace(/_/g, " ")}
                       </div>
                     </div>
@@ -766,7 +766,7 @@ export const PaymentsPage: React.FC = () => {
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           {modalError && (
-            <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-xs text-rose-500 flex items-center gap-2">
+            <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-sm text-rose-500 flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{modalError}</span>
             </div>
@@ -889,7 +889,7 @@ export const PaymentsPage: React.FC = () => {
           <div className="space-y-6">
             <div className="flex items-center justify-between p-4 bg-surface-hover/60 rounded-xl border border-border/60">
               <div>
-                <span className="text-xs text-text-muted uppercase tracking-wider">Amount Settled</span>
+                <span className="text-sm text-text-muted uppercase tracking-wider">Amount Settled</span>
                 <div className="text-2xl font-bold text-text mt-0.5">
                   {formatCurrency(selectedPayment.amount, selectedPayment.currency)}
                 </div>
@@ -897,7 +897,7 @@ export const PaymentsPage: React.FC = () => {
               <div>{getStatusBadge(selectedPayment.paymentStatus)}</div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
               <div className="space-y-1">
                 <span className="text-text-muted">Transaction ID:</span>
                 <div className="font-mono text-text break-all font-medium">{selectedPayment.id}</div>
@@ -944,14 +944,14 @@ export const PaymentsPage: React.FC = () => {
 
             {selectedPayment.approvalNotes && (
               <div className="p-3 bg-surface rounded-lg border border-border/60">
-                <span className="text-xs font-semibold text-text-muted block mb-1">Approval / Accounting Notes</span>
-                <p className="text-xs text-text whitespace-pre-wrap">{selectedPayment.approvalNotes}</p>
+                <span className="text-sm font-semibold text-text-muted block mb-1">Approval / Accounting Notes</span>
+                <p className="text-sm text-text whitespace-pre-wrap">{selectedPayment.approvalNotes}</p>
               </div>
             )}
 
             {/* Quick Status Transition Actions */}
             <div className="p-4 bg-surface-hover/40 rounded-xl border border-border/60 space-y-3">
-              <span className="text-xs font-semibold text-text block">Transition Payment Status</span>
+              <span className="text-sm font-semibold text-text block">Transition Payment Status</span>
               <div className="flex flex-wrap gap-2">
                 <Button
                   variant="outline"
@@ -1006,7 +1006,7 @@ export const PaymentsPage: React.FC = () => {
         size="md"
       >
         <div className="space-y-4">
-          <p className="text-xs text-text-muted">
+          <p className="text-sm text-text-muted">
             Are you sure you want to transition the status of payment{" "}
             <span className="font-mono text-text font-semibold">
               {paymentToStatusUpdate?.payment.transactionReference || paymentToStatusUpdate?.payment.id.slice(0, 8)}

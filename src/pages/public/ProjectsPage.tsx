@@ -100,7 +100,7 @@ export const ProjectsPage: React.FC = () => {
     <div className="space-y-12 sm:space-y-20 pb-20 font-sans text-slate-900">
       {/* Header Section */}
       <section className="pt-8 sm:pt-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center space-y-4">
-        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-900 text-xs font-semibold tracking-wide">
+        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-900 text-sm font-semibold tracking-wide">
           <Sparkles className="w-3.5 h-3.5 text-amber-600" />
           <span>PROJECT SHOWCASE: WHAT WE CAN BUILD</span>
         </div>
@@ -113,7 +113,7 @@ export const ProjectsPage: React.FC = () => {
         </p>
 
         {/* Quick Capabilities Highlights */}
-        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 pt-4 text-xs font-medium text-slate-600">
+        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 pt-4 text-sm font-medium text-slate-600">
           <span className="flex items-center space-x-1.5">
             <CheckCircle2 className="w-4 h-4 text-emerald-600" />
             <span>100% Source Code Ownership</span>
@@ -138,9 +138,9 @@ export const ProjectsPage: React.FC = () => {
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                className={`px-3.5 py-1.5 rounded-xl text-sm font-semibold transition-all ${
                   selectedCategory === cat
-                    ? "bg-slate-900 text-white shadow-sm"
+                    ? "bg-white dark:bg-slate-900 text-white shadow-sm"
                     : "bg-[#F1F2EE] text-slate-700 hover:bg-slate-200"
                 }`}
               >
@@ -151,13 +151,13 @@ export const ProjectsPage: React.FC = () => {
 
           {/* Search Input */}
           <div className="relative w-full md:w-72">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400" />
             <input
               type="text"
               placeholder="Search by system or industry..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl bg-[#F8F9F5] border border-[#E2E5E0] focus:outline-none focus:ring-2 focus:ring-amber-500/30 text-slate-900 placeholder:text-slate-400"
+              className="w-full pl-9 pr-3 py-1.5 text-sm rounded-xl bg-[#F8F9F5] border border-[#E2E5E0] focus:outline-none focus:ring-2 focus:ring-amber-500/30 text-slate-900 placeholder:text-slate-500 dark:text-slate-400"
             />
           </div>
         </div>
@@ -175,21 +175,21 @@ export const ProjectsPage: React.FC = () => {
           <div className="p-12 text-center rounded-3xl bg-white border border-rose-200 space-y-4">
             <Layers className="w-10 h-10 mx-auto text-rose-400" />
             <h3 className="text-base font-bold text-slate-900">Showcase Systems Temporarily Unavailable</h3>
-            <p className="text-xs text-slate-500 max-w-md mx-auto">
+            <p className="text-sm text-slate-500 max-w-md mx-auto">
               {error}
             </p>
             <button
               onClick={() => setRefreshTrigger((prev) => prev + 1)}
-              className="px-5 py-2.5 text-xs font-bold text-white bg-slate-900 rounded-xl hover:bg-slate-800 transition-all shadow-sm"
+              className="px-5 py-2.5 text-sm font-bold text-white bg-white dark:bg-slate-900 rounded-xl hover:bg-slate-800 transition-all shadow-sm"
             >
               Retry Loading Showcase
             </button>
           </div>
         ) : projectsList.length === 0 ? (
           <div className="p-12 text-center rounded-3xl bg-white border border-[#E2E5E0] space-y-4">
-            <Layers className="w-10 h-10 mx-auto text-slate-400" />
+            <Layers className="w-10 h-10 mx-auto text-slate-500 dark:text-slate-400" />
             <h3 className="text-base font-bold text-slate-900">No showcase projects match your filter</h3>
-            <p className="text-xs text-slate-500 max-w-md mx-auto">
+            <p className="text-sm text-slate-500 max-w-md mx-auto">
               Try adjusting your search keywords or switch back to All Categories to browse our entire portfolio.
             </p>
             <button
@@ -197,7 +197,7 @@ export const ProjectsPage: React.FC = () => {
                 setSelectedCategory("All");
                 setSearchQuery("");
               }}
-              className="px-4 py-2 text-xs font-bold text-white bg-slate-900 rounded-xl hover:bg-slate-800"
+              className="px-4 py-2 text-sm font-bold text-white bg-white dark:bg-slate-900 rounded-xl hover:bg-slate-800"
             >
               Reset Filters
             </button>
@@ -215,10 +215,10 @@ export const ProjectsPage: React.FC = () => {
 
                   {/* Category & Status */}
                   <div className="flex items-center justify-between">
-                    <span className="px-2.5 py-0.5 rounded-full bg-[#F1F2EE] text-[10px] font-mono font-bold text-slate-800 border border-[#E2E5E0]">
+                    <span className="px-2.5 py-0.5 rounded-full bg-[#F1F2EE] text-sm font-mono font-bold text-slate-800 border border-[#E2E5E0]">
                       {project.category}
                     </span>
-                    <span className="flex items-center space-x-1.5 text-[10px] font-semibold text-emerald-700">
+                    <span className="flex items-center space-x-1.5 text-sm font-semibold text-emerald-700">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                       <span>{project.status}</span>
                     </span>
@@ -229,16 +229,16 @@ export const ProjectsPage: React.FC = () => {
                     <h3 className="text-xl font-bold text-slate-950 group-hover:text-amber-700 transition-colors">
                       {project.title}
                     </h3>
-                    <p className="text-xs text-amber-700 font-medium mt-1">
+                    <p className="text-sm text-amber-700 font-medium mt-1">
                       {project.tagline}
                     </p>
-                    <p className="text-xs text-slate-600 mt-2.5 leading-relaxed line-clamp-3">
+                    <p className="text-sm text-slate-600 mt-2.5 leading-relaxed line-clamp-3">
                       {project.description}
                     </p>
                   </div>
 
                   {/* Target Audience / Solves */}
-                  <div className="p-3 rounded-2xl bg-[#F8F9F5] border border-[#E2E5E0] space-y-1.5 text-[11px]">
+                  <div className="p-3 rounded-2xl bg-[#F8F9F5] border border-[#E2E5E0] space-y-1.5 text-sm">
                     <div className="flex items-start space-x-1.5 text-slate-700">
                       <Target className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
                       <div>
@@ -258,7 +258,7 @@ export const ProjectsPage: React.FC = () => {
                   <div className="grid grid-cols-3 gap-2 pt-1">
                     {project.metrics.map((m, idx) => (
                       <div key={idx} className="bg-[#F1F2EE] p-2 rounded-xl text-center border border-[#E2E5E0]">
-                        <div className="text-xs font-bold text-slate-900 font-mono">{m.value}</div>
+                        <div className="text-sm font-bold text-slate-900 font-mono">{m.value}</div>
                         <div className="text-[9px] text-slate-500 truncate font-medium mt-0.5">{m.label}</div>
                       </div>
                     ))}
@@ -266,10 +266,10 @@ export const ProjectsPage: React.FC = () => {
 
                   {/* Feature Highlights */}
                   <div className="space-y-1 pt-1">
-                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Key Capabilities</div>
+                    <div className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Key Capabilities</div>
                     <div className="space-y-1">
                       {project.features.slice(0, 3).map((feat, idx) => (
-                        <div key={idx} className="flex items-center space-x-1.5 text-[11px] text-slate-700">
+                        <div key={idx} className="flex items-center space-x-1.5 text-sm text-slate-700">
                           <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
                           <span className="truncate">{feat}</span>
                         </div>
@@ -283,7 +283,7 @@ export const ProjectsPage: React.FC = () => {
                   <div className="flex items-center justify-between gap-2">
                     <Link
                       to={`/projects/${project.slug || project.id}`}
-                      className="text-xs font-bold text-slate-700 hover:text-slate-950 transition-colors underline-offset-2 hover:underline inline-flex items-center space-x-1"
+                      className="text-sm font-bold text-slate-700 hover:text-slate-950 transition-colors underline-offset-2 hover:underline inline-flex items-center space-x-1"
                     >
                       <span>View Full Details</span>
                       <ArrowRight className="w-3 h-3 text-amber-600" />
@@ -294,7 +294,7 @@ export const ProjectsPage: React.FC = () => {
                         href={project.liveUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center space-x-1 text-xs font-semibold text-slate-600 hover:text-slate-900"
+                        className="inline-flex items-center space-x-1 text-sm font-semibold text-slate-600 hover:text-slate-900"
                       >
                         <span>Demo Link</span>
                         <ExternalLink className="w-3 h-3" />
@@ -304,7 +304,7 @@ export const ProjectsPage: React.FC = () => {
 
                   <button
                     onClick={() => handleOpenInquiry(project)}
-                    className="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition-all flex items-center justify-center space-x-2 shadow-sm"
+                    className="w-full py-2.5 px-4 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm transition-all flex items-center justify-center space-x-2 shadow-sm"
                   >
                     <span>Request Similar Project</span>
                     <ArrowRight className="w-3.5 h-3.5 text-amber-400" />
@@ -329,10 +329,10 @@ export const ProjectsPage: React.FC = () => {
             {/* Modal Header */}
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <span className="px-3 py-1 rounded-full bg-amber-500/10 text-amber-900 text-xs font-mono font-bold border border-amber-500/30">
+                <span className="px-3 py-1 rounded-full bg-amber-500/10 text-amber-900 text-sm font-mono font-bold border border-amber-500/30">
                   {selectedProject.category}
                 </span>
-                <span className="text-xs text-emerald-700 font-semibold flex items-center space-x-1">
+                <span className="text-sm text-emerald-700 font-semibold flex items-center space-x-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                   <span>{selectedProject.status}</span>
                 </span>
@@ -349,13 +349,13 @@ export const ProjectsPage: React.FC = () => {
             <div>
               <h2 className="text-2xl font-bold text-slate-950">{selectedProject.title}</h2>
               <p className="text-sm font-semibold text-amber-700 mt-1">{selectedProject.tagline}</p>
-              <p className="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed">
+              <p className="text-sm sm:text-sm text-slate-600 mt-3 leading-relaxed">
                 {selectedProject.fullDescription || selectedProject.description}
               </p>
             </div>
 
             {/* Target Audience & Problem Solved */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 rounded-2xl bg-[#F8F9F5] border border-[#E2E5E0] text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 rounded-2xl bg-[#F8F9F5] border border-[#E2E5E0] text-sm">
               <div className="space-y-1">
                 <span className="font-bold text-slate-900 flex items-center space-x-1.5">
                   <Users className="w-3.5 h-3.5 text-amber-600" />
@@ -374,10 +374,10 @@ export const ProjectsPage: React.FC = () => {
 
             {/* Key Features */}
             <div className="space-y-2">
-              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Features &amp; Functional Modules</h4>
+              <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Features &amp; Functional Modules</h4>
               <div className="grid grid-cols-1 gap-2">
                 {selectedProject.features.map((feat, idx) => (
-                  <div key={idx} className="flex items-start space-x-2 text-xs text-slate-700 bg-[#F1F2EE] p-2.5 rounded-xl">
+                  <div key={idx} className="flex items-start space-x-2 text-sm text-slate-700 bg-[#F1F2EE] p-2.5 rounded-xl">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                     <span>{feat}</span>
                   </div>
@@ -388,10 +388,10 @@ export const ProjectsPage: React.FC = () => {
             {/* Business Benefits */}
             {selectedProject.benefits && selectedProject.benefits.length > 0 && (
               <div className="space-y-2">
-                <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Business Benefits</h4>
+                <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Business Benefits</h4>
                 <div className="grid grid-cols-1 gap-1.5">
                   {selectedProject.benefits.map((b, idx) => (
-                    <div key={idx} className="flex items-center space-x-2 text-xs text-slate-700">
+                    <div key={idx} className="flex items-center space-x-2 text-sm text-slate-700">
                       <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
                       <span>{b}</span>
                     </div>
@@ -402,10 +402,10 @@ export const ProjectsPage: React.FC = () => {
 
             {/* Technology Stack */}
             <div className="space-y-2">
-              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Technologies Used</h4>
+              <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Technologies Used</h4>
               <div className="flex flex-wrap gap-1.5">
                 {selectedProject.technologies.map((t, idx) => (
-                  <span key={idx} className="text-[11px] font-mono bg-[#F1F2EE] text-slate-800 px-2.5 py-1 rounded-lg border border-[#E2E5E0]">
+                  <span key={idx} className="text-sm font-mono bg-[#F1F2EE] text-slate-800 px-2.5 py-1 rounded-lg border border-[#E2E5E0]">
                     {t}
                   </span>
                 ))}
@@ -418,7 +418,7 @@ export const ProjectsPage: React.FC = () => {
                 href={companyConfig.contact.whatsappUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl border border-emerald-600/30 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 text-xs font-bold transition-all"
+                className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl border border-emerald-600/30 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 text-sm font-bold transition-all"
               >
                 <MessageCircle className="w-4 h-4 text-emerald-600" />
                 <span>Discuss on WhatsApp</span>
@@ -429,7 +429,7 @@ export const ProjectsPage: React.FC = () => {
                   setSelectedProject(null);
                   handleOpenInquiry(selectedProject);
                 }}
-                className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-md"
+                className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-2.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold transition-all shadow-md"
               >
                 <span>Request a Quote for this Project</span>
                 <ArrowRight className="w-4 h-4 text-amber-400" />

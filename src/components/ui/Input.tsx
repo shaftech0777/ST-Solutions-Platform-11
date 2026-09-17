@@ -23,24 +23,24 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         )}
         <div className="relative flex items-center">
           {leftIcon && (
-            <div className="absolute left-3 text-slate-400 pointer-events-none shrink-0">
+            <div className="absolute left-3 text-slate-500 dark:text-slate-400 pointer-events-none shrink-0">
               {leftIcon}
             </div>
           )}
           <input
             id={inputId}
             ref={ref}
-            className={`w-full rounded-lg text-sm bg-white dark:bg-slate-900/90 text-slate-900 dark:text-slate-100 border transition-all duration-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 ${
+            className={`w-full rounded-lg text-sm bg-white dark:bg-slate-900/90 text-slate-900 dark:text-slate-100 border transition-all duration-200 placeholder:text-slate-500 dark:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 ${
               leftIcon ? "pl-10" : "pl-3.5"
             } ${rightIcon ? "pr-10" : "pr-3.5"} py-2.5 ${
               error
                 ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
-                : "border-slate-300 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-700 focus:border-[#D4AF37]"
+                : "border-slate-300 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-300 dark:hover:border-slate-700 focus:border-[#D4AF37]"
             } ${className}`}
             {...props}
           />
           {rightIcon && (
-            <div className="absolute right-3 text-slate-400 shrink-0">
+            <div className="absolute right-3 text-slate-500 dark:text-slate-400 shrink-0">
               {rightIcon}
             </div>
           )}
@@ -68,7 +68,7 @@ export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputPro
           <button
             type="button"
             onClick={() => setShowPassword((prev) => !prev)}
-            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none p-1"
+            className="text-slate-500 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none p-1"
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -103,10 +103,10 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         <textarea
           id={inputId}
           ref={ref}
-          className={`w-full rounded-lg text-sm bg-white dark:bg-slate-900/90 text-slate-900 dark:text-slate-100 border transition-all duration-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 px-3.5 py-2.5 ${
+          className={`w-full rounded-lg text-sm bg-white dark:bg-slate-900/90 text-slate-900 dark:text-slate-100 border transition-all duration-200 placeholder:text-slate-500 dark:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 px-3.5 py-2.5 ${
             error
               ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
-              : "border-slate-300 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-700 focus:border-[#D4AF37]"
+              : "border-slate-300 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-300 dark:hover:border-slate-700 focus:border-[#D4AF37]"
           } ${className}`}
           {...props}
         />

@@ -44,6 +44,7 @@ interface NavGroup {
 export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse }) => {
   const { currentUser, logout, currentOrganization, currentWorkspace } = useAuth();
   const { canAccess } = usePermission();
+  const { features } = useFeatures();
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -107,31 +108,25 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
 
   return (
     <aside
-      className={`fixed top-0 left-0 bottom-0 z-30 bg-slate-950 text-slate-200 border-r border-slate-800/90 flex flex-col transition-all duration-300 ease-in-out ${
+      className={`fixed top-0 left-0 bottom-0 z-30 bg-white dark:bg-slate-950 text-slate-600 dark:text-slate-200 border-r border-slate-200 dark:border-slate-800/90 flex flex-col transition-all duration-300 ease-in-out ${
         isCollapsed ? "w-20" : "w-64"
       }`}
     >
+      
       {/* Brand Header */}
-      <div className="h-16 px-4 flex items-center justify-between border-b border-slate-800/80 shrink-0">
+      <div className="h-16 px-4 flex items-center justify-between border-b border-slate-200 dark:border-slate-800/80 shrink-0">
         <div className="flex items-center gap-3 overflow-hidden">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#D4AF37] to-[#B88E20] text-black font-black flex items-center justify-center text-sm shadow-lg shadow-amber-500/10 shrink-0 border border-amber-300/40 select-none">
-            ST
-          </div>
+          <img src="/favicon.svg" alt="ST-Solutions Logo" className="w-8 h-8 shrink-0" />
           {!isCollapsed && (
-            <div className="flex flex-col min-w-0">
-              <span className="font-bold text-sm tracking-tight text-white leading-tight truncate">
-                ST-SOLUTIONS
-              </span>
-              <span className="text-xs text-[#D4AF37] font-medium font-mono truncate">
-                Shaf Tech Solutions
-              </span>
-            </div>
+            <img src="/st-solutions-logo.svg" alt="ST-Solutions" className="h-6 dark:hidden" />
+          )}
+          {!isCollapsed && (
+            <img src="/st-solutions-logo-dark.svg" alt="ST-Solutions" className="h-6 hidden dark:block" />
           )}
         </div>
-
         <button
           onClick={onToggleCollapse}
-          className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-900 transition-colors hidden lg:flex items-center justify-center"
+          className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors hidden lg:flex items-center justify-center"
           title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
@@ -142,16 +137,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
       {/* Tenant Context Chip (When Expanded) */}
       {!isCollapsed && (
         <div className="px-3 pt-3 pb-1 shrink-0">
-          <div className="px-3 py-2 rounded-xl bg-slate-900/90 border border-slate-800/80 flex items-center justify-between">
+          <div className="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800/80 flex items-center justify-between">
             <div className="min-w-0">
-              <div className="text-[9px] font-mono uppercase tracking-wider text-slate-400 font-bold">
+              <div className="text-[9px] font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 font-bold">
                 Organization
               </div>
-              <div className="text-xs font-semibold text-white truncate">
+              <div className="text-xs font-semibold text-slate-900 dark:text-white truncate">
                 {currentOrganization?.name || "Shaf Tech Solutions"}
               </div>
               {currentWorkspace && (
-                <div className="text-[10px] text-slate-400 truncate">
+                <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
                   ↳ {currentWorkspace.name}
                 </div>
               )}
@@ -168,7 +163,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
         {filteredNavGroups.map((group, gIdx) => (
           <div key={gIdx} className="space-y-1">
             {!isCollapsed && (
-              <p className="px-3 text-xs font-bold text-slate-400 font-mono mb-1.5">
+              <p className="px-3 text-sm font-bold text-slate-500 dark:text-slate-400 font-sans mb-1.5">
                 {group.title}
               </p>
             )}
@@ -180,10 +175,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
                   to={item.path}
                   end={item.path === "/"}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all group relative ${
-                      isActive
-                        ? "bg-gradient-to-r from-[#D4AF37]/20 via-[#D4AF37]/10 to-transparent text-[#D4AF37] border-l-2 border-[#D4AF37] shadow-sm"
-                        : "text-slate-400 hover:text-slate-100 hover:bg-slate-900/90"
+                    `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all group relative ${
+                      isActive ? "bg-[#D4AF37]/10 dark:bg-gradient-to-r dark:from-[#D4AF37]/20 dark:via-[#D4AF37]/10 dark:to-transparent text-[#B88E20] dark:text-[#D4AF37] border-l-2 border-[#D4AF37]" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900/90"
                     } ${isCollapsed ? "justify-center px-0" : ""}`
                   }
                   title={isCollapsed ? item.label : undefined}
@@ -203,20 +196,20 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
       </nav>
 
       {/* Footer User Profile & Logout */}
-      <div className="p-3 border-t border-slate-800/80 bg-slate-950/90 shrink-0">
+      <div className="p-3 border-t border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-950/90 shrink-0">
         <div className={`flex items-center gap-3 ${isCollapsed ? "justify-center" : ""}`}>
           <Avatar name={currentUser?.profile?.fullName || currentUser?.email} size="sm" />
           {!isCollapsed && (
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-white truncate">{currentUser?.profile?.fullName || currentUser?.email?.split("@")[0] || "User"}</p>
-              <p className="text-xs text-slate-400 truncate font-mono">{currentUser?.email}</p>
+              <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{currentUser?.profile?.fullName || currentUser?.email?.split("@")[0] || "User"}</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400 truncate font-mono">{currentUser?.email}</p>
             </div>
           )}
           {!isCollapsed && (
             <button
               id="sidebar-signout-btn"
               onClick={() => setShowLogoutModal(true)}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-900 transition-colors"
+              className="p-1.5 rounded-lg text-slate-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-slate-800 transition-colors"
               title="Sign out"
               aria-label="Sign out"
             >
@@ -229,14 +222,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
       {/* Logout Confirmation Modal */}
       {showLogoutModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs">
-          <div className="w-full max-w-sm rounded-xl border border-slate-800 bg-slate-900 p-6 shadow-2xl">
+          <div className="w-full max-w-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-2xl">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 shrink-0">
                 <LogOut className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-white">Confirm Log Out</h3>
-                <p className="text-xs text-slate-400">Are you sure you want to log out?</p>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white">Confirm Log Out</h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400">Are you sure you want to log out?</p>
               </div>
             </div>
 
@@ -246,7 +239,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
                 type="button"
                 disabled={isLoggingOut}
                 onClick={() => setShowLogoutModal(false)}
-                className="px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-800 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
               >
                 Cancel
               </button>
@@ -255,7 +248,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
                 type="button"
                 disabled={isLoggingOut}
                 onClick={handleConfirmLogout}
-                className="px-4 py-2 text-xs font-semibold text-white bg-red-600 hover:bg-red-500 active:bg-red-700 rounded-lg transition-colors flex items-center gap-2 shadow-sm"
+                className="px-4 py-2 text-sm font-semibold text-white bg-red-600 hover:bg-red-500 active:bg-red-700 rounded-lg transition-colors flex items-center gap-2 shadow-sm"
               >
                 {isLoggingOut ? "Logging out..." : "Log out"}
               </button>

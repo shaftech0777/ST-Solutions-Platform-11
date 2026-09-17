@@ -282,7 +282,7 @@ export const StartProjectPage: React.FC = () => {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         {/* Page Top Header */}
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-900 text-xs font-mono font-bold uppercase tracking-wider">
+          <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-900 text-sm font-mono font-bold uppercase tracking-wider">
             <Sparkles className="w-3.5 h-3.5 text-[#B88E20]" />
             <span>Interactive Project Architect</span>
           </div>
@@ -297,7 +297,7 @@ export const StartProjectPage: React.FC = () => {
         {/* Step Indicator Ribbon */}
         {currentStep <= 7 && (
           <div className="bg-white p-4 sm:p-5 rounded-2xl border border-[#E2E5E0] shadow-sm">
-            <div className="flex items-center justify-between text-xs font-mono mb-2.5">
+            <div className="flex items-center justify-between text-sm font-mono mb-2.5">
               <div className="flex items-center space-x-2">
                 <span className="w-2 h-2 rounded-full bg-[#D4AF37]" />
                 <span className="font-bold text-slate-950">
@@ -326,7 +326,7 @@ export const StartProjectPage: React.FC = () => {
 
         {/* Error Alert if any */}
         {errorMessage && (
-          <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-700 text-xs sm:text-sm flex items-center space-x-2.5 animate-fade-in font-medium">
+          <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-700 text-sm sm:text-sm flex items-center space-x-2.5 animate-fade-in font-medium">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
             <span>{errorMessage}</span>
           </div>
@@ -338,14 +338,14 @@ export const StartProjectPage: React.FC = () => {
           {currentStep === 1 && (
             <div className="space-y-6 animate-fade-in">
               <div className="space-y-1.5">
-                <div className="flex items-center space-x-2 text-xs font-mono font-bold text-[#B88E20] uppercase">
+                <div className="flex items-center space-x-2 text-sm font-mono font-bold text-[#B88E20] uppercase">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]" />
                   <span>Step 01 • Technology Scope</span>
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
                   What are you looking to build?
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-600">
+                <p className="text-sm sm:text-sm text-slate-600">
                   Select one or more technologies and platforms matching your project vision.
                 </p>
               </div>
@@ -385,7 +385,7 @@ export const StartProjectPage: React.FC = () => {
                         <div className="font-bold text-sm text-slate-950">
                           {opt.label}
                         </div>
-                        <div className="text-xs text-slate-600 mt-1 leading-snug">
+                        <div className="text-sm text-slate-600 mt-1 leading-snug">
                           {opt.desc}
                         </div>
                       </div>
@@ -400,21 +400,21 @@ export const StartProjectPage: React.FC = () => {
           {currentStep === 2 && (
             <div className="space-y-6 animate-fade-in max-w-2xl">
               <div className="space-y-1.5">
-                <div className="flex items-center space-x-2 text-xs font-mono font-bold text-[#B88E20] uppercase">
+                <div className="flex items-center space-x-2 text-sm font-mono font-bold text-[#B88E20] uppercase">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]" />
                   <span>Step 02 • Business Context</span>
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
                   Tell us about your business
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-600">
+                <p className="text-sm sm:text-sm text-slate-600">
                   Help us tailor the system architecture to your organization and industry regulations.
                 </p>
               </div>
 
               <div className="space-y-5">
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-2 font-mono">
+                  <label className="block text-sm font-bold text-slate-800 uppercase tracking-wider mb-2 font-mono">
                     Business / Brand Name (Optional)
                   </label>
                   <input
@@ -427,7 +427,7 @@ export const StartProjectPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-2 font-mono">
+                  <label className="block text-sm font-bold text-slate-800 uppercase tracking-wider mb-2 font-mono">
                     Industry Sector
                   </label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
@@ -438,7 +438,7 @@ export const StartProjectPage: React.FC = () => {
                           key={ind}
                           type="button"
                           onClick={() => setFormData({ ...formData, industry: ind })}
-                          className={`p-3 rounded-xl border text-xs font-semibold text-center transition-all ${
+                          className={`p-3 rounded-xl border text-sm font-semibold text-center transition-all ${
                             isSelected
                               ? "bg-[#D4AF37] text-slate-950 font-bold border-[#D4AF37] shadow-sm"
                               : "bg-white border-[#E2E5E0] text-slate-800 hover:bg-[#F1F2EE]"
@@ -458,14 +458,14 @@ export const StartProjectPage: React.FC = () => {
           {currentStep === 3 && (
             <div className="space-y-6 animate-fade-in">
               <div className="space-y-1.5">
-                <div className="flex items-center space-x-2 text-xs font-mono font-bold text-[#B88E20] uppercase">
+                <div className="flex items-center space-x-2 text-sm font-mono font-bold text-[#B88E20] uppercase">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]" />
                   <span>Step 03 • Business Objectives</span>
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
                   What do you want to achieve?
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-600">
+                <p className="text-sm sm:text-sm text-slate-600">
                   Select the primary measurable outcomes driving this technology initiative.
                 </p>
               </div>
@@ -499,7 +499,7 @@ export const StartProjectPage: React.FC = () => {
                         <span className="font-bold text-sm text-slate-950 block">
                           {goal.label}
                         </span>
-                        <span className="text-xs text-slate-600 mt-0.5 block leading-snug">
+                        <span className="text-sm text-slate-600 mt-0.5 block leading-snug">
                           {goal.desc}
                         </span>
                       </div>
@@ -514,14 +514,14 @@ export const StartProjectPage: React.FC = () => {
           {currentStep === 4 && (
             <div className="space-y-6 animate-fade-in">
               <div className="space-y-1.5">
-                <div className="flex items-center space-x-2 text-xs font-mono font-bold text-[#B88E20] uppercase">
+                <div className="flex items-center space-x-2 text-sm font-mono font-bold text-[#B88E20] uppercase">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]" />
                   <span>Step 04 • Features & Specifications</span>
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
                   Required Modules & Capabilities
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-600">
+                <p className="text-sm sm:text-sm text-slate-600">
                   Select core modules and detail any custom integrations or database specifications.
                 </p>
               </div>
@@ -548,7 +548,7 @@ export const StartProjectPage: React.FC = () => {
                       >
                         <Icon className="w-3.5 h-3.5" />
                       </div>
-                      <span className="text-xs font-semibold text-slate-950 truncate">
+                      <span className="text-sm font-semibold text-slate-950 truncate">
                         {feat.label}
                       </span>
                     </button>
@@ -558,7 +558,7 @@ export const StartProjectPage: React.FC = () => {
 
               {/* Textarea for Custom Specifications */}
               <div className="pt-3 border-t border-[#E2E5E0] space-y-2">
-                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider font-mono">
+                <label className="block text-sm font-bold text-slate-800 uppercase tracking-wider font-mono">
                   Additional Specifications / Notes (Optional)
                 </label>
                 <textarea
@@ -576,14 +576,14 @@ export const StartProjectPage: React.FC = () => {
           {currentStep === 5 && (
             <div className="space-y-6 animate-fade-in">
               <div className="space-y-1.5">
-                <div className="flex items-center space-x-2 text-xs font-mono font-bold text-[#B88E20] uppercase">
+                <div className="flex items-center space-x-2 text-sm font-mono font-bold text-[#B88E20] uppercase">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]" />
                   <span>Step 05 • Project Quality & Scope Level</span>
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
                   How ambitious should we make it?
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-600">
+                <p className="text-sm sm:text-sm text-slate-600">
                   Select the level of depth, customization, and engineering sophistication you are looking for.
                 </p>
               </div>
@@ -604,7 +604,7 @@ export const StartProjectPage: React.FC = () => {
                       <div className="space-y-2.5">
                         <div className="flex items-center justify-between">
                           <span
-                            className={`text-[10px] font-mono font-bold uppercase px-2.5 py-1 rounded-full ${
+                            className={`text-sm font-mono font-bold uppercase px-2.5 py-1 rounded-full ${
                               isSelected
                                 ? "bg-[#D4AF37] text-slate-950"
                                 : "bg-[#F1F2EE] text-slate-700 border border-[#E2E5E0]"
@@ -623,7 +623,7 @@ export const StartProjectPage: React.FC = () => {
                           <h3 className="text-lg font-bold text-slate-950">
                             {lvl.title}
                           </h3>
-                          <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                          <p className="text-sm text-slate-600 mt-1 leading-relaxed">
                             {lvl.desc}
                           </p>
                         </div>
@@ -631,7 +631,7 @@ export const StartProjectPage: React.FC = () => {
 
                       <div className="pt-2 border-t border-[#E2E5E0]/70 space-y-1.5">
                         {lvl.features.map((f, idx) => (
-                          <div key={idx} className="flex items-center space-x-1.5 text-[11px] text-slate-700">
+                          <div key={idx} className="flex items-center space-x-1.5 text-sm text-slate-700">
                             <CheckCircle2 className="w-3.5 h-3.5 text-[#B88E20] flex-shrink-0" />
                             <span>{f}</span>
                           </div>
@@ -643,7 +643,7 @@ export const StartProjectPage: React.FC = () => {
               </div>
 
               {/* Informational Callout */}
-              <div className="p-4 rounded-2xl bg-[#F1F2EE] border border-[#E2E5E0] flex items-center space-x-3 text-xs text-slate-700">
+              <div className="p-4 rounded-2xl bg-[#F1F2EE] border border-[#E2E5E0] flex items-center space-x-3 text-sm text-slate-700">
                 <Shield className="w-4 h-4 text-[#B88E20] flex-shrink-0" />
                 <span>
                   These levels reflect architectural depth and custom engineering. Every solution is delivered with 100% genuine code ownership.
@@ -656,21 +656,21 @@ export const StartProjectPage: React.FC = () => {
           {currentStep === 6 && (
             <div className="space-y-8 animate-fade-in max-w-2xl">
               <div className="space-y-1.5">
-                <div className="flex items-center space-x-2 text-xs font-mono font-bold text-[#B88E20] uppercase">
+                <div className="flex items-center space-x-2 text-sm font-mono font-bold text-[#B88E20] uppercase">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]" />
                   <span>Step 06 • Timeline & Budget</span>
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
                   Timeline & Budget Preferences
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-600">
+                <p className="text-sm sm:text-sm text-slate-600">
                   Provide your target schedule and optional budget estimate.
                 </p>
               </div>
 
               {/* Timeline Selection */}
               <div className="space-y-3">
-                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider font-mono">
+                <label className="block text-sm font-bold text-slate-800 uppercase tracking-wider font-mono">
                   Expected Timeline
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -688,10 +688,10 @@ export const StartProjectPage: React.FC = () => {
                         }`}
                       >
                         <div>
-                          <div className="font-bold text-xs sm:text-sm text-slate-950">
+                          <div className="font-bold text-sm sm:text-sm text-slate-950">
                             {t.label}
                           </div>
-                          <div className="text-[11px] text-slate-600 mt-0.5">
+                          <div className="text-sm text-slate-600 mt-0.5">
                             {t.desc}
                           </div>
                         </div>
@@ -705,10 +705,10 @@ export const StartProjectPage: React.FC = () => {
               {/* User Budget Section */}
               <div className="space-y-4 pt-4 border-t border-[#E2E5E0]">
                 <div className="space-y-1">
-                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider font-mono">
+                  <label className="block text-sm font-bold text-slate-800 uppercase tracking-wider font-mono">
                     Do you already have a budget in mind?
                   </label>
-                  <p className="text-xs text-slate-600">
+                  <p className="text-sm text-slate-600">
                     You can specify your estimated budget in any currency, or choose to discuss it during technical review.
                   </p>
                 </div>
@@ -717,7 +717,7 @@ export const StartProjectPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, budgetKnown: true })}
-                    className={`p-4 rounded-2xl border text-center font-bold text-xs sm:text-sm transition-all ${
+                    className={`p-4 rounded-2xl border text-center font-bold text-sm sm:text-sm transition-all ${
                       formData.budgetKnown
                         ? "bg-[#D4AF37] text-slate-950 border-[#D4AF37] shadow-sm"
                         : "bg-white border-[#E2E5E0] text-slate-700 hover:bg-[#F1F2EE]"
@@ -735,7 +735,7 @@ export const StartProjectPage: React.FC = () => {
                         budgetAmount: "",
                         budget: "Not decided yet" })
                     }
-                    className={`p-4 rounded-2xl border text-center font-bold text-xs sm:text-sm transition-all ${
+                    className={`p-4 rounded-2xl border text-center font-bold text-sm sm:text-sm transition-all ${
                       !formData.budgetKnown
                         ? "bg-[#111827] text-white border-[#111827] shadow-sm"
                         : "bg-white border-[#E2E5E0] text-slate-700 hover:bg-[#F1F2EE]"
@@ -748,14 +748,14 @@ export const StartProjectPage: React.FC = () => {
                 {/* If Yes: Show Amount Input & Currency Selector */}
                 {formData.budgetKnown && (
                   <div className="p-4 rounded-2xl bg-[#F1F2EE] border border-[#E2E5E0] space-y-3 animate-fade-in">
-                    <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider font-mono">
+                    <label className="block text-sm font-bold text-slate-800 uppercase tracking-wider font-mono">
                       Approximate Budget Amount
                     </label>
                     <div className="flex items-center gap-2">
                       <select
                         value={formData.budgetCurrency || "PKR"}
                         onChange={(e) => setFormData({ ...formData, budgetCurrency: e.target.value })}
-                        className="px-3 py-3 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 font-mono font-bold text-xs outline-none focus:border-[#D4AF37]"
+                        className="px-3 py-3 rounded-xl border border-[#E2E5E0] bg-white text-slate-950 font-mono font-bold text-sm outline-none focus:border-[#D4AF37]"
                       >
                         {currencyOptions.map((c) => (
                           <option key={c} value={c}>
@@ -776,7 +776,7 @@ export const StartProjectPage: React.FC = () => {
                 )}
 
                 {/* Pricing Notice */}
-                <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 text-xs flex items-start space-x-2.5">
+                <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 text-sm flex items-start space-x-2.5">
                   <Sparkles className="w-4 h-4 text-[#B88E20] flex-shrink-0 mt-0.5" />
                   <div>
                     <span className="font-bold block">Pricing is negotiable</span>
@@ -793,21 +793,21 @@ export const StartProjectPage: React.FC = () => {
           {currentStep === 7 && (
             <div className="space-y-6 animate-fade-in max-w-xl">
               <div className="space-y-1.5">
-                <div className="flex items-center space-x-2 text-xs font-mono font-bold text-[#B88E20] uppercase">
+                <div className="flex items-center space-x-2 text-sm font-mono font-bold text-[#B88E20] uppercase">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]" />
                   <span>Step 07 • Contact Details</span>
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
                   Your Contact Details
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-600">
+                <p className="text-sm sm:text-sm text-slate-600">
                   Provide your primary contact information for technical consultation.
                 </p>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5 font-mono">
+                  <label className="block text-sm font-bold text-slate-800 uppercase tracking-wider mb-1.5 font-mono">
                     Your Full Name *
                   </label>
                   <input
@@ -821,7 +821,7 @@ export const StartProjectPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5 font-mono">
+                  <label className="block text-sm font-bold text-slate-800 uppercase tracking-wider mb-1.5 font-mono">
                     Email Address *
                   </label>
                   <input
@@ -835,7 +835,7 @@ export const StartProjectPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5 font-mono">
+                  <label className="block text-sm font-bold text-slate-800 uppercase tracking-wider mb-1.5 font-mono">
                     WhatsApp Number *
                   </label>
                   <input
@@ -849,7 +849,7 @@ export const StartProjectPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5 font-mono">
+                  <label className="block text-sm font-bold text-slate-800 uppercase tracking-wider mb-1.5 font-mono">
                     Direct Phone Number (Optional)
                   </label>
                   <input
@@ -862,7 +862,7 @@ export const StartProjectPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5 font-mono">
+                  <label className="block text-sm font-bold text-slate-800 uppercase tracking-wider mb-1.5 font-mono">
                     Company / Organization (Optional)
                   </label>
                   <input
@@ -881,14 +881,14 @@ export const StartProjectPage: React.FC = () => {
           {currentStep === 8 && (
             <div className="space-y-8 animate-fade-in">
               <div className="space-y-2 text-center sm:text-left">
-                <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 text-xs font-mono font-bold uppercase">
+                <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 text-sm font-mono font-bold uppercase">
                   <CheckCheck className="w-3.5 h-3.5" />
                   <span>Project Brief Generated</span>
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
                   Project Brief & Review
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-600">
+                <p className="text-sm sm:text-sm text-slate-600">
                   Review your project specifications below. Everything is compiled and ready to dispatch to ST-Solutions.
                 </p>
               </div>
@@ -898,14 +898,14 @@ export const StartProjectPage: React.FC = () => {
                 <div className="flex items-center justify-between border-b border-[#E2E5E0] pb-4">
                   <div className="flex items-center space-x-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#D4AF37]" />
-                    <span className="font-mono font-bold text-xs uppercase tracking-wider text-slate-900">
+                    <span className="font-mono font-bold text-sm uppercase tracking-wider text-slate-900">
                       ST-Solutions Intake Specification
                     </span>
                   </div>
                   <button
                     type="button"
                     onClick={() => setCurrentStep(1)}
-                    className="text-xs font-bold text-[#B88E20] hover:underline flex items-center space-x-1"
+                    className="text-sm font-bold text-[#B88E20] hover:underline flex items-center space-x-1"
                   >
                     <span>Edit Project</span>
                     <ArrowRight className="w-3 h-3 text-[#B88E20]" />
@@ -916,7 +916,7 @@ export const StartProjectPage: React.FC = () => {
                   {/* Left Column */}
                   <div className="space-y-4">
                     <div className="p-4 rounded-2xl bg-[#F1F2EE] border border-[#E2E5E0] space-y-1">
-                      <span className="text-[10px] font-mono font-bold uppercase text-slate-500">
+                      <span className="text-sm font-mono font-bold uppercase text-slate-500">
                         Project Type
                       </span>
                       <div className="text-sm font-bold text-slate-950">
@@ -925,7 +925,7 @@ export const StartProjectPage: React.FC = () => {
                     </div>
 
                     <div className="p-4 rounded-2xl bg-[#F1F2EE] border border-[#E2E5E0] space-y-1">
-                      <span className="text-[10px] font-mono font-bold uppercase text-slate-500">
+                      <span className="text-sm font-mono font-bold uppercase text-slate-500">
                         Industry & Brand
                       </span>
                       <div className="text-sm font-bold text-slate-950">
@@ -935,19 +935,19 @@ export const StartProjectPage: React.FC = () => {
                     </div>
 
                     <div className="p-4 rounded-2xl bg-[#F1F2EE] border border-[#E2E5E0] space-y-1">
-                      <span className="text-[10px] font-mono font-bold uppercase text-slate-500">
+                      <span className="text-sm font-mono font-bold uppercase text-slate-500">
                         Primary Goals
                       </span>
-                      <div className="text-xs font-semibold text-slate-900">
+                      <div className="text-sm font-semibold text-slate-900">
                         {formData.goals.length > 0 ? formData.goals.join(", ") : "Standard business expansion"}
                       </div>
                     </div>
 
                     <div className="p-4 rounded-2xl bg-[#F1F2EE] border border-[#E2E5E0] space-y-1">
-                      <span className="text-[10px] font-mono font-bold uppercase text-slate-500">
+                      <span className="text-sm font-mono font-bold uppercase text-slate-500">
                         Required Features ({formData.features.length})
                       </span>
-                      <div className="text-xs font-semibold text-slate-900">
+                      <div className="text-sm font-semibold text-slate-900">
                         {formData.features.length > 0 ? formData.features.join(", ") : "Core feature set"}
                       </div>
                     </div>
@@ -956,7 +956,7 @@ export const StartProjectPage: React.FC = () => {
                   {/* Right Column */}
                   <div className="space-y-4">
                     <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-1">
-                      <span className="text-[10px] font-mono font-bold uppercase text-amber-900">
+                      <span className="text-sm font-mono font-bold uppercase text-amber-900">
                         Quality Level
                       </span>
                       <div className="text-sm font-extrabold text-slate-950 flex items-center space-x-1.5">
@@ -966,7 +966,7 @@ export const StartProjectPage: React.FC = () => {
                     </div>
 
                     <div className="p-4 rounded-2xl bg-[#F1F2EE] border border-[#E2E5E0] space-y-1">
-                      <span className="text-[10px] font-mono font-bold uppercase text-slate-500">
+                      <span className="text-sm font-mono font-bold uppercase text-slate-500">
                         Timeline
                       </span>
                       <div className="text-sm font-bold text-slate-950">
@@ -975,26 +975,26 @@ export const StartProjectPage: React.FC = () => {
                     </div>
 
                     <div className="p-4 rounded-2xl bg-[#F1F2EE] border border-[#E2E5E0] space-y-1">
-                      <span className="text-[10px] font-mono font-bold uppercase text-slate-500">
+                      <span className="text-sm font-mono font-bold uppercase text-slate-500">
                         Estimated Budget
                       </span>
                       <div className="text-sm font-bold text-slate-950">
                         {resolvedBudget}
                       </div>
-                      <div className="text-[10px] text-slate-500 font-medium">
+                      <div className="text-sm text-slate-500 font-medium">
                         Pricing: Negotiable (after technical review)
                       </div>
                     </div>
 
                     <div className="p-4 rounded-2xl bg-[#F1F2EE] border border-[#E2E5E0] space-y-1">
-                      <span className="text-[10px] font-mono font-bold uppercase text-slate-500">
+                      <span className="text-sm font-mono font-bold uppercase text-slate-500">
                         Contact Person
                       </span>
-                      <div className="text-xs font-bold text-slate-950">
+                      <div className="text-sm font-bold text-slate-950">
                         {formData.fullName} ({formData.email})
                       </div>
                       {formData.phoneNumber && (
-                        <div className="text-[11px] text-slate-600">
+                        <div className="text-sm text-slate-600">
                           {formData.phoneNumber}
                         </div>
                       )}
@@ -1005,12 +1005,12 @@ export const StartProjectPage: React.FC = () => {
 
               {/* Text Preview Box */}
               <div className="space-y-2">
-                <div className="text-xs font-mono font-bold text-slate-700 uppercase tracking-wider flex items-center justify-between">
+                <div className="text-sm font-mono font-bold text-slate-700 uppercase tracking-wider flex items-center justify-between">
                   <span>Structured Inquiry Message</span>
                   <span className="text-slate-500">Ready to send</span>
                 </div>
-                <div className="bg-[#111827] text-slate-100 rounded-2xl p-5 font-mono text-xs leading-relaxed border border-[#1F2937] shadow-inner max-h-48 overflow-y-auto">
-                  <pre className="whitespace-pre-wrap font-mono text-xs leading-relaxed text-slate-200">
+                <div className="bg-[#111827] text-slate-100 rounded-2xl p-5 font-mono text-sm leading-relaxed border border-[#1F2937] shadow-inner max-h-48 overflow-y-auto">
+                  <pre className="whitespace-pre-wrap font-mono text-sm leading-relaxed text-slate-800 dark:text-slate-200">
                     {generatedMessage}
                   </pre>
                 </div>
@@ -1018,7 +1018,7 @@ export const StartProjectPage: React.FC = () => {
 
               {/* Contact Method Cards (Part 18) */}
               <div className="space-y-3">
-                <div className="text-xs font-mono font-bold uppercase tracking-wider text-slate-800">
+                <div className="text-sm font-mono font-bold uppercase tracking-wider text-slate-800">
                   Choose Your Preferred Contact Method
                 </div>
 
@@ -1029,21 +1029,21 @@ export const StartProjectPage: React.FC = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={handleDirectApiSubmit}
-                    className="p-5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-md flex flex-col justify-between space-y-4 transition-all hover:scale-[1.02] active:scale-[0.98] group"
+                    className="p-5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm sm:text-sm shadow-md flex flex-col justify-between space-y-4 transition-all hover:scale-[1.02] active:scale-[0.98] group"
                   >
                     <div>
                       <div className="flex items-center justify-between">
                         <MessageCircle className="w-6 h-6 text-white" />
-                        <span className="text-[10px] font-mono uppercase bg-white/20 px-2 py-0.5 rounded-full">
+                        <span className="text-sm font-mono uppercase bg-white/20 px-2 py-0.5 rounded-full">
                           Fastest
                         </span>
                       </div>
                       <div className="text-base font-extrabold mt-3">WhatsApp</div>
-                      <div className="text-[11px] text-emerald-100 font-normal mt-0.5">
+                      <div className="text-sm text-emerald-100 font-normal mt-0.5">
                         Instant engineering chat
                       </div>
                     </div>
-                    <div className="inline-flex items-center space-x-1.5 text-xs font-bold pt-2 border-t border-emerald-500/40">
+                    <div className="inline-flex items-center space-x-1.5 text-sm font-bold pt-2 border-t border-emerald-500/40">
                       <span>Continue with WhatsApp</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </div>
@@ -1053,21 +1053,21 @@ export const StartProjectPage: React.FC = () => {
                   <a
                     href={mailtoUrl}
                     onClick={handleDirectApiSubmit}
-                    className="p-5 rounded-2xl bg-[#111827] hover:bg-[#1F2937] text-white font-bold text-xs sm:text-sm border border-[#111827] shadow-md flex flex-col justify-between space-y-4 transition-all hover:scale-[1.02] active:scale-[0.98] group"
+                    className="p-5 rounded-2xl bg-[#111827] hover:bg-[#1F2937] text-white font-bold text-sm sm:text-sm border border-[#111827] shadow-md flex flex-col justify-between space-y-4 transition-all hover:scale-[1.02] active:scale-[0.98] group"
                   >
                     <div>
                       <div className="flex items-center justify-between">
                         <Mail className="w-6 h-6 text-[#D4AF37]" />
-                        <span className="text-[10px] font-mono uppercase bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full">
+                        <span className="text-sm font-mono uppercase bg-slate-800 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded-full">
                           Formal
                         </span>
                       </div>
                       <div className="text-base font-extrabold mt-3">Email</div>
-                      <div className="text-[11px] text-slate-300 font-normal mt-0.5">
+                      <div className="text-sm text-slate-700 dark:text-slate-300 font-normal mt-0.5">
                         Detailed project brief
                       </div>
                     </div>
-                    <div className="inline-flex items-center space-x-1.5 text-xs font-bold pt-2 border-t border-slate-700 text-[#D4AF37]">
+                    <div className="inline-flex items-center space-x-1.5 text-sm font-bold pt-2 border-t border-slate-300 dark:border-slate-700 text-[#D4AF37]">
                       <span>Continue with Email</span>
                       <ArrowRight className="w-3.5 h-3.5 text-[#D4AF37]" />
                     </div>
@@ -1077,21 +1077,21 @@ export const StartProjectPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={handleCopyMessage}
-                    className="p-5 rounded-2xl bg-white hover:bg-[#F1F2EE] text-slate-950 font-bold text-xs sm:text-sm border border-[#E2E5E0] shadow-sm flex flex-col justify-between space-y-4 transition-all text-left group"
+                    className="p-5 rounded-2xl bg-white hover:bg-[#F1F2EE] text-slate-950 font-bold text-sm sm:text-sm border border-[#E2E5E0] shadow-sm flex flex-col justify-between space-y-4 transition-all text-left group"
                   >
                     <div>
                       <div className="flex items-center justify-between">
                         <Copy className="w-6 h-6 text-slate-700" />
-                        <span className="text-[10px] font-mono uppercase bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+                        <span className="text-sm font-mono uppercase bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
                           Clipboard
                         </span>
                       </div>
                       <div className="text-base font-extrabold mt-3">Copy Brief</div>
-                      <div className="text-[11px] text-slate-600 font-normal mt-0.5">
+                      <div className="text-sm text-slate-600 font-normal mt-0.5">
                         {copied ? "Project brief copied!" : "Copy complete text"}
                       </div>
                     </div>
-                    <div className="inline-flex items-center space-x-1.5 text-xs font-bold pt-2 border-t border-[#E2E5E0] text-slate-900">
+                    <div className="inline-flex items-center space-x-1.5 text-sm font-bold pt-2 border-t border-[#E2E5E0] text-slate-900">
                       {copied ? (
                         <>
                           <Check className="w-3.5 h-3.5 text-emerald-600 stroke-[3]" />
@@ -1109,21 +1109,21 @@ export const StartProjectPage: React.FC = () => {
                   {/* Phone Call Card */}
                   <a
                     href={phoneUrl}
-                    className="p-5 rounded-2xl bg-white hover:bg-[#F1F2EE] text-slate-950 font-bold text-xs sm:text-sm border border-[#E2E5E0] shadow-sm flex flex-col justify-between space-y-4 transition-all group"
+                    className="p-5 rounded-2xl bg-white hover:bg-[#F1F2EE] text-slate-950 font-bold text-sm sm:text-sm border border-[#E2E5E0] shadow-sm flex flex-col justify-between space-y-4 transition-all group"
                   >
                     <div>
                       <div className="flex items-center justify-between">
                         <Phone className="w-6 h-6 text-[#B88E20]" />
-                        <span className="text-[10px] font-mono uppercase bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+                        <span className="text-sm font-mono uppercase bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
                           Direct
                         </span>
                       </div>
                       <div className="text-base font-extrabold mt-3">Phone</div>
-                      <div className="text-[11px] text-slate-600 font-normal mt-0.5">
+                      <div className="text-sm text-slate-600 font-normal mt-0.5">
                         +92 325 7263417
                       </div>
                     </div>
-                    <div className="inline-flex items-center space-x-1.5 text-xs font-bold pt-2 border-t border-[#E2E5E0] text-slate-900">
+                    <div className="inline-flex items-center space-x-1.5 text-sm font-bold pt-2 border-t border-[#E2E5E0] text-slate-900">
                       <span>Call ST-Solutions</span>
                       <ArrowRight className="w-3.5 h-3.5 text-[#B88E20]" />
                     </div>
@@ -1136,12 +1136,12 @@ export const StartProjectPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setCurrentStep(1)}
-                  className="text-xs font-bold text-slate-700 hover:text-slate-950 flex items-center space-x-1.5"
+                  className="text-sm font-bold text-slate-700 hover:text-slate-950 flex items-center space-x-1.5"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   <span>Restart / Edit Choices</span>
                 </button>
-                <span className="text-[11px] text-slate-600 font-mono">
+                <span className="text-sm text-slate-600 font-mono">
                   Official WhatsApp: +92 325 7263417
                 </span>
               </div>
@@ -1155,7 +1155,7 @@ export const StartProjectPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleStepBack}
-                  className="flex items-center space-x-2 px-5 py-2.5 rounded-xl border border-[#E2E5E0] text-xs font-bold text-slate-700 hover:bg-[#F1F2EE] transition-colors"
+                  className="flex items-center space-x-2 px-5 py-2.5 rounded-xl border border-[#E2E5E0] text-sm font-bold text-slate-700 hover:bg-[#F1F2EE] transition-colors"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   <span>Back</span>
@@ -1167,7 +1167,7 @@ export const StartProjectPage: React.FC = () => {
               <button
                 type="button"
                 onClick={handleStepNext}
-                className="flex items-center space-x-2 px-6 py-3 rounded-xl bg-[#111827] text-white font-bold text-xs sm:text-sm shadow-md hover:bg-[#1F2937] active:scale-[0.98] transition-all border border-[#111827]"
+                className="flex items-center space-x-2 px-6 py-3 rounded-xl bg-[#111827] text-white font-bold text-sm sm:text-sm shadow-md hover:bg-[#1F2937] active:scale-[0.98] transition-all border border-[#111827]"
               >
                 <span>{currentStep === 7 ? "Review Project Brief" : "Continue"}</span>
                 <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
@@ -1179,7 +1179,7 @@ export const StartProjectPage: React.FC = () => {
         {/* Direct Contact Alternative Footer */}
         <div className="p-6 rounded-2xl bg-white border border-[#E2E5E0] flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left shadow-sm">
           <div>
-            <div className="text-xs font-bold uppercase text-slate-500 font-mono">
+            <div className="text-sm font-bold uppercase text-slate-500 font-mono">
               Direct Engineering Consultation
             </div>
             <div className="text-sm font-semibold text-slate-950 mt-0.5">
@@ -1191,14 +1191,14 @@ export const StartProjectPage: React.FC = () => {
               href="https://wa.me/923257263417"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all"
+              className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-sm transition-all"
             >
               <MessageCircle className="w-4 h-4" />
               <span>WhatsApp</span>
             </a>
             <Link
               to="/contact"
-              className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl border border-[#E2E5E0] text-slate-800 hover:bg-[#F1F2EE] font-bold text-xs transition-colors"
+              className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl border border-[#E2E5E0] text-slate-800 hover:bg-[#F1F2EE] font-bold text-sm transition-colors"
             >
               <span>Contact Page</span>
             </Link>

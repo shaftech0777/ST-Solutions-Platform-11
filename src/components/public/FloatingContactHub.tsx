@@ -14,7 +14,7 @@ export const FloatingContactHub: React.FC = () => {
         {/* Expanded Contact Channels Menu */}
         {isOpen && (
           <div className="flex flex-col space-y-2 mb-2 animate-fade-in bg-white p-3 rounded-2xl shadow-2xl border border-[#E2E5E0] w-60">
-            <div className="px-2 py-1 text-[11px] font-bold tracking-wider text-slate-400 uppercase border-b border-[#E2E5E0] mb-1">
+            <div className="px-2 py-1 text-[11px] font-bold tracking-wider text-slate-500 dark:text-slate-400 uppercase border-b border-[#E2E5E0] mb-1">
               Direct Channels
             </div>
 

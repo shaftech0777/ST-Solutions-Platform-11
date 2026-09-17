@@ -261,13 +261,13 @@ export const TeamHierarchyTree: React.FC<TeamHierarchyTreeProps> = ({ onSelectUs
               <button
                 type="button"
                 onClick={() => toggleExpand(node.id)}
-                className="w-6 h-6 rounded-md bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 flex items-center justify-center transition-colors"
+                className="w-6 h-6 rounded-md bg-slate-800/80 hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 flex items-center justify-center transition-colors"
                 title={isExpanded ? "Collapse Branch" : "Expand Branch"}
               >
                 {isExpanded ? (
                   <ChevronDown className="w-3.5 h-3.5 text-[#D4AF37]" />
                 ) : (
-                  <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                  <ChevronRight className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                 )}
               </button>
             ) : (
@@ -280,7 +280,7 @@ export const TeamHierarchyTree: React.FC<TeamHierarchyTreeProps> = ({ onSelectUs
           {/* Node Summary Card */}
           <div
             onClick={() => setSelectedNode(node)}
-            className={`flex-1 group cursor-pointer p-3.5 rounded-xl bg-slate-900/70 dark:bg-slate-900/90 border transition-all duration-150 ${getBorderColor(
+            className={`flex-1 group cursor-pointer p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/70 dark:bg-slate-900/90 border transition-all duration-150 ${getBorderColor(
               node.type
             )} hover:shadow-lg hover:shadow-black/20`}
           >
@@ -288,7 +288,7 @@ export const TeamHierarchyTree: React.FC<TeamHierarchyTreeProps> = ({ onSelectUs
               <div className="flex items-center gap-2.5">
                 <Avatar name={node.name} size="sm" src={node.avatar || undefined} />
                 <div>
-                  <div className="text-sm font-semibold text-white flex items-center gap-1.5">
+                  <div className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-1.5">
                     <span>{node.name}</span>
                     {isSelf && (
                       <span className="text-[10px] bg-[#D4AF37]/20 text-[#D4AF37] px-1.5 py-0.5 rounded font-mono font-bold">
@@ -296,12 +296,12 @@ export const TeamHierarchyTree: React.FC<TeamHierarchyTreeProps> = ({ onSelectUs
                       </span>
                     )}
                   </div>
-                  <div className="text-xs text-slate-400 flex items-center gap-2 mt-0.5">
-                    <span className="font-mono text-[11px] text-slate-300">
+                  <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2 mt-0.5">
+                    <span className="font-mono text-[11px] text-slate-700 dark:text-slate-300">
                       ID: {node.loginId}
                     </span>
                     {node.email && (
-                      <span className="flex items-center gap-1 text-slate-400">
+                      <span className="flex items-center gap-1 text-slate-500 dark:text-slate-400">
                         <Mail className="w-3 h-3 text-[#D4AF37]/70" /> {node.email}
                       </span>
                     )}
@@ -317,7 +317,7 @@ export const TeamHierarchyTree: React.FC<TeamHierarchyTreeProps> = ({ onSelectUs
                       ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
                       : node.status === "SUSPENDED"
                       ? "bg-rose-500/10 text-rose-400 border border-rose-500/30"
-                      : "bg-slate-800 text-slate-400 border border-slate-700"
+                      : "bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-300 dark:border-slate-700"
                   }`}
                 >
                   {node.status}
@@ -325,7 +325,7 @@ export const TeamHierarchyTree: React.FC<TeamHierarchyTreeProps> = ({ onSelectUs
                 <IconButton
                   variant="ghost"
                   size="sm"
-                  icon={<Eye className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#D4AF37]" />}
+                  icon={<Eye className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 group-hover:text-[#D4AF37]" />}
                   title="View Profile Details"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -336,7 +336,7 @@ export const TeamHierarchyTree: React.FC<TeamHierarchyTreeProps> = ({ onSelectUs
             </div>
 
             {/* Metrics Chips */}
-            <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-800/80 text-xs">
+            <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-200 dark:border-slate-800/80 text-xs">
               {node.directReportsCount > 0 && (
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-300 font-mono text-[11px] border border-blue-500/20">
                   <Users className="w-3 h-3" /> {node.directReportsCount} Direct Report
@@ -359,14 +359,14 @@ export const TeamHierarchyTree: React.FC<TeamHierarchyTreeProps> = ({ onSelectUs
               )}
 
               {node.metadata?.managerName && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-800 text-slate-400 text-[11px]">
-                  Manager: <strong className="text-slate-200">{node.metadata.managerName}</strong>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-800 text-slate-500 dark:text-slate-400 text-[11px]">
+                  Manager: <strong className="text-slate-800 dark:text-slate-200">{node.metadata.managerName}</strong>
                 </span>
               )}
 
               {node.metadata?.supervisorName && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-800 text-slate-400 text-[11px]">
-                  Supervisor: <strong className="text-slate-200">{node.metadata.supervisorName}</strong>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-800 text-slate-500 dark:text-slate-400 text-[11px]">
+                  Supervisor: <strong className="text-slate-800 dark:text-slate-200">{node.metadata.supervisorName}</strong>
                 </span>
               )}
             </div>
@@ -375,7 +375,7 @@ export const TeamHierarchyTree: React.FC<TeamHierarchyTreeProps> = ({ onSelectUs
 
         {/* Children Sub-Tree with left branch line */}
         {hasChildren && isExpanded && (
-          <div className="relative ml-6 pl-5 border-l-2 border-slate-700/60 flex flex-col space-y-2 py-1">
+          <div className="relative ml-6 pl-5 border-l-2 border-slate-300 dark:border-slate-700/60 flex flex-col space-y-2 py-1">
             {node.children.map((child) => renderNode(child, depth + 1))}
           </div>
         )}
@@ -387,42 +387,42 @@ export const TeamHierarchyTree: React.FC<TeamHierarchyTreeProps> = ({ onSelectUs
     <div className="space-y-6">
       {/* Top Metrics Banner */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        <Card className="p-3.5 bg-slate-900/60 border-slate-800">
-          <span className="text-[10px] text-slate-400 font-mono uppercase block">Admins</span>
+        <Card className="p-3.5 bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800">
+          <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono uppercase block">Admins</span>
           <span className="text-xl font-bold text-[#D4AF37]">{metrics.admins}</span>
         </Card>
-        <Card className="p-3.5 bg-slate-900/60 border-slate-800">
-          <span className="text-[10px] text-slate-400 font-mono uppercase block">Sub-Admins</span>
+        <Card className="p-3.5 bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800">
+          <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono uppercase block">Sub-Admins</span>
           <span className="text-xl font-bold text-purple-400">{metrics.subAdmins}</span>
         </Card>
-        <Card className="p-3.5 bg-slate-900/60 border-slate-800">
-          <span className="text-[10px] text-slate-400 font-mono uppercase block">Managers</span>
+        <Card className="p-3.5 bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800">
+          <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono uppercase block">Managers</span>
           <span className="text-xl font-bold text-blue-400">{metrics.managers}</span>
         </Card>
-        <Card className="p-3.5 bg-slate-900/60 border-slate-800">
-          <span className="text-[10px] text-slate-400 font-mono uppercase block">Staff Members</span>
+        <Card className="p-3.5 bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800">
+          <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono uppercase block">Staff Members</span>
           <span className="text-xl font-bold text-emerald-400">{metrics.members}</span>
         </Card>
-        <Card className="p-3.5 bg-slate-900/60 border-slate-800">
-          <span className="text-[10px] text-slate-400 font-mono uppercase block">Clients</span>
+        <Card className="p-3.5 bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800">
+          <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono uppercase block">Clients</span>
           <span className="text-xl font-bold text-amber-400">{metrics.clients}</span>
         </Card>
-        <Card className="p-3.5 bg-slate-900/60 border-slate-800">
-          <span className="text-[10px] text-slate-400 font-mono uppercase block">Active Projects</span>
+        <Card className="p-3.5 bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800">
+          <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono uppercase block">Active Projects</span>
           <span className="text-xl font-bold text-sky-400">{metrics.projects}</span>
         </Card>
       </div>
 
       {/* Control Bar: Search, Expand/Collapse, Refresh */}
-      <Card className="p-4 bg-slate-900/50 border-slate-800 flex flex-wrap items-center justify-between gap-3">
+      <Card className="p-4 bg-slate-50 dark:bg-slate-50 dark:bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
         <div className="relative flex-1 min-w-[240px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-slate-400" />
           <input
             type="text"
             placeholder="Search hierarchy by name, email, user ID, or role..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-900 border border-slate-800 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-[#D4AF37]"
+            className="w-full pl-9 pr-3 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-[#D4AF37]"
           />
         </div>
 
@@ -447,7 +447,7 @@ export const TeamHierarchyTree: React.FC<TeamHierarchyTreeProps> = ({ onSelectUs
       {error && <ErrorState message={error} onRetry={loadTree} />}
 
       {isLoading && (
-        <Card className="p-6 border-slate-800 space-y-4">
+        <Card className="p-6 border-slate-200 dark:border-slate-800 space-y-4">
           <Skeleton className="h-10 w-full" />
           <Skeleton className="h-14 w-full" />
           <Skeleton className="h-14 w-full" />
@@ -465,7 +465,7 @@ export const TeamHierarchyTree: React.FC<TeamHierarchyTreeProps> = ({ onSelectUs
 
       {!isLoading && !error && treeData.length > 0 && (
         <div className="space-y-4">
-          <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800/80 space-y-3">
+          <div className="p-4 rounded-xl bg-white dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800/80 space-y-3">
             {treeData.map((rootNode) => renderNode(rootNode, 0))}
           </div>
         </div>
@@ -481,15 +481,15 @@ export const TeamHierarchyTree: React.FC<TeamHierarchyTreeProps> = ({ onSelectUs
         {selectedNode && (
           <div className="space-y-5">
             {/* Header Identity */}
-            <div className="flex items-start gap-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
+            <div className="flex items-start gap-4 p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
               <Avatar name={selectedNode.name} size="lg" src={selectedNode.avatar || undefined} />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="text-base font-bold text-white">{selectedNode.name}</h3>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">{selectedNode.name}</h3>
                   {getNodeBadge(selectedNode.type)}
                 </div>
-                <div className="text-xs text-slate-400 mt-1 space-y-0.5">
-                  <p className="font-mono text-slate-300">Database ID: {selectedNode.id}</p>
+                <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 space-y-0.5">
+                  <p className="font-mono text-slate-700 dark:text-slate-300">Database ID: {selectedNode.id}</p>
                   {selectedNode.email && (
                     <p className="flex items-center gap-1">
                       <Mail className="w-3.5 h-3.5 text-[#D4AF37]" /> {selectedNode.email}
@@ -506,22 +506,22 @@ export const TeamHierarchyTree: React.FC<TeamHierarchyTreeProps> = ({ onSelectUs
 
             {/* Hierarchy Context */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
-                <span className="text-[10px] text-slate-400 font-mono uppercase block">
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-1">
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono uppercase block">
                   Reporting Line / Direct Supervisor
                 </span>
-                <span className="font-semibold text-white">
+                <span className="font-semibold text-slate-900 dark:text-white">
                   {selectedNode.metadata?.supervisorName ||
                     selectedNode.metadata?.managerName ||
                     "Root Leadership / Executive"}
                 </span>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
-                <span className="text-[10px] text-slate-400 font-mono uppercase block">
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-1">
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono uppercase block">
                   Subordinates / Direct Reports
                 </span>
-                <span className="font-semibold text-white">
+                <span className="font-semibold text-slate-900 dark:text-white">
                   {selectedNode.directReportsCount} Direct Report(s)
                 </span>
               </div>
@@ -530,22 +530,22 @@ export const TeamHierarchyTree: React.FC<TeamHierarchyTreeProps> = ({ onSelectUs
             {/* Assigned Projects Section */}
             {selectedNode.metadata?.projects && selectedNode.metadata.projects.length > 0 && (
               <div className="space-y-2">
-                <span className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono block">
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider font-mono block">
                   Assigned Projects ({selectedNode.metadata.projects.length})
                 </span>
                 <div className="space-y-2 max-h-52 overflow-y-auto pr-1">
                   {selectedNode.metadata.projects.map((proj) => (
                     <div
                       key={proj.id}
-                      className="p-3 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-between gap-3 text-xs"
+                      className="p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 text-xs"
                     >
                       <div className="flex-1 min-w-0">
-                        <span className="font-semibold text-white block truncate">{proj.title}</span>
+                        <span className="font-semibold text-slate-900 dark:text-white block truncate">{proj.title}</span>
                         <div className="flex items-center gap-2 mt-1">
-                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 border border-slate-700">
+                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700">
                             {proj.status}
                           </span>
-                          <span className="text-slate-400 text-[11px]">
+                          <span className="text-slate-500 dark:text-slate-400 text-[11px]">
                             {proj.progress}% completed
                           </span>
                         </div>
@@ -564,7 +564,7 @@ export const TeamHierarchyTree: React.FC<TeamHierarchyTreeProps> = ({ onSelectUs
             )}
 
             {/* Actions */}
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
               {onSelectUser && (
                 <Button
                   variant="gold"

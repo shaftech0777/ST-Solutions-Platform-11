@@ -246,16 +246,16 @@ export const WorkspacesPage: React.FC = () => {
       />
 
       {/* Organization Hierarchy Breadcrumb Card */}
-      <div className="p-4 rounded-2xl bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-slate-950/80 border border-slate-800/90 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-sm">
+      <div className="p-4 rounded-2xl bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-slate-950/80 border border-slate-200 dark:border-slate-800/90 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-sm shadow-sm">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#D4AF37]/20 to-[#B88E20]/10 text-[#D4AF37] border border-[#D4AF37]/30 font-bold flex items-center justify-center text-sm shrink-0">
             <Building2 className="w-4 h-4" />
           </div>
           <div>
-            <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400">
+            <div className="text-sm font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Active Organization Hierarchy
             </div>
-            <div className="font-bold text-white text-sm flex items-center gap-1.5 mt-0.5">
+            <div className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-1.5 mt-0.5">
               <span>{currentOrganization?.name || "No Organization Selected"}</span>
               <span className="text-slate-500">/</span>
               <span className="text-[#D4AF37]">{currentWorkspace?.name || "Global Workspace"}</span>
@@ -267,7 +267,7 @@ export const WorkspacesPage: React.FC = () => {
           <Badge variant="gold" dot>
             Tenant Scoped
           </Badge>
-          <span className="text-[11px] font-mono text-slate-400">
+          <span className="text-sm font-mono text-slate-500 dark:text-slate-400">
             {workspaces.length} Registered Workspace{workspaces.length !== 1 ? "s" : ""}
           </span>
         </div>
@@ -282,8 +282,8 @@ export const WorkspacesPage: React.FC = () => {
                 placeholder="Search workspaces by name or description..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                leftIcon={<Search className="w-4 h-4 text-slate-400" />}
-                className="py-2 text-xs"
+                leftIcon={<Search className="w-4 h-4 text-slate-500 dark:text-slate-400" />}
+                className="py-2 text-sm"
               />
             </div>
 
@@ -293,7 +293,7 @@ export const WorkspacesPage: React.FC = () => {
                 size="sm"
                 onClick={() => setSearch("")}
                 leftIcon={<X className="w-3.5 h-3.5" />}
-                className="text-xs text-slate-400 hover:text-slate-100"
+                className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-100"
               >
                 Reset
               </Button>
@@ -308,7 +308,7 @@ export const WorkspacesPage: React.FC = () => {
                 className={`p-1.5 rounded-md transition-colors ${
                   viewMode === "grid"
                     ? "bg-white dark:bg-slate-900 text-[#D4AF37] shadow-xs"
-                    : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
                 }`}
                 title="Grid view"
                 aria-label="Grid view"
@@ -320,7 +320,7 @@ export const WorkspacesPage: React.FC = () => {
                 className={`p-1.5 rounded-md transition-colors ${
                   viewMode === "table"
                     ? "bg-white dark:bg-slate-900 text-[#D4AF37] shadow-xs"
-                    : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
                 }`}
                 title="Table view"
                 aria-label="Table view"
@@ -368,8 +368,8 @@ export const WorkspacesPage: React.FC = () => {
                 key={ws.id}
                 className={`flex flex-col justify-between p-6 relative overflow-hidden transition-all duration-200 ${
                   isCurrent
-                    ? "border-[#D4AF37] bg-slate-900/90 ring-1 ring-[#D4AF37]/30 shadow-lg"
-                    : "hover:border-slate-700 bg-white dark:bg-slate-900/60"
+                    ? "border-[#D4AF37] bg-slate-50 dark:bg-slate-900/90 ring-1 ring-[#D4AF37]/30 shadow-lg"
+                    : "hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900/60"
                 }`}
               >
                 <div className="space-y-4">
@@ -383,7 +383,7 @@ export const WorkspacesPage: React.FC = () => {
                           Active Context
                         </Badge>
                       ) : (
-                        <span className="text-[11px] font-mono text-slate-400">
+                        <span className="text-sm font-mono text-slate-500 dark:text-slate-400">
                           {ws.role || "MEMBER"}
                         </span>
                       )}
@@ -414,17 +414,17 @@ export const WorkspacesPage: React.FC = () => {
                     <h3 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">
                       {ws.name}
                     </h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2 min-h-[32px]">
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-2 min-h-[32px]">
                       {ws.description || "No specific workspace description provided."}
                     </p>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800/80">
-                    <span className="flex items-center gap-1 font-mono text-[11px]">
-                      <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                  <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800/80">
+                    <span className="flex items-center gap-1 font-mono text-sm">
+                      <Calendar className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                       {formatDate(ws.createdAt)}
                     </span>
-                    <span className="font-mono text-[11px] text-slate-400">
+                    <span className="font-mono text-sm text-slate-500 dark:text-slate-400">
                       slug: {ws.slug || "—"}
                     </span>
                   </div>
@@ -441,7 +441,7 @@ export const WorkspacesPage: React.FC = () => {
                       Switch Workspace
                     </Button>
                   ) : (
-                    <span className="text-xs font-semibold text-[#D4AF37] flex items-center gap-1">
+                    <span className="text-sm font-semibold text-[#D4AF37] flex items-center gap-1">
                       <Check className="w-4 h-4" /> Current Workspace
                     </span>
                   )}
@@ -472,7 +472,7 @@ export const WorkspacesPage: React.FC = () => {
                   <TableRow key={ws.id} className={isCurrent ? "bg-amber-500/[0.03]" : ""}>
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/30 font-bold flex items-center justify-center text-xs shrink-0">
+                        <div className="w-8 h-8 rounded-lg bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/30 font-bold flex items-center justify-center text-sm shrink-0">
                           <Briefcase className="w-4 h-4" />
                         </div>
                         <span className="font-bold text-slate-900 dark:text-white">
@@ -480,13 +480,13 @@ export const WorkspacesPage: React.FC = () => {
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-xs text-slate-500 dark:text-slate-400 max-w-xs truncate">
+                    <TableCell className="text-sm text-slate-500 dark:text-slate-400 max-w-xs truncate">
                       {ws.description || "—"}
                     </TableCell>
-                    <TableCell className="font-mono text-xs text-slate-600 dark:text-slate-300">
+                    <TableCell className="font-mono text-sm text-slate-600 dark:text-slate-300">
                       {ws.slug || "—"}
                     </TableCell>
-                    <TableCell className="font-mono text-xs text-slate-500 dark:text-slate-400">
+                    <TableCell className="font-mono text-sm text-slate-500 dark:text-slate-400">
                       {formatDate(ws.createdAt)}
                     </TableCell>
                     <TableCell>
@@ -495,7 +495,7 @@ export const WorkspacesPage: React.FC = () => {
                           Active
                         </Badge>
                       ) : (
-                        <span className="text-xs text-slate-400 font-mono">Available</span>
+                        <span className="text-sm text-slate-500 dark:text-slate-400 font-mono">Available</span>
                       )}
                     </TableCell>
                     <TableCell className="text-right">
@@ -525,12 +525,12 @@ export const WorkspacesPage: React.FC = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => switchWorkspace(ws.id)}
-                            className="text-xs py-1 px-2.5"
+                            className="text-sm py-1 px-2.5"
                           >
                             Switch
                           </Button>
                         ) : (
-                          <span className="text-xs font-semibold text-[#D4AF37] flex items-center gap-1 px-2 py-1">
+                          <span className="text-sm font-semibold text-[#D4AF37] flex items-center gap-1 px-2 py-1">
                             <Check className="w-4 h-4" /> Selected
                           </span>
                         )}
@@ -585,7 +585,7 @@ export const WorkspacesPage: React.FC = () => {
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           {modalError && (
-            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-500 text-xs font-medium">
+            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-500 text-sm font-medium">
               {modalError}
             </div>
           )}

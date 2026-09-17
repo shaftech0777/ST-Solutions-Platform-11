@@ -17,17 +17,15 @@ export const ApplicationShell: React.FC<{ children: React.ReactNode }> = ({ chil
 
   // If on login or register screen, render full screen auth layout
   if (location.pathname === "/login" || location.pathname === "/register") {
-    return <div className="min-h-screen bg-[#090A0F] text-slate-100 font-sans">{children}</div>;
+    return <div className="min-h-screen bg-[#F7F8FA] dark:bg-[#090A0F] text-slate-900 dark:text-slate-100 font-sans">{children}</div>;
   }
 
   // Display clean branded loading splash during initial credential verification
   if (isAuthLoading) {
     return (
-      <div className="min-h-screen bg-[#090A0F] text-slate-100 flex flex-col items-center justify-center p-6 space-y-4">
-        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#B88E20] text-black font-extrabold flex items-center justify-center text-lg shadow-xl shadow-amber-500/20 border border-amber-300/40 animate-pulse">
-          ST
-        </div>
-        <div className="flex items-center space-x-2 text-sm text-slate-400 font-mono">
+      <div className="min-h-screen bg-[#F7F8FA] dark:bg-[#090A0F] text-slate-900 dark:text-slate-100 flex flex-col items-center justify-center p-6 space-y-4">
+        <img src="/favicon.svg" alt="ST-Solutions Loading" className="w-16 h-16 animate-pulse" />
+        <div className="flex items-center space-x-2 text-sm text-slate-500 dark:text-slate-400 font-mono">
           <Loader2 className="w-4 h-4 animate-spin text-[#D4AF37]" />
           <span>Authenticating ST-Solutions secure session...</span>
         </div>
@@ -38,13 +36,11 @@ export const ApplicationShell: React.FC<{ children: React.ReactNode }> = ({ chil
   // If user explicitly logged out or unauthenticated, display authentication required screen
   if (!currentUser) {
     return (
-      <div className="min-h-screen bg-[#090A0F] text-slate-100 flex flex-col items-center justify-center p-6 space-y-6">
-        <div className="w-16 h-16 rounded-3xl bg-slate-900 border border-slate-800 flex items-center justify-center text-amber-400 shadow-2xl">
-          <ShieldAlert className="w-8 h-8" />
-        </div>
+      <div className="min-h-screen bg-[#F7F8FA] dark:bg-[#090A0F] text-slate-900 dark:text-slate-100 flex flex-col items-center justify-center p-6 space-y-6">
+        <div className="w-16 h-16 rounded-3xl bg-white border border-slate-200 flex items-center justify-center text-[#D4AF37] shadow-xl"><ShieldAlert className="w-8 h-8" /></div>
         <div className="text-center space-y-2 max-w-md">
-          <h2 className="text-xl font-bold text-white">Authentication Required</h2>
-          <p className="text-sm text-slate-400">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">Authentication Required</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
             Please sign in to access enterprise workspaces, clients, projects, and pipeline telemetry.
           </p>
         </div>

@@ -33,10 +33,10 @@ export const Button: React.FC<ButtonProps> = ({
   const variantClasses = {
     gold: "bg-gradient-to-r from-[#D4AF37] to-[#E5C158] hover:from-[#C59B27] hover:to-[#D4AF37] text-black font-semibold shadow-md hover:shadow-amber-500/20 focus:ring-[#D4AF37]",
     primary: "bg-gradient-to-r from-[#D4AF37] to-[#E5C158] hover:from-[#C59B27] hover:to-[#D4AF37] text-black font-semibold shadow-md hover:shadow-amber-500/20 focus:ring-[#D4AF37]",
-    dark: "bg-slate-900 dark:bg-slate-800 text-white hover:bg-slate-800 dark:hover:bg-slate-700 border border-slate-700/60 focus:ring-slate-500",
-    secondary: "bg-slate-900 dark:bg-slate-800 text-white hover:bg-slate-800 dark:hover:bg-slate-700 border border-slate-700/60 focus:ring-slate-500",
-    outline: "border border-[#D4AF37]/40 text-[#D4AF37] hover:bg-[#D4AF37]/10 dark:hover:bg-[#D4AF37]/15 focus:ring-[#D4AF37]",
-    ghost: "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-white focus:ring-slate-400",
+    dark: "bg-white dark:bg-slate-800 text-slate-800 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700/60 focus:ring-slate-500 shadow-sm",
+    secondary: "bg-white dark:bg-slate-800 text-slate-800 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700/60 focus:ring-slate-500 shadow-sm",
+    outline: "border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 focus:ring-slate-500",
+    ghost: "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white focus:ring-slate-400",
     danger: "bg-red-600 hover:bg-red-700 text-white font-semibold focus:ring-red-500 shadow-sm" };
 
   const widthClass = fullWidth ? "w-full" : "";
@@ -88,7 +88,7 @@ export const IconButton: React.FC<IconButtonProps> = ({
         variant === "gold"
           ? "bg-[#D4AF37] text-black hover:bg-[#C59B27]"
           : variant === "dark"
-          ? "bg-slate-900 dark:bg-slate-800 text-slate-200 hover:bg-slate-800"
+          ? "bg-white dark:bg-slate-900 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-800"
           : variant === "outline"
           ? "border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
           : variant === "danger"

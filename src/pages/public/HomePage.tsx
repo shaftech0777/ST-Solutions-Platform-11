@@ -152,7 +152,7 @@ export const HomePage: React.FC = () => {
           <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E2E5E0] shadow-sm flex flex-col justify-between space-y-1">
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono font-bold uppercase text-slate-500">Stack Standard</span>
-              <Terminal className="w-3.5 h-3.5 text-slate-400" />
+              <Terminal className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
             </div>
             <div className="text-xl sm:text-2xl font-extrabold text-slate-950 font-mono">100%</div>
             <div className="text-sm text-slate-600 font-medium">Full-stack TypeScript & SQL</div>
@@ -170,7 +170,7 @@ export const HomePage: React.FC = () => {
           <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E2E5E0] shadow-sm flex flex-col justify-between space-y-1">
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono font-bold uppercase text-slate-500">Code Rights</span>
-              <Sparkles className="w-3.5 h-3.5 text-slate-400" />
+              <Sparkles className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
             </div>
             <div className="text-xl sm:text-2xl font-extrabold text-slate-950 font-mono">Direct</div>
             <div className="text-sm text-slate-600 font-medium">Zero vendor lock-in</div>
@@ -234,7 +234,7 @@ export const HomePage: React.FC = () => {
                       {service.id === "e-commerce" && <ShoppingBag className="w-5 h-5" />}
                       {service.id === "digital-transformation" && <Cpu className="w-5 h-5" />}
                     </div>
-                    <span className="text-xl font-black font-mono text-slate-300 group-hover:text-[#8D6D19] transition-colors">
+                    <span className="text-xl font-black font-mono text-slate-700 dark:text-slate-300 group-hover:text-[#8D6D19] transition-colors">
                       {stepNum}
                     </span>
                   </div>
@@ -437,7 +437,7 @@ export const HomePage: React.FC = () => {
               className="p-6 rounded-3xl bg-white border border-[#E2E5E0] shadow-sm space-y-3 relative group hover:border-[#D4AF37] transition-colors"
             >
               <div className="flex items-center justify-between">
-                <span className="text-2xl font-black font-mono text-slate-300 group-hover:text-[#8D6D19] transition-colors">
+                <span className="text-2xl font-black font-mono text-slate-700 dark:text-slate-300 group-hover:text-[#8D6D19] transition-colors">
                   {step.step}
                 </span>
                 <div className="w-8 h-8 rounded-xl bg-[#F1F2EE] text-slate-900 flex items-center justify-center text-xs font-bold font-mono">
@@ -463,10 +463,10 @@ export const HomePage: React.FC = () => {
               <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#D4AF37] uppercase tracking-wider font-mono">
                 <span>Leadership & Systems Architecture</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
                 Meet the Founder — {companyConfig.founder.name}
               </h2>
-              <p className="text-sm text-slate-300 leading-relaxed max-w-2xl">
+              <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed max-w-2xl">
                 {companyConfig.founder.bio} Under his leadership, ST-Solutions focuses strictly on pragmatic software craftsmanship, rock-solid database architectures, and business automation that delivers tangible bottom-line results.
               </p>
             </div>
@@ -477,8 +477,8 @@ export const HomePage: React.FC = () => {
                   MS
                 </div>
                 <div className="space-y-0.5">
-                  <div className="text-base font-bold text-white">{companyConfig.founder.name}</div>
-                  <div className="text-xs text-slate-400">Founder / Admin</div>
+                  <div className="text-base font-bold text-slate-900 dark:text-white">{companyConfig.founder.name}</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400">Founder / Admin</div>
                 </div>
                 <a
                   href={companyConfig.founder.portfolioUrl}
@@ -516,7 +516,7 @@ export const HomePage: React.FC = () => {
               className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all group flex flex-col justify-between space-y-3"
             >
               <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center group-hover:bg-[#111827] group-hover:text-[#D4AF37] transition-colors shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white flex items-center justify-center group-hover:bg-[#111827] group-hover:text-[#D4AF37] transition-colors shadow-sm">
                   <MessageCircle className="w-5 h-5" />
                 </div>
                 <span className="text-xs font-bold text-slate-500 uppercase font-mono">
@@ -531,7 +531,7 @@ export const HomePage: React.FC = () => {
               </div>
               <div className="text-xs font-semibold text-slate-900 flex items-center space-x-1">
                 <span>Start chat</span>
-                <ArrowRight className="w-3 h-3 text-slate-400 group-hover:text-[#D4AF37] transition-colors" />
+                <ArrowRight className="w-3 h-3 text-slate-500 dark:text-slate-400 group-hover:text-[#D4AF37] transition-colors" />
               </div>
             </a>
 
@@ -541,7 +541,7 @@ export const HomePage: React.FC = () => {
               className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all group flex flex-col justify-between space-y-3"
             >
               <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center group-hover:bg-[#111827] group-hover:text-[#D4AF37] transition-colors shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white flex items-center justify-center group-hover:bg-[#111827] group-hover:text-[#D4AF37] transition-colors shadow-sm">
                   <Phone className="w-5 h-5" />
                 </div>
                 <span className="text-xs font-bold text-slate-500 uppercase font-mono">
@@ -556,7 +556,7 @@ export const HomePage: React.FC = () => {
               </div>
               <div className="text-xs font-semibold text-slate-900 flex items-center space-x-1">
                 <span>Call now</span>
-                <ArrowRight className="w-3 h-3 text-slate-400 group-hover:text-[#D4AF37] transition-colors" />
+                <ArrowRight className="w-3 h-3 text-slate-500 dark:text-slate-400 group-hover:text-[#D4AF37] transition-colors" />
               </div>
             </a>
 
@@ -566,7 +566,7 @@ export const HomePage: React.FC = () => {
               className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all group flex flex-col justify-between space-y-3"
             >
               <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center group-hover:bg-[#111827] group-hover:text-[#D4AF37] transition-colors shadow-sm font-bold">
+                <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white flex items-center justify-center group-hover:bg-[#111827] group-hover:text-[#D4AF37] transition-colors shadow-sm font-bold">
                   <Mail className="w-5 h-5" />
                 </div>
                 <span className="text-xs font-bold text-slate-500 uppercase font-mono">
@@ -581,7 +581,7 @@ export const HomePage: React.FC = () => {
               </div>
               <div className="text-xs font-semibold text-slate-900 flex items-center space-x-1">
                 <span>Send message</span>
-                <ArrowRight className="w-3 h-3 text-slate-400 group-hover:text-[#D4AF37] transition-colors" />
+                <ArrowRight className="w-3 h-3 text-slate-500 dark:text-slate-400 group-hover:text-[#D4AF37] transition-colors" />
               </div>
             </a>
 
@@ -591,7 +591,7 @@ export const HomePage: React.FC = () => {
               className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all group flex flex-col justify-between space-y-3 text-left"
             >
               <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center group-hover:bg-[#111827] group-hover:text-[#D4AF37] transition-colors shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white flex items-center justify-center group-hover:bg-[#111827] group-hover:text-[#D4AF37] transition-colors shadow-sm">
                   <QrCode className="w-5 h-5" />
                 </div>
                 <span className="text-xs font-bold text-slate-500 uppercase font-mono">WeChat</span>
@@ -604,7 +604,7 @@ export const HomePage: React.FC = () => {
               </div>
               <div className="text-xs font-semibold text-slate-900 flex items-center space-x-1">
                 <span>Connect</span>
-                <ArrowRight className="w-3 h-3 text-slate-400 group-hover:text-[#D4AF37] transition-colors" />
+                <ArrowRight className="w-3 h-3 text-slate-500 dark:text-slate-400 group-hover:text-[#D4AF37] transition-colors" />
               </div>
             </button>
           </div>

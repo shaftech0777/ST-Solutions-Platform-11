@@ -67,7 +67,7 @@ export const PublicNavbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Brand Logo */}
         <Link to="/" className="flex items-center space-x-3 group" id="nav-brand-logo">
-          <div className="w-9 h-9 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center text-[#876F23]_PRESERVE font-extrabold text-sm tracking-wider shadow-sm group-hover:border-[#876F23] transition-all">
+          <div className="w-9 h-9 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-[#876F23]_PRESERVE font-extrabold text-sm tracking-wider shadow-sm group-hover:border-[#876F23] transition-all">
             ST
           </div>
           <div className="flex flex-col">
@@ -108,13 +108,13 @@ export const PublicNavbar: React.FC = () => {
               onClick={() => navigate("/services")}
             >
               <span>Services</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isServicesDropdownOpen ? "rotate-180 text-[#876F23]" : "text-slate-400"}`} />
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isServicesDropdownOpen ? "rotate-180 text-[#876F23]" : "text-slate-500 dark:text-slate-400"}`} />
             </button>
 
             {isServicesDropdownOpen && (
               <div className="absolute top-full left-0 w-72 pt-2 z-50 animate-fade-in">
                 <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-2 space-y-1">
-                  <div className="px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                  <div className="px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     What We Build
                   </div>
                   <Link
@@ -211,13 +211,13 @@ export const PublicNavbar: React.FC = () => {
               onClick={() => navigate("/solutions")}
             >
               <span>Solutions</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isSolutionsDropdownOpen ? "rotate-180 text-[#876F23]" : "text-slate-400"}`} />
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isSolutionsDropdownOpen ? "rotate-180 text-[#876F23]" : "text-slate-500 dark:text-slate-400"}`} />
             </button>
 
             {isSolutionsDropdownOpen && (
               <div className="absolute top-full left-0 w-72 pt-2 z-50 animate-fade-in">
                 <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-2 space-y-1">
-                  <div className="px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                  <div className="px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     By Business Goal
                   </div>
 
@@ -336,7 +336,7 @@ export const PublicNavbar: React.FC = () => {
               to="/login"
               className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:text-slate-950 hover:bg-slate-100 transition-colors"
             >
-              <LogIn className="w-3.5 h-3.5 text-slate-400" />
+              <LogIn className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
               <span>Sign In</span>
             </Link>
           )}

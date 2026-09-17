@@ -388,7 +388,7 @@ export const SettingsPage: React.FC = () => {
             {/* Sidebar Context Card */}
             <div className="space-y-6">
               <Card title="Active Tenant Context" className="p-6 border-border/60 bg-surface space-y-4">
-                <div className="space-y-3 text-xs">
+                <div className="space-y-3 text-sm">
                   <div className="p-3 bg-surface-hover/60 rounded-lg border border-border/60 space-y-1">
                     <span className="text-text-muted font-medium">Organization:</span>
                     <div className="font-bold text-text text-sm flex items-center gap-1.5">
@@ -446,7 +446,7 @@ export const SettingsPage: React.FC = () => {
           <Card title="Rotate Account Password" className="p-6 border-border/60 bg-surface space-y-4">
             <form onSubmit={handleChangePassword} className="space-y-4">
               {passwordError && (
-                <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-xs text-rose-500 flex items-center gap-2">
+                <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-sm text-rose-500 flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0" />
                   <span>{passwordError}</span>
                 </div>
@@ -492,11 +492,11 @@ export const SettingsPage: React.FC = () => {
           </Card>
 
           <Card title="Security & Authentication Policies" className="p-6 border-border/60 bg-surface space-y-4">
-            <div className="space-y-4 text-xs">
+            <div className="space-y-4 text-sm">
               <div className="p-3 rounded-lg border border-border/60 bg-surface-hover/40 flex items-center justify-between">
                 <div>
                   <div className="font-semibold text-text">Two-Factor Authentication (2FA)</div>
-                  <div className="text-text-muted text-[11px]">Enforce time-based OTP for privileged admin actions</div>
+                  <div className="text-text-muted text-sm">Enforce time-based OTP for privileged admin actions</div>
                 </div>
                 <Badge variant={featureFlags.two_factor_enforcement ? "success" : "neutral"}>
                   {featureFlags.two_factor_enforcement ? "Enforced" : "Optional"}
@@ -506,7 +506,7 @@ export const SettingsPage: React.FC = () => {
               <div className="p-3 rounded-lg border border-border/60 bg-surface-hover/40 flex items-center justify-between">
                 <div>
                   <div className="font-semibold text-text">JWT Session Life Cycle</div>
-                  <div className="text-text-muted text-[11px]">Auto-expiration and silent rotation every 15 minutes</div>
+                  <div className="text-text-muted text-sm">Auto-expiration and silent rotation every 15 minutes</div>
                 </div>
                 <Badge variant="gold">Active</Badge>
               </div>
@@ -514,7 +514,7 @@ export const SettingsPage: React.FC = () => {
               <div className="p-3 rounded-lg border border-border/60 bg-surface-hover/40 flex items-center justify-between">
                 <div>
                   <div className="font-semibold text-text">Multi-Tenant Isolation Guard</div>
-                  <div className="text-text-muted text-[11px]">PostgreSQL Prisma layer strictly bounds query execution</div>
+                  <div className="text-text-muted text-sm">PostgreSQL Prisma layer strictly bounds query execution</div>
                 </div>
                 <Badge variant="success">Strict</Badge>
               </div>
@@ -586,7 +586,7 @@ export const SettingsPage: React.FC = () => {
       {/* FEATURE TOGGLES TAB */}
       {!isLoading && !error && activeTab === "features" && (
         <Card title="Platform Feature Flags" className="p-6 border-border/60 bg-surface space-y-4 max-w-3xl">
-          <p className="text-xs text-text-muted">
+          <p className="text-sm text-text-muted">
             Toggle enterprise modules dynamically across all tenant workspaces.
           </p>
 
@@ -622,8 +622,8 @@ export const SettingsPage: React.FC = () => {
                   className="flex items-center justify-between p-4 rounded-xl border border-border/60 bg-surface-hover/40 cursor-pointer hover:border-gold/40 transition-colors"
                 >
                   <div>
-                    <div className="text-xs font-semibold text-text">{flag.label}</div>
-                    <div className="text-[11px] text-text-muted mt-0.5">{flag.desc}</div>
+                    <div className="text-sm font-semibold text-text">{flag.label}</div>
+                    <div className="text-sm text-text-muted mt-0.5">{flag.desc}</div>
                   </div>
 
                   <div className="flex items-center gap-2">

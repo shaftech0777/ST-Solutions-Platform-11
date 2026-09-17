@@ -190,25 +190,25 @@ export const DashboardPage: React.FC = () => {
 
       {/* Enterprise AI Intelligence Callout + Tenant Security Card */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 border border-slate-800/90 p-6 flex flex-col justify-between relative overflow-hidden shadow-xl">
+        <Card className="lg:col-span-2 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 border border-slate-200 dark:border-slate-800/90 p-6 flex flex-col justify-between relative overflow-hidden shadow-xl">
           <div className="absolute top-0 right-0 p-6 opacity-10 text-[#D4AF37] pointer-events-none">
             <Bot className="w-48 h-48" />
           </div>
 
           <div className="space-y-3 max-w-lg z-10 pt-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/30 text-xs font-mono font-bold">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/30 text-sm font-mono font-bold">
               <Sparkles className="w-3.5 h-3.5" />
               <span>ST-SOLUTIONS Intelligence Suite</span>
             </div>
-            <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+            <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
               Enterprise AI Insights & Workflow Automation
             </h3>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            <p className="text-sm sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
               Query tenant metrics, draft project milestones, summarize audit logs, or analyze candidate resumes with real backend Google Gemini models.
             </p>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-slate-800/80 flex flex-wrap items-center gap-3 z-10">
+          <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800/80 flex flex-wrap items-center gap-3 z-10">
             <Button
               variant="outline"
               size="sm"
@@ -231,7 +231,7 @@ export const DashboardPage: React.FC = () => {
         {/* Tenant Architecture & Security Status */}
         <Card className="p-6 bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 space-y-4 shadow-sm">
           <div className="flex items-center justify-between">
-            <h2 className="text-xs font-bold text-slate-900 dark:text-white font-mono">
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white font-mono">
               Tenant Security Scope
             </h2>
             <Badge variant="gold" dot>
@@ -239,7 +239,7 @@ export const DashboardPage: React.FC = () => {
             </Badge>
           </div>
 
-          <div className="space-y-3 text-xs">
+          <div className="space-y-3 text-sm">
             <div className="flex items-center justify-start gap-4 p-3 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800">
               <span className="text-slate-500 dark:text-slate-400 font-mono min-w-[110px]">Organization</span>
               <span className="font-bold text-slate-900 dark:text-amber-300 truncate">
@@ -260,7 +260,7 @@ export const DashboardPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="pt-2 text-xs text-slate-500 dark:text-slate-400 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
+          <div className="pt-2 text-sm text-slate-500 dark:text-slate-400 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
             <span>Isolation: Strict PostgreSQL RBAC</span>
             <ShieldCheck className="w-4 h-4 text-emerald-500" />
           </div>
@@ -278,7 +278,7 @@ export const DashboardPage: React.FC = () => {
             </h3>
             <Link
               to="/platform/projects"
-              className="text-xs font-semibold text-[#D4AF37] hover:underline flex items-center gap-1 py-1.5"
+              className="text-sm font-semibold text-[#D4AF37] hover:underline flex items-center gap-1 py-1.5"
             >
               <span>View All</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -288,7 +288,7 @@ export const DashboardPage: React.FC = () => {
           {isLoading ? (
             <LoadingSpinner text="Fetching projects..." />
           ) : projects.length === 0 ? (
-            <Card className="p-8 text-center text-xs text-slate-500 border-dashed">
+            <Card className="p-8 text-center text-sm text-slate-500 border-dashed">
               No active projects in this tenant context.
             </Card>
           ) : (
@@ -312,7 +312,7 @@ export const DashboardPage: React.FC = () => {
                       <TableCell className="font-bold text-slate-900 dark:text-white">
                         {p.title}
                       </TableCell>
-                      <TableCell className="font-mono text-xs text-slate-600 dark:text-slate-300">
+                      <TableCell className="font-mono text-sm text-slate-600 dark:text-slate-300">
                         {formatCurrency(p.budget || 0)}
                       </TableCell>
                       <TableCell>
@@ -347,7 +347,7 @@ export const DashboardPage: React.FC = () => {
             </h3>
             <Link
               to="/payments"
-              className="text-xs font-semibold text-[#D4AF37] hover:underline flex items-center gap-1 py-1.5"
+              className="text-sm font-semibold text-[#D4AF37] hover:underline flex items-center gap-1 py-1.5"
             >
               <span>View All</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -357,7 +357,7 @@ export const DashboardPage: React.FC = () => {
           {isLoading ? (
             <LoadingSpinner text="Fetching payments..." />
           ) : payments.length === 0 ? (
-            <Card className="p-8 text-center text-xs text-slate-500 border-dashed">
+            <Card className="p-8 text-center text-sm text-slate-500 border-dashed">
               No recent payment transactions recorded.
             </Card>
           ) : (
@@ -381,7 +381,7 @@ export const DashboardPage: React.FC = () => {
                       <TableCell className="font-bold font-mono text-slate-900 dark:text-white">
                         {formatCurrency(p.amount || 0)}
                       </TableCell>
-                      <TableCell className="text-slate-500 dark:text-slate-400 font-mono text-xs">
+                      <TableCell className="text-slate-500 dark:text-slate-400 font-mono text-sm">
                         {p.paymentMethod || "WIRE"}
                       </TableCell>
                       <TableCell>

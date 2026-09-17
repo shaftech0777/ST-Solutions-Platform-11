@@ -404,23 +404,23 @@ export const RolesPage: React.FC = () => {
                             <div className="font-bold text-sm text-text flex items-center gap-1.5">
                               <span>{role.name}</span>
                               {isSystem && (
-                                <Badge variant="neutral" className="text-[10px]">
+                                <Badge variant="neutral" className="text-sm">
                                   System
                                 </Badge>
                               )}
                             </div>
-                            <div className="text-[11px] text-text-muted">
+                            <div className="text-sm text-text-muted">
                               {role.userCount ?? role.usersCount ?? 0} assigned users
                             </div>
                           </div>
                         </div>
                       </div>
 
-                      <p className="text-xs text-text-muted leading-relaxed line-clamp-2">
+                      <p className="text-sm text-text-muted leading-relaxed line-clamp-2">
                         {role.description || "Custom enterprise organizational access role."}
                       </p>
 
-                      <div className="flex items-center gap-2 pt-2 border-t border-border/40 text-xs">
+                      <div className="flex items-center gap-2 pt-2 border-t border-border/40 text-sm">
                         <Key className="w-3.5 h-3.5 text-gold shrink-0" />
                         <span className="font-medium text-text">
                           {permCount > 0 ? `${permCount} Granular Permissions` : "Full Root Access / Configured via RBAC"}
@@ -482,7 +482,7 @@ export const RolesPage: React.FC = () => {
             <tbody>
               {filteredPermissions.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center py-8 text-xs text-text-muted">
+                  <TableCell colSpan={4} className="text-center py-8 text-sm text-text-muted">
                     No matching permissions found in registry.
                   </TableCell>
                 </TableRow>
@@ -493,7 +493,7 @@ export const RolesPage: React.FC = () => {
                   return (
                     <TableRow key={perm.id} className="hover:bg-surface-hover/50 transition-colors">
                       <TableCell>
-                        <div className="font-mono text-xs font-semibold text-gold flex items-center gap-1.5">
+                        <div className="font-mono text-sm font-semibold text-gold flex items-center gap-1.5">
                           <Key className="w-3.5 h-3.5 shrink-0" />
                           <span>{perm.name}</span>
                         </div>
@@ -502,13 +502,13 @@ export const RolesPage: React.FC = () => {
                         <Badge variant="info">{cat}</Badge>
                       </TableCell>
                       <TableCell>
-                        <span className="text-xs text-text">{perm.description || "System authority grant."}</span>
+                        <span className="text-sm text-text">{perm.description || "System authority grant."}</span>
                       </TableCell>
                       <TableCell>
                         {perm.isSystem ? (
                           <Badge variant="neutral">Core Guard</Badge>
                         ) : (
-                          <span className="text-xs text-text-muted">Dynamic</span>
+                          <span className="text-sm text-text-muted">Dynamic</span>
                         )}
                       </TableCell>
                     </TableRow>
@@ -529,7 +529,7 @@ export const RolesPage: React.FC = () => {
       >
         <form onSubmit={handleCreateRole} className="space-y-4">
           {modalError && (
-            <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-xs text-rose-500 flex items-center gap-2">
+            <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-sm text-rose-500 flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{modalError}</span>
             </div>
@@ -555,7 +555,7 @@ export const RolesPage: React.FC = () => {
 
           <div className="space-y-2 pt-2 border-t border-border/60">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-text uppercase tracking-wider">
+              <span className="text-sm font-semibold text-text uppercase tracking-wider">
                 Assign Granular Permissions ({selectedPermissionIds.length} selected)
               </span>
               <button
@@ -567,7 +567,7 @@ export const RolesPage: React.FC = () => {
                     setSelectedPermissionIds(permissions.map((p) => p.id));
                   }
                 }}
-                className="text-xs text-gold hover:underline"
+                className="text-sm text-gold hover:underline"
               >
                 {selectedPermissionIds.length === permissions.length ? "Deselect All" : "Select All"}
               </button>
@@ -577,11 +577,11 @@ export const RolesPage: React.FC = () => {
               {(Object.entries(permissionsByCategory) as [string, PermissionItem[]][]).map(([category, perms]) => (
                 <div key={category} className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-text-muted">{category}</span>
+                    <span className="text-sm font-bold text-text-muted">{category}</span>
                     <button
                       type="button"
                       onClick={() => toggleCategoryPermissions(perms)}
-                      className="text-[11px] text-gold hover:underline"
+                      className="text-sm text-gold hover:underline"
                     >
                       Toggle Group
                     </button>
@@ -593,7 +593,7 @@ export const RolesPage: React.FC = () => {
                         <div
                           key={p.id}
                           onClick={() => togglePermission(p.id)}
-                          className={`p-2 rounded-lg border text-xs cursor-pointer flex items-start gap-2 transition-all ${
+                          className={`p-2 rounded-lg border text-sm cursor-pointer flex items-start gap-2 transition-all ${
                             isSelected
                               ? "bg-gold/10 border-gold/40 text-text"
                               : "bg-surface border-border/60 text-text-muted hover:border-border"
@@ -607,9 +607,9 @@ export const RolesPage: React.FC = () => {
                             )}
                           </div>
                           <div>
-                            <div className="font-mono text-[11px] font-semibold text-text">{p.name}</div>
+                            <div className="font-mono text-sm font-semibold text-text">{p.name}</div>
                             {p.description && (
-                              <div className="text-[10px] text-text-muted line-clamp-1">{p.description}</div>
+                              <div className="text-sm text-text-muted line-clamp-1">{p.description}</div>
                             )}
                           </div>
                         </div>
@@ -651,7 +651,7 @@ export const RolesPage: React.FC = () => {
       >
         {roleToManagePermissions && (
           <div className="space-y-4">
-            <p className="text-xs text-text-muted">
+            <p className="text-sm text-text-muted">
               Configure fine-grained system capabilities granted to users holding the{" "}
               <span className="font-semibold text-gold">{roleToManagePermissions.name}</span> role.
             </p>
@@ -660,11 +660,11 @@ export const RolesPage: React.FC = () => {
               {(Object.entries(permissionsByCategory) as [string, PermissionItem[]][]).map(([category, perms]) => (
                 <div key={category} className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-text-muted">{category}</span>
+                    <span className="text-sm font-bold text-text-muted">{category}</span>
                     <button
                       type="button"
                       onClick={() => toggleCategoryPermissions(perms)}
-                      className="text-[11px] text-gold hover:underline"
+                      className="text-sm text-gold hover:underline"
                     >
                       Toggle Group
                     </button>
@@ -676,7 +676,7 @@ export const RolesPage: React.FC = () => {
                         <div
                           key={p.id}
                           onClick={() => togglePermission(p.id)}
-                          className={`p-2 rounded-lg border text-xs cursor-pointer flex items-start gap-2 transition-all ${
+                          className={`p-2 rounded-lg border text-sm cursor-pointer flex items-start gap-2 transition-all ${
                             isSelected
                               ? "bg-gold/10 border-gold/40 text-text"
                               : "bg-surface border-border/60 text-text-muted hover:border-border"
@@ -690,9 +690,9 @@ export const RolesPage: React.FC = () => {
                             )}
                           </div>
                           <div>
-                            <div className="font-mono text-[11px] font-semibold text-text">{p.name}</div>
+                            <div className="font-mono text-sm font-semibold text-text">{p.name}</div>
                             {p.description && (
-                              <div className="text-[10px] text-text-muted line-clamp-1">{p.description}</div>
+                              <div className="text-sm text-text-muted line-clamp-1">{p.description}</div>
                             )}
                           </div>
                         </div>
@@ -734,7 +734,7 @@ export const RolesPage: React.FC = () => {
         size="md"
       >
         {selectedRole && (
-          <div className="space-y-4 text-xs">
+          <div className="space-y-4 text-sm">
             <div className="p-4 bg-surface-hover/60 rounded-xl border border-border/60 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center text-gold">
@@ -742,7 +742,7 @@ export const RolesPage: React.FC = () => {
                 </div>
                 <div>
                   <div className="font-bold text-base text-text">{selectedRole.name}</div>
-                  <div className="text-xs text-text-muted">
+                  <div className="text-sm text-text-muted">
                     {selectedRole.userCount ?? selectedRole.usersCount ?? 0} assigned accounts
                   </div>
                 </div>
@@ -764,13 +764,13 @@ export const RolesPage: React.FC = () => {
                   selectedRole.permissions.map((p: any, idx: number) => {
                     const name = typeof p === "string" ? p : p.name || p.permission?.name || `perm-${idx}`;
                     return (
-                      <span key={idx} className="font-mono text-[10px] bg-surface-hover px-2 py-0.5 rounded text-gold">
+                      <span key={idx} className="font-mono text-sm bg-surface-hover px-2 py-0.5 rounded text-gold">
                         {name}
                       </span>
                     );
                   })
                 ) : (
-                  <span className="text-xs text-text-muted">No explicit granular grants attached.</span>
+                  <span className="text-sm text-text-muted">No explicit granular grants attached.</span>
                 )}
               </div>
             </div>

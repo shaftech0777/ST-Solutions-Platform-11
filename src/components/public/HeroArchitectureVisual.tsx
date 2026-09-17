@@ -173,39 +173,39 @@ export const HeroArchitectureVisual: React.FC = () => {
         <div className="p-4 rounded-2xl bg-[#111827] text-white border border-[#1F2937] shadow-lg relative overflow-hidden">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-xl bg-slate-900 border border-[#D4AF37]/40 flex items-center justify-center text-[#D4AF37] font-black text-xs font-mono">
+              <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-900 border border-[#D4AF37]/40 flex items-center justify-center text-[#D4AF37] font-black text-xs font-mono">
                 ST
               </div>
               <div>
-                <div className="font-extrabold text-sm tracking-tight text-white flex items-center space-x-2">
+                <div className="font-extrabold text-sm tracking-tight text-slate-900 dark:text-white flex items-center space-x-2">
                   <span>The ST-Solutions Method</span>
                   <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono font-medium">
                     ACTIVE
                   </span>
                 </div>
-                <div className="text-[11px] text-slate-300 font-mono">
+                <div className="text-[11px] text-slate-700 dark:text-slate-300 font-mono">
                   Custom-built for your business needs
                 </div>
               </div>
             </div>
-            <div className="hidden sm:block text-right text-[10px] font-mono text-slate-300">
+            <div className="hidden sm:block text-right text-[10px] font-mono text-slate-700 dark:text-slate-300">
               <div>Enterprise Grade</div>
               <div className="text-[#D4AF37] font-semibold">Data Privacy</div>
             </div>
           </div>
 
           {/* Active Process Spec Preview */}
-          <div className="mt-3 pt-3 border-t border-slate-700 grid grid-cols-2 gap-2 text-[10px] font-mono">
-            <div className="bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-700 flex justify-between items-center">
-              <span className="text-slate-400">SELECTED:</span>
+          <div className="mt-3 pt-3 border-t border-slate-300 dark:border-slate-700 grid grid-cols-2 gap-2 text-[10px] font-mono">
+            <div className="bg-white dark:bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 flex justify-between items-center">
+              <span className="text-slate-500 dark:text-slate-400">SELECTED:</span>
               <span className="text-[#D4AF37] font-bold">{selectedPillar.name}</span>
             </div>
-            <div className="bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-700 flex justify-between items-center">
-              <span className="text-slate-400">STACK:</span>
+            <div className="bg-white dark:bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 flex justify-between items-center">
+              <span className="text-slate-500 dark:text-slate-400">STACK:</span>
               <span className="text-blue-400 font-bold truncate ml-1" title={selectedPillar.tag}>{selectedPillar.tag}</span>
             </div>
           </div>
-          <div className="bg-slate-900/50 mt-2 px-2.5 py-1.5 rounded-lg border border-slate-800 text-[10px] text-slate-300 font-sans leading-snug">
+          <div className="bg-slate-50 dark:bg-slate-50 dark:bg-slate-50 dark:bg-slate-900/50 mt-2 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 text-[10px] text-slate-700 dark:text-slate-300 font-sans leading-snug">
             {selectedPillar.description}
           </div>
         </div>

@@ -129,13 +129,13 @@ export const AIAssistantPage: React.FC = () => {
                   <h3 className="font-semibold text-slate-900 dark:text-white text-sm">Shaf Tech AI Model v2.4</h3>
                   <Badge variant="gold">Gemini Engine</Badge>
                 </div>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">
+                <p className="text-sm text-slate-500 dark:text-slate-400 font-mono">
                   Tenant Scoped: {currentOrganization?.name || "All Organizations"}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center space-x-2 text-xs text-emerald-600 dark:text-emerald-400 font-mono">
+            <div className="flex items-center space-x-2 text-sm text-emerald-600 dark:text-emerald-400 font-mono">
               <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse"></span>
               <span>Online & Ready</span>
             </div>
@@ -151,7 +151,7 @@ export const AIAssistantPage: React.FC = () => {
                 }`}
               >
                 <div
-                  className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 text-xs font-bold ${
+                  className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 text-sm font-bold ${
                     msg.sender === "user"
                       ? "bg-indigo-600 text-white"
                       : "bg-[#D4AF37] text-black"
@@ -161,7 +161,7 @@ export const AIAssistantPage: React.FC = () => {
                 </div>
 
                 <div
-                  className={`max-w-xl p-4 rounded-2xl text-xs sm:text-sm leading-relaxed whitespace-pre-wrap ${
+                  className={`max-w-xl p-4 rounded-2xl text-sm sm:text-sm leading-relaxed whitespace-pre-wrap ${
                     msg.sender === "user"
                       ? "bg-indigo-600 text-white rounded-tr-none shadow-sm"
                       : "bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 rounded-tl-none shadow-sm"
@@ -169,8 +169,8 @@ export const AIAssistantPage: React.FC = () => {
                 >
                   {msg.text}
                   <div
-                    className={`mt-2 text-[10px] font-mono ${
-                      msg.sender === "user" ? "text-indigo-200 text-right" : "text-slate-400 dark:text-slate-500"
+                    className={`mt-2 text-sm font-mono ${
+                      msg.sender === "user" ? "text-indigo-200 text-right" : "text-slate-500 dark:text-slate-400 dark:text-slate-500"
                     }`}
                   >
                     {msg.timestamp}
@@ -180,7 +180,7 @@ export const AIAssistantPage: React.FC = () => {
             ))}
 
             {isLoading && (
-              <div className="flex items-center space-x-3 text-slate-500 dark:text-slate-400 text-xs font-mono">
+              <div className="flex items-center space-x-3 text-slate-500 dark:text-slate-400 text-sm font-mono">
                 <div className="w-8 h-8 rounded-xl bg-[#D4AF37]/20 border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37]">
                   <Cpu className="w-4 h-4 animate-spin" />
                 </div>
@@ -232,16 +232,16 @@ export const AIAssistantPage: React.FC = () => {
                     key={idx}
                     onClick={() => handleSendMessage(item.text)}
                     disabled={isLoading}
-                    className="w-full text-left p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80 hover:border-[#D4AF37]/50 hover:bg-slate-100 dark:hover:bg-slate-900 transition-all text-xs space-y-1.5 group"
+                    className="w-full text-left p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80 hover:border-[#D4AF37]/50 hover:bg-slate-100 dark:hover:bg-white dark:bg-slate-900 transition-all text-sm space-y-1.5 group"
                   >
                     <div className="flex items-center justify-between text-slate-800 dark:text-slate-200 group-hover:text-[#D4AF37] font-semibold">
                       <span className="flex items-center space-x-2">
                         <IconComp className="w-3.5 h-3.5 text-[#D4AF37]" />
                         <span>{item.label}</span>
                       </span>
-                      <Sparkles className="w-3 h-3 text-slate-400 dark:text-slate-600 group-hover:text-[#D4AF37]" />
+                      <Sparkles className="w-3 h-3 text-slate-500 dark:text-slate-400 dark:text-slate-600 group-hover:text-[#D4AF37]" />
                     </div>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2">{item.text}</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2">{item.text}</p>
                   </button>
                 );
               })}
@@ -249,7 +249,7 @@ export const AIAssistantPage: React.FC = () => {
           </Card>
 
           <Card title="AI Telemetry Info">
-            <div className="space-y-3 text-xs text-slate-500 dark:text-slate-400 font-mono">
+            <div className="space-y-3 text-sm text-slate-500 dark:text-slate-400 font-mono">
               <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800/60">
                 <span>Model Engine:</span>
                 <span className="text-slate-900 dark:text-white font-semibold">Gemini 2.5 Flash</span>

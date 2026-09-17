@@ -181,12 +181,12 @@ export const OrganizationsPage: React.FC = () => {
                 placeholder="Search by organization name or slug..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                leftIcon={<Search className="w-4 h-4 text-slate-400" />}
-                className="py-2 text-xs"
+                leftIcon={<Search className="w-4 h-4 text-slate-500 dark:text-slate-400" />}
+                className="py-2 text-sm"
               />
             </div>
 
-            <div className="hidden sm:flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg text-xs">
+            <div className="hidden sm:flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg text-sm">
               {(["ALL", "OWNER", "ADMIN", "MEMBER"] as const).map((role) => (
                 <button
                   key={role}
@@ -208,7 +208,7 @@ export const OrganizationsPage: React.FC = () => {
                 size="sm"
                 onClick={clearFilters}
                 leftIcon={<X className="w-3.5 h-3.5" />}
-                className="text-xs text-slate-400 hover:text-slate-100"
+                className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-100"
               >
                 Reset
               </Button>
@@ -223,7 +223,7 @@ export const OrganizationsPage: React.FC = () => {
                 className={`p-1.5 rounded-md transition-colors ${
                   viewMode === "table"
                     ? "bg-white dark:bg-slate-900 text-[#D4AF37] shadow-xs"
-                    : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
                 }`}
                 title="Table view"
                 aria-label="Table view"
@@ -235,7 +235,7 @@ export const OrganizationsPage: React.FC = () => {
                 className={`p-1.5 rounded-md transition-colors ${
                   viewMode === "grid"
                     ? "bg-white dark:bg-slate-900 text-[#D4AF37] shadow-xs"
-                    : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
                 }`}
                 title="Grid view"
                 aria-label="Grid view"
@@ -301,13 +301,13 @@ export const OrganizationsPage: React.FC = () => {
                           <span className="font-bold text-slate-900 dark:text-white block">
                             {org.name}
                           </span>
-                          <span className="text-[11px] text-slate-400 font-mono">
+                          <span className="text-sm text-slate-500 dark:text-slate-400 font-mono">
                             ID: {org.id.slice(0, 8)}...
                           </span>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="font-mono text-xs text-slate-600 dark:text-slate-300">
+                    <TableCell className="font-mono text-sm text-slate-600 dark:text-slate-300">
                       {org.slug || "—"}
                     </TableCell>
                     <TableCell>
@@ -323,7 +323,7 @@ export const OrganizationsPage: React.FC = () => {
                         {org.role || "MEMBER"}
                       </Badge>
                     </TableCell>
-                    <TableCell className="font-mono text-xs text-slate-500 dark:text-slate-400">
+                    <TableCell className="font-mono text-sm text-slate-500 dark:text-slate-400">
                       {formatDate(org.createdAt)}
                     </TableCell>
                     <TableCell>
@@ -332,7 +332,7 @@ export const OrganizationsPage: React.FC = () => {
                           Active Context
                         </Badge>
                       ) : (
-                        <span className="text-xs text-slate-400 font-mono">Inactive</span>
+                        <span className="text-sm text-slate-500 dark:text-slate-400 font-mono">Inactive</span>
                       )}
                     </TableCell>
                     <TableCell className="text-right">
@@ -352,12 +352,12 @@ export const OrganizationsPage: React.FC = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => switchOrganization(org.id)}
-                            className="text-xs py-1 px-2.5"
+                            className="text-sm py-1 px-2.5"
                           >
                             Switch
                           </Button>
                         ) : (
-                          <span className="text-xs font-semibold text-[#D4AF37] flex items-center gap-1 px-2.5 py-1">
+                          <span className="text-sm font-semibold text-[#D4AF37] flex items-center gap-1 px-2.5 py-1">
                             <Check className="w-4 h-4" /> Selected
                           </span>
                         )}
@@ -381,8 +381,8 @@ export const OrganizationsPage: React.FC = () => {
                 key={org.id}
                 className={`flex flex-col justify-between p-6 relative overflow-hidden transition-all duration-200 ${
                   isCurrent
-                    ? "border-[#D4AF37] bg-slate-900/90 ring-1 ring-[#D4AF37]/30 shadow-lg"
-                    : "hover:border-slate-700 bg-white dark:bg-slate-900/60"
+                    ? "border-[#D4AF37] bg-slate-50 dark:bg-slate-900/90 ring-1 ring-[#D4AF37]/30 shadow-lg"
+                    : "hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900/60"
                 }`}
               >
                 <div className="space-y-4">
@@ -425,17 +425,17 @@ export const OrganizationsPage: React.FC = () => {
                     <h3 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">
                       {org.name}
                     </h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
+                    <p className="text-sm text-slate-500 dark:text-slate-400 font-mono mt-0.5">
                       slug: {org.slug || "n/a"}
                     </p>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800/80">
-                    <span className="flex items-center gap-1 font-mono text-[11px]">
-                      <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                  <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800/80">
+                    <span className="flex items-center gap-1 font-mono text-sm">
+                      <Calendar className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                       {formatDate(org.createdAt)}
                     </span>
-                    <span className="font-mono text-[11px]">
+                    <span className="font-mono text-sm">
                       Role: <strong className="text-slate-800 dark:text-slate-200">{org.role || "MEMBER"}</strong>
                     </span>
                   </div>
@@ -452,7 +452,7 @@ export const OrganizationsPage: React.FC = () => {
                       Switch Context
                     </Button>
                   ) : (
-                    <span className="text-xs font-semibold text-[#D4AF37] flex items-center gap-1">
+                    <span className="text-sm font-semibold text-[#D4AF37] flex items-center gap-1">
                       <Check className="w-4 h-4" /> Active Context
                     </span>
                   )}
@@ -492,7 +492,7 @@ export const OrganizationsPage: React.FC = () => {
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           {formError && (
-            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-500 text-xs font-medium">
+            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-500 text-sm font-medium">
               {formError}
             </div>
           )}

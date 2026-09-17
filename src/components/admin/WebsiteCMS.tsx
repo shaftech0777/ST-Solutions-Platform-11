@@ -160,13 +160,7 @@ export const WebsiteCMS: React.FC = () => {
       await settingsService.updateCMSSection("brand", brandData);
       
       // Sync basic profile data backward for generic settings endpoints
-      await settingsService.updateCompanyProfile({
-        companyName: brandData.name,
-        legalName: brandData.legalName,
-        tagline: brandData.tagline,
-        description: brandData.shortDescription,
-        mission: brandData.longDescription
-      }).catch(e => console.warn('Could not sync to generic company profile', e));
+      await settingsService.updateCompanyProfile({ companyName: brandData.name }).catch(e => console.warn('Could not sync to generic company profile', e));
 
       addToast({ type: "success", message: "Brand & Hero settings updated successfully." });
     } catch (err: any) {
@@ -182,12 +176,7 @@ export const WebsiteCMS: React.FC = () => {
     try {
       await settingsService.updateCMSSection("contact", contactData);
       
-      await settingsService.updateCompanyProfile({
-        email: contactData.email,
-        phoneNumber: contactData.phoneNumber,
-        whatsappNumber: contactData.whatsappNumber,
-        address: contactData.address
-      }).catch(e => console.warn('Could not sync contact info to generic profile', e));
+      await settingsService.updateCompanyProfile({}).catch(e => console.warn('Could not sync contact info to generic profile', e));
 
       addToast({ type: "success", message: "Official contact channels updated." });
     } catch (err: any) {
@@ -285,7 +274,7 @@ export const WebsiteCMS: React.FC = () => {
           onClick={() => setActiveSubTab("brand")}
           className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
             activeSubTab === "brand"
-              ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
+              ? "bg-white dark:bg-slate-900 text-white dark:bg-white dark:text-slate-900"
               : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
           }`}
         >
@@ -295,7 +284,7 @@ export const WebsiteCMS: React.FC = () => {
           onClick={() => setActiveSubTab("contact")}
           className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
             activeSubTab === "contact"
-              ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
+              ? "bg-white dark:bg-slate-900 text-white dark:bg-white dark:text-slate-900"
               : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
           }`}
         >
@@ -305,7 +294,7 @@ export const WebsiteCMS: React.FC = () => {
           onClick={() => setActiveSubTab("socials")}
           className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
             activeSubTab === "socials"
-              ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
+              ? "bg-white dark:bg-slate-900 text-white dark:bg-white dark:text-slate-900"
               : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
           }`}
         >
@@ -315,7 +304,7 @@ export const WebsiteCMS: React.FC = () => {
           onClick={() => setActiveSubTab("faqs")}
           className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
             activeSubTab === "faqs"
-              ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
+              ? "bg-white dark:bg-slate-900 text-white dark:bg-white dark:text-slate-900"
               : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
           }`}
         >
@@ -523,7 +512,7 @@ export const WebsiteCMS: React.FC = () => {
                 <div className="flex items-center space-x-2 shrink-0">
                   <button
                     onClick={() => handleOpenFaqModal(f)}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800"
+                    className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
                   </button>

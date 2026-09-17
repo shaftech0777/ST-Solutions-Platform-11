@@ -65,7 +65,7 @@ export const Modal: React.FC<ModalProps> = ({
             </div>
             <button
               onClick={onClose}
-              className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="p-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -121,15 +121,15 @@ export const Drawer: React.FC<DrawerProps> = ({
 
       {/* Drawer Container */}
       <div
-        className={`relative w-80 max-w-[85vw] h-full bg-slate-950 text-slate-100 border-r border-slate-800 shadow-2xl z-10 flex flex-col transition-transform duration-300 ${
+        className={`relative w-80 max-w-[85vw] h-full bg-white dark:bg-slate-950 text-slate-100 border-r border-slate-200 dark:border-slate-800 shadow-2xl z-10 flex flex-col transition-transform duration-300 ${
           position === "right" ? "ml-auto border-l border-r-0" : ""
         }`}
       >
-        <div className="p-4 border-b border-slate-800 flex items-center justify-between">
-          <h3 className="text-sm font-bold text-white tracking-tight">{title}</h3>
+        <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+          <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">{title}</h3>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>

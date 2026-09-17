@@ -25,7 +25,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
 
   if (fullPage) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center bg-slate-950/20 backdrop-blur-sm">
+      <div className="min-h-[60vh] flex items-center justify-center bg-white dark:bg-slate-950/20 backdrop-blur-sm">
         {content}
       </div>
     );

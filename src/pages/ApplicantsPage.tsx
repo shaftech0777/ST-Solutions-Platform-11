@@ -375,7 +375,7 @@ export const ApplicantsPage: React.FC = () => {
         <button
           type="button"
           onClick={() => setActiveTab("pipeline")}
-          className={`flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 text-sm sm:text-sm font-semibold rounded-xl transition-all ${
             activeTab === "pipeline"
               ? "bg-gold text-slate-950 shadow-xs"
               : "text-text-muted hover:text-text hover:bg-surface-hover"
@@ -383,7 +383,7 @@ export const ApplicantsPage: React.FC = () => {
         >
           <UserCheck className="w-4 h-4" />
           Candidate Pipeline & Review
-          <span className="ml-1 text-[11px] px-2 py-0.5 rounded-full bg-surface-hover/80 border border-border">
+          <span className="ml-1 text-sm px-2 py-0.5 rounded-full bg-surface-hover/80 border border-border">
             {applicants.length}
           </span>
         </button>
@@ -391,7 +391,7 @@ export const ApplicantsPage: React.FC = () => {
         <button
           type="button"
           onClick={() => setActiveTab("form_builder")}
-          className={`flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 text-sm sm:text-sm font-semibold rounded-xl transition-all ${
             activeTab === "form_builder"
               ? "bg-gold text-slate-950 shadow-xs"
               : "text-text-muted hover:text-text hover:bg-surface-hover"
@@ -399,7 +399,7 @@ export const ApplicantsPage: React.FC = () => {
         >
           <Sliders className="w-4 h-4" />
           Application Form Builder
-          <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 border border-emerald-500/30">
+          <span className="text-sm uppercase font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 border border-emerald-500/30">
             Dynamic
           </span>
         </button>
@@ -413,53 +413,53 @@ export const ApplicantsPage: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="applicants-kpi-summary">
             <Card className="p-5 border-border/60 bg-surface">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">Total Pipeline</span>
+                <span className="text-sm font-semibold text-text-muted uppercase tracking-wider">Total Pipeline</span>
                 <div className="w-8 h-8 rounded-lg bg-surface-hover flex items-center justify-center text-text">
                   <UserCheck className="w-4 h-4" />
                 </div>
               </div>
               <div className="mt-3">
                 <div className="text-2xl font-bold text-text">{stats.total}</div>
-                <p className="text-xs text-text-muted mt-1">Active talent acquisition pool</p>
+                <p className="text-sm text-text-muted mt-1">Active talent acquisition pool</p>
               </div>
             </Card>
 
             <Card className="p-5 border-amber-500/20 bg-surface">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-amber-500 uppercase tracking-wider">In Review & Interview</span>
+                <span className="text-sm font-semibold text-amber-500 uppercase tracking-wider">In Review & Interview</span>
                 <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-500">
                   <Clock className="w-4 h-4" />
                 </div>
               </div>
               <div className="mt-3">
                 <div className="text-2xl font-bold text-text">{stats.underReview}</div>
-                <p className="text-xs text-text-muted mt-1">Under active technical screening</p>
+                <p className="text-sm text-text-muted mt-1">Under active technical screening</p>
               </div>
             </Card>
 
             <Card className="p-5 border-emerald-500/20 bg-surface">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-emerald-500 uppercase tracking-wider">Accepted Candidates</span>
+                <span className="text-sm font-semibold text-emerald-500 uppercase tracking-wider">Accepted Candidates</span>
                 <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">
                   <CheckCircle2 className="w-4 h-4" />
                 </div>
               </div>
               <div className="mt-3">
                 <div className="text-2xl font-bold text-text">{stats.accepted}</div>
-                <p className="text-xs text-text-muted mt-1">Approved for team onboarding</p>
+                <p className="text-sm text-text-muted mt-1">Approved for team onboarding</p>
               </div>
             </Card>
 
             <Card className="p-5 border-rose-500/20 bg-surface">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-rose-500 uppercase tracking-wider">Rejected</span>
+                <span className="text-sm font-semibold text-rose-500 uppercase tracking-wider">Rejected</span>
                 <div className="w-8 h-8 rounded-lg bg-rose-500/10 flex items-center justify-center text-rose-500">
                   <XCircle className="w-4 h-4" />
                 </div>
               </div>
               <div className="mt-3">
                 <div className="text-2xl font-bold text-text">{stats.rejected}</div>
-                <p className="text-xs text-text-muted mt-1">Declined applications</p>
+                <p className="text-sm text-text-muted mt-1">Declined applications</p>
               </div>
             </Card>
           </div>
@@ -584,7 +584,7 @@ export const ApplicantsPage: React.FC = () => {
                             <Avatar name={applicant.fullName} size="sm" />
                             <div>
                               <div className="font-semibold text-sm text-text">{applicant.fullName}</div>
-                              <div className="text-xs text-text-muted flex items-center gap-2 mt-0.5">
+                              <div className="text-sm text-text-muted flex items-center gap-2 mt-0.5">
                                 <span className="flex items-center gap-1">
                                   <Mail className="w-3 h-3 text-gold/80" /> {applicant.email}
                                 </span>
@@ -600,18 +600,18 @@ export const ApplicantsPage: React.FC = () => {
                         </TableCell>
 
                         <TableCell>
-                          <div className="font-medium text-xs text-text">
+                          <div className="font-medium text-sm text-text">
                             {applicant.positionApplied || "Applicant"}
                           </div>
                           {applicant.skillsDescription && (
-                            <div className="text-[11px] text-text-muted truncate max-w-[220px] mt-0.5" title={applicant.skillsDescription}>
+                            <div className="text-sm text-text-muted truncate max-w-[220px] mt-0.5" title={applicant.skillsDescription}>
                               {applicant.skillsDescription}
                             </div>
                           )}
                         </TableCell>
 
                         <TableCell>
-                          <div className="text-xs text-text flex items-center gap-1">
+                          <div className="text-sm text-text flex items-center gap-1">
                             <MapPin className="w-3 h-3 text-text-muted shrink-0" />
                             <span>{applicant.city ? `${applicant.city}, ${applicant.country || ""}` : applicant.country || "Not specified"}</span>
                           </div>
@@ -620,7 +620,7 @@ export const ApplicantsPage: React.FC = () => {
                         <TableCell>{getStatusBadge(status)}</TableCell>
 
                         <TableCell>
-                          <div className="text-xs text-text">
+                          <div className="text-sm text-text">
                             {new Date(applicant.appliedDate || applicant.createdAt).toLocaleDateString()}
                           </div>
                         </TableCell>
@@ -685,13 +685,13 @@ export const ApplicantsPage: React.FC = () => {
                       <Avatar name={applicant.fullName} size="sm" />
                       <div>
                         <div className="font-semibold text-sm text-text">{applicant.fullName}</div>
-                        <div className="text-xs text-text-muted">{applicant.positionApplied || "Applicant"}</div>
+                        <div className="text-sm text-text-muted">{applicant.positionApplied || "Applicant"}</div>
                       </div>
                     </div>
                     {getStatusBadge(status)}
                   </div>
 
-                  <div className="space-y-1 text-xs text-text-muted border-y border-border/40 py-2">
+                  <div className="space-y-1 text-sm text-text-muted border-y border-border/40 py-2">
                     <div className="flex items-center gap-1.5 text-text">
                       <Mail className="w-3.5 h-3.5 text-gold shrink-0" />
                       <span>{applicant.email}</span>
@@ -709,7 +709,7 @@ export const ApplicantsPage: React.FC = () => {
                   </div>
 
                   <div className="flex items-center justify-between pt-1">
-                    <span className="text-[11px] text-text-muted">
+                    <span className="text-sm text-text-muted">
                       {new Date(applicant.appliedDate || applicant.createdAt).toLocaleDateString()}
                     </span>
                     <div className="flex items-center gap-1">
@@ -774,15 +774,15 @@ export const ApplicantsPage: React.FC = () => {
             return (
               <div key={col.key} className="space-y-3">
                 <div className="flex items-center justify-between p-3 bg-surface border border-border/60 rounded-xl">
-                  <span className="text-xs font-semibold text-text uppercase tracking-wider">{col.label}</span>
-                  <span className="text-xs font-bold bg-surface-hover px-2 py-0.5 rounded-full text-gold">
+                  <span className="text-sm font-semibold text-text uppercase tracking-wider">{col.label}</span>
+                  <span className="text-sm font-bold bg-surface-hover px-2 py-0.5 rounded-full text-gold">
                     {colApplicants.length}
                   </span>
                 </div>
 
                 <div className="space-y-2.5 min-h-[300px]">
                   {colApplicants.length === 0 ? (
-                    <div className="p-6 text-center border border-dashed border-border/60 rounded-xl text-xs text-text-muted">
+                    <div className="p-6 text-center border border-dashed border-border/60 rounded-xl text-sm text-text-muted">
                       No candidates in this stage
                     </div>
                   ) : (
@@ -793,21 +793,21 @@ export const ApplicantsPage: React.FC = () => {
                         onClick={() => handleOpenDossier(applicant)}
                       >
                         <div className="flex items-center justify-between">
-                          <div className="font-semibold text-xs text-text truncate max-w-[140px]">
+                          <div className="font-semibold text-sm text-text truncate max-w-[140px]">
                             {applicant.fullName}
                           </div>
-                          <span className="text-[10px] text-text-muted">
+                          <span className="text-sm text-text-muted">
                             {new Date(applicant.appliedDate || applicant.createdAt).toLocaleDateString([], {
                               month: "short",
                               day: "numeric" })}
                           </span>
                         </div>
 
-                        <div className="text-[11px] text-gold font-medium truncate">
+                        <div className="text-sm text-gold font-medium truncate">
                           {applicant.positionApplied || "Applicant"}
                         </div>
 
-                        <div className="text-[11px] text-text-muted flex items-center gap-1 truncate">
+                        <div className="text-sm text-text-muted flex items-center gap-1 truncate">
                           <MapPin className="w-3 h-3 shrink-0" />
                           <span>{applicant.city || applicant.country || "Not specified"}</span>
                         </div>
@@ -823,7 +823,7 @@ export const ApplicantsPage: React.FC = () => {
                                 approvalNotes: applicant.approvalNotes || "",
                                 rejectionReason: applicant.rejectionReason || "" });
                             }}
-                            className="text-[11px] text-gold hover:underline font-medium"
+                            className="text-sm text-gold hover:underline font-medium"
                           >
                             Review & Stage →
                           </button>
@@ -849,7 +849,7 @@ export const ApplicantsPage: React.FC = () => {
       >
         <form onSubmit={handleCreateSubmit} className="space-y-4">
           {modalError && (
-            <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-xs text-rose-500 flex items-center gap-2">
+            <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-sm text-rose-500 flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{modalError}</span>
             </div>
@@ -985,13 +985,13 @@ export const ApplicantsPage: React.FC = () => {
                 <Avatar name={selectedApplicant.fullName} size="md" />
                 <div>
                   <div className="text-lg font-bold text-text">{selectedApplicant.fullName}</div>
-                  <div className="text-xs text-gold font-medium">{selectedApplicant.positionApplied || "Applicant"}</div>
+                  <div className="text-sm text-gold font-medium">{selectedApplicant.positionApplied || "Applicant"}</div>
                 </div>
               </div>
               <div>{getStatusBadge(selectedApplicant.applicationStatus || selectedApplicant.status)}</div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
               <div className="space-y-1">
                 <span className="text-text-muted">Email Address:</span>
                 <div className="text-text font-medium flex items-center gap-1">
@@ -1041,7 +1041,7 @@ export const ApplicantsPage: React.FC = () => {
                     href={selectedApplicant.linkedinUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs text-gold hover:underline bg-surface-hover px-3 py-1.5 rounded-lg border border-border"
+                    className="inline-flex items-center gap-1.5 text-sm text-gold hover:underline bg-surface-hover px-3 py-1.5 rounded-lg border border-border"
                   >
                     <Linkedin className="w-3.5 h-3.5" /> LinkedIn Profile
                   </a>
@@ -1051,7 +1051,7 @@ export const ApplicantsPage: React.FC = () => {
                     href={selectedApplicant.githubUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs text-gold hover:underline bg-surface-hover px-3 py-1.5 rounded-lg border border-border"
+                    className="inline-flex items-center gap-1.5 text-sm text-gold hover:underline bg-surface-hover px-3 py-1.5 rounded-lg border border-border"
                   >
                     <Github className="w-3.5 h-3.5" /> GitHub Portfolio
                   </a>
@@ -1062,14 +1062,14 @@ export const ApplicantsPage: React.FC = () => {
             {/* Skills & Bio */}
             {selectedApplicant.skillsDescription && (
               <div className="p-3.5 bg-surface rounded-xl border border-border/60 space-y-1">
-                <span className="text-xs font-semibold text-text-muted block">Skills & Expertise</span>
-                <p className="text-xs text-text leading-relaxed">{selectedApplicant.skillsDescription}</p>
+                <span className="text-sm font-semibold text-text-muted block">Skills & Expertise</span>
+                <p className="text-sm text-text leading-relaxed">{selectedApplicant.skillsDescription}</p>
               </div>
             )}
 
             {/* Dynamic Custom Questions & Answers */}
             {isLoadingAnswers ? (
-              <div className="p-3.5 bg-surface rounded-xl border border-border/60 space-y-2 text-xs text-text-muted">
+              <div className="p-3.5 bg-surface rounded-xl border border-border/60 space-y-2 text-sm text-text-muted">
                 <div className="flex items-center gap-2">
                   <RefreshCw className="w-3.5 h-3.5 animate-spin text-gold" />
                   <span>Loading candidate question responses...</span>
@@ -1077,11 +1077,11 @@ export const ApplicantsPage: React.FC = () => {
               </div>
             ) : selectedApplicantAnswers && selectedApplicantAnswers.length > 0 ? (
               <div className="p-4 bg-surface rounded-xl border border-border/60 space-y-3">
-                <div className="flex items-center gap-2 text-xs font-semibold text-text">
+                <div className="flex items-center gap-2 text-sm font-semibold text-text">
                   <FileQuestion className="w-4 h-4 text-gold" />
                   <span>Custom Questionnaire Responses ({selectedApplicantAnswers.length})</span>
                 </div>
-                <div className="divide-y divide-border/40 text-xs">
+                <div className="divide-y divide-border/40 text-sm">
                   {selectedApplicantAnswers.map((ans: any, idx: number) => (
                     <div key={ans.id || idx} className="py-2.5 first:pt-1 last:pb-1 space-y-1">
                       <div className="text-text-muted font-medium">
@@ -1098,7 +1098,7 @@ export const ApplicantsPage: React.FC = () => {
 
             {/* Review Notes */}
             {(selectedApplicant.reviewNotes || selectedApplicant.approvalNotes || selectedApplicant.rejectionReason) && (
-              <div className="p-3.5 bg-surface-hover/60 rounded-xl border border-border/60 space-y-2 text-xs">
+              <div className="p-3.5 bg-surface-hover/60 rounded-xl border border-border/60 space-y-2 text-sm">
                 <span className="font-semibold text-text block">Recruitment Audit Notes</span>
                 {selectedApplicant.reviewNotes && (
                   <div>
@@ -1157,8 +1157,8 @@ export const ApplicantsPage: React.FC = () => {
           <div className="space-y-4">
             <div className="p-3 bg-surface-hover/60 rounded-lg border border-border/60 flex items-center justify-between">
               <div>
-                <div className="font-semibold text-xs text-text">{reviewingApplicant.fullName}</div>
-                <div className="text-[11px] text-text-muted">{reviewingApplicant.email}</div>
+                <div className="font-semibold text-sm text-text">{reviewingApplicant.fullName}</div>
+                <div className="text-sm text-text-muted">{reviewingApplicant.email}</div>
               </div>
               <div>{getStatusBadge(reviewingApplicant.applicationStatus || reviewingApplicant.status)}</div>
             </div>
@@ -1172,7 +1172,7 @@ export const ApplicantsPage: React.FC = () => {
             />
 
             <div className="space-y-2 pt-2 border-t border-border/60">
-              <span className="text-xs font-semibold text-text block">Apply Stage Decision</span>
+              <span className="text-sm font-semibold text-text block">Apply Stage Decision</span>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <Button
                   variant="outline"
@@ -1229,7 +1229,7 @@ export const ApplicantsPage: React.FC = () => {
       >
         {onboardingApplicant && (
           <div className="space-y-4">
-            <p className="text-xs text-text-muted">
+            <p className="text-sm text-text-muted">
               Convert candidate <span className="font-semibold text-text">{onboardingApplicant.fullName}</span> into an active team member with access credentials in{" "}
               <span className="font-semibold text-gold">{currentOrganization?.name || "your organization"}</span>.
             </p>

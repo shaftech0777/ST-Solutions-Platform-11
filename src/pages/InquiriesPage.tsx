@@ -282,15 +282,15 @@ export const InquiriesPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center space-x-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-900 dark:text-amber-400 text-xs font-mono font-bold uppercase tracking-wider">
+            <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-900 dark:text-amber-400 text-sm font-mono font-bold uppercase tracking-wider">
               Lead Management
             </span>
-            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Public Portal Submissions</span>
+            <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">Public Portal Submissions</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-1">
             Project Inquiries
           </h1>
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-0.5">
+          <p className="text-sm sm:text-sm text-slate-600 dark:text-slate-400 mt-0.5">
             Manage incoming visitor project requests, track outreach status, and connect via WhatsApp, Email, or Phone.
           </p>
         </div>
@@ -299,7 +299,7 @@ export const InquiriesPage: React.FC = () => {
           <button
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="px-4 py-2 rounded-xl bg-transparent border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center space-x-2 disabled:opacity-50"
+            className="px-4 py-2 rounded-xl bg-transparent border border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center space-x-2 disabled:opacity-50"
           >
             <RefreshCw className={`w-3.5 h-3.5 text-amber-600 dark:text-amber-400 ${isRefreshing ? "animate-spin" : ""}`} />
             <span>{isRefreshing ? "Syncing..." : "Refresh Feed"}</span>
@@ -353,7 +353,7 @@ export const InquiriesPage: React.FC = () => {
             className={`p-5 sm:p-6 rounded-2xl border ${kpi.border} ${kpi.bg} shadow-sm flex flex-col justify-between`}
           >
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider font-mono">
+              <span className="text-sm font-bold text-slate-600 uppercase tracking-wider font-mono">
                 {kpi.label}
               </span>
               {kpi.badge && (
@@ -372,13 +372,13 @@ export const InquiriesPage: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
           {/* Search Input */}
           <div className="sm:col-span-6 relative">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Search by name, email, phone, company, project snapshot..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#E2E5E0] text-xs font-medium text-slate-900 bg-[#F8F9F7] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#E2E5E0] text-sm font-medium text-slate-900 bg-[#F8F9F7] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
             />
           </div>
 
@@ -387,7 +387,7 @@ export const InquiriesPage: React.FC = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E2E5E0] text-xs font-medium text-slate-800 bg-[#F8F9F7] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E2E5E0] text-sm font-medium text-slate-800 bg-[#F8F9F7] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
             >
               <option value="ALL">All Statuses</option>
               <option value="NEW">New Leads Only</option>
@@ -404,7 +404,7 @@ export const InquiriesPage: React.FC = () => {
             <select
               value={priorityFilter}
               onChange={(e) => setPriorityFilter(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E2E5E0] text-xs font-medium text-slate-800 bg-[#F8F9F7] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E2E5E0] text-sm font-medium text-slate-800 bg-[#F8F9F7] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
             >
               <option value="ALL">All Priorities</option>
               <option value="URGENT">Urgent</option>
@@ -420,24 +420,24 @@ export const InquiriesPage: React.FC = () => {
       {isLoading ? (
         <div className="p-12 text-center rounded-3xl bg-white border border-[#E2E5E0] space-y-3">
           <RefreshCw className="w-8 h-8 mx-auto text-[#B88E20] animate-spin" />
-          <p className="text-xs font-bold text-slate-700">Loading project inquiries...</p>
+          <p className="text-sm font-bold text-slate-700">Loading project inquiries...</p>
         </div>
       ) : error ? (
         <div className="p-8 text-center rounded-3xl bg-rose-50 border border-rose-200 text-rose-800 space-y-2">
           <AlertCircle className="w-6 h-6 mx-auto text-rose-600" />
-          <p className="text-xs font-bold">{error}</p>
+          <p className="text-sm font-bold">{error}</p>
           <button
             onClick={() => fetchInquiries(true)}
-            className="text-xs font-bold text-[#B88E20] underline"
+            className="text-sm font-bold text-[#B88E20] underline"
           >
             Retry
           </button>
         </div>
       ) : inquiries.length === 0 ? (
         <div className="p-12 text-center rounded-3xl bg-white border border-[#E2E5E0] space-y-3">
-          <Layers className="w-10 h-10 mx-auto text-slate-300" />
+          <Layers className="w-10 h-10 mx-auto text-slate-700 dark:text-slate-300" />
           <h3 className="text-base font-bold text-slate-900">No project inquiries found</h3>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+          <p className="text-sm text-slate-500 max-w-sm mx-auto">
             When visitors submit requests through the public website or project showcases, they will appear here in real-time.
           </p>
         </div>
@@ -460,18 +460,18 @@ export const InquiriesPage: React.FC = () => {
                   <div className="space-y-2 flex-1">
                     <div className="flex items-center flex-wrap gap-2">
                       <span
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider border ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border}`}
+                        className={`px-2.5 py-0.5 rounded-full text-sm font-mono font-bold uppercase tracking-wider border ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border}`}
                       >
                         {statusStyle.label}
                       </span>
 
                       <span
-                        className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${priorityStyle.bg} ${priorityStyle.text}`}
+                        className={`px-2 py-0.5 rounded-full text-sm font-mono font-bold ${priorityStyle.bg} ${priorityStyle.text}`}
                       >
                         {priorityStyle.label} Priority
                       </span>
 
-                      <span className="text-xs text-slate-500 font-mono">
+                      <span className="text-sm text-slate-500 font-mono">
                         {new Date(inquiry.createdAt).toLocaleString(undefined, {
                           month: "short",
                           day: "numeric",
@@ -487,25 +487,25 @@ export const InquiriesPage: React.FC = () => {
                           {inquiry.visitorName}
                         </h2>
                         {inquiry.companyName && (
-                          <span className="text-xs text-slate-600 font-medium flex items-center space-x-1">
-                            <Building className="w-3 h-3 text-slate-400" />
+                          <span className="text-sm text-slate-600 font-medium flex items-center space-x-1">
+                            <Building className="w-3 h-3 text-slate-500 dark:text-slate-400" />
                             <span>({inquiry.companyName})</span>
                           </span>
                         )}
                         {inquiry.country && (
-                          <span className="text-xs text-slate-500 font-mono">
+                          <span className="text-sm text-slate-500 font-mono">
                             • {inquiry.country}
                           </span>
                         )}
                       </div>
 
                       <div className="flex items-center space-x-2 mt-1.5">
-                        <span className="text-xs font-semibold text-slate-600 inline-flex items-center h-6">Interested in:</span>
-                        <span className="text-xs font-bold text-amber-700 bg-amber-500/10 px-2 h-6 inline-flex items-center justify-center rounded-md border border-amber-500/20">
+                        <span className="text-sm font-semibold text-slate-600 inline-flex items-center h-6">Interested in:</span>
+                        <span className="text-sm font-bold text-amber-700 bg-amber-500/10 px-2 h-6 inline-flex items-center justify-center rounded-md border border-amber-500/20">
                           {inquiry.projectNameSnapshot}
                         </span>
                         {inquiry.category && (
-                          <span className="text-xs font-mono text-slate-500 inline-flex items-center h-6">
+                          <span className="text-sm font-mono text-slate-500 inline-flex items-center h-6">
                             [{inquiry.category}]
                           </span>
                         )}
@@ -513,12 +513,12 @@ export const InquiriesPage: React.FC = () => {
                     </div>
 
                     {/* Message Preview */}
-                    <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed bg-[#F8F9F7] p-2.5 rounded-xl border border-[#E2E5E0]">
+                    <p className="text-sm text-slate-600 line-clamp-2 leading-relaxed bg-[#F8F9F7] p-2.5 rounded-xl border border-[#E2E5E0]">
                       "{inquiry.message}"
                     </p>
 
                     {/* Meta tags: Budget & Contact info */}
-                    <div className="flex flex-wrap items-center gap-3 pt-1 text-[11px] text-slate-600">
+                    <div className="flex flex-wrap items-center gap-3 pt-1 text-sm text-slate-600">
                       <span className="font-mono">
                         📧 <strong>{inquiry.email}</strong>
                       </span>
@@ -549,7 +549,7 @@ export const InquiriesPage: React.FC = () => {
                       <button
                         onClick={() => handleRecordContactAttempt(inquiry, "WHATSAPP", true)}
                         title="Chat on WhatsApp (auto records outreach)"
-                        className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 text-xs font-bold flex items-center justify-center shadow-sm transition-all flex-1 lg:flex-none"
+                        className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 text-sm font-bold flex items-center justify-center shadow-sm transition-all flex-1 lg:flex-none"
                       >
                         <MessageCircle className="w-4 h-4" />
                       </button>
@@ -557,7 +557,7 @@ export const InquiriesPage: React.FC = () => {
                       <button
                         onClick={() => handleRecordContactAttempt(inquiry, "EMAIL", true)}
                         title="Send Email (auto records outreach)"
-                        className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 text-xs font-bold flex items-center justify-center shadow-sm transition-all flex-1 lg:flex-none"
+                        className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 text-sm font-bold flex items-center justify-center shadow-sm transition-all flex-1 lg:flex-none"
                       >
                         <Mail className="w-4 h-4" />
                       </button>
@@ -565,7 +565,7 @@ export const InquiriesPage: React.FC = () => {
                       <button
                         onClick={() => handleRecordContactAttempt(inquiry, "PHONE_CALL", true)}
                         title="Phone Call (auto records outreach)"
-                        className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center justify-center shadow-sm transition-all flex-1 lg:flex-none"
+                        className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold flex items-center justify-center shadow-sm transition-all flex-1 lg:flex-none"
                       >
                         <Phone className="w-4 h-4" />
                       </button>
@@ -575,7 +575,7 @@ export const InquiriesPage: React.FC = () => {
                     <div className="flex items-center justify-end space-x-2 w-full">
                       <button
                         onClick={() => handleOpenDetail(inquiry)}
-                        className="px-4 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-900 text-xs font-bold transition-all border border-slate-200 flex items-center justify-center space-x-1 flex-1 lg:flex-none"
+                        className="px-4 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-900 text-sm font-bold transition-all border border-slate-200 flex items-center justify-center space-x-1 flex-1 lg:flex-none"
                       >
                         <Edit3 className="w-3.5 h-3.5 text-amber-600" />
                         <span>Manage Lead</span>
@@ -585,7 +585,7 @@ export const InquiriesPage: React.FC = () => {
                         <button
                           onClick={() => handleDeleteInquiry(inquiry.id)}
                           title="Delete inquiry"
-                          className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors flex-shrink-0"
+                          className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors flex-shrink-0"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -610,23 +610,23 @@ export const InquiriesPage: React.FC = () => {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="p-6 bg-slate-950 text-white flex items-center justify-between border-b border-slate-800">
+            <div className="p-6 bg-white dark:bg-slate-950 text-slate-900 dark:text-white flex items-center justify-between border-b border-slate-200 dark:border-slate-800">
               <div className="space-y-1">
                 <div className="flex items-center space-x-2">
-                  <span className="px-2.5 py-0.5 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37]/40 text-[#E5C158] text-[10px] font-mono uppercase tracking-wider font-bold">
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37]/40 text-[#E5C158] text-sm font-mono uppercase tracking-wider font-bold">
                     Lead File #{selectedInquiry.id.slice(0, 8)}
                   </span>
-                  <span className="text-xs text-slate-400">
+                  <span className="text-sm text-slate-500 dark:text-slate-400">
                     Submitted {new Date(selectedInquiry.createdAt).toLocaleDateString()}
                   </span>
                 </div>
-                <h2 className="text-xl font-extrabold text-white">
+                <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">
                   {selectedInquiry.visitorName}
                 </h2>
               </div>
               <button
                 onClick={() => setIsDetailModalOpen(false)}
-                className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+                className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -635,7 +635,7 @@ export const InquiriesPage: React.FC = () => {
             {/* Modal Body */}
             <div className="p-6 sm:p-8 overflow-y-auto flex-1 space-y-6">
               {actionSuccessMessage && (
-                <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center space-x-2 animate-fade-in">
+                <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-semibold flex items-center space-x-2 animate-fade-in">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                   <span>{actionSuccessMessage}</span>
                 </div>
@@ -644,7 +644,7 @@ export const InquiriesPage: React.FC = () => {
               {/* Status & Priority Controls */}
               <div className="p-4 rounded-2xl bg-[#F8F9F7] border border-[#E2E5E0] grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-900">
+                  <label className="text-sm font-bold text-slate-900">
                     Workflow Status
                   </label>
                   <select
@@ -653,7 +653,7 @@ export const InquiriesPage: React.FC = () => {
                     onChange={(e) =>
                       handleStatusChange(selectedInquiry.id, e.target.value as InquiryStatus)
                     }
-                    className="w-full px-3.5 py-2 rounded-xl border border-[#E2E5E0] text-xs font-bold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                    className="w-full px-3.5 py-2 rounded-xl border border-[#E2E5E0] text-sm font-bold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
                   >
                     <option value="NEW">New Lead</option>
                     <option value="CONTACTED">Contacted</option>
@@ -665,7 +665,7 @@ export const InquiriesPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-900">
+                  <label className="text-sm font-bold text-slate-900">
                     Priority Level
                   </label>
                   <select
@@ -673,7 +673,7 @@ export const InquiriesPage: React.FC = () => {
                     onChange={(e) =>
                       handlePriorityChange(selectedInquiry.id, e.target.value as InquiryPriority)
                     }
-                    className="w-full px-3.5 py-2 rounded-xl border border-[#E2E5E0] text-xs font-bold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                    className="w-full px-3.5 py-2 rounded-xl border border-[#E2E5E0] text-sm font-bold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
                   >
                     <option value="LOW">Low</option>
                     <option value="NORMAL">Normal</option>
@@ -686,10 +686,10 @@ export const InquiriesPage: React.FC = () => {
               {/* Visitor & Snapshot Information Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="p-4 rounded-2xl border border-[#E2E5E0] bg-white space-y-2">
-                  <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono">
+                  <div className="text-sm font-bold text-slate-500 uppercase tracking-wider font-mono">
                     Contact Details
                   </div>
-                  <div className="space-y-1 text-xs">
+                  <div className="space-y-1 text-sm">
                     <div className="flex items-center justify-between">
                       <span className="text-slate-500">Email:</span>
                       <a
@@ -723,10 +723,10 @@ export const InquiriesPage: React.FC = () => {
                 </div>
 
                 <div className="p-4 rounded-2xl border border-[#E2E5E0] bg-white space-y-2">
-                  <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono">
+                  <div className="text-sm font-bold text-slate-500 uppercase tracking-wider font-mono">
                     Requirements Snapshot
                   </div>
-                  <div className="space-y-1 text-xs">
+                  <div className="space-y-1 text-sm">
                     <div className="flex items-center justify-between">
                       <span className="text-slate-500">Target System:</span>
                       <span className="font-bold text-[#B88E20]">
@@ -761,10 +761,10 @@ export const InquiriesPage: React.FC = () => {
 
               {/* Requirements Message */}
               <div className="space-y-2">
-                <div className="text-xs font-bold text-slate-900 uppercase tracking-wider font-mono">
+                <div className="text-sm font-bold text-slate-900 uppercase tracking-wider font-mono">
                   Full Message / Project Scope
                 </div>
-                <div className="p-4 rounded-2xl bg-[#F8F9F7] border border-[#E2E5E0] text-xs text-slate-800 leading-relaxed whitespace-pre-wrap">
+                <div className="p-4 rounded-2xl bg-[#F8F9F7] border border-[#E2E5E0] text-sm text-slate-800 leading-relaxed whitespace-pre-wrap">
                   {selectedInquiry.message}
                 </div>
               </div>
@@ -772,8 +772,8 @@ export const InquiriesPage: React.FC = () => {
               {/* Outreach Trigger Bar */}
               <div className="p-4 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-950 text-white flex flex-col sm:flex-row items-center justify-between gap-3">
                 <div className="space-y-0.5 text-center sm:text-left">
-                  <div className="text-xs font-bold text-white">Direct Outreach Channels</div>
-                  <div className="text-[11px] text-slate-400">
+                  <div className="text-sm font-bold text-slate-900 dark:text-white">Direct Outreach Channels</div>
+                  <div className="text-sm text-slate-500 dark:text-slate-400">
                     Clicking automatically logs an outreach activity timestamp.
                   </div>
                 </div>
@@ -782,7 +782,7 @@ export const InquiriesPage: React.FC = () => {
                     onClick={() =>
                       handleRecordContactAttempt(selectedInquiry, "WHATSAPP", true)
                     }
-                    className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-white/10 hover:bg-emerald-600 text-white text-xs font-bold flex items-center justify-center space-x-1.5 transition-all border border-white/20"
+                    className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-white/10 hover:bg-emerald-600 text-white text-sm font-bold flex items-center justify-center space-x-1.5 transition-all border border-white/20"
                   >
                     <MessageCircle className="w-3.5 h-3.5" />
                     <span>WhatsApp</span>
@@ -791,7 +791,7 @@ export const InquiriesPage: React.FC = () => {
                     onClick={() =>
                       handleRecordContactAttempt(selectedInquiry, "EMAIL", true)
                     }
-                    className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-white/10 hover:bg-blue-600 text-white text-xs font-bold flex items-center justify-center space-x-1.5 transition-all border border-white/20"
+                    className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-white/10 hover:bg-blue-600 text-white text-sm font-bold flex items-center justify-center space-x-1.5 transition-all border border-white/20"
                   >
                     <Mail className="w-3.5 h-3.5" />
                     <span>Email</span>
@@ -800,7 +800,7 @@ export const InquiriesPage: React.FC = () => {
                     onClick={() =>
                       handleRecordContactAttempt(selectedInquiry, "PHONE_CALL", true)
                     }
-                    className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold flex items-center justify-center space-x-1.5 transition-all border border-white/20"
+                    className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-bold flex items-center justify-center space-x-1.5 transition-all border border-white/20"
                   >
                     <Phone className="w-3.5 h-3.5" />
                     <span>Call</span>
@@ -810,16 +810,16 @@ export const InquiriesPage: React.FC = () => {
 
               {/* Internal Notes */}
               <div className="space-y-3">
-                <div className="text-xs font-bold text-slate-900 uppercase tracking-wider font-mono">
+                <div className="text-sm font-bold text-slate-900 uppercase tracking-wider font-mono">
                   Administrative Notes & History
                 </div>
 
                 {selectedInquiry.adminNotes ? (
-                  <div className="p-4 rounded-2xl bg-amber-50/50 border border-amber-200/70 text-xs text-slate-800 whitespace-pre-wrap leading-relaxed">
+                  <div className="p-4 rounded-2xl bg-amber-50/50 border border-amber-200/70 text-sm text-slate-800 whitespace-pre-wrap leading-relaxed">
                     {selectedInquiry.adminNotes}
                   </div>
                 ) : (
-                  <div className="text-xs text-slate-400 italic">No notes added yet.</div>
+                  <div className="text-sm text-slate-500 dark:text-slate-400 italic">No notes added yet.</div>
                 )}
 
                 <form onSubmit={handleAddNote} className="space-y-2">
@@ -828,13 +828,13 @@ export const InquiriesPage: React.FC = () => {
                     placeholder="Append new note (e.g. Discussed wireframes on WhatsApp, promised quote by Thursday)..."
                     value={newNoteText}
                     onChange={(e) => setNewNoteText(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#E2E5E0] text-xs font-medium text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#E2E5E0] text-sm font-medium text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
                   />
                   <div className="flex justify-end">
                     <button
                       type="submit"
                       disabled={isSubmittingNote || !newNoteText.trim()}
-                      className="px-4 py-2 rounded-xl bg-slate-950 text-white text-xs font-bold hover:bg-slate-800 transition-colors disabled:opacity-50 flex items-center space-x-1.5"
+                      className="px-4 py-2 rounded-xl bg-white dark:bg-slate-950 text-white text-sm font-bold hover:bg-slate-800 transition-colors disabled:opacity-50 flex items-center space-x-1.5"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       <span>{isSubmittingNote ? "Saving..." : "Append Note"}</span>
@@ -846,14 +846,14 @@ export const InquiriesPage: React.FC = () => {
               {/* Activity Timeline */}
               {Array.isArray(selectedInquiry.activities) && selectedInquiry.activities.length > 0 && (
                 <div className="space-y-2 pt-2 border-t border-[#E2E5E0]">
-                  <div className="text-xs font-bold text-slate-900 uppercase tracking-wider font-mono">
+                  <div className="text-sm font-bold text-slate-900 uppercase tracking-wider font-mono">
                     Activity & Audit Trail
                   </div>
                   <div className="space-y-2">
                     {selectedInquiry.activities.map((act) => (
                       <div
                         key={act.id}
-                        className="p-3 rounded-xl bg-[#F8F9F7] border border-[#E2E5E0] text-xs flex items-start justify-between gap-3"
+                        className="p-3 rounded-xl bg-[#F8F9F7] border border-[#E2E5E0] text-sm flex items-start justify-between gap-3"
                       >
                         <div className="space-y-0.5">
                           <div className="font-bold text-slate-900">
@@ -869,12 +869,12 @@ export const InquiriesPage: React.FC = () => {
                             <div className="text-slate-600">{act.details}</div>
                           )}
                           {act.userName && (
-                            <div className="text-[10px] text-slate-400">
+                            <div className="text-sm text-slate-500 dark:text-slate-400">
                               By: {act.userName}
                             </div>
                           )}
                         </div>
-                        <span className="text-[10px] font-mono text-slate-400 whitespace-nowrap">
+                        <span className="text-sm font-mono text-slate-500 dark:text-slate-400 whitespace-nowrap">
                           {new Date(act.createdAt).toLocaleString()}
                         </span>
                       </div>

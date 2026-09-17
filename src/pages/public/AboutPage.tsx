@@ -21,7 +21,7 @@ export const AboutPage: React.FC = () => {
     <div className="space-y-16 sm:space-y-24 pb-16 font-sans">
       {/* Header Banner */}
       <section className="pt-8 sm:pt-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center space-y-4">
-        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-900 text-xs font-semibold uppercase tracking-wider font-mono">
+        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-900 text-sm font-semibold uppercase tracking-wider font-mono">
           <span>Our Story & Philosophy</span>
         </div>
         <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-950 tracking-tight max-w-3xl mx-auto">
@@ -41,11 +41,11 @@ export const AboutPage: React.FC = () => {
             <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-[#B88E20] flex items-center justify-center">
               <Compass className="w-6 h-6" />
             </div>
-            <h2 className="text-2xl font-bold text-white">Our Mission</h2>
-            <p className="text-sm text-slate-300 leading-relaxed">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Our Mission</h2>
+            <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
               To empower modern enterprises and growing businesses with robust, high-performance software systems that eliminate operational bottlenecks, reduce manual friction, and accelerate measurable business growth.
             </p>
-            <ul className="space-y-2.5 text-xs text-slate-300 pt-2 font-medium">
+            <ul className="space-y-2.5 text-sm text-slate-700 dark:text-slate-300 pt-2 font-medium">
               <li className="flex items-center space-x-2">
                 <CheckCircle2 className="w-4 h-4 text-[#D4AF37] flex-shrink-0" />
                 <span>Zero bloated dependencies or fragile templates</span>
@@ -66,11 +66,11 @@ export const AboutPage: React.FC = () => {
             <div className="w-12 h-12 rounded-2xl bg-[#D4AF37]/20 text-[#D4AF37] flex items-center justify-center">
               <Sparkles className="w-6 h-6" />
             </div>
-            <h2 className="text-2xl font-bold text-white">Our Vision</h2>
-            <p className="text-sm text-slate-300 leading-relaxed">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Our Vision</h2>
+            <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
               To establish ST-Solutions as the premier technology partner for businesses seeking dependable, scalable, and secure digital infrastructure built with absolute craftsmanship.
             </p>
-            <ul className="space-y-2.5 text-xs text-slate-300 pt-2 font-medium">
+            <ul className="space-y-2.5 text-sm text-slate-700 dark:text-slate-300 pt-2 font-medium">
               <li className="flex items-center space-x-2">
                 <CheckCircle2 className="w-4 h-4 text-[#D4AF37] flex-shrink-0" />
                 <span>Enterprise reliability accessible to growing ventures</span>
@@ -94,7 +94,7 @@ export const AboutPage: React.FC = () => {
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-950 tracking-tight">
             Our Architectural Principles
           </h2>
-          <p className="text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
+          <p className="text-sm sm:text-sm text-slate-600 max-w-xl mx-auto">
             How we approach every system, database schema, and user interface.
           </p>
         </div>
@@ -105,7 +105,7 @@ export const AboutPage: React.FC = () => {
               <Code2 className="w-5 h-5" />
             </div>
             <h3 className="text-base font-bold text-slate-950">Strict Type Safety</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-sm text-slate-600 leading-relaxed">
               We leverage full-stack TypeScript across client and backend systems to eliminate runtime defects and guarantee predictability.
             </p>
           </div>
@@ -115,7 +115,7 @@ export const AboutPage: React.FC = () => {
               <Layers className="w-5 h-5" />
             </div>
             <h3 className="text-base font-bold text-slate-950">Relational Integrity</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-sm text-slate-600 leading-relaxed">
               PostgreSQL and Prisma ORM ensure your critical financial and operational records maintain strict foreign key integrity and ACID guarantees.
             </p>
           </div>
@@ -125,7 +125,7 @@ export const AboutPage: React.FC = () => {
               <Lock className="w-5 h-5" />
             </div>
             <h3 className="text-base font-bold text-slate-950">Cryptographic Security</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-sm text-slate-600 leading-relaxed">
               Hashed refresh tokens, multi-tenant workspace isolation, and zero secret leakage in browser bundles.
             </p>
           </div>
@@ -135,7 +135,7 @@ export const AboutPage: React.FC = () => {
               <Workflow className="w-5 h-5" />
             </div>
             <h3 className="text-base font-bold text-slate-950">Pragmatic Automation</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-sm text-slate-600 leading-relaxed">
               We automate repetitive human tasks through robust webhook queues, Brevo email triggers, and WhatsApp integrations.
             </p>
           </div>
@@ -145,7 +145,7 @@ export const AboutPage: React.FC = () => {
               <Cpu className="w-5 h-5" />
             </div>
             <h3 className="text-base font-bold text-slate-950">Practical AI Utility</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-sm text-slate-600 leading-relaxed">
               We ground LLMs in your private operational context to build actionable assistants without theoretical hype.
             </p>
           </div>
@@ -155,7 +155,7 @@ export const AboutPage: React.FC = () => {
               <HeartHandshake className="w-5 h-5" />
             </div>
             <h3 className="text-base font-bold text-slate-950">Long-Term Ownership</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-sm text-slate-600 leading-relaxed">
               You own your source code, data schemas, and cloud accounts entirely—no proprietary lock-ins.
             </p>
           </div>
@@ -167,16 +167,16 @@ export const AboutPage: React.FC = () => {
         <div className="p-8 sm:p-12 rounded-3xl bg-[#111827] text-white border border-[#1F2937] shadow-2xl relative overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-8 space-y-4">
-              <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#D4AF37] uppercase tracking-wider font-mono">
+              <div className="inline-flex items-center space-x-2 text-sm font-bold text-[#D4AF37] uppercase tracking-wider font-mono">
                 <span>Founder & Technical Lead</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
                 {companyConfig.founder.name}
               </h2>
-              <div className="text-xs text-amber-300 font-mono font-semibold">
+              <div className="text-sm text-amber-300 font-mono font-semibold">
                 {companyConfig.founder.title}
               </div>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl">
+              <p className="text-sm sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed max-w-2xl">
                 {companyConfig.founder.bio} With deep experience across distributed systems, enterprise data pipelines, and responsive client architectures, Muhammad Shaf oversees system design and quality control across every project delivered by ST-Solutions.
               </p>
 
@@ -185,7 +185,7 @@ export const AboutPage: React.FC = () => {
                   href={companyConfig.founder.portfolioUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl bg-white text-slate-950 font-bold text-xs shadow-md transition-all group hover:bg-slate-100 active:scale-[0.98]"
+                  className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl bg-white text-slate-950 font-bold text-sm shadow-md transition-all group hover:bg-slate-100 active:scale-[0.98]"
                 >
                   <span>View Official Portfolio</span>
                   <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform text-slate-950" />
@@ -198,8 +198,8 @@ export const AboutPage: React.FC = () => {
                 <div className="w-16 h-16 rounded-2xl bg-[#D4AF37] text-slate-950 font-black text-2xl flex items-center justify-center shadow-md">
                   MS
                 </div>
-                <div className="text-sm font-bold text-white">{companyConfig.founder.name}</div>
-                <div className="text-[10px] text-slate-400 font-mono">ST-Solutions Founder</div>
+                <div className="text-sm font-bold text-slate-900 dark:text-white">{companyConfig.founder.name}</div>
+                <div className="text-sm text-slate-500 dark:text-slate-400 font-mono">ST-Solutions Founder</div>
               </div>
             </div>
           </div>
@@ -212,20 +212,20 @@ export const AboutPage: React.FC = () => {
           <h3 className="text-2xl font-bold text-slate-950">
             Have a project in mind?
           </h3>
-          <p className="text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
+          <p className="text-sm sm:text-sm text-slate-600 max-w-xl mx-auto">
             Schedule a technical consultation to explore the best architecture, timeline, and investment for your requirements.
           </p>
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               to="/contact"
-              className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl bg-[#111827] text-white font-bold text-xs shadow-md hover:bg-[#1F2937] hover:scale-[1.02] active:scale-[0.98] transition-all border border-[#111827]"
+              className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl bg-[#111827] text-white font-bold text-sm shadow-md hover:bg-[#1F2937] hover:scale-[1.02] active:scale-[0.98] transition-all border border-[#111827]"
             >
               <span>Contact ST-Solutions</span>
               <ArrowRight className="w-3.5 h-3.5 text-[#D4AF37]" />
             </Link>
             <Link
               to="/projects"
-              className="w-full sm:w-auto px-6 py-3.5 rounded-xl border border-[#E2E5E0] hover:bg-slate-100 text-slate-800 font-semibold text-xs transition-colors shadow-sm"
+              className="w-full sm:w-auto px-6 py-3.5 rounded-xl border border-[#E2E5E0] hover:bg-slate-100 text-slate-800 font-semibold text-sm transition-colors shadow-sm"
             >
               Explore Real Projects
             </Link>

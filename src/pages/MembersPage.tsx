@@ -523,53 +523,53 @@ export const MembersPage: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="members-kpi-summary">
         <Card className="p-5 border-border/60 bg-surface">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">Total Users</span>
+            <span className="text-sm font-semibold text-text-muted uppercase tracking-wider">Total Users</span>
             <div className="w-8 h-8 rounded-lg bg-surface-hover flex items-center justify-center text-text">
               <Users className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl font-bold text-text">{stats.total}</div>
-            <p className="text-xs text-text-muted mt-1">Platform user accounts</p>
+            <p className="text-sm text-text-muted mt-1">Platform user accounts</p>
           </div>
         </Card>
 
         <Card className="p-5 border-emerald-500/20 bg-surface">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-emerald-500 uppercase tracking-wider">Active Status</span>
+            <span className="text-sm font-semibold text-emerald-500 uppercase tracking-wider">Active Status</span>
             <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">
               <CheckCircle2 className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl font-bold text-text">{stats.active}</div>
-            <p className="text-xs text-text-muted mt-1">Full operational access</p>
+            <p className="text-sm text-text-muted mt-1">Full operational access</p>
           </div>
         </Card>
 
         <Card className="p-5 border-amber-500/20 bg-surface">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-amber-500 uppercase tracking-wider">Leadership & Admins</span>
+            <span className="text-sm font-semibold text-amber-500 uppercase tracking-wider">Leadership & Admins</span>
             <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-500">
               <Shield className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl font-bold text-text">{stats.leadership}</div>
-            <p className="text-xs text-text-muted mt-1">Privileged role holders</p>
+            <p className="text-sm text-text-muted mt-1">Privileged role holders</p>
           </div>
         </Card>
 
         <Card className="p-5 border-rose-500/20 bg-surface">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-rose-500 uppercase tracking-wider">Suspended / Inactive</span>
+            <span className="text-sm font-semibold text-rose-500 uppercase tracking-wider">Suspended / Inactive</span>
             <div className="w-8 h-8 rounded-lg bg-rose-500/10 flex items-center justify-center text-rose-500">
               <XCircle className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl font-bold text-text">{stats.suspended}</div>
-            <p className="text-xs text-text-muted mt-1">Access restricted</p>
+            <p className="text-sm text-text-muted mt-1">Access restricted</p>
           </div>
         </Card>
       </div>
@@ -582,7 +582,7 @@ export const MembersPage: React.FC = () => {
             setActiveView("directory");
             setSearchParams({});
           }}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
             activeView === "directory"
               ? "bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/40 shadow-sm"
               : "text-text-muted hover:text-text hover:bg-surface-hover/70"
@@ -590,7 +590,7 @@ export const MembersPage: React.FC = () => {
         >
           <Users className="w-4 h-4" />
           <span>User Accounts Directory</span>
-          <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-slate-800 text-slate-300 font-mono">
+          <span className="ml-1 px-1.5 py-0.2 rounded-full text-sm bg-slate-800 text-slate-700 dark:text-slate-300 font-mono">
             {filteredMembers.length}
           </span>
         </button>
@@ -601,7 +601,7 @@ export const MembersPage: React.FC = () => {
             setActiveView("hierarchy");
             setSearchParams({ tab: "hierarchy" });
           }}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
             activeView === "hierarchy"
               ? "bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/40 shadow-sm"
               : "text-text-muted hover:text-text hover:bg-surface-hover/70"
@@ -609,7 +609,7 @@ export const MembersPage: React.FC = () => {
         >
           <Layers className="w-4 h-4 text-[#D4AF37]" />
           <span>Team Hierarchy Tree</span>
-          <span className="ml-1 px-1.5 py-0.2 rounded text-[10px] bg-[#D4AF37]/20 text-[#D4AF37] font-mono font-bold">
+          <span className="ml-1 px-1.5 py-0.2 rounded text-sm bg-[#D4AF37]/20 text-[#D4AF37] font-mono font-bold">
             Live DB
           </span>
         </button>
@@ -746,17 +746,17 @@ export const MembersPage: React.FC = () => {
                               <div className="font-semibold text-sm text-text flex items-center gap-1.5">
                                 <span>{name}</span>
                                 {isSelf && (
-                                  <span className="text-[10px] bg-gold/10 text-gold px-1.5 py-0.5 rounded font-mono font-bold">
+                                  <span className="text-sm bg-gold/10 text-gold px-1.5 py-0.5 rounded font-mono font-bold">
                                     You
                                   </span>
                                 )}
                               </div>
-                              <div className="text-xs text-text-muted flex items-center gap-2 mt-0.5 flex-wrap">
-                                <span className="font-mono text-[11px] bg-slate-800 text-slate-300 px-1.5 py-0.2 rounded border border-slate-700">
+                              <div className="text-sm text-text-muted flex items-center gap-2 mt-0.5 flex-wrap">
+                                <span className="font-mono text-sm bg-slate-800 text-slate-700 dark:text-slate-300 px-1.5 py-0.2 rounded border border-slate-300 dark:border-slate-700">
                                   ID: {targetUserId}
                                 </span>
                                 {email && !email.endsWith("@st-solutions.internal") && (
-                                  <span className="flex items-center gap-1 text-slate-400">
+                                  <span className="flex items-center gap-1 text-slate-500 dark:text-slate-400">
                                     <Mail className="w-3 h-3 text-gold/80" /> {email}
                                   </span>
                                 )}
@@ -769,7 +769,7 @@ export const MembersPage: React.FC = () => {
                         <TableCell>{getStatusBadge(status)}</TableCell>
 
                         <TableCell>
-                          <div className="text-xs text-text">
+                          <div className="text-sm text-text">
                             {new Date(member.createdAt).toLocaleDateString()}
                           </div>
                         </TableCell>
@@ -859,18 +859,18 @@ export const MembersPage: React.FC = () => {
                         <div className="font-semibold text-sm text-text flex items-center gap-1.5">
                           <span>{name}</span>
                           {isSelf && (
-                            <span className="text-[10px] bg-gold/10 text-gold px-1.5 py-0.5 rounded font-mono font-bold">
+                            <span className="text-sm bg-gold/10 text-gold px-1.5 py-0.5 rounded font-mono font-bold">
                               You
                             </span>
                           )}
                         </div>
-                        <div className="text-xs text-text-muted mt-0.5">{email}</div>
+                        <div className="text-sm text-text-muted mt-0.5">{email}</div>
                       </div>
                     </div>
                     {getStatusBadge(status)}
                   </div>
 
-                  <div className="flex items-center justify-between pt-2 border-t border-border/60 text-xs">
+                  <div className="flex items-center justify-between pt-2 border-t border-border/60 text-sm">
                     <div>{getRoleBadge(role)}</div>
                     <div className="flex items-center gap-1">
                       <IconButton
@@ -942,13 +942,13 @@ export const MembersPage: React.FC = () => {
       >
         <form onSubmit={handleCreateUserSubmit} className="space-y-4">
           {modalError && (
-            <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-xs text-rose-500 flex items-center gap-2">
+            <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-sm text-rose-500 flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{modalError}</span>
             </div>
           )}
 
-          <div className="p-3 bg-slate-900/60 border border-slate-800 rounded-xl text-xs text-slate-300 space-y-1">
+          <div className="p-3 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-xl text-sm text-slate-700 dark:text-slate-300 space-y-1">
             <span className="font-semibold text-[#D4AF37] block">Administrative Provisioning Policy:</span>
             <span>
               {isActorAdmin
@@ -973,7 +973,7 @@ export const MembersPage: React.FC = () => {
 
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-semibold text-slate-300">
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                 User ID / Username <span className="text-amber-400">*</span>
               </label>
               <button
@@ -983,7 +983,7 @@ export const MembersPage: React.FC = () => {
                   const rand = Math.random().toString(36).substring(2, 6);
                   setCreateUserId(`user-${prefix}-${rand}`);
                 }}
-                className="text-[11px] text-[#D4AF37] hover:underline font-mono"
+                className="text-sm text-[#D4AF37] hover:underline font-mono"
               >
                 + Auto-Generate ID
               </button>
@@ -1007,7 +1007,7 @@ export const MembersPage: React.FC = () => {
 
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-semibold text-slate-300">
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                 Initial Password <span className="text-amber-400">*</span>
               </label>
               <button
@@ -1020,7 +1020,7 @@ export const MembersPage: React.FC = () => {
                   }
                   setCreatePassword(pass);
                 }}
-                className="text-[11px] text-[#D4AF37] hover:underline font-mono"
+                className="text-sm text-[#D4AF37] hover:underline font-mono"
               >
                 + Generate Strong Password
               </button>
@@ -1083,13 +1083,13 @@ export const MembersPage: React.FC = () => {
       >
         <form onSubmit={handleInviteSubmit} className="space-y-4">
           {modalError && (
-            <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-xs text-rose-500 flex items-center gap-2">
+            <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-sm text-rose-500 flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{modalError}</span>
             </div>
           )}
 
-          <p className="text-xs text-text-muted">
+          <p className="text-sm text-text-muted">
             Send an invitation link to onboard a new collaborator into{" "}
             <span className="font-semibold text-text">{currentOrganization?.name || "your organization"}</span>.
           </p>
@@ -1150,7 +1150,7 @@ export const MembersPage: React.FC = () => {
                   <div className="text-base font-bold text-text">
                     {selectedMember.user?.profile?.fullName || selectedMember.fullName || selectedMember.name || "Unnamed User"}
                   </div>
-                  <div className="text-xs text-text-muted">
+                  <div className="text-sm text-text-muted">
                     {selectedMember.user?.email || selectedMember.email}
                   </div>
                 </div>
@@ -1158,7 +1158,7 @@ export const MembersPage: React.FC = () => {
               <div>{getStatusBadge(selectedMember.status || selectedMember.user?.status || "ACTIVE")}</div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
               <div className="p-3 rounded-lg bg-surface border border-border/60 space-y-1">
                 <span className="text-text-muted block">Account Type / Hierarchy:</span>
                 <div>
@@ -1168,7 +1168,7 @@ export const MembersPage: React.FC = () => {
 
               <div className="p-3 rounded-lg bg-surface border border-border/60 space-y-1">
                 <span className="text-text-muted block">Database User ID:</span>
-                <div className="text-text font-mono text-[11px] select-all font-semibold">
+                <div className="text-text font-mono text-sm select-all font-semibold">
                   {selectedMember.user?.id || selectedMember.userId || selectedMember.id}
                 </div>
               </div>
@@ -1208,16 +1208,16 @@ export const MembersPage: React.FC = () => {
             {(selectedMember.hierarchy || selectedMember.user?.hierarchy) && (
               <div className="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider font-mono">
+                  <span className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider font-mono">
                     Organizational Hierarchy & Line Management
                   </span>
-                  <span className="text-[11px] text-[#B88E20] font-medium font-mono">
+                  <span className="text-sm text-[#B88E20] font-medium font-mono">
                     Live Structure
                   </span>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                   <div className="p-2.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-                    <span className="text-[10px] text-slate-400 uppercase font-mono block">Direct Supervisor / Manager</span>
+                    <span className="text-sm text-slate-500 dark:text-slate-400 uppercase font-mono block">Direct Supervisor / Manager</span>
                     <span className="font-semibold text-slate-800 dark:text-slate-200">
                       {(selectedMember.hierarchy || selectedMember.user?.hierarchy)?.supervisor?.fullName ||
                         (selectedMember.hierarchy || selectedMember.user?.hierarchy)?.supervisor?.email ||
@@ -1225,7 +1225,7 @@ export const MembersPage: React.FC = () => {
                     </span>
                   </div>
                   <div className="p-2.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-                    <span className="text-[10px] text-slate-400 uppercase font-mono block">Direct Subordinates</span>
+                    <span className="text-sm text-slate-500 dark:text-slate-400 uppercase font-mono block">Direct Subordinates</span>
                     <span className="font-semibold text-slate-800 dark:text-slate-200">
                       {(selectedMember.hierarchy || selectedMember.user?.hierarchy)?.managedUsersCount || 0} Direct Report(s)
                     </span>
@@ -1238,29 +1238,29 @@ export const MembersPage: React.FC = () => {
             {(selectedMember.work || selectedMember.user?.work) && (
               <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider font-mono">
+                  <span className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider font-mono">
                     Assigned Portfolio & Performance
                   </span>
-                  <span className="text-[11px] text-emerald-500 font-medium font-mono">
+                  <span className="text-sm text-emerald-500 font-medium font-mono">
                     Score: {(selectedMember.work || selectedMember.user?.work)?.performanceScore ?? 100}%
                   </span>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-mono">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-sm font-mono">
                   <div className="p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-                    <span className="text-[10px] text-slate-400 block">Managed Clients</span>
+                    <span className="text-sm text-slate-500 dark:text-slate-400 block">Managed Clients</span>
                     <span className="text-sm font-bold text-slate-900 dark:text-white">
                       {(selectedMember.work || selectedMember.user?.work)?.assignedClientsCount || 0}
                     </span>
                   </div>
                   <div className="p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-                    <span className="text-[10px] text-slate-400 block">Active Projects</span>
+                    <span className="text-sm text-slate-500 dark:text-slate-400 block">Active Projects</span>
                     <span className="text-sm font-bold text-slate-900 dark:text-white">
                       {(selectedMember.work || selectedMember.user?.work)?.activeProjectsCount || 0}
                     </span>
                   </div>
                   <div className="p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 col-span-2 sm:col-span-1">
-                    <span className="text-[10px] text-slate-400 block">Member Rank</span>
-                    <span className="text-xs font-bold text-[#D4AF37]">
+                    <span className="text-sm text-slate-500 dark:text-slate-400 block">Member Rank</span>
+                    <span className="text-sm font-bold text-[#D4AF37]">
                       {(selectedMember.hierarchy || selectedMember.user?.hierarchy)?.memberAccount?.rankName || "Standard Tier"}
                     </span>
                   </div>
@@ -1269,7 +1269,7 @@ export const MembersPage: React.FC = () => {
             )}
 
             {/* Security Notice */}
-            <div className="p-3.5 bg-slate-900/60 border border-slate-800 rounded-xl text-xs text-slate-300 flex items-start gap-2.5">
+            <div className="p-3.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-xl text-sm text-slate-700 dark:text-slate-300 flex items-start gap-2.5">
               <Shield className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
               <div>
                 <span className="font-semibold text-[#D4AF37] block">Credential Protection & Hashing:</span>
@@ -1314,13 +1314,13 @@ export const MembersPage: React.FC = () => {
         {memberToResetPassword && (
           <form onSubmit={handleResetPasswordSubmit} className="space-y-4">
             {modalError && (
-              <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-xs text-rose-500 flex items-center gap-2">
+              <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-sm text-rose-500 flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{modalError}</span>
               </div>
             )}
 
-            <p className="text-xs text-text-muted">
+            <p className="text-sm text-text-muted">
               Provisioning a new credential for{" "}
               <span className="font-semibold text-text">
                 {memberToResetPassword.user?.profile?.fullName || memberToResetPassword.fullName || memberToResetPassword.email || "this user"}
@@ -1329,7 +1329,7 @@ export const MembersPage: React.FC = () => {
 
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-semibold text-slate-300">
+                <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                   New Temporary Password <span className="text-amber-400">*</span>
                 </label>
                 <button
@@ -1342,7 +1342,7 @@ export const MembersPage: React.FC = () => {
                     }
                     setResetPasswordValue(pass);
                   }}
-                  className="text-[11px] text-[#D4AF37] hover:underline font-mono"
+                  className="text-sm text-[#D4AF37] hover:underline font-mono"
                 >
                   + Generate Strong Password
                 </button>
@@ -1388,7 +1388,7 @@ export const MembersPage: React.FC = () => {
       >
         {memberToEditRole && (
           <div className="space-y-4">
-            <p className="text-xs text-text-muted">
+            <p className="text-sm text-text-muted">
               Adjust privileges for{" "}
               <span className="font-semibold text-text">
                 {memberToEditRole.user?.profile?.fullName || memberToEditRole.fullName || memberToEditRole.name || "this user"}

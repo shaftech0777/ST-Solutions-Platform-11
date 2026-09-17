@@ -495,8 +495,8 @@ export const ProjectsPage: React.FC = () => {
               placeholder="Search by title, description, or client..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              leftIcon={<Search className="w-4 h-4 text-slate-400" />}
-              className="py-2 text-xs"
+              leftIcon={<Search className="w-4 h-4 text-slate-500 dark:text-slate-400" />}
+              className="py-2 text-sm"
             />
           </div>
 
@@ -505,7 +505,7 @@ export const ProjectsPage: React.FC = () => {
               options={PROJECT_STATUS_OPTIONS}
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="py-2 text-xs"
+              className="py-2 text-sm"
             />
           </div>
 
@@ -520,7 +520,7 @@ export const ProjectsPage: React.FC = () => {
                 ]}
                 value={clientFilter}
                 onChange={(e) => setClientFilter(e.target.value)}
-                className="py-2 text-xs"
+                className="py-2 text-sm"
               />
             </div>
           )}
@@ -531,7 +531,7 @@ export const ProjectsPage: React.FC = () => {
               size="sm"
               onClick={clearFilters}
               leftIcon={<X className="w-3.5 h-3.5" />}
-              className="text-xs text-slate-400 hover:text-slate-100"
+              className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-100"
             >
               Reset
             </Button>
@@ -546,7 +546,7 @@ export const ProjectsPage: React.FC = () => {
               className={`p-1.5 rounded-md transition-colors ${
                 viewMode === "table"
                   ? "bg-white dark:bg-slate-900 text-[#D4AF37] shadow-xs"
-                  : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
               }`}
               title="Table view"
               aria-label="Table view"
@@ -558,7 +558,7 @@ export const ProjectsPage: React.FC = () => {
               className={`p-1.5 rounded-md transition-colors ${
                 viewMode === "grid"
                   ? "bg-white dark:bg-slate-900 text-[#D4AF37] shadow-xs"
-                  : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
               }`}
               title="Grid view"
               aria-label="Grid view"
@@ -628,28 +628,28 @@ export const ProjectsPage: React.FC = () => {
                           {p.title}
                         </button>
                         {p.category && (
-                          <span className="inline-flex items-center gap-1 text-[11px] font-mono text-slate-400">
+                          <span className="inline-flex items-center gap-1 text-sm font-mono text-slate-500 dark:text-slate-400">
                             <Tag className="w-3 h-3 text-[#D4AF37]" />
                             {p.category}
                           </span>
                         )}
                         {p.description && (
-                          <p className="text-[11px] text-slate-500 font-normal line-clamp-1 max-w-xs">
+                          <p className="text-sm text-slate-500 font-normal line-clamp-1 max-w-xs">
                             {p.description}
                           </p>
                         )}
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-300 font-medium">
-                        <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <div className="flex items-center gap-1.5 text-sm text-slate-700 dark:text-slate-300 font-medium">
+                        <Building2 className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 shrink-0" />
                         <span className="truncate max-w-[140px]">{getClientDisplayName(p)}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="font-mono font-bold text-xs text-slate-900 dark:text-amber-300">
+                    <TableCell className="font-mono font-bold text-sm text-slate-900 dark:text-amber-300">
                       {formatCurrency(p.budget)}
                     </TableCell>
-                    <TableCell className="font-mono text-[11px] text-slate-500 dark:text-slate-400">
+                    <TableCell className="font-mono text-sm text-slate-500 dark:text-slate-400">
                       <div>
                         {formatDate(p.startDate)} → {formatDate(p.expectedCompletionDate) || "TBD"}
                       </div>
@@ -675,7 +675,7 @@ export const ProjectsPage: React.FC = () => {
                                 );
                               }
                             }}
-                            className="text-xs bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-800 rounded-lg py-1 px-2 focus:outline-none focus:ring-1 focus:ring-[#D4AF37] cursor-pointer disabled:opacity-50"
+                            className="text-sm bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-800 rounded-lg py-1 px-2 focus:outline-none focus:ring-1 focus:ring-[#D4AF37] cursor-pointer disabled:opacity-50"
                           >
                             <option value="" disabled>
                               Transition to...
@@ -688,7 +688,7 @@ export const ProjectsPage: React.FC = () => {
                           </select>
                         </div>
                       ) : (
-                        <span className="text-[11px] text-slate-400 font-mono">Terminal State</span>
+                        <span className="text-sm text-slate-500 dark:text-slate-400 font-mono">Terminal State</span>
                       )}
                     </TableCell>
                     <TableCell className="text-right">
@@ -741,14 +741,14 @@ export const ProjectsPage: React.FC = () => {
             return (
               <Card
                 key={p.id}
-                className="flex flex-col justify-between p-6 relative overflow-hidden hover:border-slate-700 bg-white dark:bg-slate-900/60 transition-all duration-200"
+                className="flex flex-col justify-between p-6 relative overflow-hidden hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900/60 transition-all duration-200"
               >
                 <div className="space-y-4">
                   <div className="flex items-start justify-between gap-2">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <span className="w-2.5 h-2.5 rounded-full bg-[#D4AF37]" />
-                        <span className="text-[11px] font-mono text-slate-400">
+                        <span className="text-sm font-mono text-slate-500 dark:text-slate-400">
                           {p.category || "Client Contract"}
                         </span>
                       </div>
@@ -764,9 +764,9 @@ export const ProjectsPage: React.FC = () => {
                     </Badge>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs p-3 rounded-xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800">
+                  <div className="flex items-center justify-between text-sm p-3 rounded-xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800">
                     <div className="flex items-center gap-2">
-                      <Building2 className="w-4 h-4 text-slate-400" />
+                      <Building2 className="w-4 h-4 text-slate-500 dark:text-slate-400" />
                       <span className="font-semibold text-slate-800 dark:text-slate-200 truncate max-w-[150px]">
                         {getClientDisplayName(p)}
                       </span>
@@ -777,14 +777,14 @@ export const ProjectsPage: React.FC = () => {
                   </div>
 
                   {p.description && (
-                    <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
+                    <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2">
                       {p.description}
                     </p>
                   )}
 
-                  <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800/80">
-                    <span className="flex items-center gap-1 font-mono text-[11px]">
-                      <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                  <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800/80">
+                    <span className="flex items-center gap-1 font-mono text-sm">
+                      <Calendar className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                       {formatDate(p.startDate)} → {formatDate(p.expectedCompletionDate) || "TBD"}
                     </span>
                   </div>
@@ -794,7 +794,7 @@ export const ProjectsPage: React.FC = () => {
                   {/* Status Transition Control */}
                   {allowedNextStatuses.length > 0 && canManage && (
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-[11px] font-mono text-slate-400">Advance Status:</span>
+                      <span className="text-sm font-mono text-slate-500 dark:text-slate-400">Advance Status:</span>
                       <select
                         disabled={isTransitioning}
                         value=""
@@ -807,7 +807,7 @@ export const ProjectsPage: React.FC = () => {
                             );
                           }
                         }}
-                        className="text-xs bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-800 rounded-lg py-1 px-2 focus:outline-none focus:ring-1 focus:ring-[#D4AF37] cursor-pointer"
+                        className="text-sm bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-800 rounded-lg py-1 px-2 focus:outline-none focus:ring-1 focus:ring-[#D4AF37] cursor-pointer"
                       >
                         <option value="" disabled>
                           Select transition...
@@ -826,7 +826,7 @@ export const ProjectsPage: React.FC = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => setSelectedProject(p)}
-                      className="text-xs py-1 px-2.5"
+                      className="text-sm py-1 px-2.5"
                     >
                       Details
                     </Button>
@@ -881,7 +881,7 @@ export const ProjectsPage: React.FC = () => {
           description={`Contract specifications and timeline for ${selectedProject.title}`}
           footer={
             <div className="flex items-center justify-between w-full">
-              <span className="text-xs font-mono text-slate-500">
+              <span className="text-sm font-mono text-slate-500">
                 Project ID: {selectedProject.id}
               </span>
               <div className="flex items-center gap-2">
@@ -921,28 +921,28 @@ export const ProjectsPage: React.FC = () => {
                     {selectedProject.projectStatus}
                   </Badge>
                 </div>
-                <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                  <Building2 className="w-3.5 h-3.5 text-slate-400" />
+                <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                  <Building2 className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                   Client: <strong className="text-slate-800 dark:text-slate-200">{getClientDisplayName(selectedProject)}</strong>
                 </p>
               </div>
               <div className="text-right">
-                <span className="text-[11px] font-mono text-slate-400 block">Allocated Budget</span>
+                <span className="text-sm font-mono text-slate-500 dark:text-slate-400 block">Allocated Budget</span>
                 <span className="text-lg font-mono font-bold text-[#D4AF37]">
                   {formatCurrency(selectedProject.budget)}
                 </span>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
               <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40">
-                <span className="text-[11px] font-mono text-slate-400 block mb-1">Project Category</span>
+                <span className="text-sm font-mono text-slate-500 dark:text-slate-400 block mb-1">Project Category</span>
                 <span className="font-semibold text-slate-900 dark:text-white">
                   {selectedProject.category || "Enterprise Software"}
                 </span>
               </div>
               <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40">
-                <span className="text-[11px] font-mono text-slate-400 block mb-1">Delivery Timeline</span>
+                <span className="text-sm font-mono text-slate-500 dark:text-slate-400 block mb-1">Delivery Timeline</span>
                 <span className="font-semibold text-slate-900 dark:text-white font-mono">
                   {formatDate(selectedProject.startDate)} → {formatDate(selectedProject.expectedCompletionDate) || "Open"}
                 </span>
@@ -950,8 +950,8 @@ export const ProjectsPage: React.FC = () => {
             </div>
 
             {selectedProject.description && (
-              <div className="p-3.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 text-xs">
-                <span className="text-[11px] font-mono text-slate-400 block mb-1">Contract Scope & Deliverables</span>
+              <div className="p-3.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 text-sm">
+                <span className="text-sm font-mono text-slate-500 dark:text-slate-400 block mb-1">Contract Scope & Deliverables</span>
                 <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
                   {selectedProject.description}
                 </p>
@@ -959,18 +959,18 @@ export const ProjectsPage: React.FC = () => {
             )}
 
             {/* Scope & Requirements Checklist */}
-            <div className="p-4 rounded-xl bg-slate-900/70 border border-slate-800 space-y-4">
+            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-mono font-bold text-[#D4AF37] uppercase tracking-wider block">
+                  <span className="text-sm font-mono font-bold text-[#D4AF37] uppercase tracking-wider block">
                     Scope & Requirements Checklist ({requirements.filter((r) => r.isCompleted).length} / {requirements.length} Completed)
                   </span>
-                  <span className="text-[11px] text-slate-400">
+                  <span className="text-sm text-slate-500 dark:text-slate-400">
                     Client deliverables and acceptance criteria.
                   </span>
                 </div>
                 {requirements.length > 0 && (
-                  <span className="font-mono text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">
+                  <span className="font-mono text-sm font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">
                     {Math.round((requirements.filter((r) => r.isCompleted).length / requirements.length) * 100)}% Complete
                   </span>
                 )}
@@ -989,9 +989,9 @@ export const ProjectsPage: React.FC = () => {
               )}
 
               {isLoadingRequirements ? (
-                <div className="py-4 text-center text-xs text-slate-500">Loading deliverables...</div>
+                <div className="py-4 text-center text-sm text-slate-500">Loading deliverables...</div>
               ) : requirements.length === 0 ? (
-                <div className="py-4 text-center text-xs text-slate-500 border border-dashed border-slate-800 rounded-lg">
+                <div className="py-4 text-center text-sm text-slate-500 border border-dashed border-slate-200 dark:border-slate-800 rounded-lg">
                   No explicit deliverables documented yet.
                 </div>
               ) : (
@@ -999,10 +999,10 @@ export const ProjectsPage: React.FC = () => {
                   {requirements.map((req) => (
                     <div
                       key={req.id}
-                      className={`p-2.5 rounded-lg border transition-colors flex items-start justify-between gap-3 text-xs ${
+                      className={`p-2.5 rounded-lg border transition-colors flex items-start justify-between gap-3 text-sm ${
                         req.isCompleted
-                          ? "bg-emerald-950/20 border-emerald-500/30 text-slate-300"
-                          : "bg-slate-900 border-slate-800 text-slate-200"
+                          ? "bg-emerald-950/20 border-emerald-500/30 text-slate-700 dark:text-slate-300"
+                          : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200"
                       }`}
                     >
                       <div className="flex items-start gap-2.5 flex-1 min-w-0">
@@ -1010,7 +1010,7 @@ export const ProjectsPage: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => handleToggleRequirement(req.id, req.isCompleted)}
-                            className="mt-0.5 text-slate-400 hover:text-emerald-400 transition-colors"
+                            className="mt-0.5 text-slate-500 dark:text-slate-400 hover:text-emerald-400 transition-colors"
                           >
                             {req.isCompleted ? (
                               <CheckSquare className="w-4 h-4 text-emerald-400" />
@@ -1028,22 +1028,22 @@ export const ProjectsPage: React.FC = () => {
                           </span>
                         )}
                         <div className="flex-1 min-w-0">
-                          <span className={`font-semibold block ${req.isCompleted ? "line-through text-slate-400" : "text-white"}`}>
+                          <span className={`font-semibold block ${req.isCompleted ? "line-through text-slate-500 dark:text-slate-400" : "text-white"}`}>
                             {req.title}
                           </span>
                           {req.description && (
-                            <p className="text-[11px] text-slate-400 mt-0.5">{req.description}</p>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{req.description}</p>
                           )}
                         </div>
                       </div>
 
                       <div className="flex items-center gap-2 shrink-0">
                         <span
-                          className={`text-[10px] font-mono px-1.5 py-0.2 rounded border ${
+                          className={`text-sm font-mono px-1.5 py-0.2 rounded border ${
                             req.priority === "HIGH"
                               ? "bg-rose-500/10 text-rose-400 border-rose-500/30"
                               : req.priority === "LOW"
-                              ? "bg-slate-800 text-slate-400 border-slate-700"
+                              ? "bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-300 dark:border-slate-700"
                               : "bg-amber-500/10 text-amber-400 border-amber-500/30"
                           }`}
                         >
@@ -1066,18 +1066,18 @@ export const ProjectsPage: React.FC = () => {
               )}
 
               {canManage && (
-                <form onSubmit={handleAddRequirement} className="flex items-center gap-2 pt-2 border-t border-slate-800">
+                <form onSubmit={handleAddRequirement} className="flex items-center gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
                   <input
                     type="text"
                     placeholder="+ Add deliverable requirement..."
                     value={newReqTitle}
                     onChange={(e) => setNewReqTitle(e.target.value)}
-                    className="flex-1 px-3 py-1.5 text-xs bg-slate-950 border border-slate-800 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-[#D4AF37]"
+                    className="flex-1 px-3 py-1.5 text-sm bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-[#D4AF37]"
                   />
                   <select
                     value={newReqPriority}
                     onChange={(e) => setNewReqPriority(e.target.value)}
-                    className="px-2 py-1.5 text-xs bg-slate-950 border border-slate-800 rounded-lg text-slate-300 focus:outline-none focus:border-[#D4AF37]"
+                    className="px-2 py-1.5 text-sm bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-700 dark:text-slate-300 focus:outline-none focus:border-[#D4AF37]"
                   >
                     <option value="LOW">Low</option>
                     <option value="MEDIUM">Medium</option>
@@ -1096,11 +1096,11 @@ export const ProjectsPage: React.FC = () => {
             </div>
 
             {/* Allowed Transitions Preview */}
-            <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 space-y-3">
-              <span className="text-xs font-mono font-bold text-[#D4AF37] uppercase tracking-wider block">
+            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 space-y-3">
+              <span className="text-sm font-mono font-bold text-[#D4AF37] uppercase tracking-wider block">
                 Workflow Transition Governance
               </span>
-              <p className="text-xs text-slate-400">
+              <p className="text-sm text-slate-500 dark:text-slate-400">
                 Current status is <strong className="text-white">{selectedProject.projectStatus}</strong>.
                 {ALLOWED_PROJECT_STATUS_TRANSITIONS[selectedProject.projectStatus]?.length > 0 ? (
                   <> Allowed valid transitions: {ALLOWED_PROJECT_STATUS_TRANSITIONS[selectedProject.projectStatus].join(", ")}</>
@@ -1142,7 +1142,7 @@ export const ProjectsPage: React.FC = () => {
       >
         <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
           {modalError && (
-            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-500 text-xs font-medium">
+            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-500 text-sm font-medium">
               {modalError}
             </div>
           )}

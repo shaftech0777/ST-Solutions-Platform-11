@@ -295,7 +295,7 @@ export const NotificationsPage: React.FC = () => {
           <div className="flex items-center gap-2 border-b md:border-b-0 border-border/40 pb-2 md:pb-0">
             <button
               onClick={() => setActiveTab("all")}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+              className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
                 activeTab === "all"
                   ? "bg-gold text-black shadow-sm"
                   : "text-text-muted hover:text-text hover:bg-surface-hover"
@@ -306,7 +306,7 @@ export const NotificationsPage: React.FC = () => {
 
             <button
               onClick={() => setActiveTab("unread")}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors flex items-center gap-1.5 ${
                 activeTab === "unread"
                   ? "bg-gold text-black shadow-sm"
                   : "text-text-muted hover:text-text hover:bg-surface-hover"
@@ -315,7 +315,7 @@ export const NotificationsPage: React.FC = () => {
               <span>Unread</span>
               {unreadCount > 0 && (
                 <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                  className={`text-sm px-1.5 py-0.2 rounded-full font-mono ${
                     activeTab === "unread" ? "bg-black/20 text-black" : "bg-gold/20 text-gold"
                   }`}
                 >
@@ -326,7 +326,7 @@ export const NotificationsPage: React.FC = () => {
 
             <button
               onClick={() => setActiveTab("read")}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+              className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
                 activeTab === "read"
                   ? "bg-gold text-black shadow-sm"
                   : "text-text-muted hover:text-text hover:bg-surface-hover"
@@ -343,7 +343,7 @@ export const NotificationsPage: React.FC = () => {
               placeholder="Search notifications..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-1.5 text-xs bg-surface-hover/60 border border-border rounded-lg text-text placeholder:text-text-muted focus:outline-none focus:ring-1 focus:ring-gold"
+              className="w-full pl-9 pr-4 py-1.5 text-sm bg-surface-hover/60 border border-border rounded-lg text-text placeholder:text-text-muted focus:outline-none focus:ring-1 focus:ring-gold"
             />
             {search && (
               <button
@@ -424,14 +424,14 @@ export const NotificationsPage: React.FC = () => {
                         )}
                       </div>
 
-                      <p className="text-xs text-text-muted leading-relaxed max-w-2xl">
+                      <p className="text-sm text-text-muted leading-relaxed max-w-2xl">
                         {notif.message}
                       </p>
 
-                      <div className="flex items-center gap-2 pt-1 text-[11px] text-text-muted">
+                      <div className="flex items-center gap-2 pt-1 text-sm text-text-muted">
                         <Clock className="w-3 h-3 text-gold/80" />
                         <span>{new Date(notif.createdAt).toLocaleString()}</span>
-                        <span className="font-mono text-[10px] bg-surface-hover px-1.5 py-0.5 rounded">
+                        <span className="font-mono text-sm bg-surface-hover px-1.5 py-0.5 rounded">
                           {notif.type}
                         </span>
                       </div>
@@ -503,7 +503,7 @@ export const NotificationsPage: React.FC = () => {
         size="md"
       >
         <div className="space-y-4">
-          <p className="text-xs text-text-muted">
+          <p className="text-sm text-text-muted">
             Configure delivery channels and category triggers for operational updates.
           </p>
 
@@ -542,8 +542,8 @@ export const NotificationsPage: React.FC = () => {
                   className="flex items-center justify-between p-3 rounded-lg border border-border/60 bg-surface-hover/40 cursor-pointer hover:border-gold/30 transition-colors"
                 >
                   <div>
-                    <div className="text-xs font-semibold text-text">{item.label}</div>
-                    <div className="text-[11px] text-text-muted">{item.desc}</div>
+                    <div className="text-sm font-semibold text-text">{item.label}</div>
+                    <div className="text-sm text-text-muted">{item.desc}</div>
                   </div>
                   <input
                     type="checkbox"

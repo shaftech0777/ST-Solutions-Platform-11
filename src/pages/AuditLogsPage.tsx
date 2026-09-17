@@ -196,59 +196,59 @@ export const AuditLogsPage: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="audit-kpi-summary">
         <Card className="p-5 border-border/60 bg-surface">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">Total Audit Records</span>
+            <span className="text-sm font-semibold text-text-muted uppercase tracking-wider">Total Audit Records</span>
             <div className="w-8 h-8 rounded-lg bg-surface-hover flex items-center justify-center text-text">
               <Database className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl font-bold text-text">{stats.total}</div>
-            <p className="text-xs text-text-muted mt-1">Immutable journal events</p>
+            <p className="text-sm text-text-muted mt-1">Immutable journal events</p>
           </div>
         </Card>
 
         <Card className="p-5 border-blue-500/20 bg-surface">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-blue-500 uppercase tracking-wider">Auth & Session Events</span>
+            <span className="text-sm font-semibold text-blue-500 uppercase tracking-wider">Auth & Session Events</span>
             <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500">
               <Lock className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl font-bold text-text">{stats.authEvents}</div>
-            <p className="text-xs text-text-muted mt-1">Logins, token refreshes, switches</p>
+            <p className="text-sm text-text-muted mt-1">Logins, token refreshes, switches</p>
           </div>
         </Card>
 
         <Card className="p-5 border-emerald-500/20 bg-surface">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-emerald-500 uppercase tracking-wider">Business Mutations</span>
+            <span className="text-sm font-semibold text-emerald-500 uppercase tracking-wider">Business Mutations</span>
             <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">
               <Activity className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl font-bold text-text">{stats.entityChanges}</div>
-            <p className="text-xs text-text-muted mt-1">Client, project & ledger updates</p>
+            <p className="text-sm text-text-muted mt-1">Client, project & ledger updates</p>
           </div>
         </Card>
 
         <Card className="p-5 border-amber-500/20 bg-surface">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-amber-500 uppercase tracking-wider">Security & RBAC Actions</span>
+            <span className="text-sm font-semibold text-amber-500 uppercase tracking-wider">Security & RBAC Actions</span>
             <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-500">
               <ShieldCheck className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl font-bold text-text">{stats.securityModifications}</div>
-            <p className="text-xs text-text-muted mt-1">Role assignments & status locks</p>
+            <p className="text-sm text-text-muted mt-1">Role assignments & status locks</p>
           </div>
         </Card>
       </div>
 
       {/* Compliance Notice */}
-      <div className="p-4 bg-gold/5 border border-gold/20 rounded-xl flex items-center gap-3 text-xs">
+      <div className="p-4 bg-gold/5 border border-gold/20 rounded-xl flex items-center gap-3 text-sm">
         <ShieldCheck className="w-5 h-5 text-gold shrink-0" />
         <div className="text-text-muted">
           <strong className="text-text">Enterprise Compliance Guarantee:</strong> All logged operations are write-once and cryptographically tied to tenant isolation boundaries. No audit logs may be modified or deleted by user requests.
@@ -349,34 +349,34 @@ export const AuditLogsPage: React.FC = () => {
                     return (
                       <TableRow key={log.id} className="hover:bg-surface-hover/50 transition-colors">
                         <TableCell>
-                          <div className="text-xs font-mono text-text font-medium">
+                          <div className="text-sm font-mono text-text font-medium">
                             {new Date(log.createdAt).toLocaleDateString()}
                           </div>
-                          <div className="text-[11px] text-text-muted font-mono">
+                          <div className="text-sm text-text-muted font-mono">
                             {new Date(log.createdAt).toLocaleTimeString()}
                           </div>
                         </TableCell>
 
                         <TableCell>
-                          <div className="font-semibold text-xs text-text">{actorName}</div>
-                          <div className="text-[11px] text-text-muted truncate max-w-[180px]">{actorEmail}</div>
+                          <div className="font-semibold text-sm text-text">{actorName}</div>
+                          <div className="text-sm text-text-muted truncate max-w-[180px]">{actorEmail}</div>
                         </TableCell>
 
                         <TableCell>{getActionBadge(log.action)}</TableCell>
 
                         <TableCell>
-                          <div className="text-xs text-text max-w-xs truncate" title={log.description || ""}>
+                          <div className="text-sm text-text max-w-xs truncate" title={log.description || ""}>
                             {log.description || "System operation executed"}
                           </div>
                           {log.entityType && (
-                            <div className="text-[10px] text-gold/80 font-mono mt-0.5">
+                            <div className="text-sm text-gold/80 font-mono mt-0.5">
                               {log.entityType} {log.entityId ? `[${log.entityId.slice(0, 8)}]` : ""}
                             </div>
                           )}
                         </TableCell>
 
                         <TableCell>
-                          <div className="font-mono text-xs text-text-muted flex items-center gap-1">
+                          <div className="font-mono text-sm text-text-muted flex items-center gap-1">
                             <Globe className="w-3 h-3 text-gold/60" />
                             <span>{log.ipAddress || "Internal / 127.0.0.1"}</span>
                           </div>
@@ -409,18 +409,18 @@ export const AuditLogsPage: React.FC = () => {
                 <Card key={log.id} className="p-4 border-border/60 bg-surface space-y-3">
                   <div className="flex items-start justify-between gap-2">
                     <div className="space-y-0.5">
-                      <div className="font-semibold text-xs text-text">{actorName}</div>
-                      <div className="text-[11px] text-text-muted font-mono">
+                      <div className="font-semibold text-sm text-text">{actorName}</div>
+                      <div className="text-sm text-text-muted font-mono">
                         {new Date(log.createdAt).toLocaleString()}
                       </div>
                     </div>
                     {getActionBadge(log.action)}
                   </div>
 
-                  <p className="text-xs text-text-muted">{log.description || "Operational event logged."}</p>
+                  <p className="text-sm text-text-muted">{log.description || "Operational event logged."}</p>
 
-                  <div className="flex items-center justify-between pt-2 border-t border-border/40 text-xs">
-                    <div className="font-mono text-[11px] text-text-muted flex items-center gap-1">
+                  <div className="flex items-center justify-between pt-2 border-t border-border/40 text-sm">
+                    <div className="font-mono text-sm text-text-muted flex items-center gap-1">
                       <Globe className="w-3 h-3 text-gold/60" />
                       <span>{log.ipAddress || "127.0.0.1"}</span>
                     </div>
@@ -449,10 +449,10 @@ export const AuditLogsPage: React.FC = () => {
         size="lg"
       >
         {selectedLog && (
-          <div className="space-y-4 text-xs">
+          <div className="space-y-4 text-sm">
             <div className="p-4 bg-surface-hover/60 rounded-xl border border-border/60 flex items-center justify-between">
               <div>
-                <span className="text-text-muted uppercase tracking-wider text-[10px] block">Audit Event Action</span>
+                <span className="text-text-muted uppercase tracking-wider text-sm block">Audit Event Action</span>
                 <div className="text-base font-mono font-bold text-text mt-0.5">{selectedLog.action}</div>
               </div>
               <div>{getActionBadge(selectedLog.action)}</div>
@@ -506,7 +506,7 @@ export const AuditLogsPage: React.FC = () => {
             {selectedLog.details && (
               <div className="space-y-1">
                 <span className="text-text-muted font-semibold block">Event Payload / JSON Context:</span>
-                <pre className="p-3 bg-black/40 text-gold rounded-lg border border-border/60 font-mono text-[11px] overflow-x-auto max-h-48">
+                <pre className="p-3 bg-black/40 text-gold rounded-lg border border-border/60 font-mono text-sm overflow-x-auto max-h-48">
                   {JSON.stringify(selectedLog.details, null, 2)}
                 </pre>
               </div>

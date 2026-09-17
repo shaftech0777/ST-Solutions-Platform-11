@@ -5,7 +5,7 @@ import { Button } from "../components/ui/Button.js";
 
 export const RegisterPage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-[#090A0F] text-slate-100 flex flex-col items-center justify-center p-6 font-sans relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#090A0F] text-slate-900 dark:text-slate-100 flex flex-col items-center justify-center p-6 font-sans relative overflow-hidden">
       {/* Subtle decorative gold glow */}
       <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#D4AF37]/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[#D4AF37]/5 rounded-full blur-3xl pointer-events-none" />
@@ -16,13 +16,13 @@ export const RegisterPage: React.FC = () => {
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#B88E20] text-black font-black text-xl shadow-xl shadow-amber-500/10 border border-amber-300/40 mb-2">
             ST
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-white">ST-SOLUTIONS</h1>
-          <p className="text-xs text-amber-400 font-mono uppercase tracking-widest font-semibold">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">ST-SOLUTIONS</h1>
+          <p className="text-sm text-amber-400 font-mono uppercase tracking-widest font-semibold">
             Shaf Tech Enterprise Gateway
           </p>
         </div>
 
-        <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden text-center space-y-5">
+        <div className="bg-slate-50 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden text-center space-y-5">
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#D4AF37] via-amber-300 to-[#D4AF37]" />
 
           <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-[#D4AF37] flex items-center justify-center mx-auto">
@@ -30,18 +30,18 @@ export const RegisterPage: React.FC = () => {
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-xl font-bold text-white tracking-tight">Public Registration Disabled</h2>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Public Registration Disabled</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
               ST-Solutions operates on a strict administrative provisioning model. Public account self-registration is closed.
             </p>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 text-left space-y-2 text-xs text-slate-300">
+          <div className="p-4 rounded-xl bg-white dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800/80 text-left space-y-2 text-sm text-slate-700 dark:text-slate-300">
             <div className="flex items-start gap-2 text-amber-400 font-semibold">
               <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>Administrative Provisioning Only</span>
             </div>
-            <p className="text-[11px] text-slate-400 leading-relaxed">
+            <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
               New team member, manager, and subordinate accounts can only be issued by an authorized <strong>Administrator</strong> or <strong>Sub-Administrator</strong> from within the system management console.
             </p>
           </div>
@@ -55,14 +55,14 @@ export const RegisterPage: React.FC = () => {
 
             <Link
               to="/"
-              className="text-xs text-slate-500 hover:text-slate-300 transition-colors inline-block pt-2"
+              className="text-sm text-slate-500 hover:text-slate-300 transition-colors inline-block pt-2"
             >
               ← Return to Public Website
             </Link>
           </div>
         </div>
 
-        <div className="text-center text-xs text-slate-500 flex items-center justify-center gap-1.5 font-mono">
+        <div className="text-center text-sm text-slate-500 flex items-center justify-center gap-1.5 font-mono">
           <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
           <span>Encrypted Tenant Identity & Access Control</span>
         </div>

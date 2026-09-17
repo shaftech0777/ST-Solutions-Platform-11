@@ -100,7 +100,7 @@ export const StatCard: React.FC<StatCardProps> = ({
           <span className={trend.isPositive ? "text-emerald-500" : "text-red-500"}>
             {trend.isPositive ? "↑" : "↓"} {trend.value}
           </span>
-          <span className="text-slate-400 text-[11px]">vs last period</span>
+          <span className="text-slate-500 dark:text-slate-400 text-[11px]">vs last period</span>
         </div>
       )}
     </Card>

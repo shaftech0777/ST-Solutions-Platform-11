@@ -142,7 +142,7 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="flex items-center gap-2 sm:gap-3">
         <button
           onClick={onOpenMobileSidebar}
-          className="p-2 min-h-[40px] min-w-[40px] flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900 lg:hidden focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50"
+          className="p-2 min-h-[40px] min-w-[40px] flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white dark:bg-slate-900 lg:hidden focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50"
           aria-label="Open navigation menu"
         >
           <Menu className="w-5 h-5" />
@@ -150,7 +150,7 @@ export const Header: React.FC<HeaderProps> = ({
 
         <div className="flex items-center gap-1.5 sm:gap-2">
           <OrganizationSelector />
-          <span className="text-slate-300 dark:text-slate-700 text-xs sm:text-sm hidden sm:inline">/</span>
+          <span className="text-slate-700 dark:text-slate-300 dark:text-slate-700 text-sm sm:text-sm hidden sm:inline">/</span>
           <div className="hidden md:block">
             <WorkspaceSelector />
           </div>
@@ -162,12 +162,12 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Command Search Button */}
         <button
           onClick={onOpenCommandSearch}
-          className="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 min-h-[38px] rounded-xl bg-slate-100 dark:bg-slate-900/80 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-all text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50"
+          className="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 min-h-[38px] rounded-xl bg-slate-100 dark:bg-slate-900/80 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-all text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50"
           aria-label="Search modules and commands"
         >
           <Search className="w-3.5 h-3.5 text-[#D4AF37]" />
           <span className="hidden md:inline">Search...</span>
-          <kbd className="hidden md:inline-block px-1.5 py-0.2 text-[10px] font-mono rounded bg-white dark:bg-slate-950 text-slate-500 border border-slate-200 dark:border-slate-800">
+          <kbd className="hidden md:inline-block px-1.5 py-0.2 text-sm font-mono rounded bg-white dark:bg-slate-950 text-slate-500 border border-slate-200 dark:border-slate-800">
             ⌘K
           </kbd>
         </button>
@@ -175,7 +175,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
-          className="p-2 min-h-[40px] min-w-[40px] flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50"
+          className="p-2 min-h-[40px] min-w-[40px] flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-white dark:bg-slate-900 transition-colors focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50"
           title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
           aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
         >
@@ -186,7 +186,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="relative">
           <button
             onClick={() => setIsNotifOpen(!isNotifOpen)}
-            className="p-2 min-h-[40px] min-w-[40px] flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors relative focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50"
+            className="p-2 min-h-[40px] min-w-[40px] flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-white dark:bg-slate-900 transition-colors relative focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50"
             aria-label="Notifications"
           >
             <Bell className="w-4 h-4" />
@@ -200,13 +200,13 @@ export const Header: React.FC<HeaderProps> = ({
               <div className="fixed inset-0 z-40" onClick={() => setIsNotifOpen(false)} />
               <div className="absolute right-0 mt-2 w-80 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
                 <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider font-mono">
+                  <span className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider font-mono">
                     Notifications
                   </span>
                   {unreadCount > 0 && (
                     <button
                       onClick={handleMarkAllRead}
-                      className="text-[11px] text-[#D4AF37] hover:underline font-medium"
+                      className="text-sm text-[#D4AF37] hover:underline font-medium"
                     >
                       Mark all as read
                     </button>
@@ -215,7 +215,7 @@ export const Header: React.FC<HeaderProps> = ({
 
                 <div className="max-h-64 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/60">
                   {notifications.length === 0 ? (
-                    <div className="p-6 text-center text-xs text-slate-500 dark:text-slate-400">No new notifications</div>
+                    <div className="p-6 text-center text-sm text-slate-500 dark:text-slate-400">No new notifications</div>
                   ) : (
                     notifications.map((n) => {
                       const isUnread = !n.read && !n.isRead;
@@ -223,7 +223,7 @@ export const Header: React.FC<HeaderProps> = ({
                         <div
                           key={n.id}
                           onClick={() => handleNotificationClick(n)}
-                          className={`p-3.5 text-xs transition-colors cursor-pointer select-none ${
+                          className={`p-3.5 text-sm transition-colors cursor-pointer select-none ${
                             isUnread ? "bg-[#D4AF37]/10 hover:bg-[#D4AF37]/15" : "hover:bg-slate-50 dark:hover:bg-slate-800/40"
                           }`}
                         >
@@ -236,7 +236,7 @@ export const Header: React.FC<HeaderProps> = ({
                             )}
                           </div>
                           <p className="text-slate-600 dark:text-slate-400 mt-0.5 leading-snug line-clamp-2">{n.message}</p>
-                          <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono mt-1 block">
+                          <span className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500 font-mono mt-1 block">
                             {new Date(n.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                           </span>
                         </div>
@@ -249,14 +249,14 @@ export const Header: React.FC<HeaderProps> = ({
                   <Link
                     to="/notifications"
                     onClick={() => setIsNotifOpen(false)}
-                    className="text-[11px] font-semibold text-[#D4AF37] hover:underline"
+                    className="text-sm font-semibold text-[#D4AF37] hover:underline"
                   >
                     View all notifications →
                   </Link>
                   <Link
                     to="/settings"
                     onClick={() => setIsNotifOpen(false)}
-                    className="text-[10px] text-slate-400 hover:text-white"
+                    className="text-sm text-slate-500 dark:text-slate-400 hover:text-white"
                   >
                     Preferences
                   </Link>
@@ -270,7 +270,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="relative">
           <button
             onClick={() => setIsProfileOpen(!isProfileOpen)}
-            className="flex items-center gap-2 p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50"
+            className="flex items-center gap-2 p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-white dark:bg-slate-900 transition-colors focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50"
             aria-label="User account menu"
           >
             <Avatar name={currentUser?.profile?.fullName || currentUser?.email} size="sm" />
@@ -281,8 +281,8 @@ export const Header: React.FC<HeaderProps> = ({
               <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)} />
               <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl z-50 py-2 animate-in fade-in zoom-in-95 duration-150">
                 <div className="px-4 py-2.5 border-b border-slate-200 dark:border-slate-800">
-                  <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{currentUser?.profile?.fullName || currentUser?.email?.split("@")[0] || "User"}</p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono truncate">{currentUser?.email}</p>
+                  <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{currentUser?.profile?.fullName || currentUser?.email?.split("@")[0] || "User"}</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 font-mono truncate">{currentUser?.email}</p>
                   <span className="inline-block mt-1 px-2 py-0.5 rounded text-[9px] font-bold font-mono bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/20 uppercase">
                     {currentUser?.accountType || "USER"}
                   </span>
@@ -292,17 +292,17 @@ export const Header: React.FC<HeaderProps> = ({
                   <Link
                     to="/settings"
                     onClick={() => setIsProfileOpen(false)}
-                    className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors"
+                    className="flex items-center gap-2.5 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors"
                   >
-                    <Settings className="w-3.5 h-3.5 text-slate-400" />
+                    <Settings className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                     Account Settings
                   </Link>
                   <Link
                     to="/audit"
                     onClick={() => setIsProfileOpen(false)}
-                    className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors"
+                    className="flex items-center gap-2.5 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors"
                   >
-                    <ShieldAlert className="w-3.5 h-3.5 text-slate-400" />
+                    <ShieldAlert className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                     Security Logs
                   </Link>
                 </div>
@@ -314,7 +314,7 @@ export const Header: React.FC<HeaderProps> = ({
                       setIsProfileOpen(false);
                       setShowLogoutModal(true);
                     }}
-                    className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-colors"
+                    className="w-full flex items-center gap-2.5 px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-colors"
                   >
                     <LogOut className="w-3.5 h-3.5" />
                     Sign Out
@@ -328,7 +328,7 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Logout Confirmation Modal */}
       {showLogoutModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white dark:bg-slate-950/60 backdrop-blur-xs">
           <div className="w-full max-w-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-2xl">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 shrink-0">
@@ -336,7 +336,7 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
               <div>
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white">Confirm Log Out</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Are you sure you want to log out?</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Are you sure you want to log out?</p>
               </div>
             </div>
 
@@ -346,7 +346,7 @@ export const Header: React.FC<HeaderProps> = ({
                 type="button"
                 disabled={isLoggingOut}
                 onClick={() => setShowLogoutModal(false)}
-                className="px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
               >
                 Cancel
               </button>
@@ -355,7 +355,7 @@ export const Header: React.FC<HeaderProps> = ({
                 type="button"
                 disabled={isLoggingOut}
                 onClick={handleConfirmLogout}
-                className="px-4 py-2 text-xs font-semibold text-white bg-red-600 hover:bg-red-500 active:bg-red-700 rounded-lg transition-colors flex items-center gap-2 shadow-sm"
+                className="px-4 py-2 text-sm font-semibold text-white bg-red-600 hover:bg-red-500 active:bg-red-700 rounded-lg transition-colors flex items-center gap-2 shadow-sm"
               >
                 {isLoggingOut ? "Logging out..." : "Log out"}
               </button>

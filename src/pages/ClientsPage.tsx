@@ -392,8 +392,8 @@ export const ClientsPage: React.FC = () => {
               placeholder="Search by name, company, email, or phone..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              leftIcon={<Search className="w-4 h-4 text-slate-400" />}
-              className="py-2 text-xs"
+              leftIcon={<Search className="w-4 h-4 text-slate-500 dark:text-slate-400" />}
+              className="py-2 text-sm"
             />
           </div>
 
@@ -402,7 +402,7 @@ export const ClientsPage: React.FC = () => {
               options={CLIENT_STATUS_OPTIONS}
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="py-2 text-xs"
+              className="py-2 text-sm"
             />
           </div>
 
@@ -412,7 +412,7 @@ export const ClientsPage: React.FC = () => {
               size="sm"
               onClick={clearFilters}
               leftIcon={<X className="w-3.5 h-3.5" />}
-              className="text-xs text-slate-400 hover:text-slate-100"
+              className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-100"
             >
               Reset
             </Button>
@@ -427,7 +427,7 @@ export const ClientsPage: React.FC = () => {
               className={`p-1.5 rounded-md transition-colors ${
                 viewMode === "table"
                   ? "bg-white dark:bg-slate-900 text-[#D4AF37] shadow-xs"
-                  : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
               }`}
               title="Table view"
               aria-label="Table view"
@@ -439,7 +439,7 @@ export const ClientsPage: React.FC = () => {
               className={`p-1.5 rounded-md transition-colors ${
                 viewMode === "grid"
                   ? "bg-white dark:bg-slate-900 text-[#D4AF37] shadow-xs"
-                  : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
               }`}
               title="Grid view"
               aria-label="Grid view"
@@ -508,36 +508,36 @@ export const ClientsPage: React.FC = () => {
                           >
                             {name}
                           </button>
-                          <span className="text-[11px] text-slate-400 font-mono">
+                          <span className="text-sm text-slate-500 dark:text-slate-400 font-mono">
                             {c.businessType || "Enterprise Account"}
                           </span>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-300 font-medium">
-                        <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <div className="flex items-center gap-1.5 text-sm text-slate-700 dark:text-slate-300 font-medium">
+                        <Building2 className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 shrink-0" />
                         <span>{c.companyName || "—"}</span>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="space-y-0.5 text-xs font-mono">
+                      <div className="space-y-0.5 text-sm font-mono">
                         <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
-                          <Mail className="w-3 h-3 text-slate-400" />
+                          <Mail className="w-3 h-3 text-slate-500 dark:text-slate-400" />
                           <span>{c.email}</span>
                         </div>
                         {phone && (
-                          <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 text-[11px]">
-                            <Phone className="w-3 h-3 text-slate-400" />
+                          <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 text-sm">
+                            <Phone className="w-3 h-3 text-slate-500 dark:text-slate-400" />
                             <span>{phone}</span>
                           </div>
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="text-xs text-slate-500 dark:text-slate-400">
+                    <TableCell className="text-sm text-slate-500 dark:text-slate-400">
                       {c.city || c.country ? (
                         <div className="flex items-center gap-1">
-                          <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
+                          <MapPin className="w-3 h-3 text-slate-500 dark:text-slate-400 shrink-0" />
                           <span>{[c.city, c.country].filter(Boolean).join(", ")}</span>
                         </div>
                       ) : (
@@ -598,7 +598,7 @@ export const ClientsPage: React.FC = () => {
             return (
               <Card
                 key={c.id}
-                className="flex flex-col justify-between p-6 relative overflow-hidden hover:border-slate-700 bg-white dark:bg-slate-900/60 transition-all duration-200"
+                className="flex flex-col justify-between p-6 relative overflow-hidden hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900/60 transition-all duration-200"
               >
                 <div className="space-y-4">
                   <div className="flex items-start justify-between">
@@ -611,7 +611,7 @@ export const ClientsPage: React.FC = () => {
                         >
                           {name}
                         </button>
-                        <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                        <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">
                           {c.companyName || "Independent Client"}
                         </span>
                       </div>
@@ -621,20 +621,20 @@ export const ClientsPage: React.FC = () => {
                     </Badge>
                   </div>
 
-                  <div className="space-y-1.5 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs font-mono">
+                  <div className="space-y-1.5 pt-2 border-t border-slate-100 dark:border-slate-800 text-sm font-mono">
                     <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
-                      <Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <Mail className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 shrink-0" />
                       <span className="truncate">{c.email}</span>
                     </div>
                     {phone && (
                       <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
-                        <Phone className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                        <Phone className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 shrink-0" />
                         <span>{phone}</span>
                       </div>
                     )}
                     {(c.city || c.country) && (
                       <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
-                        <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                        <MapPin className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 shrink-0" />
                         <span className="truncate">{[c.city, c.country].filter(Boolean).join(", ")}</span>
                       </div>
                     )}
@@ -642,7 +642,7 @@ export const ClientsPage: React.FC = () => {
                 </div>
 
                 <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                  <span className="text-[11px] font-mono text-slate-400">
+                  <span className="text-sm font-mono text-slate-500 dark:text-slate-400">
                     Added: {formatDate(c.createdAt)}
                   </span>
                   <div className="flex items-center gap-1.5">
@@ -650,7 +650,7 @@ export const ClientsPage: React.FC = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => handleOpenClientDetails(c)}
-                      className="text-xs py-1 px-2.5"
+                      className="text-sm py-1 px-2.5"
                     >
                       Details
                     </Button>
@@ -707,7 +707,7 @@ export const ClientsPage: React.FC = () => {
           }`}
           footer={
             <div className="flex items-center justify-between w-full">
-              <span className="text-xs font-mono text-slate-500">
+              <span className="text-sm font-mono text-slate-500">
                 Client ID: {selectedClient.id}
               </span>
               <div className="flex items-center gap-2">
@@ -752,35 +752,35 @@ export const ClientsPage: React.FC = () => {
                     {selectedClient.clientStatus || selectedClient.status || "ACTIVE"}
                   </Badge>
                 </div>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1.5">
-                  <Building2 className="w-3.5 h-3.5 text-slate-400" />
+                <p className="text-sm text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1.5">
+                  <Building2 className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                   {selectedClient.companyName || "Independent Corporate Entity"}
                 </p>
               </div>
             </div>
 
             {/* Profile fields */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
               <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40">
-                <span className="text-[11px] font-mono text-slate-400 block mb-1">Email Address</span>
+                <span className="text-sm font-mono text-slate-500 dark:text-slate-400 block mb-1">Email Address</span>
                 <span className="font-semibold text-slate-900 dark:text-white font-mono">
                   {selectedClient.email}
                 </span>
               </div>
               <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40">
-                <span className="text-[11px] font-mono text-slate-400 block mb-1">Phone Number</span>
+                <span className="text-sm font-mono text-slate-500 dark:text-slate-400 block mb-1">Phone Number</span>
                 <span className="font-semibold text-slate-900 dark:text-white font-mono">
                   {selectedClient.phoneNumber || selectedClient.phone || "—"}
                 </span>
               </div>
               <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40">
-                <span className="text-[11px] font-mono text-slate-400 block mb-1">WhatsApp Contact</span>
+                <span className="text-sm font-mono text-slate-500 dark:text-slate-400 block mb-1">WhatsApp Contact</span>
                 <span className="font-semibold text-slate-900 dark:text-white font-mono">
                   {selectedClient.whatsappNumber || "—"}
                 </span>
               </div>
               <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40">
-                <span className="text-[11px] font-mono text-slate-400 block mb-1">Business Domain / Type</span>
+                <span className="text-sm font-mono text-slate-500 dark:text-slate-400 block mb-1">Business Domain / Type</span>
                 <span className="font-semibold text-slate-900 dark:text-white">
                   {selectedClient.businessType || "Enterprise Consulting"}
                 </span>
@@ -789,8 +789,8 @@ export const ClientsPage: React.FC = () => {
 
             {/* Location & Address */}
             {(selectedClient.address || selectedClient.city || selectedClient.country) && (
-              <div className="p-3.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 text-xs">
-                <span className="text-[11px] font-mono text-slate-400 block mb-1">Physical Location</span>
+              <div className="p-3.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 text-sm">
+                <span className="text-sm font-mono text-slate-500 dark:text-slate-400 block mb-1">Physical Location</span>
                 <p className="font-medium text-slate-800 dark:text-slate-200">
                   {[selectedClient.address, selectedClient.city, selectedClient.country]
                     .filter(Boolean)
@@ -801,8 +801,8 @@ export const ClientsPage: React.FC = () => {
 
             {/* Business Description */}
             {selectedClient.businessDescription && (
-              <div className="p-3.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 text-xs">
-                <span className="text-[11px] font-mono text-slate-400 block mb-1">Business Scope / Notes</span>
+              <div className="p-3.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 text-sm">
+                <span className="text-sm font-mono text-slate-500 dark:text-slate-400 block mb-1">Business Scope / Notes</span>
                 <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
                   {selectedClient.businessDescription}
                 </p>
@@ -812,16 +812,16 @@ export const ClientsPage: React.FC = () => {
             {/* Ownership & Hierarchy Chain */}
             <div className="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider font-mono">
+                <span className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider font-mono">
                   Client Ownership & Governance Chain
                 </span>
-                <span className="text-[11px] text-[#B88E20] font-medium font-mono">
+                <span className="text-sm text-[#B88E20] font-medium font-mono">
                   RBAC Verified
                 </span>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                 <div className="p-2.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-                  <span className="text-[10px] text-slate-400 uppercase font-mono block">Responsible Member</span>
+                  <span className="text-sm text-slate-500 dark:text-slate-400 uppercase font-mono block">Responsible Member</span>
                   <span className="font-semibold text-slate-800 dark:text-slate-200">
                     {(selectedClient as any).ownership?.member?.user?.profile?.fullName ||
                       (selectedClient as any).ownership?.member?.user?.email ||
@@ -829,7 +829,7 @@ export const ClientsPage: React.FC = () => {
                   </span>
                 </div>
                 <div className="p-2.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-                  <span className="text-[10px] text-slate-400 uppercase font-mono block">Assigned Manager</span>
+                  <span className="text-sm text-slate-500 dark:text-slate-400 uppercase font-mono block">Assigned Manager</span>
                   <span className="font-semibold text-slate-800 dark:text-slate-200">
                     {(selectedClient as any).ownership?.assignedManager?.profile?.fullName ||
                       (selectedClient as any).ownership?.assignedManager?.email ||
@@ -848,21 +848,21 @@ export const ClientsPage: React.FC = () => {
                     Client Communication & Relationship Logs
                   </h4>
                 </div>
-                <span className="text-[11px] font-mono text-slate-400">
+                <span className="text-sm font-mono text-slate-500 dark:text-slate-400">
                   {communications.length} Record{communications.length !== 1 ? "s" : ""}
                 </span>
               </div>
 
               {/* Log new communication form */}
               <form onSubmit={handleCreateCommunication} className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-3">
-                <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 block">
+                <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 block">
                   Log New Interaction / Communication
                 </span>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <select
                     value={commType}
                     onChange={(e) => setCommType(e.target.value)}
-                    className="text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white outline-none"
+                    className="text-sm px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white outline-none"
                   >
                     <option value="NOTE">Internal Note</option>
                     <option value="EMAIL">Email Sent / Received</option>
@@ -875,7 +875,7 @@ export const ClientsPage: React.FC = () => {
                     placeholder="Subject / Summary..."
                     value={commSubject}
                     onChange={(e) => setCommSubject(e.target.value)}
-                    className="text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white outline-none sm:col-span-2"
+                    className="text-sm px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white outline-none sm:col-span-2"
                   />
                 </div>
                 <textarea
@@ -884,7 +884,7 @@ export const ClientsPage: React.FC = () => {
                   placeholder="Record details of the discussion, client request, or action item..."
                   value={commContent}
                   onChange={(e) => setCommContent(e.target.value)}
-                  className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white outline-none resize-none"
+                  className="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white outline-none resize-none"
                 />
                 <div className="flex justify-end">
                   <Button
@@ -906,7 +906,7 @@ export const ClientsPage: React.FC = () => {
                   <Skeleton className="h-12 w-full" />
                 </div>
               ) : communications.length === 0 ? (
-                <div className="text-center py-6 text-xs text-slate-500 font-mono">
+                <div className="text-center py-6 text-sm text-slate-500 font-mono">
                   No communication records logged yet. Log the first client note above.
                 </div>
               ) : (
@@ -914,7 +914,7 @@ export const ClientsPage: React.FC = () => {
                   {communications.map((comm) => (
                     <div
                       key={comm.id}
-                      className="p-3 rounded-lg bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs space-y-1"
+                      className="p-3 rounded-lg bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-sm space-y-1"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -925,7 +925,7 @@ export const ClientsPage: React.FC = () => {
                             </span>
                           )}
                         </div>
-                        <span className="text-[10px] font-mono text-slate-400">
+                        <span className="text-sm font-mono text-slate-500 dark:text-slate-400">
                           {new Date(comm.createdAt).toLocaleString()}
                         </span>
                       </div>
@@ -933,7 +933,7 @@ export const ClientsPage: React.FC = () => {
                         {comm.content}
                       </p>
                       {comm.sender && (
-                        <div className="text-[10px] text-slate-400 font-mono pt-1">
+                        <div className="text-sm text-slate-500 dark:text-slate-400 font-mono pt-1">
                           Logged by: {comm.sender.profile?.fullName || comm.sender.email}
                         </div>
                       )}
@@ -944,7 +944,7 @@ export const ClientsPage: React.FC = () => {
             </div>
 
             {/* Timestamp */}
-            <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 pt-2 border-t border-slate-200 dark:border-slate-800">
+            <div className="flex items-center justify-between text-sm font-mono text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-200 dark:border-slate-800">
               <span>Registered: {formatDate(selectedClient.createdAt)}</span>
               <span>Updated: {formatDate(selectedClient.updatedAt)}</span>
             </div>
@@ -981,7 +981,7 @@ export const ClientsPage: React.FC = () => {
       >
         <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
           {modalError && (
-            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-500 text-xs font-medium">
+            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-500 text-sm font-medium">
               {modalError}
             </div>
           )}

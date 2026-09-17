@@ -59,7 +59,7 @@ export const SolutionsPage: React.FC = () => {
     <div className="space-y-16 sm:space-y-24 pb-16 font-sans">
       {/* Header Banner */}
       <section className="pt-8 sm:pt-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center space-y-4">
-        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-900 text-xs font-semibold uppercase tracking-wider font-mono">
+        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-900 text-sm font-semibold uppercase tracking-wider font-mono">
           <span>Problem-Oriented Architecture</span>
         </div>
         <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-950 tracking-tight max-w-3xl mx-auto">
@@ -74,7 +74,7 @@ export const SolutionsPage: React.FC = () => {
       {/* Problem Options ("I want to...") */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center space-y-2 mb-8 sm:mb-12">
-          <div className="text-xs font-mono font-bold text-[#8D6D19] uppercase tracking-wider">
+          <div className="text-sm font-mono font-bold text-[#8D6D19] uppercase tracking-wider">
             Discovery Matrix
           </div>
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-950 tracking-tight">
@@ -104,7 +104,7 @@ export const SolutionsPage: React.FC = () => {
                     {sol.goal}
                   </h3>
 
-                  <p className="text-xs text-slate-600 leading-relaxed flex-grow">
+                  <p className="text-sm text-slate-600 leading-relaxed flex-grow">
                     {sol.shortDesc}
                   </p>
                 </div>
@@ -114,7 +114,7 @@ export const SolutionsPage: React.FC = () => {
                     {sol.tags.map((tag, idx) => (
                       <span
                         key={idx}
-                        className="text-[10px] font-mono bg-[#F1F2EE] text-slate-700 px-2 py-0.5 rounded-md border border-[#E2E5E0]"
+                        className="text-sm font-mono bg-[#F1F2EE] text-slate-700 px-2 py-0.5 rounded-md border border-[#E2E5E0]"
                       >
                         {tag}
                       </span>
@@ -123,7 +123,7 @@ export const SolutionsPage: React.FC = () => {
 
                   <Link
                     to={`/contact?service=${encodeURIComponent(sol.recommendedService)}&goal=${encodeURIComponent(sol.goal)}`}
-                    className="inline-flex items-center justify-center space-x-1 px-4 py-2 rounded-xl bg-slate-950 text-white text-xs font-bold shadow-sm hover:bg-slate-800 transition-all border border-slate-900 w-full"
+                    className="inline-flex items-center justify-center space-x-1 px-4 py-2 rounded-xl bg-white dark:bg-slate-950 text-white text-sm font-bold shadow-sm hover:bg-slate-800 transition-all border border-slate-900 w-full"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <span>Request Solution</span>
@@ -140,13 +140,13 @@ export const SolutionsPage: React.FC = () => {
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="p-8 sm:p-12 rounded-3xl bg-white border border-[#E2E5E0] shadow-lg space-y-8">
           <div className="text-center space-y-2 max-w-2xl mx-auto">
-            <span className="text-xs font-mono font-bold text-[#8D6D19] uppercase tracking-wider">
+            <span className="text-sm font-mono font-bold text-[#8D6D19] uppercase tracking-wider">
               Sectors & Environments
             </span>
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-950 tracking-tight">
               Solutions by Industry
             </h2>
-            <p className="text-xs sm:text-sm text-slate-600">
+            <p className="text-sm sm:text-sm text-slate-600">
               We design specialized workflows adapted to the regulatory, data, and usability patterns of distinct industries.
             </p>
           </div>
@@ -157,13 +157,13 @@ export const SolutionsPage: React.FC = () => {
                 key={idx}
                 className="p-4 rounded-2xl bg-[#F1F2EE] border border-[#E2E5E0] space-y-2 hover:border-[#D4AF37] transition-colors"
               >
-                <div className="flex items-center space-x-2 text-slate-950 font-bold text-xs sm:text-sm">
+                <div className="flex items-center space-x-2 text-slate-950 font-bold text-sm sm:text-sm">
                   <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-[#8D6D19] flex items-center justify-center flex-shrink-0 border border-amber-500/20">
                     {industryIconMap[ind.icon] || <Building2 className="w-4 h-4" />}
                   </div>
                   <span>{ind.name}</span>
                 </div>
-                <p className="text-xs text-slate-600 leading-relaxed">
+                <p className="text-sm text-slate-600 leading-relaxed">
                   {ind.desc}
                 </p>
               </div>
@@ -173,7 +173,7 @@ export const SolutionsPage: React.FC = () => {
           <div className="text-center pt-0 sm:pt-2">
             <Link
               to="/contact"
-              className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl bg-[#111827] text-white font-bold text-xs shadow-md hover:bg-[#1F2937] hover:scale-[1.02] active:scale-[0.98] transition-all border border-[#111827]"
+              className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl bg-[#111827] text-white font-bold text-sm shadow-md hover:bg-[#1F2937] hover:scale-[1.02] active:scale-[0.98] transition-all border border-[#111827]"
             >
               <span>Consult with an Industry Architect</span>
               <ArrowRight className="w-3.5 h-3.5 text-[#D4AF37]" />
