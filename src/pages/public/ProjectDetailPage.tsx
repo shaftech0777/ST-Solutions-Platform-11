@@ -80,7 +80,7 @@ export const ProjectDetailPage: React.FC = () => {
   if (error || !project) {
     return (
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center space-y-5">
-        <Layers className="w-12 h-12 mx-auto text-slate-500 dark:text-slate-400" />
+        <Layers className="w-12 h-12 mx-auto text-slate-400" />
         <h2 className="text-2xl font-extrabold text-slate-950">Showcase Project Not Found</h2>
         <p className="text-sm text-slate-600 max-w-md mx-auto">
           {error || "The showcase project you requested could not be retrieved from the portfolio database."}
@@ -88,7 +88,7 @@ export const ProjectDetailPage: React.FC = () => {
         <div className="pt-4">
           <Link
             to="/projects"
-            className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold transition-all shadow-sm"
+            className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-[#111827] hover:bg-[#1F2937] text-white text-sm font-bold transition-all shadow-sm"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Browse All Showcase Systems</span>
@@ -108,11 +108,11 @@ export const ProjectDetailPage: React.FC = () => {
           <Link to="/" className="hover:text-slate-950 transition-colors">
             Home
           </Link>
-          <ChevronRight className="w-3 h-3 text-slate-500 dark:text-slate-400" />
+          <ChevronRight className="w-3 h-3 text-slate-400" />
           <Link to="/projects" className="hover:text-slate-950 transition-colors">
             Portfolio
           </Link>
-          <ChevronRight className="w-3 h-3 text-slate-500 dark:text-slate-400" />
+          <ChevronRight className="w-3 h-3 text-slate-400" />
           <span className="font-semibold text-slate-900 truncate max-w-[200px] sm:max-w-xs">
             {project.title}
           </span>
@@ -152,7 +152,7 @@ export const ProjectDetailPage: React.FC = () => {
             <div className="flex flex-wrap items-center gap-3 pt-3">
               <button
                 onClick={() => setIsInquiryModalOpen(true)}
-                className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold transition-all shadow-md"
+                className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl bg-[#111827] hover:bg-[#1F2937] text-white text-sm font-bold transition-all shadow-md"
               >
                 <span>Request Tailored Quote</span>
                 <ArrowRight className="w-3.5 h-3.5 text-amber-400" />
@@ -267,12 +267,12 @@ export const ProjectDetailPage: React.FC = () => {
       {/* Business Benefits & ROI */}
       {project.benefits && project.benefits.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="p-8 sm:p-10 rounded-3xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xl space-y-6">
+          <div className="p-8 sm:p-10 rounded-3xl bg-[#111827] text-white border border-[#1F2937] shadow-xl space-y-6">
             <div>
               <div className="text-sm font-bold text-amber-400 uppercase tracking-wider font-mono">
                 BUSINESS IMPACT
               </div>
-              <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-1">
+              <h2 className="text-2xl font-extrabold text-white tracking-tight mt-1">
                 Measurable ROI &amp; Commercial Benefits
               </h2>
             </div>
@@ -281,10 +281,10 @@ export const ProjectDetailPage: React.FC = () => {
               {project.benefits.map((benefit, idx) => (
                 <div
                   key={idx}
-                  className="p-5 rounded-2xl bg-slate-800/80 border border-slate-300 dark:border-slate-700/60 space-y-2"
+                  className="p-5 rounded-2xl bg-slate-800 border border-slate-700 space-y-2"
                 >
                   <Sparkles className="w-4 h-4 text-amber-400" />
-                  <p className="text-sm sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed">{benefit}</p>
+                  <p className="text-sm sm:text-sm text-slate-200 leading-relaxed">{benefit}</p>
                 </div>
               ))}
             </div>
@@ -327,7 +327,7 @@ export const ProjectDetailPage: React.FC = () => {
           </div>
           <button
             onClick={() => setIsInquiryModalOpen(true)}
-            className="px-6 py-3.5 rounded-xl bg-white dark:bg-slate-950 hover:bg-white dark:bg-slate-900 text-white font-bold text-sm transition-all shadow-md shrink-0"
+            className="px-6 py-3.5 rounded-xl bg-[#111827] hover:bg-[#1F2937] text-white font-bold text-sm transition-all shadow-md shrink-0"
           >
             Start Project Consultation
           </button>

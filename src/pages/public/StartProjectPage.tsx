@@ -1010,7 +1010,7 @@ export const StartProjectPage: React.FC = () => {
                   <span className="text-slate-500">Ready to send</span>
                 </div>
                 <div className="bg-[#111827] text-slate-100 rounded-2xl p-5 font-mono text-sm leading-relaxed border border-[#1F2937] shadow-inner max-h-48 overflow-y-auto">
-                  <pre className="whitespace-pre-wrap font-mono text-sm leading-relaxed text-slate-800 dark:text-slate-200">
+                  <pre className="whitespace-pre-wrap font-mono text-sm leading-relaxed text-slate-200">
                     {generatedMessage}
                   </pre>
                 </div>
@@ -1058,16 +1058,16 @@ export const StartProjectPage: React.FC = () => {
                     <div>
                       <div className="flex items-center justify-between">
                         <Mail className="w-6 h-6 text-[#D4AF37]" />
-                        <span className="text-sm font-mono uppercase bg-slate-800 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded-full">
+                        <span className="text-sm font-mono uppercase bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full">
                           Formal
                         </span>
                       </div>
                       <div className="text-base font-extrabold mt-3">Email</div>
-                      <div className="text-sm text-slate-700 dark:text-slate-300 font-normal mt-0.5">
+                      <div className="text-sm text-slate-300 font-normal mt-0.5">
                         Detailed project brief
                       </div>
                     </div>
-                    <div className="inline-flex items-center space-x-1.5 text-sm font-bold pt-2 border-t border-slate-300 dark:border-slate-700 text-[#D4AF37]">
+                    <div className="inline-flex items-center space-x-1.5 text-sm font-bold pt-2 border-t border-slate-700 text-[#D4AF37]">
                       <span>Continue with Email</span>
                       <ArrowRight className="w-3.5 h-3.5 text-[#D4AF37]" />
                     </div>

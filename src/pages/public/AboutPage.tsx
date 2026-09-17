@@ -41,11 +41,11 @@ export const AboutPage: React.FC = () => {
             <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-[#B88E20] flex items-center justify-center">
               <Compass className="w-6 h-6" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Our Mission</h2>
-            <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+            <h2 className="text-2xl font-bold text-white">Our Mission</h2>
+            <p className="text-sm text-slate-300 leading-relaxed">
               To empower modern enterprises and growing businesses with robust, high-performance software systems that eliminate operational bottlenecks, reduce manual friction, and accelerate measurable business growth.
             </p>
-            <ul className="space-y-2.5 text-sm text-slate-700 dark:text-slate-300 pt-2 font-medium">
+            <ul className="space-y-2.5 text-sm text-slate-300 pt-2 font-medium">
               <li className="flex items-center space-x-2">
                 <CheckCircle2 className="w-4 h-4 text-[#D4AF37] flex-shrink-0" />
                 <span>Zero bloated dependencies or fragile templates</span>
@@ -66,11 +66,11 @@ export const AboutPage: React.FC = () => {
             <div className="w-12 h-12 rounded-2xl bg-[#D4AF37]/20 text-[#D4AF37] flex items-center justify-center">
               <Sparkles className="w-6 h-6" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Our Vision</h2>
-            <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+            <h2 className="text-2xl font-bold text-white">Our Vision</h2>
+            <p className="text-sm text-slate-300 leading-relaxed">
               To establish ST-Solutions as the premier technology partner for businesses seeking dependable, scalable, and secure digital infrastructure built with absolute craftsmanship.
             </p>
-            <ul className="space-y-2.5 text-sm text-slate-700 dark:text-slate-300 pt-2 font-medium">
+            <ul className="space-y-2.5 text-sm text-slate-300 pt-2 font-medium">
               <li className="flex items-center space-x-2">
                 <CheckCircle2 className="w-4 h-4 text-[#D4AF37] flex-shrink-0" />
                 <span>Enterprise reliability accessible to growing ventures</span>
@@ -170,13 +170,13 @@ export const AboutPage: React.FC = () => {
               <div className="inline-flex items-center space-x-2 text-sm font-bold text-[#D4AF37] uppercase tracking-wider font-mono">
                 <span>Founder & Technical Lead</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
                 {companyConfig.founder.name}
               </h2>
               <div className="text-sm text-amber-300 font-mono font-semibold">
                 {companyConfig.founder.title}
               </div>
-              <p className="text-sm sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed max-w-2xl">
+              <p className="text-sm sm:text-sm text-slate-300 leading-relaxed max-w-2xl">
                 {companyConfig.founder.bio} With deep experience across distributed systems, enterprise data pipelines, and responsive client architectures, Muhammad Shaf oversees system design and quality control across every project delivered by ST-Solutions.
               </p>
 
@@ -198,8 +198,8 @@ export const AboutPage: React.FC = () => {
                 <div className="w-16 h-16 rounded-2xl bg-[#D4AF37] text-slate-950 font-black text-2xl flex items-center justify-center shadow-md">
                   MS
                 </div>
-                <div className="text-sm font-bold text-slate-900 dark:text-white">{companyConfig.founder.name}</div>
-                <div className="text-sm text-slate-500 dark:text-slate-400 font-mono">ST-Solutions Founder</div>
+                <div className="text-sm font-bold text-white">{companyConfig.founder.name}</div>
+                <div className="text-sm text-slate-400 font-mono">ST-Solutions Founder</div>
               </div>
             </div>
           </div>

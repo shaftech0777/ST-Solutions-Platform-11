@@ -140,7 +140,7 @@ export const ProjectsPage: React.FC = () => {
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-3.5 py-1.5 rounded-xl text-sm font-semibold transition-all ${
                   selectedCategory === cat
-                    ? "bg-white dark:bg-slate-900 text-white shadow-sm"
+                    ? "bg-[#111827] text-white shadow-sm"
                     : "bg-[#F1F2EE] text-slate-700 hover:bg-slate-200"
                 }`}
               >
@@ -151,13 +151,13 @@ export const ProjectsPage: React.FC = () => {
 
           {/* Search Input */}
           <div className="relative w-full md:w-72">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               placeholder="Search by system or industry..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-sm rounded-xl bg-[#F8F9F5] border border-[#E2E5E0] focus:outline-none focus:ring-2 focus:ring-amber-500/30 text-slate-900 placeholder:text-slate-500 dark:text-slate-400"
+              className="w-full pl-9 pr-3 py-1.5 text-sm rounded-xl bg-[#F8F9F5] border border-[#E2E5E0] focus:outline-none focus:ring-2 focus:ring-amber-500/30 text-slate-900 placeholder:text-slate-400"
             />
           </div>
         </div>
@@ -180,14 +180,14 @@ export const ProjectsPage: React.FC = () => {
             </p>
             <button
               onClick={() => setRefreshTrigger((prev) => prev + 1)}
-              className="px-5 py-2.5 text-sm font-bold text-white bg-white dark:bg-slate-900 rounded-xl hover:bg-slate-800 transition-all shadow-sm"
+              className="px-5 py-2.5 text-sm font-bold text-white bg-[#111827] rounded-xl hover:bg-[#1F2937] transition-all shadow-sm"
             >
               Retry Loading Showcase
             </button>
           </div>
         ) : projectsList.length === 0 ? (
           <div className="p-12 text-center rounded-3xl bg-white border border-[#E2E5E0] space-y-4">
-            <Layers className="w-10 h-10 mx-auto text-slate-500 dark:text-slate-400" />
+            <Layers className="w-10 h-10 mx-auto text-slate-400" />
             <h3 className="text-base font-bold text-slate-900">No showcase projects match your filter</h3>
             <p className="text-sm text-slate-500 max-w-md mx-auto">
               Try adjusting your search keywords or switch back to All Categories to browse our entire portfolio.
@@ -197,7 +197,7 @@ export const ProjectsPage: React.FC = () => {
                 setSelectedCategory("All");
                 setSearchQuery("");
               }}
-              className="px-4 py-2 text-sm font-bold text-white bg-white dark:bg-slate-900 rounded-xl hover:bg-slate-800"
+              className="px-4 py-2 text-sm font-bold text-white bg-[#111827] rounded-xl hover:bg-[#1F2937]"
             >
               Reset Filters
             </button>
@@ -266,7 +266,7 @@ export const ProjectsPage: React.FC = () => {
 
                   {/* Feature Highlights */}
                   <div className="space-y-1 pt-1">
-                    <div className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Key Capabilities</div>
+                    <div className="text-sm font-bold text-slate-500 uppercase tracking-wider">Key Capabilities</div>
                     <div className="space-y-1">
                       {project.features.slice(0, 3).map((feat, idx) => (
                         <div key={idx} className="flex items-center space-x-1.5 text-sm text-slate-700">
@@ -304,7 +304,7 @@ export const ProjectsPage: React.FC = () => {
 
                   <button
                     onClick={() => handleOpenInquiry(project)}
-                    className="w-full py-2.5 px-4 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm transition-all flex items-center justify-center space-x-2 shadow-sm"
+                    className="w-full py-2.5 px-4 rounded-xl bg-[#111827] hover:bg-[#1F2937] text-white font-semibold text-sm transition-all flex items-center justify-center space-x-2 shadow-sm"
                   >
                     <span>Request Similar Project</span>
                     <ArrowRight className="w-3.5 h-3.5 text-amber-400" />
@@ -429,7 +429,7 @@ export const ProjectsPage: React.FC = () => {
                   setSelectedProject(null);
                   handleOpenInquiry(selectedProject);
                 }}
-                className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-2.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold transition-all shadow-md"
+                className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-2.5 rounded-xl bg-[#111827] hover:bg-[#1F2937] text-white text-sm font-bold transition-all shadow-md"
               >
                 <span>Request a Quote for this Project</span>
                 <ArrowRight className="w-4 h-4 text-amber-400" />

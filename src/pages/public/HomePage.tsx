@@ -463,10 +463,10 @@ export const HomePage: React.FC = () => {
               <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#D4AF37] uppercase tracking-wider font-mono">
                 <span>Leadership & Systems Architecture</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
                 Meet the Founder — {companyConfig.founder.name}
               </h2>
-              <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed max-w-2xl">
+              <p className="text-sm text-slate-300 leading-relaxed max-w-2xl">
                 {companyConfig.founder.bio} Under his leadership, ST-Solutions focuses strictly on pragmatic software craftsmanship, rock-solid database architectures, and business automation that delivers tangible bottom-line results.
               </p>
             </div>
@@ -477,8 +477,8 @@ export const HomePage: React.FC = () => {
                   MS
                 </div>
                 <div className="space-y-0.5">
-                  <div className="text-base font-bold text-slate-900 dark:text-white">{companyConfig.founder.name}</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">Founder / Admin</div>
+                  <div className="text-base font-bold text-white">{companyConfig.founder.name}</div>
+                  <div className="text-xs text-slate-400">Founder / Admin</div>
                 </div>
                 <a
                   href={companyConfig.founder.portfolioUrl}

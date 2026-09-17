@@ -241,7 +241,7 @@ ${formData.message.trim()}
                 <Clock className="w-4 h-4" />
                 <span>Response Guarantee</span>
               </div>
-              <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+              <p className="text-sm text-slate-300 leading-relaxed">
                 All client requests submitted through the form or WhatsApp receive technical assessment and scoping follow-up within 24 hours.
               </p>
             </div>

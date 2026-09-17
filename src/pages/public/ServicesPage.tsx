@@ -158,10 +158,10 @@ export const ServicesPage: React.FC = () => {
       {/* Bottom Consultation Box (Intentional Dark Contrast Section) */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center space-y-6">
         <div className="p-8 sm:p-12 rounded-3xl bg-[#111827] text-white border border-[#1F2937] shadow-2xl space-y-4 max-w-3xl mx-auto">
-          <h3 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+          <h3 className="text-2xl font-bold tracking-tight text-white">
             Not sure which service fits best?
           </h3>
-          <p className="text-sm sm:text-sm text-slate-700 dark:text-slate-300 max-w-xl mx-auto">
+          <p className="text-sm sm:text-sm text-slate-300 max-w-xl mx-auto">
             Our engineers can review your current technical setup or business goals and recommend the optimal solution architecture.
           </p>
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -176,7 +176,7 @@ export const ServicesPage: React.FC = () => {
               href={companyConfig.contact.whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto px-6 py-3.5 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-800 text-white font-semibold text-sm transition-colors"
+              className="w-full sm:w-auto px-6 py-3.5 rounded-xl border border-slate-700 hover:bg-slate-800 text-white font-semibold text-sm transition-colors"
             >
               Chat on WhatsApp ({companyConfig.contact.whatsappDisplay})
             </a>

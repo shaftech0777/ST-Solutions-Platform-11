@@ -123,7 +123,7 @@ export const SolutionsPage: React.FC = () => {
 
                   <Link
                     to={`/contact?service=${encodeURIComponent(sol.recommendedService)}&goal=${encodeURIComponent(sol.goal)}`}
-                    className="inline-flex items-center justify-center space-x-1 px-4 py-2 rounded-xl bg-white dark:bg-slate-950 text-white text-sm font-bold shadow-sm hover:bg-slate-800 transition-all border border-slate-900 w-full"
+                    className="inline-flex items-center justify-center space-x-1 px-4 py-2 rounded-xl bg-[#111827] text-white text-sm font-bold shadow-sm hover:bg-[#1F2937] transition-all border border-[#111827] w-full"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <span>Request Solution</span>

@@ -148,21 +148,21 @@ export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="p-6 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white flex items-center justify-between border-b border-slate-200 dark:border-slate-800">
+        <div className="p-6 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white flex items-center justify-between border-b border-slate-800">
           <div className="space-y-1">
             <div className="flex items-center space-x-2">
               <span className="px-2.5 py-0.5 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37]/40 text-[#E5C158] text-[10px] font-mono uppercase tracking-wider font-bold">
                 Project Inquiry
               </span>
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Direct Engineering Consult</span>
+              <span className="text-xs text-slate-400 font-medium">Direct Engineering Consult</span>
             </div>
-            <h2 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            <h2 className="text-xl font-extrabold text-white tracking-tight">
               {isSubmitted ? "Inquiry Dispatched" : `Request Consult on "${formData.projectNameSnapshot}"`}
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+            className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -211,7 +211,7 @@ export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
               <div className="pt-2">
                 <button
                   onClick={onClose}
-                  className="px-6 py-2.5 rounded-xl bg-white dark:bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition-colors"
+                  className="px-6 py-2.5 rounded-xl bg-[#111827] text-white text-xs font-bold hover:bg-slate-800 transition-colors"
                 >
                   Close Window
                 </button>
@@ -324,7 +324,7 @@ export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
                         }
                         className={`p-3 rounded-xl border text-xs font-bold flex flex-col items-center justify-center space-y-1.5 transition-all ${
                           isSelected
-                            ? "bg-white dark:bg-slate-950 text-white border-slate-950 shadow-md"
+                            ? "bg-[#111827] text-white border-[#111827] shadow-md"
                             : "bg-white text-slate-700 border-[#E2E5E0] hover:bg-[#F1F2EE]"
                         }`}
                       >
