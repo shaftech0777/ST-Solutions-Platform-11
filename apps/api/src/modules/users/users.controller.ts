@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { AccountType } from "@prisma/client";
 import { ResponseBuilder } from "../../core/responses/index.js";
 import { AuthenticatedRequest } from "../../core/security/security.types.js";
+import { auditService } from "../audit/audit.service.js";
 import { usersService as defaultUsersService, UsersService } from "./users.service.js";
 import {
   CreateUserInput,
@@ -79,6 +80,13 @@ export class UsersController {
       const dto = req.body as CreateUserInput;
       const newUser = await this.usersService.createUser(dto, actor);
 
+      // Audit log creation event
+      await auditService.recordEvent(
+        req,
+        "USER_CREATED",
+        `Created staff/member account ${newUser.id} (${newUser.email || "No Email"}) with role ${newUser.accountType}`
+      );
+
       ResponseBuilder.created(res, newUser, {
         message: "User account created successfully",
       });
@@ -101,6 +109,9 @@ export class UsersController {
       const dto = req.body as UpdateUserInput;
 
       const updatedUser = await this.usersService.updateUser(id, dto, actor);
+
+      // Audit log profile update
+      await auditService.recordEvent(req, "USER_PROFILE_UPDATED", `Updated profile information for user ${id}`);
 
       ResponseBuilder.success(res, updatedUser, {
         message: "User profile updated successfully",
@@ -125,6 +136,9 @@ export class UsersController {
 
       const updatedUser = await this.usersService.updateUserStatus(id, dto, actor);
 
+      // Audit log status update
+      await auditService.recordEvent(req, "USER_STATUS_CHANGED", `Updated user ${id} status to ${dto.status}`);
+
       ResponseBuilder.success(res, updatedUser, {
         message: "User status updated successfully",
       });
@@ -147,6 +161,13 @@ export class UsersController {
       const dto = req.body as UpdateUserRoleInput;
 
       const updatedUser = await this.usersService.updateUserRole(id, dto, actor);
+
+      // Audit log role change
+      await auditService.recordEvent(
+        req,
+        "USER_ROLE_CHANGED",
+        `Updated user ${id} role/accountType to ${dto.accountType || dto.roleId}`
+      );
 
       ResponseBuilder.success(res, updatedUser, {
         message: "User role assignment updated successfully",
@@ -171,6 +192,9 @@ export class UsersController {
 
       const result = await this.usersService.resetUserPassword(id, newPassword, actor);
 
+      // Audit log password reset
+      await auditService.recordEvent(req, "USER_PASSWORD_RESET", `Administratively reset password credentials for user ${id}`);
+
       ResponseBuilder.success(res, result, {
         message: result.message,
       });
@@ -194,6 +218,9 @@ export class UsersController {
 
       const updatedUser = await this.usersService.suspendUser(id, reason, actor);
 
+      // Audit log suspension
+      await auditService.recordEvent(req, "USER_SUSPENDED", `Suspended user ${id}: ${reason}`);
+
       ResponseBuilder.success(res, updatedUser, {
         message: "User account suspended successfully",
       });
@@ -216,6 +243,9 @@ export class UsersController {
 
       const updatedUser = await this.usersService.reactivateUser(id, actor);
 
+      // Audit log reactivation
+      await auditService.recordEvent(req, "USER_REACTIVATED", `Reactivated user account ${id}`);
+
       ResponseBuilder.success(res, updatedUser, {
         message: "User account reactivated successfully",
       });
@@ -237,6 +267,9 @@ export class UsersController {
         : undefined;
 
       const result = await this.usersService.deleteUser(id, actor);
+
+      // Audit log deletion
+      await auditService.recordEvent(req, "USER_DELETED", `Deleted / deactivated user ${id}`);
 
       ResponseBuilder.success(res, result, {
         message: result.message,

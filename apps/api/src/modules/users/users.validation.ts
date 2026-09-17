@@ -33,6 +33,9 @@ export const createUserSchema = z.object({
   accountType: z.nativeEnum(AccountType).optional().default(AccountType.MEMBER),
   status: z.nativeEnum(UserStatus).optional().default(UserStatus.ACTIVE),
   roleId: z.string().trim().nullable().optional(),
+  managedByUserId: z.string().trim().nullable().optional(),
+  organizationId: z.string().trim().nullable().optional(),
+  workspaceId: z.string().trim().nullable().optional(),
   profile: z
     .object({
       fullName: z.string().trim().min(1, "Full name cannot be empty").optional(),
@@ -53,6 +56,9 @@ export const createUserSchema = z.object({
  */
 export const updateUserSchema = z.object({
   email: emailSchema.optional(),
+  managedByUserId: z.string().trim().nullable().optional(),
+  organizationId: z.string().trim().nullable().optional(),
+  workspaceId: z.string().trim().nullable().optional(),
   profile: z
     .object({
       fullName: z.string().trim().min(1, "Full name cannot be empty").optional().nullable(),

@@ -5,6 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ST-Solutions</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script>
+      (function() {
+        try {
+          var mode = localStorage.getItem('st_solutions_theme');
+          if (mode === 'dark') {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
+          } else {
+            document.documentElement.classList.add('light');
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
     <meta name="description" content="ST-SOLUTIONS Enterprise Operations Platform — Unified multi-tenant workspace telemetry, project delivery, financial ledger, and organizational governance." />
     <meta property="og:title" content="ST-Solutions" />
     <meta property="og:description" content="ST-SOLUTIONS Enterprise Operations Platform — Unified multi-tenant workspace telemetry, project delivery, financial ledger, and organizational governance." />

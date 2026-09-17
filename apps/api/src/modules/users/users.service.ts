@@ -176,6 +176,13 @@ export class UsersService {
       }
     }
 
+    if (dto.managedByUserId && (actor?.accountType === AccountType.ADMIN || actor?.accountType === AccountType.SUB_ADMIN)) {
+      const targetManager = await this.usersRepository.findById(dto.managedByUserId);
+      if (targetManager) {
+        validManagedByUserId = targetManager.id;
+      }
+    }
+
     const createdUser = await this.usersRepository.create({
       id: rawUserId || undefined,
       email: normalizedEmail,
@@ -185,6 +192,8 @@ export class UsersService {
       roleId: dto.roleId ?? null,
       createdByUserId: validCreatedByUserId,
       managedByUserId: validManagedByUserId,
+      organizationId: dto.organizationId ?? null,
+      workspaceId: dto.workspaceId ?? null,
       profile: dto.profile
         ? {
             fullName: dto.profile.fullName,
@@ -232,8 +241,19 @@ export class UsersService {
       }
     }
 
+    let targetManagedByUserId = dto.managedByUserId;
+    if (targetManagedByUserId) {
+      const managerExists = await this.usersRepository.findById(targetManagedByUserId);
+      if (!managerExists) {
+        throw new NotFoundError(`Manager with ID '${targetManagedByUserId}' was not found`, ERROR_CODES.DATABASE_RECORD_NOT_FOUND);
+      }
+    }
+
     const updatedUser = await this.usersRepository.update(id, {
       email: normalizedEmail,
+      managedByUserId: targetManagedByUserId,
+      organizationId: dto.organizationId,
+      workspaceId: dto.workspaceId,
       profile: dto.profile
         ? {
             fullName: dto.profile.fullName,
